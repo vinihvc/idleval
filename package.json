@@ -1,4 +1,16 @@
 {
+  "name": "idleval",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.5.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint:check": "ultracite check",
+    "lint:fix": "ultracite fix"
+  },
   "dependencies": {
     "@ark-ui/react": "^5.37.0",
     "@number-flow/react": "^0.6.0",
@@ -29,24 +41,6 @@
     "ultracite": "7.8.1",
     "vite": "^8.0.16"
   },
-  "name": "idleval",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "check": "ultracite check",
-    "check:fix": "biome check src --write",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint src --write ",
-    "format": "biome format .",
-    "format:fix": "biome format src --write",
-    "typecheck": "tsc --noEmit",
-    "fix": "ultracite fix"
-  },
-  "type": "module",
-  "version": "2.0.0",
-  "private": true,
-  "packageManager": "pnpm@11.5.1",
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "pnpm dlx ultracite fix"
