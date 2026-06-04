@@ -13,7 +13,7 @@ export const Switch = (props: React.ComponentProps<typeof ArkSwitch.Root>) => {
     <ArkSwitch.Root
       className={cn(
         "group/switch",
-        "[--thumb-size:--spacing(5)]",
+        "[--thumb-size:--spacing(6)] sm:[--thumb-size:--spacing(5)]",
         "h-[calc(var(--thumb-size)+2px)] w-[calc(var(--thumb-size)*2-2px)]",
         "p-px",
         "inline-flex shrink-0 items-center",
