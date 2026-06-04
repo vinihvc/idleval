@@ -1,12 +1,12 @@
-import type * as React from "react";
+import type React from "react";
+import { borderedText } from "@/components/ui/text-border";
 import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
-import { totalToEarnAfterProduce, useFactory } from "@/store";
+import { totalToEarnAfterProduce, useFactory } from "@/store/atoms/factories";
 import {
   amountFormatterWithDolarSign,
   timeFormatter,
 } from "@/utils/formatters";
-import { borderedText } from "../text-border";
 import classes from "./progress.module.css";
 
 interface ProgressProps extends React.ComponentProps<"div"> {
@@ -50,7 +50,7 @@ export const Progress = (props: ProgressProps) => {
     <div
       aria-valuenow={value}
       className={cn(
-        "group relative h-6 w-full overflow-hidden rounded-full border border-foreground/50 bg-background",
+        "group relative inset-shadow-xs h-7 w-full overflow-hidden rounded-md border-3 border-primary/40 bg-muted",
         className
       )}
       data-auto={isAutomated}
@@ -59,7 +59,7 @@ export const Progress = (props: ProgressProps) => {
     >
       <div
         className={cn(
-          "h-full w-0 flex-1 bg-blue-600",
+          "h-full w-0 flex-1 bg-primary",
           isUnlocked && classes.fill
         )}
         style={{ animationDuration }}
@@ -67,26 +67,15 @@ export const Progress = (props: ProgressProps) => {
 
       <div
         className={cn(
-          "absolute inset-0 flex items-center justify-between px-3 font-semibold text-background text-sm tracking-wide",
-          borderedText({ variant: "blue" })
-        )}
-      >
-        <span className="w-40 text-xs">{timeFormatter(productionTime)}</span>
-        <span>
-          {amountFormatterWithDolarSign(totalToEarnAfterProduce(factoryType))}
-        </span>
-      </div>
-
-      <div
-        className={cn(
-          "absolute inset-0 flex items-center justify-between px-3 font-semibold text-foreground text-sm tracking-wide",
-          borderedText({ variant: "white" }),
-          isUnlocked && classes.clip
+          "absolute inset-0 flex items-center justify-between px-2 font-semibold text-foreground text-lg tracking-wide",
+          borderedText({ variant: "white" })
         )}
         style={{ animationDuration }}
       >
-        <span className="w-40 text-xs">{timeFormatter(productionTime)}</span>
-        <span>
+        <span className="w-40 font-number tabular-nums">
+          {timeFormatter(productionTime)}
+        </span>
+        <span className="font-number tabular-nums">
           {amountFormatterWithDolarSign(totalToEarnAfterProduce(factoryType))}
         </span>
       </div>

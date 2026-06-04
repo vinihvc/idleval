@@ -1,12 +1,13 @@
 import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { FACTORIES, type FactoryType } from "@/content/factories";
-import { decreaseMoney, hasMoneyToBuy, increaseMoney, store } from "@/store";
+import { store } from "@/store/store";
 import {
   type MscAtomProps,
   totalCanBuyByAmount,
   totalToPayByAmount,
 } from "./msc";
+import { decreaseGold, hasGoldToBuy, increaseGold } from "./wallet";
 
 const INITIAL_FACTORY = "potato";
 
@@ -57,7 +58,7 @@ export const setAmountBySelectedAmount = (
   const amountToPay = totalToPayByAmount(factory, amount);
   const amountToBuy = totalCanBuyByAmount(factory, amount);
 
-  const canBuy = hasMoneyToBuy(amountToPay);
+  const canBuy = hasGoldToBuy(amountToPay);
 
   if (!canBuy) {
     return;
@@ -71,7 +72,7 @@ export const setAmountBySelectedAmount = (
     },
   }));
 
-  decreaseMoney(amountToPay);
+  decreaseGold(amountToPay);
 };
 
 /**
@@ -109,7 +110,7 @@ export const stopProducing = (factory: FactoryType) => {
     },
   }));
 
-  increaseMoney(factory);
+  increaseGold(factory);
 };
 
 /**
@@ -120,7 +121,7 @@ export const stopProducing = (factory: FactoryType) => {
 export const autoFactory = (factory: FactoryType) => {
   const { isUnlocked, automatedCost } = getFactory(factory);
 
-  const canAutomate = hasMoneyToBuy(automatedCost);
+  const canAutomate = hasGoldToBuy(automatedCost);
 
   if (!(isUnlocked && canAutomate)) {
     return;
@@ -134,18 +135,18 @@ export const autoFactory = (factory: FactoryType) => {
     },
   }));
 
-  decreaseMoney(automatedCost);
+  decreaseGold(automatedCost);
 };
 
 /**
- * Upgrade a factory, generating more money per second
+ * Upgrade a factory, generating more gold per second
  *
  * @param factory - The factory to upgrade
  */
 export const upgradeFactory = (factory: FactoryType) => {
   const { isUnlocked, upgradeCost } = getFactory(factory);
 
-  const canUpgrade = hasMoneyToBuy(upgradeCost);
+  const canUpgrade = hasGoldToBuy(upgradeCost);
 
   if (!(isUnlocked && canUpgrade)) {
     return;
@@ -159,7 +160,7 @@ export const upgradeFactory = (factory: FactoryType) => {
     },
   }));
 
-  decreaseMoney(upgradeCost);
+  decreaseGold(upgradeCost);
 };
 
 /**
@@ -170,7 +171,7 @@ export const upgradeFactory = (factory: FactoryType) => {
 export const unlockFactory = (factory: FactoryType) => {
   const { unlockPrice } = getFactory(factory);
 
-  const canUnlock = hasMoneyToBuy(unlockPrice);
+  const canUnlock = hasGoldToBuy(unlockPrice);
 
   if (!canUnlock) {
     return;
@@ -185,7 +186,7 @@ export const unlockFactory = (factory: FactoryType) => {
     },
   }));
 
-  decreaseMoney(unlockPrice);
+  decreaseGold(unlockPrice);
 };
 
 export const getProductionValue = (factory: FactoryType) => {
@@ -195,10 +196,10 @@ export const getProductionValue = (factory: FactoryType) => {
 };
 
 /**
- * Get the total amount of money a factory will earn after producing
+ * Get the total amount of gold a factory will earn after producing
  *
- * @param factory - The factory to get the total amount of money for
- * @returns The total amount of money a factory will earn after producing
+ * @param factory - The factory to get the total amount of gold for
+ * @returns The total amount of gold a factory will earn after producing
  */
 export const totalToEarnAfterProduce = (factory: FactoryType) => {
   const { amount } = getFactory(factory);

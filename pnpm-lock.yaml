@@ -11,6 +11,15 @@ importers:
       '@ark-ui/react':
         specifier: ^5.37.0
         version: 5.37.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@fontsource/almendra':
+        specifier: ^5.2.8
+        version: 5.2.8
+      '@fontsource/grenze-gotisch':
+        specifier: ^5.2.8
+        version: 5.2.8
+      '@fontsource/jersey-10':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@number-flow/react':
         specifier: ^0.6.0
         version: 0.6.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -26,9 +35,9 @@ importers:
       jotai:
         specifier: ^2.20.0
         version: 2.20.0(@types/react@19.2.16)(react@19.2.7)
-      lucide-react:
-        specifier: ^1.17.0
-        version: 1.17.0(react@19.2.7)
+      pixelarticons:
+        specifier: ^2.1.2
+        version: 2.1.2(react@19.2.7)
       react:
         specifier: ^19.2.7
         version: 19.2.7
@@ -182,6 +191,15 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
+
+  '@fontsource/almendra@5.2.8':
+    resolution: {integrity: sha512-mH18reA2m/UtBL0ejiptGEby8DQiiQRYgixmAOeDq01g2PMM30JrcewU2zUEsI0kFz58fm78+nGs2p5/ppI9sw==}
+
+  '@fontsource/grenze-gotisch@5.2.8':
+    resolution: {integrity: sha512-tfcZ3OBCAQ+c70Sw76wftJQYNrD380l3lhwNAexfvTGE0MA//Asg5fBn3KakIO5gaSOs3wpYiZYmgH5oU3eZjg==}
+
+  '@fontsource/jersey-10@5.2.8':
+    resolution: {integrity: sha512-5kjCLWNO/3n4zQ6fFvYratSSe61rgY/KRpQIayrblv6dW9jvOxAQXa8MJmWCJUHQlFK9GHH5bj/GSE7C6vgZHQ==}
 
   '@internationalized/date@3.12.0':
     resolution: {integrity: sha512-/PyIMzK29jtXaGU23qTvNZxvBXRtKbNnGDFD+PY6CZw/Y8Ex8pFUzkuCJCG9aOqmShjqhS9mPqP6Dk5onQY8rQ==}
@@ -923,11 +941,6 @@ packages:
     resolution: {integrity: sha512-RPimw/7aMdv2oqRrxKwvZXcPfwBrn/JZ2xYcY9Hus/6LaS3VOAKVWKWgNLCFSiOm1ESXinjsDlidVU7JlnCN2A==}
     engines: {node: 20 || >=22}
 
-  lucide-react@1.17.0:
-    resolution: {integrity: sha512-9FA9evdox/JQL5PT57fdA1x/yg8T7knJ98+zjTL3UfKza6pflQUUh3XtaQIHKvnsJw1lmsEyHVlt5jchYxOQ5w==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -980,6 +993,12 @@ packages:
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
+
+  pixelarticons@2.1.2:
+    resolution: {integrity: sha512-RnACjnR5UKm+ovmLKvdsF6DJOYD9JonXDqWOwtFiCStsJofCbShvsYnt4NCL5qPrmVHrB6h64X/qtNUep8GueQ==}
+    hasBin: true
+    peerDependencies:
+      react: '>=16'
 
   postcss@8.5.15:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
@@ -1341,6 +1360,12 @@ snapshots:
       '@floating-ui/utils': 0.2.11
 
   '@floating-ui/utils@0.2.11': {}
+
+  '@fontsource/almendra@5.2.8': {}
+
+  '@fontsource/grenze-gotisch@5.2.8': {}
+
+  '@fontsource/jersey-10@5.2.8': {}
 
   '@internationalized/date@3.12.0':
     dependencies:
@@ -2289,10 +2314,6 @@ snapshots:
 
   lru-cache@11.5.1: {}
 
-  lucide-react@1.17.0(react@19.2.7):
-    dependencies:
-      react: 19.2.7
-
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -2335,6 +2356,10 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.4: {}
+
+  pixelarticons@2.1.2(react@19.2.7):
+    dependencies:
+      react: 19.2.7
 
   postcss@8.5.15:
     dependencies:

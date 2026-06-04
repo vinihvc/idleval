@@ -1,6 +1,6 @@
 import type React from "react";
-import { SettingDialog } from "@/components/dialog/settings";
 import { Coin } from "@/components/icons/coin";
+import { HeaderNavigation } from "@/components/layout/navigation";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import {
   Tooltip,
@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
 import { useWallet } from "@/store/atoms/wallet";
-import { HeaderNavigation } from "../bottom-navigation";
 import { AmountToBuy } from "./header.amount";
 
 interface HeaderProps extends React.ComponentProps<"header"> {}
@@ -17,39 +16,37 @@ interface HeaderProps extends React.ComponentProps<"header"> {}
 export const Header = (props: HeaderProps) => {
   const { className, ...rest } = props;
 
-  const { money } = useWallet();
+  const { gold } = useWallet();
 
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 flex items-center justify-between bg-foreground/50 p-4 backdrop-blur-sm sm:sticky",
+        "fixed inset-x-0 top-0 z-50 flex items-center justify-between border-primary/30 border-b-2 bg-secondary/90 p-3 backdrop-blur-md sm:sticky",
         className
       )}
       {...rest}
     >
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="relative flex h-9 w-36 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border border-foreground bg-background pr-2 shadow-lg">
+          <div className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border-3 border-primary/70 bg-popover pr-2 transition-all">
             <Coin
               aria-hidden
-              className="absolute top-0 -left-2 size-12 shrink-0 -translate-y-1.5"
+              className="absolute top-0 -left-2 size-10 shrink-0 -translate-y-1.5 drop-shadow-md"
             />
 
-            <span className="font-bold text-base">
-              <AnimatedNumber isDollar value={money} />
+            <span className="font-bold font-number text-popover-foreground text-xl tabular-nums">
+              <AnimatedNumber isDollar value={gold} />
             </span>
           </div>
         </TooltipTrigger>
 
-        <TooltipContent>Total Gold</TooltipContent>
+        <TooltipContent>Treasury Gold</TooltipContent>
       </Tooltip>
 
       <HeaderNavigation />
 
       <nav className="flex gap-2">
         <AmountToBuy />
-
-        <SettingDialog />
       </nav>
     </header>
   );

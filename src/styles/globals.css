@@ -1,29 +1,16 @@
+@import "@fontsource/jersey-10/latin.css";
+@import "@fontsource/almendra/latin.css";
+@import "@fontsource/grenze-gotisch/latin.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --border: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --primary: var(--foreground);
-  --primary-foreground: var(--background);
-  --secondary: oklch(0.92 0 0);
-  --secondary-foreground: var(--foreground);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.96 0 0);
-  --accent-foreground: var(--foreground);
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(1 0 0);
-  --input: oklch(0.922 0 0);
-  --popover: var(--background);
-  --popover-foreground: var(--foreground);
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-display: "Almendra", ui-serif, Georgia, serif;
+  --font-number: "Jersey 10", ui-monospace, monospace;
   --font-sans:
-    "Radio Canada", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Grenze Gotisch", ui-serif, Georgia, serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-background: var(--background);
@@ -43,11 +30,57 @@
   --color-input: var(--input);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning: var(--warning);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
+  --color-info-foreground: var(--info-foreground);
+  --color-info: var(--info);
+}
+
+:root {
+  --background: oklch(0.18 0.02 55);
+  --foreground: oklch(0.9 0.05 85);
+
+  --primary: oklch(0.82 0.14 85);
+  --primary-foreground: oklch(0.22 0.05 55);
+
+  --secondary: oklch(0.38 0.06 55);
+  --secondary-foreground: oklch(0.92 0.05 85);
+
+  --muted: oklch(0.32 0.05 55);
+  --muted-foreground: oklch(0.78 0.05 80);
+
+  --accent: oklch(0.45 0.08 65);
+  --accent-foreground: oklch(0.92 0.05 85);
+
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(26.228% 0.05464 28.234);
+
+  --popover: oklch(0.88 0.06 85);
+  --popover-foreground: oklch(0.28 0.06 55);
+  --card: oklch(0.88 0.06 85);
+  --card-foreground: oklch(0.28 0.06 55);
+
+  --info: oklch(0.5 0.12 250);
+  --info-foreground: oklch(0.75 0.08 250);
+
+  --success: oklch(0.55 0.14 155);
+  --success-foreground: oklch(0.75 0.1 155);
+
+  --warning: oklch(0.72 0.14 75);
+  --warning-foreground: oklch(0.25 0.05 70);
+
+  --border: oklch(0.42 0.08 70);
+  --input: oklch(0.38 0.06 60);
+  --ring: oklch(0.62 0.1 75);
 }
 
 @layer base {
   ::selection {
-    @apply bg-primary/80 text-primary-foreground;
+    @apply bg-primary/40 text-primary-foreground;
   }
 
   * {
@@ -55,12 +88,13 @@
   }
 
   html {
+    scrollbar-gutter: stable;
     color-scheme: dark;
     @apply antialiased;
   }
 
   body {
-    @apply bg-background min-h-svh text-foreground flex flex-col scrollbar-thin overflow-y-scroll scrollbar-track-transparent scrollbar-thumb-foreground/20 font-sans;
+    @apply bg-background min-h-svh text-foreground flex flex-col scrollbar-thin overflow-y-scroll scrollbar-track-transparent scrollbar-thumb-primary/30 font-sans;
   }
 
   main {
@@ -74,5 +108,18 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .pixel-crisp {
+    image-rendering: pixelated;
+  }
+
+  .fantasy-panel-shadow {
+    box-shadow:
+      0 4px 0 oklch(0.62 0.1 75),
+      0 8px 24px oklch(0 0 0 / 0.45),
+      inset 0 1px 0 oklch(1 0 0 / 0.12);
   }
 }

@@ -1,46 +1,53 @@
-import { Check } from "lucide-react";
+import { Check } from "pixelarticons/react";
+import { Badge } from "@/components/ui/badge";
+import { NumberText } from "@/components/ui/number-text";
+import { UpgradeCard, UpgradeCardTrigger } from "@/components/ui/upgrade-card";
 import type { FactoryType } from "@/content/factories";
-import { hasMoneyToBuy } from "@/store";
 import { autoFactory, useFactory } from "@/store/atoms/factories";
+import { hasGoldToBuy } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
-import { UpgradeCard, UpgradeCardTrigger } from "../../ui/upgrade-card";
 
-type ManagersCardProps = {
+interface ManagersCardProps {
   /**
    * The factory type
    */
   factoryType: FactoryType;
-};
+}
 
 export const ManagersCard = (props: ManagersCardProps) => {
   const { factoryType } = props;
 
   const { isUnlocked, isAutomated, automatedCost } = useFactory(factoryType);
 
-  const canBuy = hasMoneyToBuy(automatedCost);
+  const canBuy = hasGoldToBuy(automatedCost);
 
   const getText = () => {
     if (!isUnlocked) {
-      return "Unlock first";
+      return "Charter required";
     }
     if (isAutomated) {
       return <Check />;
     }
-    if (!canBuy) {
-      return `Research (${amountFormatter(automatedCost)})`;
-    }
-    return "Research";
+    return (
+      <>
+        <span>Appoint</span>
+        <Badge className="font-number normal-case" variant="default">
+          <NumberText>{amountFormatter(automatedCost)}</NumberText>
+        </Badge>
+      </>
+    );
   };
 
   return (
     <UpgradeCard
+      canAfford={isUnlocked && !isAutomated && canBuy}
       factoryType={factoryType}
       image={`/images/managers/${factoryType}.webp`}
-      isEnabled={isAutomated}
+      isComplete={isAutomated}
       type="manager"
     >
       <UpgradeCardTrigger
-        disabled={!isUnlocked || isAutomated || !canBuy}
+        disabled={!(isUnlocked && canBuy)}
         onClick={() => autoFactory(factoryType)}
       >
         {getText()}

@@ -1,4 +1,9 @@
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
+
+type PixelartIcon = ComponentType<
+  SVGProps<SVGSVGElement> & { size?: number | string }
+>;
+
 import {
   BottomNavigationItem,
   BottomNavigationItemIcon,
@@ -12,7 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 
 interface DialogNavTriggerProps {
-  icon: LucideIcon;
+  icon: PixelartIcon;
   label: string;
   value?: string;
   variant: "bottom" | "header";
@@ -43,7 +48,7 @@ export const DialogNavTrigger = (props: DialogNavTriggerProps) => {
     <Tooltip>
       <TooltipTrigger asChild>
         <ResponsiveDialogTrigger asChild>
-          <Button size="icon" variant="white">
+          <Button size="icon-md" variant="white">
             <span className="sr-only">{label}</span>
             <Icon />
           </Button>

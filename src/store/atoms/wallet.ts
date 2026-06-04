@@ -1,53 +1,78 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
 import type { FactoryType } from "@/content/factories";
-import { setStatistics, store } from "..";
+import { store } from "@/store/store";
 import { getFactory } from "./factories";
+import { setStatistics } from "./statistics";
 
-export const walletAtom = atomWithStorage("wallet", {
-  money: 0,
+interface WalletState {
+  gold: number;
+}
+
+const migrateWallet = (parsed: Record<string, unknown>): WalletState => {
+  if (typeof parsed.gold === "number") {
+    return { gold: parsed.gold };
+  }
+
+  if (typeof parsed.money === "number") {
+    return { gold: parsed.money };
+  }
+
+  return { gold: 0 };
+};
+
+const walletStorage = createJSONStorage<WalletState>(() => localStorage, {
+  reviver: (key, value) => {
+    if (key === "" && value && typeof value === "object") {
+      return migrateWallet(value as Record<string, unknown>);
+    }
+
+    return value;
+  },
 });
+
+export const walletAtom = atomWithStorage("wallet", { gold: 0 }, walletStorage);
 
 export const useWallet = () => useAtomValue(walletAtom);
 
 /**
- * Increase the amount of money in the wallet
+ * Increase the amount of gold in the wallet
  *
- * @param factory - The factory that produced the money
+ * @param factory - The factory that produced the gold
  */
-export const increaseMoney = (factory: FactoryType) => {
+export const increaseGold = (factory: FactoryType) => {
   const { amount, productionValue, isUpgraded } = getFactory(factory);
 
-  const moneyEarned = amount * productionValue * (isUpgraded ? 2 : 1);
+  const goldEarned = amount * productionValue * (isUpgraded ? 2 : 1);
 
   setStatistics(factory);
 
   store.set(walletAtom, (prev) => ({
     ...prev,
-    money: prev.money + moneyEarned,
+    gold: prev.gold + goldEarned,
   }));
 };
 
 /**
- * Decrease the amount of money in the wallet
+ * Decrease the amount of gold in the wallet
  *
- * @param amount - The amount of money to decrease
+ * @param amount - The amount of gold to decrease
  */
-export const decreaseMoney = (amount: number) => {
+export const decreaseGold = (amount: number) => {
   store.set(walletAtom, (prev) => ({
     ...prev,
-    money: prev.money - amount,
+    gold: prev.gold - amount,
   }));
 };
 
 /**
- * Check if the wallet has enough money to buy an item
+ * Check if the wallet has enough gold to buy an item
  *
  * @param price - The price of the item
- * @returns `true` if the wallet has enough money, `false` otherwise
+ * @returns `true` if the wallet has enough gold, `false` otherwise
  */
-export const hasMoneyToBuy = (price: number) => {
+export const hasGoldToBuy = (price: number) => {
   const wallet = store.get(walletAtom);
 
-  return wallet.money >= price;
+  return wallet.gold >= price;
 };

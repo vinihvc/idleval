@@ -3,9 +3,11 @@
 import { Drawer as ArkDrawer, useDrawerContext } from "@ark-ui/react/drawer";
 import { ark } from "@ark-ui/react/factory";
 import { Portal } from "@ark-ui/react/portal";
+import { Close } from "pixelarticons/react";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { DialogImage } from "@/components/ui/dialog";
 import { cn } from "@/lib/cn";
 
 export const useDrawer = useDrawerContext;
@@ -48,19 +50,27 @@ export const DrawerProvider = (
   );
 };
 
+const DRAWER_MAX_SNAP = 0.95;
+// Snap `1` = min(content height, viewport); `0.95` = max pull-up (see max-h-[95svh]).
+const DRAWER_SNAP_POINTS: [number, number] = [1, DRAWER_MAX_SNAP];
+
 export const Drawer = (props: React.ComponentProps<typeof ArkDrawer.Root>) => {
   const {
-    // when is true, swipe return error, waiting fix
     lazyMount = false,
     unmountOnExit = false,
-    //
+    snapPoints = DRAWER_SNAP_POINTS,
+    defaultSnapPoint = 1,
+    snapToSequentialPoints = true,
     ...rest
   } = props;
 
   return (
     <ArkDrawer.Root
       data-slot="drawer"
+      defaultSnapPoint={defaultSnapPoint}
       lazyMount={lazyMount}
+      snapPoints={snapPoints}
+      snapToSequentialPoints={snapToSequentialPoints}
       unmountOnExit={unmountOnExit}
       {...rest}
     />
@@ -73,7 +83,7 @@ export const DrawerTrigger = (
 
 const drawerOverlayVariants = tv({
   base: [
-    "[--bg:rgb(0_0_0/calc(0.32*(1-var(--drawer-swipe-progress))))] [--blur:calc(4px*(1-var(--drawer-swipe-progress)))]",
+    "[--bg:rgb(20_15_10/calc(0.55*(1-var(--drawer-swipe-progress))))] [--blur:calc(6px*(1-var(--drawer-swipe-progress)))]",
     "fixed inset-0 z-50",
     "bg-(--bg) backdrop-blur-(--blur)",
     "data-[state=open]:fade-in-0 data-[state=open]:animate-in",
@@ -99,10 +109,12 @@ const drawerPositionerVariants = tv({
   base: [
     "fixed inset-0 z-50",
     "flex items-end justify-center",
-    "w-screen",
+    "w-screen overscroll-contain",
+    // Reserve space for DrawerImage (-top-12 / sm:-top-18) so it stays on-screen
+    "pt-12 sm:pt-18",
     "has-data-[swipe-direction=up]:items-start",
-    "has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start",
-    "has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end",
+    "has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0",
+    "has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0",
   ],
   variants: {
     variant: {
@@ -133,15 +145,17 @@ export const DrawerPositioner = (props: DrawerPositionerProps) => {
 
 const drawerContentVariants = tv({
   base: [
-    "[--bleed:3rem] [--space:--spacing(6)]",
+    "[--bleed:3rem] [--drawer-image-overflow:3rem] [--space:--spacing(4)] sm:[--drawer-image-overflow:4.5rem]",
     "group/drawer",
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
-    "max-h-[calc(80vh+var(--bleed))] w-full",
+    "max-h-[95svh] w-full",
+    "has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-env(safe-area-inset-bottom,0px)))]",
     "-mb-(--bleed) pb-[calc(1.5rem+env(safe-area-inset-bottom,0)+var(--bleed))]",
-    "bg-popover",
+    "border-4 border-primary/60 bg-popover",
     "text-popover-foreground",
-    "flex flex-col",
+    "fantasy-panel-shadow inset-shadow-xs",
+    "flex min-h-0 flex-col",
     "duration-300 ease-in-out will-change-transform",
     "data-swiping:select-none",
     "translate-y-[calc(-1.25rem*var(--nested-layer-count))]",
@@ -199,10 +213,23 @@ const SWIPE_DIRECTION_TO_PLACEMENT = {
 
 interface DrawerContentProps
   extends React.ComponentProps<typeof ArkDrawer.Content>,
-    VariantProps<typeof drawerContentVariants> {}
+    VariantProps<typeof drawerContentVariants> {
+  /**
+   * Show close button at the top right corner
+   *
+   * @default true
+   */
+  showCloseButton?: boolean;
+}
 
 export const DrawerContent = (props: DrawerContentProps) => {
-  const { variant = "default", className, children, ...rest } = props;
+  const {
+    variant = "default",
+    showCloseButton = true,
+    className,
+    children,
+    ...rest
+  } = props;
 
   return (
     <Portal>
@@ -224,6 +251,19 @@ export const DrawerContent = (props: DrawerContentProps) => {
               <DrawerGrabber />
 
               {children}
+
+              {!!showCloseButton && (
+                <DrawerClose asChild>
+                  <Button
+                    aria-label="Close"
+                    className="absolute top-2 right-2 border-2 shadow-lg"
+                    size="icon-xl"
+                    variant="secondary"
+                  >
+                    <Close />
+                  </Button>
+                </DrawerClose>
+              )}
             </ArkDrawer.Content>
           </DrawerPositioner>
         )}
@@ -260,13 +300,13 @@ export const DrawerGrabber = (
   const { className, ...rest } = props;
 
   return (
-    <ark.div className="p-(--space)">
+    <ark.div className="shrink-0 p-(--space)">
       <ArkDrawer.Grabber
         className={cn(
           "h-1 w-12",
           "mx-auto",
           "hidden shrink-0",
-          "bg-muted-foreground/32",
+          "bg-primary/50",
           "rounded-full",
           "touch-none",
           "group-data-[swipe-direction=down]/drawer:flex",
@@ -301,8 +341,8 @@ export const DrawerHeader = (props: DrawerHeaderProps) => {
   return (
     <ark.div
       className={cn(
-        "flex flex-col gap-2",
-        "p-(--space) pt-0",
+        "flex shrink-0 flex-col gap-1 text-center",
+        "mt-4 p-(--space) pt-0",
         "in-[[data-slot=drawer-content]:has([data-slot=drawer-body])]:pb-3",
         className
       )}
@@ -328,7 +368,10 @@ export const DrawerTitle = (
   const { className, ...rest } = props;
   return (
     <ArkDrawer.Title
-      className={cn("font-semibold text-lg leading-none", className)}
+      className={cn(
+        "font-display font-semibold text-popover-foreground text-xl leading-snug tracking-wide",
+        className
+      )}
       data-slot="drawer-title"
       {...rest}
     />
@@ -341,7 +384,7 @@ export const DrawerDescription = (
   const { className, ...rest } = props;
   return (
     <ark.div
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-xl leading-relaxed", className)}
       data-slot="drawer-description"
       {...rest}
     />
@@ -358,25 +401,26 @@ interface DrawerBodyProps extends React.ComponentProps<typeof ark.div> {
 }
 
 export const DrawerBody = (props: DrawerBodyProps) => {
-  const { scrollFade = false, className, ...rest } = props;
+  const { scrollFade: _scrollFade = false, className, ...rest } = props;
 
   return (
-    <ScrollArea scrollFade={scrollFade}>
-      <ark.div
-        className={cn(
-          "flex-1",
-          "p-(--space)",
-          "overflow-auto",
-          "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
-          "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
-          className
-        )}
-        data-slot="drawer-body"
-        {...rest}
-      />
-    </ScrollArea>
+    <ark.div
+      className={cn(
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain",
+        "p-(--space)",
+        "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
+        "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
+        className
+      )}
+      data-slot="drawer-body"
+      {...rest}
+    />
   );
 };
+
+export type DrawerImageProps = React.ComponentProps<typeof DialogImage>;
+
+export const DrawerImage = DialogImage;
 
 export const DrawerClose = (
   props: React.ComponentProps<typeof ArkDrawer.CloseTrigger>

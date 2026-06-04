@@ -1,13 +1,18 @@
 import { Image } from "@unpic/react";
-import { LockKeyhole } from "lucide-react";
+import { Lock } from "pixelarticons/react";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Button } from "@/components/ui/button";
+import { NumberText } from "@/components/ui/number-text";
+import { borderedText } from "@/components/ui/text-border";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
 import { startProducing, useFactory } from "@/store/atoms/factories";
 import { capitalize } from "@/utils/formatters";
-import { AnimatedNumber } from "../animated-number";
-import { borderedText } from "../text-border";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
 
 interface FactoryCardProduceProps extends React.ComponentProps<typeof Button> {
   /**
@@ -29,12 +34,13 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           className={cn(
             "group relative",
             "size-22",
-            "text-background",
-            "border-2",
+            "text-foreground",
+            "border-3",
             "shrink-0",
-            "rounded-full border-foreground",
-            "data-[producing=true]:focus-visible:border-blue-600 data-[producing=true]:focus-visible:ring-blue-600/50",
-            "data-[producing=true]:border-blue-600",
+            "rounded-full border-primary/70",
+            "transition-shadow hover:shadow-[0_0_12px_oklch(0.78_0.12_85/0.35)]",
+            "data-[producing=true]:focus-visible:border-info data-[producing=true]:focus-visible:ring-info/50",
+            "data-[producing=true]:border-info",
             className
           )}
           data-auto={isAutomated}
@@ -42,16 +48,16 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           data-unlocked={isUnlocked}
           disabled={isProducing || !isUnlocked || isAutomated}
           onClick={() => startProducing(factoryType)}
-          size="icon"
+          size="icon-md"
           {...rest}
         >
-          <div className="relative rounded-full border border-background/50 p-1 group-data-[producing=true]:border-blue-600">
+          <div className="relative rounded-full border border-primary/40 p-1 group-data-[producing=true]:border-info">
             <Image
               alt={`Produce ${factoryType}`}
               className={cn(
                 "rounded-full",
-                "bg-background p-1",
-                "[image-rendering:pixelated]",
+                "bg-muted p-1",
+                "pixel-crisp",
                 "pointer-events-none",
                 "group-data-[unlocked=false]:grayscale"
               )}
@@ -62,8 +68,10 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
             />
 
             {isUpgraded && (
-              <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-background/20 bg-foreground">
-                <span className="font-bold text-[10px]">2x</span>
+              <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-primary/50 bg-primary">
+                <NumberText className="font-bold text-primary-foreground text-sm">
+                  2x
+                </NumberText>
               </div>
             )}
           </div>
@@ -74,9 +82,14 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
             <div className="absolute -bottom-2">
               <span
                 className={cn(
-                  "fade-in-50 slide-in-from-bottom-1 flex h-6 w-18 animate-in items-center justify-center rounded-lg border border-background/20 bg-foreground text-background text-xs",
-                  "group-data-[producing=true]:border-blue-800 group-data-[producing=true]:bg-blue-600",
-                  borderedText({ variant: isProducing ? "blue" : "black" })
+                  "h-6 w-18",
+                  "flex items-center justify-center",
+                  "bg-accent text-accent-foreground",
+                  "font-number text-sm",
+                  "rounded-lg border-3 border-primary/40",
+                  "fade-in-50 slide-in-from-bottom-1 animate-in",
+                  "group-data-[producing=true]:border-info-foreground/40 group-data-[producing=true]:bg-info group-data-[producing=true]:text-white",
+                  borderedText({ variant: isProducing ? "blue" : "white" })
                 )}
               >
                 <AnimatedNumber value={amount} />
@@ -86,7 +99,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
 
           {!isUnlocked && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <LockKeyhole className="size-5" />
+              <Lock className="size-5" />
             </div>
           )}
         </Button>

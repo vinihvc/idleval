@@ -1,7 +1,9 @@
 import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import type { FactoryType } from "@/content/factories";
-import { getFactory, hasMoneyToBuy, store, walletAtom } from "..";
+import { store } from "@/store/store";
+import { getFactory } from "./factories";
+import { hasGoldToBuy, walletAtom } from "./wallet";
 
 export const AMOUNT_TO_BUY = [
   {
@@ -28,15 +30,15 @@ export const AMOUNT_TO_BUY = [
   {
     name: "max",
     symbol: "",
-    description: "maximum",
+    description: "all you can afford",
     value: "max",
     math: "percentage",
   },
 ] as const;
 
-export type MscAtomProps = {
+export interface MscAtomProps {
   amountToBuy: (typeof AMOUNT_TO_BUY)[number]["value"];
-};
+}
 
 export const mscAtom = atomWithStorage<MscAtomProps>("msc", {
   amountToBuy: 1,
@@ -54,16 +56,27 @@ export const useMsc = () => {
   return found;
 };
 
+const getNextAmountToBuy = (
+  current: MscAtomProps["amountToBuy"]
+): MscAtomProps["amountToBuy"] => {
+  if (current === 1) {
+    return 10;
+  }
+
+  if (current === 10) {
+    return 50;
+  }
+
+  if (current === 50) {
+    return "max";
+  }
+
+  return 1;
+};
+
 export const toggleAmountToBuy = () => {
   store.set(mscAtom, (prev) => ({
-    amountToBuy:
-      prev.amountToBuy === 1
-        ? 10
-        : prev.amountToBuy === 10
-          ? 50
-          : prev.amountToBuy === 50
-            ? "max"
-            : 1,
+    amountToBuy: getNextAmountToBuy(prev.amountToBuy),
   }));
 };
 
@@ -77,40 +90,40 @@ export const totalCanBuyByAmount = (
   factory: FactoryType,
   amount: MscAtomProps["amountToBuy"]
 ) => {
-  const { money } = store.get(walletAtom);
+  const { gold } = store.get(walletAtom);
   const { buyCost } = getFactory(factory);
 
-  // Return the total amount of money divided by the buy cost
+  // Return the total amount of gold divided by the buy cost
   if (amount === "max") {
-    return Math.max(0, Math.floor(money / buyCost));
+    return Math.max(0, Math.floor(gold / buyCost));
   }
 
-  // Return the total amount of money divided by the buy cost
+  // Return the total amount of gold divided by the buy cost
   if (amount === 10) {
-    const totalCanBuy = Math.floor((money * 0.1) / buyCost);
+    const totalCanBuy = Math.floor((gold * 0.1) / buyCost);
 
-    // If the money is greater than the buy cost but 10% is less than 1, return at least 1
-    if (money >= buyCost) {
+    // If gold is greater than the buy cost but 10% is less than 1, return at least 1
+    if (gold >= buyCost) {
       return Math.max(1, totalCanBuy);
     }
 
     return 0;
   }
 
-  // Return the total amount of money divided by the buy cost
+  // Return the total amount of gold divided by the buy cost
   if (amount === 50) {
-    const totalCanBuy = Math.floor((money * 0.5) / buyCost);
+    const totalCanBuy = Math.floor((gold * 0.5) / buyCost);
 
-    // If the money is greater than the buy cost but 50% is less than 1, return at least 1
-    if (money >= buyCost) {
+    // If gold is greater than the buy cost but 50% is less than 1, return at least 1
+    if (gold >= buyCost) {
       return Math.max(1, totalCanBuy);
     }
 
     return 0;
   }
 
-  // Return 1 if the money is greater than the buy cost, otherwise return 0
-  return hasMoneyToBuy(buyCost) ? 1 : 0;
+  // Return 1 if gold is greater than the buy cost, otherwise return 0
+  return hasGoldToBuy(buyCost) ? 1 : 0;
 };
 
 /**

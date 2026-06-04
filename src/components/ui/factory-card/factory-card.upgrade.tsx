@@ -1,6 +1,7 @@
 import type React from "react";
 import { FactoryDialog } from "@/components/dialog/factory";
 import { Button } from "@/components/ui/button";
+import { NumberText } from "@/components/ui/number-text";
 import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
 import {
@@ -13,7 +14,7 @@ import {
   totalToPayByAmount,
   useMsc,
 } from "@/store/atoms/msc";
-import { hasMoneyToBuy } from "@/store/atoms/wallet";
+import { hasGoldToBuy } from "@/store/atoms/wallet";
 import {
   amountFormatter,
   amountFormatterWithDolarSign,
@@ -38,13 +39,16 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
   const totalGreaterThan0 = totalCanBuy > 0;
 
   const handleBuy = () => {
-    isUnlocked
-      ? setAmountBySelectedAmount(factoryType, amountToBuy)
-      : unlockFactory(factoryType);
+    if (isUnlocked) {
+      setAmountBySelectedAmount(factoryType, amountToBuy);
+    } else {
+      unlockFactory(factoryType);
+    }
   };
 
-  const canBuyAmount = hasMoneyToBuy(totalToPay);
-  const canUnlock = hasMoneyToBuy(unlockPrice);
+  const canBuyAmount = hasGoldToBuy(totalToPay);
+  const canUnlock = hasGoldToBuy(unlockPrice);
+  const isLocked = !(isUnlocked || canUnlock);
 
   const buttonVariant = () => {
     if (!totalGreaterThan0) {
@@ -54,63 +58,71 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
       return "green";
     }
     if (!isUnlocked && canUnlock) {
-      return "black";
+      return "gold";
     }
     return "gray";
   };
 
   return (
-    <div className={cn("flex min-w-0 items-center gap-1", className)} {...rest}>
+    <div
+      className={cn("flex min-w-0 items-stretch gap-1", className)}
+      {...rest}
+    >
       <Button
-        className="min-w-0 flex-1 justify-between gap-1 px-2 font-bold text-xs uppercase max-sm:text-[10px]"
+        className={cn(
+          "h-9 min-h-9 min-w-0 flex-1 justify-between gap-1 px-2 font-bold font-number",
+          isLocked &&
+            "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-popover-foreground/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10 active:scale-100"
+        )}
+        data-locked={isLocked}
         disabled={
           isUnlocked
             ? !(canBuyAmount && totalGreaterThan0)
             : !(canUnlock && totalGreaterThan0)
         }
         onClick={handleBuy}
-        variant={buttonVariant()}
+        size="md"
+        variant={isLocked ? "gray" : buttonVariant()}
       >
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
             <span className="flex items-center gap-1">
-              {`Buy ${amountFormatter(totalCanBuy)} `}
-
+              Buy <NumberText>{amountFormatter(totalCanBuy)}</NumberText>{" "}
               <span className="max-sm:hidden">{name}</span>
             </span>
 
-            <span className="normal-case">
+            <NumberText className="normal-case">
               {amountFormatterWithDolarSign(totalToPay)}
-            </span>
+            </NumberText>
           </>
         )}
 
         {!isUnlocked && canUnlock && (
           <>
             Unlock
-            <span className="normal-case">
+            <NumberText className="normal-case">
               {amountFormatterWithDolarSign(unlockPrice)}
-            </span>
+            </NumberText>
           </>
         )}
 
-        {!(isUnlocked || canUnlock) || (!totalGreaterThan0 && "No money")}
+        {!(isUnlocked || canUnlock) || (!totalGreaterThan0 && "Empty coffers")}
 
         {isUnlocked && !canBuyAmount && (
           <>
-            No money
-            <span className="normal-case">
+            Empty coffers
+            <NumberText className="normal-case">
               {amountFormatterWithDolarSign(totalToPay)}
-            </span>
+            </NumberText>
           </>
         )}
 
-        {!(isUnlocked || canUnlock) && (
+        {isLocked && (
           <>
-            Locked
-            <span className="normal-case">
+            <span className="[-webkit-text-stroke-width:0]">Under seal</span>
+            <NumberText className="normal-case opacity-80">
               {amountFormatterWithDolarSign(unlockPrice)}
-            </span>
+            </NumberText>
           </>
         )}
       </Button>

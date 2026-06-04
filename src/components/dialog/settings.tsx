@@ -1,20 +1,22 @@
-import { Menu } from "lucide-react";
+import { Menu } from "pixelarticons/react";
 import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
-  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
   ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toggleMusic, toggleSfx, useSettings } from "@/store/atoms/settings";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export const SettingDialog = () => {
   const settings = useSettings();
@@ -24,7 +26,7 @@ export const SettingDialog = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <ResponsiveDialogTrigger asChild>
-            <Button size="icon" variant="white">
+            <Button size="icon-md" variant="white">
               <span className="sr-only">Open Settings</span>
               <Menu />
             </Button>
@@ -41,13 +43,13 @@ export const SettingDialog = () => {
           <ResponsiveDialogTitle>Settings</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Change the game settings to fit your preferences.
+            Tune courtly comforts to your liking.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid gap-5">
-            <div className="flex items-center justify-between">
+          <div className="grid gap-4">
+            <div className="border-primary/25 flex items-center justify-between gap-3 rounded-md border bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
               <label className="font-semibold" htmlFor="toggle-music">
                 Music
               </label>
@@ -59,7 +61,7 @@ export const SettingDialog = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="border-primary/25 flex items-center justify-between gap-3 rounded-md border bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
               <label className="font-semibold" htmlFor="toggle-sfx">
                 SFX
               </label>
@@ -72,12 +74,6 @@ export const SettingDialog = () => {
             </div>
           </div>
         </ResponsiveDialogBody>
-
-        <ResponsiveDialogFooter>
-          <ResponsiveDialogClose asChild>
-            <Button size="xl">Close Settings</Button>
-          </ResponsiveDialogClose>
-        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

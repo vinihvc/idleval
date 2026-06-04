@@ -1,5 +1,5 @@
 import { Image } from "@unpic/react";
-import { ArrowBigUpDash, UserSearch } from "lucide-react";
+import { ArrowUpBox, Briefcase } from "pixelarticons/react";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import type { FactoryType } from "@/content/factories";
@@ -11,14 +11,22 @@ type UpgradeCardType = "upgrade" | "manager";
 
 interface UpgradeCardContextType {
   /**
-   * Whether the card is enabled
+   * Whether the player can afford the purchase right now
    */
-  isEnabled: boolean;
+  canAfford: boolean;
+  /**
+   * Whether the upgrade or manager is already owned
+   */
+  isComplete: boolean;
 }
 
 const UpgradeCardContext = React.createContext({} as UpgradeCardContextType);
 
 interface UpgradeCardProps extends React.ComponentProps<"div"> {
+  /**
+   * Whether the player can afford the purchase right now
+   */
+  canAfford: boolean;
   /**
    * The factory type
    */
@@ -28,9 +36,9 @@ interface UpgradeCardProps extends React.ComponentProps<"div"> {
    */
   image: string;
   /**
-   * Whether the card is enabled
+   * Whether the upgrade or manager is already owned
    */
-  isEnabled: boolean;
+  isComplete: boolean;
   /**
    * The type of card
    */
@@ -38,38 +46,47 @@ interface UpgradeCardProps extends React.ComponentProps<"div"> {
 }
 
 const ICON_MAP = {
-  upgrade: { tooltip: "Upgrade", icon: ArrowBigUpDash },
-  manager: { tooltip: "Manager", icon: UserSearch },
+  upgrade: { tooltip: "Improve", icon: ArrowUpBox },
+  manager: { tooltip: "Steward", icon: Briefcase },
 };
 
 export const UpgradeCard = (props: UpgradeCardProps) => {
-  const { factoryType, type, image, isEnabled, className, children, ...rest } =
-    props;
+  const {
+    factoryType,
+    type,
+    image,
+    canAfford,
+    isComplete,
+    className,
+    children,
+    ...rest
+  } = props;
 
   const { name } = useFactory(factoryType);
 
   const { tooltip, icon: Icon } = ICON_MAP[type];
 
   return (
-    <UpgradeCardContext.Provider value={{ isEnabled }}>
+    <UpgradeCardContext.Provider value={{ canAfford, isComplete }}>
       <article
         className={cn(
           "group relative",
-          "border-2 border-foreground",
-          "bg-foreground",
-          "rounded-md",
+          "bg-muted",
           "transition-all",
-          'data-[enabled="true"]:border-green-600 data-[enabled="true"]:bg-green-600',
-          "outline-0 focus-visible:border-foreground focus-visible:ring-[3px] focus-visible:ring-foreground/50",
+          "inset-shadow-xs overflow-hidden rounded-md border-3",
+          'data-[affordable="true"]:border-success/80',
+          'data-[complete="true"]:border-success data-[complete="true"]:bg-success',
+          "focus-visible: outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50",
           className
         )}
-        data-enabled={isEnabled}
+        data-affordable={canAfford}
+        data-complete={isComplete}
         {...rest}
       >
-        <div className="rounded-t-md border-inherit border-b-2">
+        <div className="relative aspect-square w-full overflow-hidden border-inherit border-b-2">
           <Image
             alt={factoryType}
-            className="pointer-events-none aspect-square rounded-t-sm"
+            className="pixel-crisp pointer-events-none size-full object-cover"
             height={200}
             layout="constrained"
             src={image}
@@ -79,30 +96,38 @@ export const UpgradeCard = (props: UpgradeCardProps) => {
 
         <Tooltip>
           <TooltipTrigger asChild>
+            <div className="absolute top-1 left-1">
+              <div
+                className={cn(
+                  "flex size-7 items-center justify-center rounded-lg border-2 border-primary/60 bg-secondary text-secondary-foreground"
+                )}
+              >
+                <Image
+                  alt=""
+                  aria-hidden
+                  className="pixel-crisp pointer-events-none size-full rounded-md object-contain"
+                  height={28}
+                  layout="constrained"
+                  src={`/images/factories/${factoryType}.webp`}
+                  width={28}
+                />
+              </div>
+            </div>
+          </TooltipTrigger>
+
+          <TooltipContent>{name}</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
             <div className="absolute top-1 right-1">
-              <div className="flex size-7 items-center justify-center rounded-lg border-2 border-foreground bg-background text-foreground">
+              <div className="flex size-7 items-center justify-center rounded-lg border-2 border-primary/60 bg-secondary text-secondary-foreground">
                 <Icon className="size-4" />
               </div>
             </div>
           </TooltipTrigger>
 
           <TooltipContent>{tooltip}</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="absolute top-1 left-1">
-              <Image
-                className="pointer-events-none aspect-square size-7 rounded-lg border-2 border-foreground object-contain"
-                height={28}
-                layout="constrained"
-                src={`/images/factories/${factoryType}.webp`}
-                width={28}
-              />
-            </div>
-          </TooltipTrigger>
-
-          <TooltipContent>{name}</TooltipContent>
         </Tooltip>
 
         {children}
@@ -114,14 +139,22 @@ export const UpgradeCard = (props: UpgradeCardProps) => {
 export const UpgradeCardTrigger = (
   props: React.ComponentProps<typeof Button>
 ) => {
-  const { isEnabled } = useUpgradeCard();
+  const { className, ...rest } = props;
+
+  const { canAfford, isComplete } = useUpgradeCard();
 
   return (
     <Button
-      className="relative w-full rounded-t-none rounded-b-sm border-0 font-medium text-[10px] uppercase group-data-[enabled='false']:disabled:opacity-50"
-      type="button"
-      variant={isEnabled ? "green" : "black"}
-      {...props}
+      className={cn(
+        "w-full",
+        "font-medium text-sm",
+        "rounded-none border-0",
+        className
+      )}
+      clickEffect={false}
+      overrideSound="upgrade"
+      variant={isComplete || canAfford ? "green" : "black"}
+      {...rest}
     />
   );
 };

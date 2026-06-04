@@ -1,4 +1,4 @@
-import { createIcon } from "./create-icon";
+import { createIcon } from "@/components/ui/create-icon";
 
 export const Coin = createIcon({
   viewBox: "0 0 256 256",

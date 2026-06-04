@@ -1,13 +1,13 @@
 "use client";
 
-import { Loader2Icon } from "lucide-react";
+import { Loader } from "pixelarticons/react";
 import { cn } from "@/lib/cn";
 
 export const Spinner = (props: React.ComponentProps<"svg">) => {
   const { "aria-label": ariaLabel, className, ...rest } = props;
 
   return (
-    <Loader2Icon
+    <Loader
       aria-label={ariaLabel ?? "Loading"}
       className={cn("size-4 animate-spin", className)}
       data-slot="spinner"

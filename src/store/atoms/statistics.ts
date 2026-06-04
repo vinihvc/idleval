@@ -1,21 +1,92 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
 import { FACTORIES, type FactoryType } from "@/content/factories";
-import { store } from "..";
+import { store } from "@/store/store";
 import { getFactory, getProductionValue } from "./factories";
 
 const initialStatistics = Object.fromEntries(
   Object.keys(FACTORIES).map((factory) => [
     factory,
-    { quantity: 0, moneySpent: 0, moneyEarned: 0 },
+    { quantity: 0, goldSpent: 0, goldEarned: 0 },
   ])
 );
 
-export const statisticsAtom = atomWithStorage("statistics", {
-  moneyEarned: 0,
-  moneySpent: 0,
-  factories: initialStatistics,
+interface FactoryStatistics {
+  goldEarned: number;
+  goldSpent: number;
+  quantity: number;
+}
+
+interface StatisticsState {
+  factories: Record<string, FactoryStatistics>;
+  goldEarned: number;
+  goldSpent: number;
+}
+
+const readLegacyNumber = (primary: unknown, legacy: unknown): number => {
+  if (typeof primary === "number") {
+    return primary;
+  }
+
+  if (typeof legacy === "number") {
+    return legacy;
+  }
+
+  return 0;
+};
+
+const migrateFactoryStats = (
+  factory: Record<string, unknown>
+): FactoryStatistics => ({
+  quantity: typeof factory.quantity === "number" ? factory.quantity : 0,
+  goldSpent: readLegacyNumber(factory.goldSpent, factory.moneySpent),
+  goldEarned: readLegacyNumber(factory.goldEarned, factory.moneyEarned),
 });
+
+const migrateStatistics = (
+  parsed: Record<string, unknown>
+): StatisticsState => {
+  const factoriesRaw =
+    parsed.factories && typeof parsed.factories === "object"
+      ? (parsed.factories as Record<string, Record<string, unknown>>)
+      : {};
+
+  const factories = Object.fromEntries(
+    Object.keys(FACTORIES).map((factory) => [
+      factory,
+      migrateFactoryStats(factoriesRaw[factory] ?? {}),
+    ])
+  );
+
+  return {
+    goldEarned: readLegacyNumber(parsed.goldEarned, parsed.moneyEarned),
+    goldSpent: readLegacyNumber(parsed.goldSpent, parsed.moneySpent),
+    factories,
+  };
+};
+
+const statisticsStorage = createJSONStorage<StatisticsState>(
+  () => localStorage,
+  {
+    reviver: (key, value) => {
+      if (key === "" && value && typeof value === "object") {
+        return migrateStatistics(value as Record<string, unknown>);
+      }
+
+      return value;
+    },
+  }
+);
+
+export const statisticsAtom = atomWithStorage(
+  "statistics",
+  {
+    goldEarned: 0,
+    goldSpent: 0,
+    factories: initialStatistics,
+  },
+  statisticsStorage
+);
 
 export const useStatistics = () => useAtomValue(statisticsAtom);
 
@@ -30,36 +101,36 @@ export const setStatistics = (factory: FactoryType) => {
 
   store.set(statisticsAtom, (prev) => ({
     ...prev,
-    moneyEarned: prev.moneyEarned + amount * productionValue,
+    goldEarned: prev.goldEarned + amount * productionValue,
     factories: {
       ...prev.factories,
       [factory]: {
         ...prev.factories[factory],
-        moneyEarned:
-          prev.factories[factory].moneyEarned + amount * productionValue,
+        goldEarned:
+          prev.factories[factory].goldEarned + amount * productionValue,
       },
     },
   }));
 };
 
 /**
- * Get the total money earned
+ * Get the total gold earned
  *
- * @returns The total money earned
+ * @returns The total gold earned
  */
-export const totalMoneyEarned = () => {
-  const { moneyEarned } = store.get(statisticsAtom);
+export const totalGoldEarned = () => {
+  const { goldEarned } = store.get(statisticsAtom);
 
-  return moneyEarned;
+  return goldEarned;
 };
 
 /**
- * Get the total money spent
+ * Get the total gold spent
  *
- * @returns The total money spent
+ * @returns The total gold spent
  */
-export const moneyEarnedByFactory = (factory: FactoryType) => {
+export const goldEarnedByFactory = (factory: FactoryType) => {
   const { factories } = store.get(statisticsAtom);
 
-  return factories[factory].moneyEarned;
+  return factories[factory].goldEarned;
 };

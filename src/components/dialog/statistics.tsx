@@ -1,22 +1,16 @@
-import { PieChart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Chart } from "pixelarticons/react";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
-  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { FACTORIES, type FactoryType } from "@/content/factories";
-import {
-  moneyEarnedByFactory,
-  totalMoneyEarned,
-} from "@/store/atoms/statistics";
-import { AnimatedNumber } from "../ui/animated-number";
+import { goldEarnedByFactory, totalGoldEarned } from "@/store/atoms/statistics";
 import { DialogNavTrigger } from "./dialog-nav-trigger";
 
 interface StatisticsDialogProps {
@@ -29,7 +23,7 @@ export const StatisticsDialog = (props: StatisticsDialogProps) => {
   return (
     <ResponsiveDialog>
       <DialogNavTrigger
-        icon={PieChart}
+        icon={Chart}
         label="Statistics"
         value="statistics"
         variant={variant}
@@ -45,35 +39,34 @@ export const StatisticsDialog = (props: StatisticsDialogProps) => {
           <ResponsiveDialogTitle>Statistics</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Check your statistics and see how you are doing.
+            Review the ledgers of your realm&apos;s triumphs.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
           <div className="grid gap-2">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold capitalize">Total</span>
-
-              <AnimatedNumber value={totalMoneyEarned()} />
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground">
+              <span className="shrink-0 capitalize">Realm total</span>
+              <AnimatedNumber
+                className="shrink-0 text-end text-2xl"
+                value={totalGoldEarned()}
+              />
             </div>
 
             {Object.entries(FACTORIES).map(([key]) => (
-              <div className="flex items-center justify-between" key={key}>
-                <span className="font-semibold capitalize">{key}</span>
-
+              <div
+                className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground"
+                key={key}
+              >
+                <span className="shrink-0 capitalize">{key}</span>
                 <AnimatedNumber
-                  value={moneyEarnedByFactory(key as FactoryType)}
+                  className="shrink-0 text-end text-2xl"
+                  value={goldEarnedByFactory(key as FactoryType)}
                 />
               </div>
             ))}
           </div>
         </ResponsiveDialogBody>
-
-        <ResponsiveDialogFooter>
-          <ResponsiveDialogClose asChild>
-            <Button size="xl">Close Statistics</Button>
-          </ResponsiveDialogClose>
-        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

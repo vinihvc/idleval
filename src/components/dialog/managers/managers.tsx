@@ -1,18 +1,15 @@
-import { UserSearch } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Briefcase } from "pixelarticons/react";
+import { DialogNavTrigger } from "@/components/dialog/dialog-nav-trigger";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
-  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { FACTORIES, type FactoryType } from "@/content/factories";
-import { DialogNavTrigger } from "../dialog-nav-trigger";
 import { ManagersCard } from "./managers.card";
 
 interface ManagersDialogProps {
@@ -25,7 +22,7 @@ export const ManagersDialog = (props: ManagersDialogProps) => {
   return (
     <ResponsiveDialog>
       <DialogNavTrigger
-        icon={UserSearch}
+        icon={Briefcase}
         label="Managers"
         value="managers"
         variant={variant}
@@ -41,23 +38,17 @@ export const ManagersDialog = (props: ManagersDialogProps) => {
           <ResponsiveDialogTitle>Managers</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Hire managers to automate your factories.
+            Appoint stewards to keep the works running while you ride afar.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {Object.entries(FACTORIES).map(([key]) => (
               <ManagersCard factoryType={key as FactoryType} key={key} />
             ))}
           </div>
         </ResponsiveDialogBody>
-
-        <ResponsiveDialogFooter>
-          <ResponsiveDialogClose asChild>
-            <Button size="xl">Close Managers</Button>
-          </ResponsiveDialogClose>
-        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

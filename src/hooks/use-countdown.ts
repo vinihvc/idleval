@@ -7,16 +7,21 @@ import { useInterval } from "./use-interval";
  * Emit a countdown timer for a factory
  */
 export const useCountdown = (factory: FactoryType) => {
-  const f = useFactory(factory);
+  const {
+    isUnlocked,
+    isAutomated,
+    isProducing,
+    productionTime,
+  } = useFactory(factory);
 
-  const [seconds, setSeconds] = React.useState(f.productionTime);
-  const [isRunning, setIsRunning] = React.useState(
-    f.isAutomated || f.isProducing
-  );
+  const isActive = isUnlocked && (isAutomated || isProducing);
+
+  const [seconds, setSeconds] = React.useState(productionTime);
+  const [isRunning, setIsRunning] = React.useState(isActive);
 
   React.useEffect(() => {
-    setIsRunning(f.isAutomated || f.isProducing);
-  }, [f.isAutomated, f.isProducing]);
+    setIsRunning(isActive);
+  }, [isActive]);
 
   useInterval(
     () => {
@@ -25,12 +30,12 @@ export const useCountdown = (factory: FactoryType) => {
       }
 
       if (seconds < 1) {
-        setSeconds(f.productionTime);
-        setIsRunning(f.isAutomated);
+        setSeconds(productionTime);
+        setIsRunning(isUnlocked && isAutomated);
         stopProducing(factory);
       }
     },
-    isRunning && f.isUnlocked ? 1000 : undefined
+    isRunning ? 1000 : undefined
   );
 
   return { seconds, isRunning };

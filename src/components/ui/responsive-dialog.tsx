@@ -20,6 +20,7 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
+  DrawerImage,
   DrawerTitle,
   DrawerTrigger,
 } from "./drawer";
@@ -97,7 +98,6 @@ export const ResponsiveDialogContent = (
   }
 
   const {
-    showCloseButton: _showCloseButton,
     bottomStickOnMobile: _bottomStickOnMobile,
     size: _size,
     draggable: _draggable,
@@ -112,11 +112,11 @@ export const ResponsiveDialogImage = (
 ) => {
   const { isDesktop } = useResponsiveDialog();
 
-  if (!isDesktop) {
-    return null;
+  if (isDesktop) {
+    return <DialogImage {...props} />;
   }
 
-  return <DialogImage {...props} />;
+  return <DrawerImage {...props} />;
 };
 
 export const ResponsiveDialogDescription = (props: ResponsiveDialogProps) => {

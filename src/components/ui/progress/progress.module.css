@@ -15,21 +15,3 @@
   animation-fill-mode: forwards;
   animation-play-state: running;
 }
-
-@keyframes progress-clip {
-  from {
-    clip-path: inset(0 0 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 100%);
-  }
-}
-
-.clip {
-  animation-name: progress-clip;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
-}

@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { store } from "..";
+import { store } from "@/store/store";
 
 const settingsAtom = atomWithStorage("settings", {
   music: true,

@@ -1,20 +1,20 @@
-import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
-  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
   ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
 
+const linkClass =
+  "font-semibold text-popover-foreground underline decoration-primary/60 underline-offset-4 transition-colors hover:decoration-primary";
+
 export const AboutDialog = () => (
   <ResponsiveDialog>
-    <ResponsiveDialogTrigger className="underline-offset-4 outline-hidden hover:underline focus-visible:underline">
+    <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
       About
     </ResponsiveDialogTrigger>
 
@@ -22,23 +22,26 @@ export const AboutDialog = () => (
       <ResponsiveDialogImage alt="About" src="/images/msc/about.webp" />
 
       <ResponsiveDialogHeader>
-        <ResponsiveDialogTitle>About this game</ResponsiveDialogTitle>
+        <ResponsiveDialogTitle>About the Realm</ResponsiveDialogTitle>
 
         <ResponsiveDialogDescription>
-          Idleval (Idle + Medieval) is a idle game where you can build your own
-          town, generate resources and upgrade your buildings.
+          Idleval is an idle realm-builder: raise a settlement, gather coin and
+          supplies, and strengthen every guild and workshop—even while you are
+          away.
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
 
       <ResponsiveDialogBody>
-        <div className="grid gap-2">
-          <p className="font-semibold">Tecnologies</p>
+        <div className="grid gap-3">
+          <p className="font-display font-semibold text-lg text-popover-foreground tracking-wide">
+            Royal Codex
+          </p>
 
-          <ul className="list-disc pl-4">
+          <ul className="list-disc space-y-1 pl-4 text-popover-foreground/90 leading-relaxed">
             <li>
               Made with{" "}
               <a
-                className="font-medium underline hover:text-blue-600"
+                className={linkClass}
                 href="https://react.dev/"
                 rel="noopener noreferrer nofollow"
                 target="_blank"
@@ -49,67 +52,61 @@ export const AboutDialog = () => (
             <li>
               Styling with{" "}
               <a
-                className="font-medium underline hover:text-blue-600"
+                className={linkClass}
                 href="https://tailwindcss.com/"
                 rel="noopener noreferrer nofollow"
                 target="_blank"
               >
                 Tailwind
-              </a>{" "}
+              </a>
             </li>
             <li>
               Components with{" "}
               <a
-                className="font-medium underline hover:text-blue-600"
+                className={linkClass}
                 href="https://shark.vini.one/"
                 rel="noopener noreferrer nofollow"
                 target="_blank"
               >
                 Shark UI
-              </a>{" "}
+              </a>
             </li>
             <li>
               Icons by{" "}
               <a
-                className="font-medium underline hover:text-blue-600"
-                href="https://lucide.dev/"
+                className={linkClass}
+                href="https://pixelarticons.com/"
                 rel="noopener noreferrer nofollow"
                 target="_blank"
               >
-                Lucide
-              </a>{" "}
+                Pixelarticons
+              </a>
             </li>
             <li>
               State management with{" "}
               <a
-                className="font-medium underline hover:text-blue-600"
+                className={linkClass}
                 href="https://jotai.org/"
                 rel="noopener noreferrer nofollow"
                 target="_blank"
               >
                 Jotai
-              </a>{" "}
+              </a>
             </li>
             <li>
               Images by{" "}
               <a
-                className="font-medium underline hover:text-blue-600"
+                className={linkClass}
                 href="https://chatgpt.com"
                 rel="noopener noreferrer nofollow"
                 target="_blank"
               >
                 ChatGPT
-              </a>{" "}
+              </a>
             </li>
           </ul>
         </div>
       </ResponsiveDialogBody>
-
-      <ResponsiveDialogFooter>
-        <ResponsiveDialogClose asChild>
-          <Button size="xl">Close About</Button>
-        </ResponsiveDialogClose>
-      </ResponsiveDialogFooter>
     </ResponsiveDialogContent>
   </ResponsiveDialog>
 );

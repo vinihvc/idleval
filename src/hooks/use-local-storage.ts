@@ -11,7 +11,7 @@ export const useLocalStorage = <T>(
 ): [T, (value: T) => void] => {
   const [value, setValue] = React.useState(defaultValue);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount to hydrate from localStorage
   React.useEffect(() => {
     const item = localStorage.getItem(key);
 

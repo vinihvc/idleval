@@ -34,7 +34,7 @@ export const BottomNavigationList = (
         "fixed inset-x-0 bottom-0 z-10",
         "flex w-full items-center justify-around",
         "min-h-14 shrink-0",
-        "border-t bg-background/60 backdrop-blur-sm",
+        "border-t-2 bg-background/60 backdrop-blur-sm",
         "pb-[env(safe-area-inset-bottom,0px)]",
         className
       )}
@@ -63,7 +63,7 @@ export const BottomNavigationItem = (
         "aria-selected:text-primary",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "data-disabled:pointer-events-none data-disabled:opacity-64",
-        "[&_svg:not([class*='size-'])]:size-5 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "[&_svg:not([class*='size-'])]:size-6 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "has-[data-slot=bottom-navigation-item-label]:size-4",
         "pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
         "motion-reduce:transition-none!",

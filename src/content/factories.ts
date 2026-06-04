@@ -3,7 +3,7 @@ export type FactoryType = keyof typeof FACTORIES;
 export const FACTORIES = {
   potato: {
     name: "Potato",
-    description: "Produces potatoes to feed your people.",
+    description: "Stock the granaries and keep the realm from hunger.",
     productionTime: 2,
     productionValue: 25,
     buyCost: 75,
@@ -13,7 +13,7 @@ export const FACTORIES = {
   },
   peasant: {
     name: "Peasant",
-    description: "Peasant to agriculture and farming.",
+    description: "Work the fields and bring in the harvest.",
     productionTime: 5,
     productionValue: 200,
     buyCost: 1125,
@@ -23,7 +23,7 @@ export const FACTORIES = {
   },
   knight: {
     name: "Knight",
-    description: "Knight for protection and against invaders.",
+    description: "Hold the line against raiders and invaders.",
     productionTime: 12,
     productionValue: 1600,
     buyCost: 16_875,
@@ -33,7 +33,7 @@ export const FACTORIES = {
   },
   archer: {
     name: "Archer",
-    description: "Archer for scouting and and long range attacks.",
+    description: "Scout the wilds and rain arrows from afar.",
     productionTime: 25,
     productionValue: 12_800,
     buyCost: 253_125,
@@ -43,7 +43,7 @@ export const FACTORIES = {
   },
   engineer: {
     name: "Engineer",
-    description: "Engineer for repairing and researching new technologies.",
+    description: "Raise fortifications and craft engines of war.",
     productionTime: 50,
     productionValue: 102_400,
     buyCost: 3_796_875,
@@ -53,7 +53,7 @@ export const FACTORIES = {
   },
   mage: {
     name: "Mage",
-    description: "Mage for generate respect and power for the kingdom.",
+    description: "Weave sorcery to swell the crown's power and renown.",
     productionTime: 100,
     productionValue: 819_200,
     buyCost: 56_953_125,

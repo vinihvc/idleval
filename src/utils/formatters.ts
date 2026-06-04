@@ -32,12 +32,12 @@ const VALUE_RANGE = [
   { value: 1e90, symbol: "ZZ" },
 ];
 
+const TRAILING_DECIMAL_ZEROS_RE = /\.0+$|(\.[0-9]*[1-9])0+$/;
+
 /**
  * Minify number to show as K, M, B, T
  */
 export const amountFormatter = (amount: number) => {
-  const regex = /\.0+$|(\.[0-9]*[1-9])0+$/;
-
   const item = VALUE_RANGE.slice()
     .reverse()
     .find((item) => amount >= item.value);
@@ -48,7 +48,7 @@ export const amountFormatter = (amount: number) => {
 
   if (item) {
     const formattedValue = amount / item.value;
-    return `${formattedValue.toFixed(2).replace(regex, "$1")}${item.symbol}`;
+    return `${formattedValue.toFixed(2).replace(TRAILING_DECIMAL_ZEROS_RE, "$1")}${item.symbol}`;
   }
 
   return "0";
@@ -56,6 +56,26 @@ export const amountFormatter = (amount: number) => {
 
 export const amountFormatterWithDolarSign = (amount: number) =>
   `$${amountFormatter(amount)}`;
+
+export const getAmountForNumberFlow = (amount: number) => {
+  if (amount >= 1e93) {
+    return { kind: "infinity" as const };
+  }
+
+  const item = VALUE_RANGE.slice()
+    .reverse()
+    .find((rangeItem) => amount >= rangeItem.value);
+
+  if (!item) {
+    return { kind: "value" as const, value: 0, suffix: "" };
+  }
+
+  return {
+    kind: "value" as const,
+    value: amount / item.value,
+    suffix: item.symbol,
+  };
+};
 
 export const suffixAmountFormatter = (amount: number) => {
   const item = VALUE_RANGE.slice()

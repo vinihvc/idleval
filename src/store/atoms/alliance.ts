@@ -1,12 +1,12 @@
 import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { store } from "../store";
+import { store } from "@/store/store";
 import { factoriesAtom, initialData } from "./factories";
 import { walletAtom } from "./wallet";
 
-export type AllianceType = {
+export interface AllianceType {
   count: number;
-};
+}
 
 export const allianceAtom = atomWithStorage<AllianceType>("alliance", {
   count: 0,
@@ -15,19 +15,19 @@ export const allianceAtom = atomWithStorage<AllianceType>("alliance", {
 export const useAlliance = () => useAtomValue(allianceAtom);
 
 export const canJoinAlliance = () => {
-  const { money } = store.get(walletAtom);
+  const { gold } = store.get(walletAtom);
 
-  if (money < 1e6) {
+  if (gold < 1e6) {
     return false;
   }
 
-  return money >= 1e93;
+  return gold >= 1e93;
 };
 
 export const joinAlliance = () => {
-  const { money } = store.get(walletAtom);
+  const { gold } = store.get(walletAtom);
 
-  if (money < 1e36) {
+  if (gold < 1e36) {
     return;
   }
 
@@ -37,7 +37,7 @@ export const joinAlliance = () => {
 
   store.set(walletAtom, (prev) => ({
     ...prev,
-    money: 0,
+    gold: 0,
   }));
 
   store.set(factoriesAtom, initialData);

@@ -1,20 +1,20 @@
+import { FantasyPanel } from "@/components/ui/fantasy/fantasy-panel";
 import { cn } from "@/lib/cn";
 
-interface GameProps extends React.ComponentProps<"div"> {}
-
-export const Game = (props: GameProps) => {
+export const Game = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
 
   return (
-    <div
+    <FantasyPanel
       className={cn(
-        "container relative max-w-4xl overflow-hidden",
+        "container max-w-4xl",
+        "relative overflow-hidden",
         "flex flex-col",
-        "border border-foreground/50",
-        "max-sm:flex-1 max-sm:py-16",
-        "sm:rounded-xl sm:bg-foreground/20",
+        "max-sm:flex-1 max-sm:rounded-none max-sm:border-x-0 max-sm:py-16",
+        "sm:rounded-xl",
         className
       )}
+      variant="stone"
       {...rest}
     />
   );

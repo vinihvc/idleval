@@ -20,7 +20,7 @@ export const Tooltip = (
     lazyMount = true,
     unmountOnExit = true,
     closeDelay = 100,
-    openDelay = 0,
+    openDelay = 600,
     ...rest
   } = props;
 
@@ -52,9 +52,9 @@ export const TooltipContent = (
         <ArkTooltip.Content
           className={cn(
             "z-50 w-fit max-sm:hidden",
-            "px-3 py-1.5",
+            "px-2.5 py-1",
             "bg-foreground",
-            "text-background text-xs",
+            "font-medium text-background text-base",
             "rounded-lg shadow-lg/5",
             "origin-(--transform-origin) animate-in",
             "fade-in-0 zoom-in-[98%]",

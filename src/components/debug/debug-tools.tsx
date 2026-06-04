@@ -1,0 +1,95 @@
+import {
+  ArrowUpBox,
+  Briefcase,
+  Coins,
+  Crown,
+  Lock,
+  Reload,
+} from "pixelarticons/react";
+import {
+  ActionBar,
+  ActionBarBody,
+  ActionBarContent,
+} from "@/components/ui/action-bar";
+import { Button } from "@/components/ui/button";
+import { NumberText } from "@/components/ui/number-text";
+import { IS_DEV } from "@/lib/envs";
+import {
+  addDebugGold,
+  DEBUG_GOLD_AMOUNT,
+  enableAllManagers,
+  enableAllUpgrades,
+  enableGodMode,
+  resetGameState,
+  unlockAllFactories,
+} from "@/store/debug";
+import { amountFormatterWithDolarSign } from "@/utils/formatters";
+
+export const DebugTools = () => {
+  if (!IS_DEV) {
+    return null;
+  }
+
+  return (
+    <ActionBar open>
+      <ActionBarContent aria-label="Debug tools" className="hidden sm:flex">
+        <ActionBarBody>
+          <Button
+            aria-label="Reset game state"
+            onClick={resetGameState}
+            variant="destructive"
+          >
+            <Reload />
+            <span className="max-md:sr-only">Reset </span>
+          </Button>
+          <Button
+            aria-label="Add debug gold"
+            onClick={addDebugGold}
+            variant="green"
+          >
+            <Coins />
+            <span className="max-md:sr-only">
+              Add{" "}
+              <NumberText>
+                {amountFormatterWithDolarSign(DEBUG_GOLD_AMOUNT)}
+              </NumberText>
+            </span>
+          </Button>
+          <Button
+            aria-label="Unlock all factories"
+            onClick={unlockAllFactories}
+            variant="black"
+          >
+            <Lock />
+            <span className="max-md:sr-only">All factories</span>
+          </Button>
+          <Button
+            aria-label="Enable all upgrades"
+            onClick={enableAllUpgrades}
+            variant="gold"
+          >
+            <ArrowUpBox />
+            <span className="max-md:sr-only">All upgrades</span>
+          </Button>
+          <Button
+            aria-label="Enable all managers"
+            onClick={enableAllManagers}
+            variant="blue"
+          >
+            <Briefcase />
+            <span className="max-md:sr-only">All managers</span>
+          </Button>
+          <Button
+            aria-label="Enable god mode"
+            className="border-purple-600 bg-purple-500 text-purple-50"
+            onClick={enableGodMode}
+            variant="default"
+          >
+            <Crown />
+            <span className="max-md:sr-only">God mode</span>
+          </Button>
+        </ActionBarBody>
+      </ActionBarContent>
+    </ActionBar>
+  );
+};

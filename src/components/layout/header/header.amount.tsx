@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/cn";
+import { NumberText } from "@/components/ui/number-text";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toggleAmountToBuy, useMsc } from "@/store/atoms/msc";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 export const AmountToBuy = () => {
   const amount = useMsc();
@@ -16,27 +20,22 @@ export const AmountToBuy = () => {
         <Button
           className="w-14"
           onClick={toggleAmountToBuy}
-          size="icon"
+          size="icon-md"
           variant="white"
         >
           <span>
-            <span
-              className={cn(
-                "font-semibold text-base",
-                amount.value === "max" && "uppercase"
-              )}
-            >
+            <NumberText className="font-semibold text-xl capitalize">
               {`${amount.value}${amount.symbol}`}
-            </span>
+            </NumberText>
           </span>
 
           <span className="sr-only">
-            {`You are buying ${amount.description} at once`}
+            {`Purchase ${amount.description} in one stroke`}
           </span>
         </Button>
       </TooltipTrigger>
 
-      <TooltipContent>{`Buy ${amount.description} at once`}</TooltipContent>
+      <TooltipContent>{`Purchase ${amount.description} in one stroke`}</TooltipContent>
     </Tooltip>
   );
 };

@@ -1,6 +1,6 @@
 # Idleval
 
-Step into a medieval world where you build, expand, and conquer. Recruit heroes, gather resources, and grow your empire — even while you're away!
+Step into a medieval realm where you build, expand, and defend. Recruit heroes, gather riches, and grow your kingdom—even while you are away!
 
 ### Preview
 

@@ -1,45 +1,53 @@
-import { Check } from "lucide-react";
+import { Check } from "pixelarticons/react";
+import { Badge } from "@/components/ui/badge";
+import { NumberText } from "@/components/ui/number-text";
+import { UpgradeCard, UpgradeCardTrigger } from "@/components/ui/upgrade-card";
 import type { FactoryType } from "@/content/factories";
-import { hasMoneyToBuy, upgradeFactory, useFactory } from "@/store";
+import { upgradeFactory, useFactory } from "@/store/atoms/factories";
+import { hasGoldToBuy } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
-import { UpgradeCard, UpgradeCardTrigger } from "../../ui/upgrade-card";
 
-type UpgradesCardProps = {
+interface UpgradesCardProps {
   /**
    * The factory type
    */
   factoryType: FactoryType;
-};
+}
 
 export const UpgradesCard = (props: UpgradesCardProps) => {
   const { factoryType } = props;
 
   const { isUnlocked, isUpgraded, upgradeCost } = useFactory(factoryType);
 
-  const canBuy = hasMoneyToBuy(upgradeCost);
+  const canBuy = hasGoldToBuy(upgradeCost);
 
   const getText = () => {
     if (!isUnlocked) {
-      return "Unlock first";
+      return "Charter required";
     }
     if (isUpgraded) {
       return <Check />;
     }
-    if (!canBuy) {
-      return `Upgrade (${amountFormatter(upgradeCost)})`;
-    }
-    return "Upgrade";
+    return (
+      <>
+        <span>Improve</span>
+        <Badge className="font-number normal-case" variant="default">
+          <NumberText>{amountFormatter(upgradeCost)}</NumberText>
+        </Badge>
+      </>
+    );
   };
 
   return (
     <UpgradeCard
+      canAfford={isUnlocked && !isUpgraded && canBuy}
       factoryType={factoryType}
       image={`/images/upgrades/${factoryType}.webp`}
-      isEnabled={isUpgraded}
+      isComplete={isUpgraded}
       type="upgrade"
     >
       <UpgradeCardTrigger
-        disabled={!isUnlocked || isUpgraded || !canBuy}
+        disabled={!(isUnlocked && canBuy)}
         onClick={() => upgradeFactory(factoryType)}
       >
         {getText()}

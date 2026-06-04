@@ -3,7 +3,7 @@ import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
-import { useSettings } from "@/store";
+import { useSettings } from "@/store/atoms/settings";
 import { type SoundsType, sound } from "./sound";
 import { borderedText } from "./text-border";
 
@@ -11,115 +11,132 @@ export const buttonVariants = tv({
   base: [
     "relative",
     "inline-flex shrink-0 items-center justify-center gap-2",
-    "font-medium text-sm tracking-wide",
-    "rounded-lg border shadow-sm",
+    "font-medium text-base tracking-wide",
+    "inset-shadow-xs rounded-lg border-3",
     "whitespace-nowrap",
     "transition-all",
-    "active:scale-95",
     "outline-none focus-visible:ring-[3px]",
-    "disabled:pointer-events-none aria-disabled:pointer-events-none",
+    "disabled:pointer-events-none aria-disabled:pointer-events-none aria-disabled:opacity-64",
     "data-disabled:pointer-events-none data-disabled:opacity-64",
     "data-[state=loading]:pointer-events-none",
-    "[&_svg:not([class*='size-'])]:size-5 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0",
     "motion-reduce:transition-none!",
   ],
   variants: {
     variant: {
       black: [
-        "bg-foreground",
-        "text-background",
-        "border-background/20",
-        "active:bg-neutral-950",
-        "hover:bg-neutral-950",
-        "focus-visible:ring-foreground/50",
+        "bg-secondary",
+        "text-foreground",
+        "border-primary/40",
+        "active:brightness-95",
+        "hover:brightness-105",
+        "focus-visible:ring-primary/50",
       ],
       white: [
-        "bg-background",
-        "text-foreground",
-        "border-foreground",
-        "active:bg-neutral-100",
-        "hover:bg-neutral-100",
-        "focus-visible:ring-foreground/50",
+        "bg-popover",
+        "text-popover-foreground",
+        "border-primary/60",
+        "active:brightness-95",
+        "hover:brightness-105",
+        "focus-visible:ring-primary/50",
+      ],
+      gold: [
+        "bg-primary",
+        "text-white",
+        "border-primary-foreground/30",
+        "active:brightness-95",
+        "hover:brightness-105",
+        "focus-visible:ring-primary/50",
       ],
       gray: [
-        "bg-neutral-600",
-        "text-white",
-        "active:bg-neutral-800",
-        "border-foreground",
-        "hover:bg-neutral-800 focus-visible:ring-neutral-800/20",
+        "bg-muted",
+        "text-foreground",
+        "active:brightness-95",
+        "border-primary/30",
+        "hover:brightness-105 focus-visible:ring-primary/20",
       ],
       green: [
-        "bg-green-600",
+        "bg-success",
         "text-white",
-        "active:bg-green-700",
-        "border-green-800",
-        "hover:bg-green-700 focus-visible:ring-green-800/20",
-        "focus-visible:ring-green-800/50",
+        "active:brightness-95",
+        "border-success-foreground/40",
+        "hover:brightness-105 focus-visible:ring-success/50",
       ],
       blue: [
-        "bg-blue-600",
+        "bg-info",
         "text-white",
-        "active:bg-blue-700",
-        "border-blue-800",
-        "hover:bg-blue-700 focus-visible:ring-blue-800/20",
+        "active:brightness-95",
+        "border-info-foreground/40",
+        "hover:brightness-105 focus-visible:ring-info/50",
       ],
       default: [
         "bg-primary",
-        "border border-transparent shadow-primary/24",
+        "border-transparent shadow-primary/24",
         "text-primary-foreground",
-        "hover:bg-primary/90",
+        "active:brightness-95",
+        "hover:brightness-105",
         "focus-visible:border-background",
       ],
       outline: [
         "bg-transparent",
         "text-foreground",
-        "border border-input shadow-sm/5",
-        "hover:bg-accent hover:text-accent-foreground",
+        "border-input shadow-sm/5",
+        "active:brightness-95",
+        "hover:text-accent-foreground hover:brightness-105",
         "focus-visible:border-primary",
       ],
       destructive: [
         "bg-destructive",
         "text-white",
-        "border border-transparent shadow-destructive/24",
-        "hover:bg-destructive/90",
+        "border-transparent shadow-destructive/24",
+        "active:brightness-95",
+        "hover:brightness-105",
         "focus-visible:border-background focus-visible:ring-destructive-foreground/32",
       ],
       secondary: [
         "bg-secondary",
         "text-secondary-foreground",
-        "border border-transparent",
+        "border-primary",
         "focus-visible:border-primary",
-        "hover:bg-secondary/80",
+        "active:brightness-95",
+        "hover:brightness-105",
       ],
       ghost: [
-        "hover:bg-accent hover:text-accent-foreground",
-        "border border-transparent",
+        "active:brightness-95",
+        "hover:brightness-105",
+        "hover:text-accent-foreground",
+        "border-transparent",
         "focus-visible:border-primary",
       ],
       link: [
-        "border border-transparent",
+        "active:brightness-95",
+        "border-transparent",
         "text-primary underline-offset-4",
         "hover:underline",
         "focus-visible:border-primary",
       ],
     },
     size: {
-      xs: "h-7 px-2",
-      sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
-      md: "h-9 px-4 py-2 has-[>svg]:px-3",
-      lg: "h-10 px-6 has-[>svg]:px-4",
-      xl: "h-11 px-6 has-[>svg]:px-6",
-      icon: "size-9",
-      "icon-xs": "size-6 rounded-sm",
-      "icon-sm": "size-7",
-      "icon-md": "size-8",
-      "icon-lg": "size-9",
+      xs: "h-7 px-2 [&_svg:not([class*='size-'])]:size-3",
+      sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4",
+      md: "h-9 px-4 py-2 has-[>svg]:px-3 [&_svg:not([class*='size-'])]:size-4",
+      lg: "h-10 px-6 has-[>svg]:px-4 [&_svg:not([class*='size-'])]:size-5",
+      xl: "h-11 px-6 has-[>svg]:px-6 [&_svg:not([class*='size-'])]:size-5",
+      "icon-xs": "size-6 rounded-sm [&_svg:not([class*='size-'])]:size-3",
+      "icon-sm": "size-7 [&_svg:not([class*='size-'])]:size-4",
+      "icon-md": "size-8 [&_svg:not([class*='size-'])]:size-4",
+      "icon-lg": "size-9 [&_svg:not([class*='size-'])]:size-5",
       "icon-xl": 'size-10 [&_svg:not([class*="size-"])]:size-5',
+    },
+    clickEffect: {
+      true: "active:scale-[0.98]",
+      false: "",
     },
   },
   defaultVariants: {
     variant: "black",
     size: "md",
+    clickEffect: true,
   },
 });
 
@@ -154,6 +171,7 @@ export const Button = (props: ButtonProps) => {
     overrideSound = "click",
     asChild = false,
     isLoading = false,
+    clickEffect,
     className,
     onClick,
     children,
@@ -170,21 +188,36 @@ export const Button = (props: ButtonProps) => {
     onClick?.(event);
   };
 
-  const borderedVariant =
+  let borderedVariant:
+    | "black"
+    | "white"
+    | "gold"
+    | "green"
+    | "gray"
+    | "blue"
+    | undefined;
+
+  if (variant === "gold") {
+    borderedVariant = "gold";
+  } else if (
     variant === "black" ||
     variant === "white" ||
     variant === "green" ||
     variant === "gray" ||
     variant === "blue"
-      ? variant
-      : undefined;
+  ) {
+    borderedVariant = variant;
+  }
+
+  const isIconSize = typeof size === "string" && size.startsWith("icon");
 
   return (
     <ark.button
       asChild={asChild}
       className={cn(
-        buttonVariants({ variant, size }),
+        buttonVariants({ variant, size, clickEffect }),
         borderedVariant &&
+          !isIconSize &&
           borderedText({ variant: borderedVariant, size: "lg" }),
         className
       )}

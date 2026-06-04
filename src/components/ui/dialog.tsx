@@ -4,7 +4,7 @@ import { Dialog as ArkDialog, useDialogContext } from "@ark-ui/react/dialog";
 import { ark } from "@ark-ui/react/factory";
 import { Portal } from "@ark-ui/react/portal";
 import { Image } from "@unpic/react";
-import { XIcon } from "lucide-react";
+import { Close } from "pixelarticons/react";
 import React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ export const DialogTrigger = (
 export const dialogOverlayVariants = tv({
   base: [
     "fixed inset-0 z-50",
-    "bg-foreground/40 backdrop-blur-xs",
+    "bg-stone-950/70 backdrop-blur-sm",
     "duration-200",
     "peer peer-data-[slot=dialog-overlay]:hidden",
     "data-[state=open]:fade-in-0 data-[state=open]:animate-in",
@@ -90,9 +90,9 @@ export const DialogPositioner = (
       className={cn(
         "fixed inset-0 z-50",
         "h-svh w-screen overflow-y-auto",
-        // Reserve space for DialogImage (-top-12 / sm:-top-28) so it stays on-screen
-        "grid grid-rows-[minmax(3rem,1fr)_auto_minmax(0,3fr)] justify-items-center",
-        "p-4 sm:grid-rows-[minmax(7rem,1fr)_auto_minmax(0,3fr)]",
+        // Center dialog vertically; min top row reserves space for DialogImage (-top-12 / sm:-top-18)
+        "grid min-h-svh grid-rows-[minmax(3rem,1fr)_auto_minmax(0,1fr)] justify-items-center",
+        "p-4 sm:grid-rows-[minmax(4.5rem,1fr)_auto_minmax(0,1fr)]",
         className
       )}
       data-slot="dialog-positioner"
@@ -109,9 +109,9 @@ export const dialogContentVariants = tv({
     "row-start-2",
     "max-h-full min-h-0 w-full min-w-0",
     "flex flex-col gap-4",
-    "bg-background text-foreground",
-    "rounded-xl border border-foreground shadow-lg",
-    "sm:shadow-[-6px_6px_0_0] sm:shadow-foreground",
+    "bg-popover text-popover-foreground",
+    "fantasy-panel-shadow rounded-xl border-4 border-primary/70",
+    "inset-shadow-xs",
     "outline-none",
     "translate-y-[calc(-1.25rem*var(--nested-layer-count))]",
     "transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform",
@@ -200,11 +200,11 @@ export const DialogContent = (props: DialogContentProps) => {
             <DialogClose asChild>
               <Button
                 aria-label="Close"
-                className="absolute -top-4 -right-4 drop-shadow-lg max-sm:hidden"
-                size="icon"
-                variant="black"
+                className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 border-2 shadow-lg"
+                size="icon-xl"
+                variant="secondary"
               >
-                <XIcon />
+                <Close />
               </Button>
             </DialogClose>
           )}
@@ -261,7 +261,7 @@ export const DialogHeader = (props: DialogHeaderProps) => {
   return (
     <ark.div
       className={cn(
-        "mt-8 flex flex-col gap-2 text-center sm:mt-12 sm:text-left",
+        "flex flex-col gap-1 text-center sm:mt-14 sm:text-left",
         "p-(--space)",
         "in-[[data-slot=dialog-content]:has([data-slot=dialog-body])]:pb-3",
         className
@@ -289,7 +289,10 @@ export const DialogTitle = (
 
   return (
     <ArkDialog.Title
-      className={cn("font-bold text-2xl", className)}
+      className={cn(
+        "font-display font-semibold text-2xl text-popover-foreground tracking-wide",
+        className
+      )}
       data-slot="dialog-title"
       {...rest}
     />
@@ -307,13 +310,13 @@ export const DialogImage = (props: DialogImageProps) => {
 
   return (
     <div
-      className="absolute -top-12 left-1/2 inline-flex rounded-full border-4 border-foreground max-md:-translate-x-1/2 sm:-top-28 sm:border-6 md:left-2"
+      className="absolute -top-12 left-1/2 inline-flex rounded-full border-4 border-primary/80 bg-secondary p-1 max-md:-translate-x-1/2 sm:-top-18 sm:border-6 md:left-2"
       data-slot="dialog-image"
     >
       <Image
         aria-hidden
         className={cn(
-          "pointer-events-none aspect-square size-20 rounded-full border-2 border-white bg-foreground text-foreground drop-shadow-lg [image-rendering:pixelated] sm:size-40 sm:border-4",
+          "pixel-crisp pointer-events-none aspect-square size-20 rounded-full border-2 border-primary/40 bg-muted drop-shadow-lg sm:size-28 sm:border-4",
           className
         )}
         height={200}
@@ -332,7 +335,7 @@ export const DialogDescription = (
 
   return (
     <ArkDialog.Description
-      className={cn("text-base opacity-80", className)}
+      className={cn("text-xl leading-relaxed", className)}
       data-slot="dialog-description"
       {...rest}
     />

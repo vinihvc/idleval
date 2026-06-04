@@ -1,18 +1,15 @@
-import { ArrowBigUpDash } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowUpBox } from "pixelarticons/react";
+import { DialogNavTrigger } from "@/components/dialog/dialog-nav-trigger";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
-  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { FACTORIES, type FactoryType } from "@/content/factories";
-import { DialogNavTrigger } from "../dialog-nav-trigger";
 import { UpgradesCard } from "./upgrades.card";
 
 interface UpgradesDialogProps {
@@ -25,7 +22,7 @@ export const UpgradesDialog = (props: UpgradesDialogProps) => {
   return (
     <ResponsiveDialog>
       <DialogNavTrigger
-        icon={ArrowBigUpDash}
+        icon={ArrowUpBox}
         label="Upgrades"
         value="upgrades"
         variant={variant}
@@ -41,23 +38,17 @@ export const UpgradesDialog = (props: UpgradesDialogProps) => {
           <ResponsiveDialogTitle>Upgrades</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Upgrade your factories to increase your income.
+            Improve workshops and halls to double the crown&apos;s takings.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {Object.entries(FACTORIES).map(([key]) => (
               <UpgradesCard factoryType={key as FactoryType} key={key} />
             ))}
           </div>
         </ResponsiveDialogBody>
-
-        <ResponsiveDialogFooter>
-          <ResponsiveDialogClose asChild>
-            <Button size="lg">Close Upgrades</Button>
-          </ResponsiveDialogClose>
-        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );
