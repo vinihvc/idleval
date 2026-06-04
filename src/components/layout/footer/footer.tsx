@@ -1,18 +1,17 @@
-import { cn } from '@/lib/cn'
-import React from 'react'
+import type React from "react";
+import { AboutDialog } from "@/components/dialog/about";
+import { cn } from "@/lib/cn";
 
-interface FooterProps extends React.ComponentProps<'footer'> {}
-
-const AboutDialog = React.lazy(() => import('@/components/dialog/about'))
+interface FooterProps extends React.ComponentProps<"footer"> {}
 
 export const Footer = (props: FooterProps) => {
-  const { className, ...rest } = props
+  const { className, ...rest } = props;
 
   return (
     <footer
       className={cn(
-        'inset-x-0 p-5 text-white max-md:hidden md:absolute md:bottom-0',
-        className,
+        "inset-x-0 p-5 text-white max-md:hidden md:absolute md:bottom-0",
+        className
       )}
       {...rest}
     >
@@ -23,12 +22,12 @@ export const Footer = (props: FooterProps) => {
 
         <a
           href="https://vini.one"
-          target="_blank"
           rel="noopener noreferrer nofollow"
+          target="_blank"
         >
           &copy; Vinicius Vicentini
         </a>
       </div>
     </footer>
-  )
-}
+  );
+};

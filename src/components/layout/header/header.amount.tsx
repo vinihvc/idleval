@@ -1,27 +1,29 @@
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/cn'
-import { toggleAmountToBuy, useMsc } from '@/store/atoms/msc'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../ui/tooltip'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
+import { toggleAmountToBuy, useMsc } from "@/store/atoms/msc";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 export const AmountToBuy = () => {
-  const amount = useMsc()
+  const amount = useMsc();
 
-  if (!amount) return null
+  if (!amount) {
+    return null;
+  }
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
           className="w-14"
-          variant="white"
-          size="icon"
           onClick={toggleAmountToBuy}
+          size="icon"
+          variant="white"
         >
           <span>
             <span
               className={cn(
-                'font-semibold text-base',
-                amount.value === 'max' && 'uppercase',
+                "font-semibold text-base",
+                amount.value === "max" && "uppercase"
               )}
             >
               {`${amount.value}${amount.symbol}`}
@@ -36,5 +38,5 @@ export const AmountToBuy = () => {
 
       <TooltipContent>{`Buy ${amount.description} at once`}</TooltipContent>
     </Tooltip>
-  )
-}
+  );
+};

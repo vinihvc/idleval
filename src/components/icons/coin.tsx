@@ -1,12 +1,12 @@
-import { createIcon } from './create-icon'
+import { createIcon } from "./create-icon";
 
 export const Coin = createIcon({
-  viewBox: '0 0 256 256',
+  viewBox: "0 0 256 256",
   path: (
     <>
       <g transform="translate(1.41, 1.41) scale(2.81)">
-        <circle cx="45.001" cy="47.211" r="42.791" fill="#e88102" />
-        <circle cx="45" cy="42.79" r="35" fill="#f39e09" />
+        <circle cx="45.001" cy="47.211" fill="#e88102" r="42.791" />
+        <circle cx="45" cy="42.79" fill="#f39e09" r="35" />
         <path
           d="M45 13.791c17.977 0 32.78 13.555 34.766 31 .15-1.313.234-2.647.234-4 0-19.33-15.67-35-35-35s-35 15.67-35 35c0 1.353.085 2.687.234 4 1.986-17.445 16.789-31 34.766-31z"
           fill="#e88102"
@@ -42,4 +42,4 @@ export const Coin = createIcon({
       </g>
     </>
   ),
-})
+});

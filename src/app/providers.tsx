@@ -1,16 +1,14 @@
-import { Soundtrack } from '@/components/sound/soundtrack'
-import { SoundProvider } from '@/components/ui/sound'
-import { store } from '@/store'
-import { Provider as JotaiProvider } from 'jotai'
+import { Provider as JotaiProvider } from "jotai";
+import { Soundtrack } from "@/components/sound/soundtrack";
+import { SoundProvider } from "@/components/ui/sound";
+import { store } from "@/store";
 
-export const Providers = ({ children }: React.PropsWithChildren) => {
-  return (
-    <SoundProvider>
-      <JotaiProvider store={store}>
-        {children}
+export const Providers = ({ children }: React.PropsWithChildren) => (
+  <SoundProvider>
+    <JotaiProvider store={store}>
+      {children}
 
-        <Soundtrack />
-      </JotaiProvider>
-    </SoundProvider>
-  )
-}
+      <Soundtrack />
+    </JotaiProvider>
+  </SoundProvider>
+);

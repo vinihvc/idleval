@@ -1,14 +1,14 @@
-import { FACTORIES, type FactoryType } from '@/content/factories'
-import { decreaseMoney, hasMoneyToBuy, increaseMoney, store } from '@/store'
-import { useAtomValue } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { useAtomValue } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { FACTORIES, type FactoryType } from "@/content/factories";
+import { decreaseMoney, hasMoneyToBuy, increaseMoney, store } from "@/store";
 import {
   type MscAtomProps,
   totalCanBuyByAmount,
   totalToPayByAmount,
-} from './msc'
+} from "./msc";
 
-const INITIAL_FACTORY = 'potato'
+const INITIAL_FACTORY = "potato";
 
 export const initialData = Object.fromEntries(
   Object.keys(FACTORIES).map((factory) => [
@@ -20,19 +20,19 @@ export const initialData = Object.fromEntries(
       isAutomated: false,
       isUnlocked: factory === INITIAL_FACTORY,
     },
-  ]),
-)
+  ])
+);
 
-export const factoriesAtom = atomWithStorage('factories', initialData)
+export const factoriesAtom = atomWithStorage("factories", initialData);
 
 export const useFactory = (factory: FactoryType) => {
-  const factories = useAtomValue(factoriesAtom)
+  const factories = useAtomValue(factoriesAtom);
 
   return {
     ...factories[factory],
     ...FACTORIES[factory as FactoryType],
-  }
-}
+  };
+};
 
 /**
  * Get a factory from the store
@@ -40,12 +40,10 @@ export const useFactory = (factory: FactoryType) => {
  * @param factory - The factory to get
  * @returns The factory
  */
-export const getFactory = (factory: FactoryType) => {
-  return {
-    ...store.get(factoriesAtom)[factory],
-    ...FACTORIES[factory as FactoryType],
-  }
-}
+export const getFactory = (factory: FactoryType) => ({
+  ...store.get(factoriesAtom)[factory],
+  ...FACTORIES[factory as FactoryType],
+});
 
 /**
  * Set the amount of a factory
@@ -54,14 +52,16 @@ export const getFactory = (factory: FactoryType) => {
  */
 export const setAmountBySelectedAmount = (
   factory: FactoryType,
-  amount: MscAtomProps['amountToBuy'],
+  amount: MscAtomProps["amountToBuy"]
 ) => {
-  const amountToPay = totalToPayByAmount(factory, amount)
-  const amountToBuy = totalCanBuyByAmount(factory, amount)
+  const amountToPay = totalToPayByAmount(factory, amount);
+  const amountToBuy = totalCanBuyByAmount(factory, amount);
 
-  const canBuy = hasMoneyToBuy(amountToPay)
+  const canBuy = hasMoneyToBuy(amountToPay);
 
-  if (!canBuy) return
+  if (!canBuy) {
+    return;
+  }
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
@@ -69,10 +69,10 @@ export const setAmountBySelectedAmount = (
       ...prev[factory],
       amount: prev[factory].amount + amountToBuy,
     },
-  }))
+  }));
 
-  decreaseMoney(amountToPay)
-}
+  decreaseMoney(amountToPay);
+};
 
 /**
  * Start producing a factory
@@ -80,9 +80,11 @@ export const setAmountBySelectedAmount = (
  * @param factory - The factory to start producing
  */
 export const startProducing = (factory: FactoryType) => {
-  const { isAutomated, isProducing, isUnlocked } = getFactory(factory)
+  const { isAutomated, isProducing, isUnlocked } = getFactory(factory);
 
-  if (isProducing || isAutomated || !isUnlocked) return
+  if (isProducing || isAutomated || !isUnlocked) {
+    return;
+  }
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
@@ -90,8 +92,8 @@ export const startProducing = (factory: FactoryType) => {
       ...prev[factory],
       isProducing: true,
     },
-  }))
-}
+  }));
+};
 
 /**
  * Stop producing a factory
@@ -105,10 +107,10 @@ export const stopProducing = (factory: FactoryType) => {
       ...prev[factory],
       isProducing: false,
     },
-  }))
+  }));
 
-  increaseMoney(factory)
-}
+  increaseMoney(factory);
+};
 
 /**
  * Enable automation for a factory
@@ -116,11 +118,13 @@ export const stopProducing = (factory: FactoryType) => {
  * @param factory - The factory to enable automation for
  */
 export const autoFactory = (factory: FactoryType) => {
-  const { isUnlocked, automatedCost } = getFactory(factory)
+  const { isUnlocked, automatedCost } = getFactory(factory);
 
-  const canAutomate = hasMoneyToBuy(automatedCost)
+  const canAutomate = hasMoneyToBuy(automatedCost);
 
-  if (!isUnlocked || !canAutomate) return
+  if (!(isUnlocked && canAutomate)) {
+    return;
+  }
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
@@ -128,10 +132,10 @@ export const autoFactory = (factory: FactoryType) => {
       ...prev[factory],
       isAutomated: true,
     },
-  }))
+  }));
 
-  decreaseMoney(automatedCost)
-}
+  decreaseMoney(automatedCost);
+};
 
 /**
  * Upgrade a factory, generating more money per second
@@ -139,11 +143,13 @@ export const autoFactory = (factory: FactoryType) => {
  * @param factory - The factory to upgrade
  */
 export const upgradeFactory = (factory: FactoryType) => {
-  const { isUnlocked, upgradeCost } = getFactory(factory)
+  const { isUnlocked, upgradeCost } = getFactory(factory);
 
-  const canUpgrade = hasMoneyToBuy(upgradeCost)
+  const canUpgrade = hasMoneyToBuy(upgradeCost);
 
-  if (!isUnlocked || !canUpgrade) return
+  if (!(isUnlocked && canUpgrade)) {
+    return;
+  }
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
@@ -151,10 +157,10 @@ export const upgradeFactory = (factory: FactoryType) => {
       ...prev[factory],
       isUpgraded: true,
     },
-  }))
+  }));
 
-  decreaseMoney(upgradeCost)
-}
+  decreaseMoney(upgradeCost);
+};
 
 /**
  * Upgrade a factory to unlock
@@ -162,11 +168,13 @@ export const upgradeFactory = (factory: FactoryType) => {
  * @param factory - The factory to upgrade to unlock
  */
 export const unlockFactory = (factory: FactoryType) => {
-  const { unlockPrice } = getFactory(factory)
+  const { unlockPrice } = getFactory(factory);
 
-  const canUnlock = hasMoneyToBuy(unlockPrice)
+  const canUnlock = hasMoneyToBuy(unlockPrice);
 
-  if (!canUnlock) return
+  if (!canUnlock) {
+    return;
+  }
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
@@ -175,16 +183,16 @@ export const unlockFactory = (factory: FactoryType) => {
       isUnlocked: true,
       amount: 1,
     },
-  }))
+  }));
 
-  decreaseMoney(unlockPrice)
-}
+  decreaseMoney(unlockPrice);
+};
 
 export const getProductionValue = (factory: FactoryType) => {
-  const { productionValue, isUpgraded } = getFactory(factory)
+  const { productionValue, isUpgraded } = getFactory(factory);
 
-  return productionValue * (isUpgraded ? 2 : 1)
-}
+  return productionValue * (isUpgraded ? 2 : 1);
+};
 
 /**
  * Get the total amount of money a factory will earn after producing
@@ -193,8 +201,8 @@ export const getProductionValue = (factory: FactoryType) => {
  * @returns The total amount of money a factory will earn after producing
  */
 export const totalToEarnAfterProduce = (factory: FactoryType) => {
-  const { amount } = getFactory(factory)
-  const productionValue = getProductionValue(factory)
+  const { amount } = getFactory(factory);
+  const productionValue = getProductionValue(factory);
 
-  return amount * productionValue
-}
+  return amount * productionValue;
+};

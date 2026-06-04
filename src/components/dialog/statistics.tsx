@@ -1,77 +1,80 @@
-import { Button } from '@/components/ui/button'
+import { PieChart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogImage,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { FACTORIES, type FactoryType } from '@/content/factories'
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogImage,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
+import { FACTORIES, type FactoryType } from "@/content/factories";
 import {
   moneyEarnedByFactory,
   totalMoneyEarned,
-} from '@/store/atoms/statistics'
-import { DialogDescription } from '@radix-ui/react-dialog'
-import { PieChart } from 'lucide-react'
-import { AnimatedNumber } from '../ui/animated-number'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+} from "@/store/atoms/statistics";
+import { AnimatedNumber } from "../ui/animated-number";
+import { DialogNavTrigger } from "./dialog-nav-trigger";
 
-const StatisticsDialog = () => {
-  return (
-    <Dialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="white" size="icon">
-              <span className="sr-only">Open Statistics</span>
-              <PieChart />
-            </Button>
-          </DialogTrigger>
-        </TooltipTrigger>
-
-        <TooltipContent>Statistics</TooltipContent>
-      </Tooltip>
-
-      <DialogContent>
-        <DialogImage src="/images/msc/statistic.webp" alt="Statistics" />
-
-        <DialogHeader>
-          <DialogTitle>Statistics</DialogTitle>
-
-          <DialogDescription>
-            Check your statistics and see how you are doing.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="grid gap-2">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold capitalize">Total</span>
-
-            <AnimatedNumber value={totalMoneyEarned()} />
-          </div>
-
-          {Object.entries(FACTORIES).map(([key]) => (
-            <div key={key} className="flex items-center justify-between">
-              <span className="font-semibold capitalize">{key}</span>
-
-              <AnimatedNumber
-                value={moneyEarnedByFactory(key as FactoryType)}
-              />
-            </div>
-          ))}
-        </div>
-
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button size="xl">Close Statistics</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
+interface StatisticsDialogProps {
+  variant?: "bottom" | "header";
 }
 
-export default StatisticsDialog
+export const StatisticsDialog = (props: StatisticsDialogProps) => {
+  const { variant = "header" } = props;
+
+  return (
+    <ResponsiveDialog>
+      <DialogNavTrigger
+        icon={PieChart}
+        label="Statistics"
+        value="statistics"
+        variant={variant}
+      />
+
+      <ResponsiveDialogContent>
+        <ResponsiveDialogImage
+          alt="Statistics"
+          src="/images/msc/statistic.webp"
+        />
+
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Statistics</ResponsiveDialogTitle>
+
+          <ResponsiveDialogDescription>
+            Check your statistics and see how you are doing.
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+
+        <ResponsiveDialogBody>
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold capitalize">Total</span>
+
+              <AnimatedNumber value={totalMoneyEarned()} />
+            </div>
+
+            {Object.entries(FACTORIES).map(([key]) => (
+              <div className="flex items-center justify-between" key={key}>
+                <span className="font-semibold capitalize">{key}</span>
+
+                <AnimatedNumber
+                  value={moneyEarnedByFactory(key as FactoryType)}
+                />
+              </div>
+            ))}
+          </div>
+        </ResponsiveDialogBody>
+
+        <ResponsiveDialogFooter>
+          <ResponsiveDialogClose asChild>
+            <Button size="xl">Close Statistics</Button>
+          </ResponsiveDialogClose>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
+  );
+};

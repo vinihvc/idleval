@@ -1,39 +1,39 @@
-export type FactoryType = keyof typeof FACTORIES
+export type FactoryType = keyof typeof FACTORIES;
 
 export const FACTORIES = {
   potato: {
-    name: 'Potato',
-    description: 'Produces potatoes to feed your people.',
+    name: "Potato",
+    description: "Produces potatoes to feed your people.",
     productionTime: 2,
     productionValue: 25,
     buyCost: 75,
-    automatedCost: 7_500,
+    automatedCost: 7500,
     upgradeCost: 30_000,
     unlockPrice: 0,
   },
   peasant: {
-    name: 'Peasant',
-    description: 'Peasant to agriculture and farming.',
+    name: "Peasant",
+    description: "Peasant to agriculture and farming.",
     productionTime: 5,
     productionValue: 200,
-    buyCost: 1_125,
+    buyCost: 1125,
     automatedCost: 112_500,
     upgradeCost: 450_000,
     unlockPrice: 11_250,
   },
   knight: {
-    name: 'Knight',
-    description: 'Knight for protection and against invaders.',
+    name: "Knight",
+    description: "Knight for protection and against invaders.",
     productionTime: 12,
-    productionValue: 1_600,
+    productionValue: 1600,
     buyCost: 16_875,
     automatedCost: 1_687_500,
     upgradeCost: 6_750_000,
     unlockPrice: 168_750,
   },
   archer: {
-    name: 'Archer',
-    description: 'Archer for scouting and and long range attacks.',
+    name: "Archer",
+    description: "Archer for scouting and and long range attacks.",
     productionTime: 25,
     productionValue: 12_800,
     buyCost: 253_125,
@@ -42,8 +42,8 @@ export const FACTORIES = {
     unlockPrice: 2_531_250,
   },
   engineer: {
-    name: 'Engineer',
-    description: 'Engineer for repairing and researching new technologies.',
+    name: "Engineer",
+    description: "Engineer for repairing and researching new technologies.",
     productionTime: 50,
     productionValue: 102_400,
     buyCost: 3_796_875,
@@ -52,8 +52,8 @@ export const FACTORIES = {
     unlockPrice: 37_968_750,
   },
   mage: {
-    name: 'Mage',
-    description: 'Mage for generate respect and power for the kingdom.',
+    name: "Mage",
+    description: "Mage for generate respect and power for the kingdom.",
     productionTime: 100,
     productionValue: 819_200,
     buyCost: 56_953_125,
@@ -61,4 +61,4 @@ export const FACTORIES = {
     upgradeCost: 22_781_250_000,
     unlockPrice: 569_531_250,
   },
-}
+};

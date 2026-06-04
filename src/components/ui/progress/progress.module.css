@@ -1,35 +1,35 @@
 @keyframes progress-fill {
-	from {
-		width: 0%;
-	}
-	to {
-		width: 100%;
-	}
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 .fill {
-	animation-name: progress-fill;
-	animation-fill-mode: forwards;
-	animation-timing-function: linear;
-	animation-direction: normal;
-	animation-play-state: running;
-	animation-iteration-count: infinite;
+  animation-name: progress-fill;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
 }
 
 @keyframes progress-clip {
-	from {
-		clip-path: inset(0 0 0 0);
-	}
-	to {
-		clip-path: inset(0 0 0 100%);
-	}
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 100%);
+  }
 }
 
 .clip {
-	animation-name: progress-clip;
-	animation-fill-mode: forwards;
-	animation-timing-function: linear;
-	animation-direction: normal;
-	animation-iteration-count: infinite;
-	animation-play-state: running;
+  animation-name: progress-clip;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
 }

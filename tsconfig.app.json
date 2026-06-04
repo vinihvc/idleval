@@ -21,9 +21,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    
-    /* Paths */
-    "baseUrl": ".",
+
+    /* Paths (relative to this config file in TS 6+) */
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -1,52 +1,55 @@
 {
-	"name": "idleval",
-	"private": true,
-	"version": "2.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc -b && vite build",
-		"preview": "vite preview",
-		"check": "biome check .",
-		"check:fix": "biome check src --write",
-		"lint": "biome lint .",
-		"lint:fix": "biome lint src --write ",
-		"format": "biome format .",
-		"format:fix": "biome format src --write",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@number-flow/react": "^0.5.8",
-		"@radix-ui/react-dialog": "^1.1.6",
-		"@radix-ui/react-progress": "^1.1.2",
-		"@radix-ui/react-scroll-area": "^1.2.3",
-		"@radix-ui/react-slot": "^1.1.2",
-		"@radix-ui/react-switch": "^1.1.3",
-		"@radix-ui/react-tooltip": "^1.1.8",
-		"@tailwindcss/vite": "^4.0.17",
-		"@unpic/react": "^1.0.1",
-		"clsx": "^2.1.1",
-		"jotai": "^2.12.2",
-		"lucide-react": "^0.486.0",
-		"react": "^19.1.0",
-		"react-dom": "^19.1.0",
-		"tailwind-merge": "^3.1.0",
-		"tailwind-variants": "^1.0.0",
-		"use-sound": "^5.0.0",
-		"vaul": "^1.1.2"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@tailwindcss/postcss": "^4.0.17",
-		"@types/node": "^22.13.14",
-		"@types/react": "^19.0.12",
-		"@types/react-dom": "^19.0.4",
-		"@vitejs/plugin-react-swc": "^3.8.1",
-		"postcss": "^8.5.3",
-		"tailwindcss": "^4.0.17",
-		"tailwindcss-animate": "^1.0.7",
-		"tw-animate-css": "^1.2.5",
-		"typescript": "^5.8.2",
-		"vite": "^6.2.4"
-	}
+  "dependencies": {
+    "@ark-ui/react": "^5.37.0",
+    "@number-flow/react": "^0.6.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "@unpic/react": "^1.0.2",
+    "clsx": "^2.1.1",
+    "jotai": "^2.20.0",
+    "lucide-react": "^1.17.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tailwind-merge": "^3.6.0",
+    "tailwind-variants": "^3.2.2",
+    "use-sound": "^5.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.16",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "lint-staged": "^17.0.7",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "^6.0.3",
+    "ultracite": "7.8.1",
+    "vite": "^8.0.16"
+  },
+  "name": "idleval",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "check": "ultracite check",
+    "check:fix": "biome check src --write",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint src --write ",
+    "format": "biome format .",
+    "format:fix": "biome format src --write",
+    "typecheck": "tsc --noEmit",
+    "fix": "ultracite fix"
+  },
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.5.1",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "pnpm dlx ultracite fix"
+    ]
+  }
 }

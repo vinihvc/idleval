@@ -1,23 +1,23 @@
-import { FACTORIES, type FactoryType } from '@/content/factories'
-import { useAtomValue } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
-import { store } from '..'
-import { getFactory, getProductionValue } from './factories'
+import { useAtomValue } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { FACTORIES, type FactoryType } from "@/content/factories";
+import { store } from "..";
+import { getFactory, getProductionValue } from "./factories";
 
 const initialStatistics = Object.fromEntries(
   Object.keys(FACTORIES).map((factory) => [
     factory,
     { quantity: 0, moneySpent: 0, moneyEarned: 0 },
-  ]),
-)
+  ])
+);
 
-export const statisticsAtom = atomWithStorage('statistics', {
+export const statisticsAtom = atomWithStorage("statistics", {
   moneyEarned: 0,
   moneySpent: 0,
   factories: initialStatistics,
-})
+});
 
-export const useStatistics = () => useAtomValue(statisticsAtom)
+export const useStatistics = () => useAtomValue(statisticsAtom);
 
 /**
  * Set the statistics for a factory
@@ -25,8 +25,8 @@ export const useStatistics = () => useAtomValue(statisticsAtom)
  * @param factory - The factory to set the statistics for
  */
 export const setStatistics = (factory: FactoryType) => {
-  const { amount } = getFactory(factory)
-  const productionValue = getProductionValue(factory)
+  const { amount } = getFactory(factory);
+  const productionValue = getProductionValue(factory);
 
   store.set(statisticsAtom, (prev) => ({
     ...prev,
@@ -39,8 +39,8 @@ export const setStatistics = (factory: FactoryType) => {
           prev.factories[factory].moneyEarned + amount * productionValue,
       },
     },
-  }))
-}
+  }));
+};
 
 /**
  * Get the total money earned
@@ -48,10 +48,10 @@ export const setStatistics = (factory: FactoryType) => {
  * @returns The total money earned
  */
 export const totalMoneyEarned = () => {
-  const { moneyEarned } = store.get(statisticsAtom)
+  const { moneyEarned } = store.get(statisticsAtom);
 
-  return moneyEarned
-}
+  return moneyEarned;
+};
 
 /**
  * Get the total money spent
@@ -59,7 +59,7 @@ export const totalMoneyEarned = () => {
  * @returns The total money spent
  */
 export const moneyEarnedByFactory = (factory: FactoryType) => {
-  const { factories } = store.get(statisticsAtom)
+  const { factories } = store.get(statisticsAtom);
 
-  return factories[factory].moneyEarned
-}
+  return factories[factory].moneyEarned;
+};

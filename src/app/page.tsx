@@ -1,25 +1,25 @@
-import { TailwindIndicator } from '@/components/debug/tailwind-indicator'
-import { Background } from '@/components/layout/background'
-import { Footer } from '@/components/layout/footer'
-import { Game } from '@/components/layout/game'
-import { Header } from '@/components/layout/header'
-import { Navigation } from '@/components/layout/navigation'
-import { FactoryCard } from '@/components/ui/factory-card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { IS_DEV } from '@/config/envs'
-import { FACTORIES, type FactoryType } from '@/content/factories'
-import { useContextMenu } from '@/hooks/use-context-menu'
-import { cn } from '@/lib/cn'
-import { Providers } from './providers'
+import { TailwindIndicator } from "@/components/debug/tailwind-indicator";
+import { Background } from "@/components/layout/background";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { Footer } from "@/components/layout/footer";
+import { Game } from "@/components/layout/game";
+import { Header } from "@/components/layout/header";
+import { FactoryCard } from "@/components/ui/factory-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FACTORIES, type FactoryType } from "@/content/factories";
+import { useContextMenu } from "@/hooks/use-context-menu";
+import { cn } from "@/lib/cn";
+import { IS_DEV } from "@/lib/envs";
+import { Providers } from "./providers";
 
 export const HomePage = () => {
-  useContextMenu()
+  useContextMenu();
 
   return (
     <Providers>
       <Background />
 
-      <Game className={cn({ 'select-none': !IS_DEV })}>
+      <Game className={cn({ "select-none": !IS_DEV })}>
         <Header />
 
         <ScrollArea className="flex-1">
@@ -33,18 +33,9 @@ export const HomePage = () => {
 
       <Footer />
 
-      <Navigation
-        className={cn(
-          'fixed inset-x-0 bottom-0',
-          'h-14 w-full',
-          'border-background/20 border-t',
-          'bg-foreground/80 backdrop-blur-lg',
-          'px-2 sm:hidden',
-          '[&>button]:size-full [&>button]:hover:bg-foreground/90 [&>button]:active:bg-foreground/90',
-        )}
-      />
+      <BottomNavigation />
 
       <TailwindIndicator />
     </Providers>
-  )
-}
+  );
+};

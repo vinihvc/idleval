@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 /**
  * Returns a stateful value, and a function to update it
@@ -7,46 +7,48 @@ import React from 'react'
  */
 export const useLocalStorage = <T>(
   key: string,
-  defaultValue: T,
+  defaultValue: T
 ): [T, (value: T) => void] => {
-  const [value, setValue] = React.useState(defaultValue)
+  const [value, setValue] = React.useState(defaultValue);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   React.useEffect(() => {
-    const item = localStorage.getItem(key)
+    const item = localStorage.getItem(key);
 
     if (!item) {
-      localStorage.setItem(key, JSON.stringify(defaultValue))
+      localStorage.setItem(key, JSON.stringify(defaultValue));
     }
 
-    setValue(item ? JSON.parse(item) : defaultValue)
+    setValue(item ? JSON.parse(item) : defaultValue);
 
     function handler(e: StorageEvent) {
-      if (e.key !== key) return
+      if (e.key !== key) {
+        return;
+      }
 
-      const lsi = localStorage.getItem(key)
-      setValue(JSON.parse(lsi ?? ''))
+      const lsi = localStorage.getItem(key);
+      setValue(JSON.parse(lsi ?? ""));
     }
 
-    window.addEventListener('storage', handler)
+    window.addEventListener("storage", handler);
 
     return () => {
-      window.removeEventListener('storage', handler)
-    }
-  }, [])
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
 
   const setValueWrap = (value: T) => {
     try {
-      setValue(value)
+      setValue(value);
 
-      localStorage.setItem(key, JSON.stringify(value))
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new StorageEvent('storage', { key }))
+      localStorage.setItem(key, JSON.stringify(value));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new StorageEvent("storage", { key }));
       }
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
 
-  return [value, setValueWrap]
-}
+  return [value, setValueWrap];
+};

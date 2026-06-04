@@ -1,1 +1,1 @@
-export { default } from './upgrades'
+export { UpgradesDialog } from "./upgrades";

@@ -9,8 +9,8 @@ Step into a medieval world where you build, expand, and conquer. Recruit heroes,
 ## Getting Started
 
 1. Clone the repository
-2. Install dependencies with `bun i`
-3. Start the development server with `bun dev`
+2. Install dependencies with `pnpm install`
+3. Start the development server with `pnpm dev`
 4. Open your browser and navigate to `http://localhost:5173`
 
 ## Technologies
@@ -31,11 +31,11 @@ git clone https://github.com/vinihvc/idleval
 ### Installing dependencies
 
 ```bash
-bun i
+pnpm install
 ```
 
 ### Running Locally
 
 ```bash
-bun dev
+pnpm dev
 ```

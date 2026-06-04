@@ -1,32 +1,59 @@
-import { cn } from '@/lib/cn'
-import * as RSwitch from '@radix-ui/react-switch'
-import type React from 'react'
+"use client";
 
-export const Switch = (props: React.ComponentProps<typeof RSwitch.Root>) => {
-  const { className, ...rest } = props
+import { Switch as ArkSwitch, useSwitchContext } from "@ark-ui/react/switch";
+import type React from "react";
+import { cn } from "@/lib/cn";
+
+export const useSwitch = useSwitchContext;
+
+export const Switch = (props: React.ComponentProps<typeof ArkSwitch.Root>) => {
+  const { className, tabIndex, ...rest } = props;
 
   return (
-    <RSwitch.Root
-      data-slot="switch"
+    <ArkSwitch.Root
       className={cn(
-        'peer h-[1.15rem] w-8 shrink-0',
-        'inline-flex items-center',
-        'rounded-full border border-transparent',
-        'shadow-xs transition-all',
-        'data-[state=checked]:bg-foreground data-[state=unchecked]:bg-foreground/20',
-        'outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        className,
+        "group/switch",
+        "[--thumb-size:--spacing(5)]",
+        "h-[calc(var(--thumb-size)+2px)] w-[calc(var(--thumb-size)*2-2px)]",
+        "p-px",
+        "inline-flex shrink-0 items-center",
+        "rounded-full border border-transparent",
+        "transition-all",
+        "outline-none [[data-focus-visible],[data-invalid]]:ring-[3px]",
+        "data-focus-visible:border-primary data-focus-visible:ring-ring/32",
+        "data-invalid:border-destructive data-invalid:ring-destructive/24",
+        "dark:data-invalid:border-destructive-foreground dark:data-invalid:ring-destructive-foreground/20",
+        "data-[state=checked]:bg-foreground",
+        "data-[state=unchecked]:bg-foreground/10",
+        "data-disabled:pointer-events-none data-disabled:opacity-64",
+        "motion-reduce:transition-none!",
+        className
       )}
+      data-slot="switch"
       {...rest}
     >
-      <RSwitch.Thumb
-        data-slot="switch-thumb"
-        className={cn(
-          'pointer-events-none block size-4 rounded-full bg-background ring-0 transition-transform',
-          'data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0',
-        )}
-      />
-    </RSwitch.Root>
-  )
-}
+      <ArkSwitch.Control
+        className="flex size-full items-center"
+        data-slot="switch-control"
+      >
+        <ArkSwitch.Thumb
+          className={cn(
+            "block",
+            "aspect-square h-full w-auto",
+            "bg-background",
+            "rounded-full shadow-sm/5 ring-0",
+            "pointer-events-none",
+            "transition-transform",
+            "data-[state=checked]:translate-x-[calc(var(--thumb-size)-4px)]",
+            "dark:data-[state=checked]:bg-primary-foreground",
+            "data-[state=unchecked]:translate-x-0",
+            "motion-reduce:transition-none!"
+          )}
+          data-slot="switch-thumb"
+        />
+      </ArkSwitch.Control>
+
+      <ArkSwitch.HiddenInput tabIndex={tabIndex} />
+    </ArkSwitch.Root>
+  );
+};

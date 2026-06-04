@@ -1,18 +1,20 @@
-import { useMediaQuery } from '@/hooks/use-media-query'
-import { cn } from '@/lib/cn'
-import React from 'react'
+import React from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogImage,
   DialogTitle,
   DialogTrigger,
-} from './dialog'
+} from "./dialog";
 import {
   Drawer,
+  DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
@@ -20,121 +22,142 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from './drawer'
+} from "./drawer";
 
 interface RootResponsiveDialogProps extends React.PropsWithChildren {
-  /**
-   * If `true`, the component will be rendered as a child element
-   */
-  open?: boolean
-  /**
-   * The callback function to handle the open state change
-   */
-  onOpenChange?: (open: boolean) => void
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }
 
 interface ResponsiveDialogProps extends React.PropsWithChildren {
-  /**
-   * The class name to apply to the component
-   */
-  className?: string
-  /**
-   * If `true`, the component will be rendered as a child element
-   */
-  asChild?: true
+  asChild?: true;
+  className?: string;
 }
 
-const ResponsiveDialogContext = React.createContext<{ isDesktop: boolean }>({
-  isDesktop: false,
-})
+const ResponsiveDialogContext = React.createContext<{
+  isDesktop: boolean;
+} | null>(null);
 
-const useResponsiveDialogContext = () => {
-  const context = React.useContext(ResponsiveDialogContext)
+export const useResponsiveDialog = () => {
+  const context = React.useContext(ResponsiveDialogContext);
 
   if (!context) {
     throw new Error(
-      'ResponsiveDialog components cannot be rendered outside the ResponsiveDialog Context',
-    )
+      "ResponsiveDialog components cannot be rendered outside the ResponsiveDialog context"
+    );
   }
 
-  return context
-}
+  return context;
+};
 
 export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
-  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const { onOpenChange, ...rest } = props;
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const Component = isDesktop ? Dialog : Drawer;
 
-  const Component = isDesktop ? Dialog : Drawer
+  const handleOpenChange = onOpenChange
+    ? (details: { open: boolean }) => {
+        onOpenChange(details.open);
+      }
+    : undefined;
 
   return (
     <ResponsiveDialogContext.Provider value={{ isDesktop }}>
-      <Component {...props} {...(!isDesktop && { autoFocus: true })} />
+      <Component onOpenChange={handleOpenChange} {...rest} />
     </ResponsiveDialogContext.Provider>
-  )
-}
+  );
+};
 
 export const ResponsiveDialogTrigger = (props: ResponsiveDialogProps) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogTrigger : DrawerTrigger
+  const Component = isDesktop ? DialogTrigger : DrawerTrigger;
 
-  return <Component {...props} />
-}
+  return <Component {...props} />;
+};
 
 export const ResponsiveDialogClose = (props: ResponsiveDialogProps) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogClose : DrawerClose
+  const Component = isDesktop ? DialogClose : DrawerClose;
 
-  return <Component {...props} />
-}
+  return <Component {...props} />;
+};
 
 interface ResponsiveDialogContentProps
   extends React.ComponentProps<typeof DialogContent> {}
 
 export const ResponsiveDialogContent = (
-  props: ResponsiveDialogContentProps,
+  props: ResponsiveDialogContentProps
 ) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogContent : DrawerContent
+  if (isDesktop) {
+    return <DialogContent {...props} />;
+  }
 
-  return <Component {...props} />
-}
+  const {
+    showCloseButton: _showCloseButton,
+    bottomStickOnMobile: _bottomStickOnMobile,
+    size: _size,
+    draggable: _draggable,
+    ...drawerProps
+  } = props;
+
+  return <DrawerContent {...drawerProps} />;
+};
+
+export const ResponsiveDialogImage = (
+  props: React.ComponentProps<typeof DialogImage>
+) => {
+  const { isDesktop } = useResponsiveDialog();
+
+  if (!isDesktop) {
+    return null;
+  }
+
+  return <DialogImage {...props} />;
+};
 
 export const ResponsiveDialogDescription = (props: ResponsiveDialogProps) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogDescription : DrawerDescription
+  const Component = isDesktop ? DialogDescription : DrawerDescription;
 
-  return <Component {...props} />
-}
+  return <Component {...props} />;
+};
 
 export const ResponsiveDialogHeader = (props: ResponsiveDialogProps) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogHeader : DrawerHeader
+  const Component = isDesktop ? DialogHeader : DrawerHeader;
 
-  return <Component {...props} />
-}
+  return <Component {...props} />;
+};
 
 export const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogTitle : DrawerTitle
+  const Component = isDesktop ? DialogTitle : DrawerTitle;
 
-  return <Component {...props} />
-}
+  return <Component {...props} />;
+};
 
 export const ResponsiveDialogBody = (props: ResponsiveDialogProps) => {
-  const { className, ...rest } = props
+  const { isDesktop } = useResponsiveDialog();
+  const { className, ...rest } = props;
 
-  return <div className={cn('px-4 md:px-0', className)} {...rest} />
-}
+  if (isDesktop) {
+    return <DialogBody className={className} {...rest} />;
+  }
+
+  return <DrawerBody className={className} {...rest} />;
+};
 
 export const ResponsiveDialogFooter = (props: ResponsiveDialogProps) => {
-  const { isDesktop } = useResponsiveDialogContext()
+  const { isDesktop } = useResponsiveDialog();
 
-  const Component = isDesktop ? DialogFooter : DrawerFooter
+  const Component = isDesktop ? DialogFooter : DrawerFooter;
 
-  return <Component {...props} />
-}
+  return <Component {...props} />;
+};

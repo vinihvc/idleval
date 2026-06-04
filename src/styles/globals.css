@@ -2,41 +2,77 @@
 @import "tw-animate-css";
 
 :root {
-	--background: oklch(1 0 0);
-
-	--foreground: oklch(0.145 0 0);
-
-	--border: oklch(0.922 0 0);
-
-	--ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --border: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+  --secondary: oklch(0.92 0 0);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(1 0 0);
+  --input: oklch(0.922 0 0);
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
 }
 
 @theme inline {
-	--font-sans: "Radio Canada", ui-sans-serif, system-ui, sans-serif,
-		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Radio Canada", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-	--color-background: var(--background);
-
-	--color-foreground: var(--foreground);
-
-	--color-border: var(--border);
-
-	--color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 }
 
 @layer base {
-	* {
-		@apply border-border outline-ring/50;
-	}
-	html {
-		color-scheme: dark;
-	}
+  ::selection {
+    @apply bg-primary/80 text-primary-foreground;
+  }
 
-	body {
-		@apply bg-background text-foreground overflow-y-scroll antialiased;
-	}
+  * {
+    @apply border-border outline-ring/50 ring-ring;
+  }
 
-	#root {
-		@apply relative h-full min-h-dvh flex flex-col items-center justify-center sm:px-5 overflow-hidden;
-	}
+  html {
+    color-scheme: dark;
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-background min-h-svh text-foreground flex flex-col scrollbar-thin overflow-y-scroll scrollbar-track-transparent scrollbar-thumb-foreground/20 font-sans;
+  }
+
+  main {
+    @apply flex-1 flex flex-col;
+  }
+
+  #root {
+    @apply relative h-full min-h-svh flex flex-col items-center justify-center sm:px-3 overflow-hidden;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }

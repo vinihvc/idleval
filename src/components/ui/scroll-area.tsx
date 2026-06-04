@@ -1,60 +1,99 @@
-import * as RScrollArea from '@radix-ui/react-scroll-area'
-import type React from 'react'
+"use client";
 
-import { cn } from '@/lib/cn'
+import {
+  ScrollArea as ArkScrollArea,
+  useScrollAreaContext,
+} from "@ark-ui/react/scroll-area";
+import type React from "react";
+import { tv, type VariantProps } from "tailwind-variants";
+import { cn } from "@/lib/cn";
 
-export const ScrollArea = ({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof RScrollArea.Root>) => {
+export const useScrollArea = useScrollAreaContext;
+
+const scrollAreaVariants = tv({
+  base: [
+    "h-full",
+    "rounded-[inherit]",
+    "outline-none",
+    "scrollbar-none",
+    "outline-none",
+  ],
+  variants: {
+    scrollFade: {
+      true: [
+        "mask-t-from-[calc(100%-var(--fade-size))]",
+        "mask-b-from-[calc(100%-var(--fade-size))]",
+        "data-at-top:mask-t-from-100%",
+        "data-at-bottom:mask-b-from-100%",
+        "transition-shadow",
+        "motion-reduce:transition-none!",
+      ],
+    },
+  },
+  defaultVariants: {
+    scrollFade: false,
+  },
+});
+
+interface ScrollAreaProps
+  extends React.ComponentProps<typeof ArkScrollArea.Root>,
+    VariantProps<typeof scrollAreaVariants> {}
+
+export const ScrollArea = (props: ScrollAreaProps) => {
+  const { scrollFade = false, className, children, ...rest } = props;
+
   return (
-    <RScrollArea.Root
+    <ArkScrollArea.Root
+      className={cn("size-full min-h-0 [--fade-size:1.5rem]", className)}
       data-slot="scroll-area"
-      className={cn('relative flex-1 overflow-auto', className)}
-      {...props}
+      {...rest}
     >
-      <RScrollArea.Viewport
+      <ArkScrollArea.Viewport
+        className={cn(scrollAreaVariants({ scrollFade }))}
         data-slot="scroll-area-viewport"
-        className="size-full rounded-[inherit] outline-none transition-[color,box-shadow] focus-visible:outline-1 focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
-        {children}
-      </RScrollArea.Viewport>
+        <ArkScrollArea.Content data-slot="scroll-area-content">
+          {children}
+        </ArkScrollArea.Content>
+      </ArkScrollArea.Viewport>
 
-      <ScrollBar />
+      <ScrollAreaScrollbar orientation="vertical" />
+      <ScrollAreaScrollbar orientation="horizontal" />
 
-      <RScrollArea.Corner />
-    </RScrollArea.Root>
-  )
-}
+      <ArkScrollArea.Corner data-slot="scroll-area-corner" />
+    </ArkScrollArea.Root>
+  );
+};
 
-ScrollArea.displayName = RScrollArea.Root.displayName
+export const ScrollAreaScrollbar = (
+  props: React.ComponentProps<typeof ArkScrollArea.Scrollbar>
+) => {
+  const { orientation, className, ...rest } = props;
 
-export const ScrollBar = ({
-  className,
-  orientation = 'vertical',
-  ...props
-}: React.ComponentProps<typeof RScrollArea.ScrollAreaScrollbar>) => {
   return (
-    <RScrollArea.ScrollAreaScrollbar
+    <ArkScrollArea.Scrollbar
+      className={cn(
+        "flex",
+        "m-1",
+        "bg-transparent",
+        "opacity-0 transition-opacity delay-300",
+        "data-[orientation=vertical]:w-1.5",
+        "data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:flex-col",
+        "data-hover:opacity-100 data-hover:delay-0 data-hover:duration-100",
+        "data-scrolling:opacity-100 data-scrolling:delay-0 data-scrolling:duration-100",
+        "data-[orientation=vertical]:in-[[data-slot=scroll-area]:not([data-overflow-y])]:hidden",
+        "data-[orientation=horizontal]:in-[[data-slot=scroll-area]:not([data-overflow-x])]:hidden",
+        "motion-reduce:transition-none!",
+        className
+      )}
       data-slot="scroll-area-scrollbar"
       orientation={orientation}
-      className={cn(
-        'mr-1 flex touch-none select-none p-px transition-colors',
-        orientation === 'vertical' &&
-          'h-full w-1.5 border-l border-l-transparent',
-        orientation === 'horizontal' &&
-          'h-1.5 flex-col border-t border-t-transparent',
-        className,
-      )}
-      {...props}
+      {...rest}
     >
-      <RScrollArea.ScrollAreaThumb
+      <ArkScrollArea.Thumb
+        className="relative flex-1 rounded-full bg-foreground/20"
         data-slot="scroll-area-thumb"
-        className="relative flex-1 rounded-full bg-foreground"
       />
-    </RScrollArea.ScrollAreaScrollbar>
-  )
-}
-
-ScrollBar.displayName = RScrollArea.ScrollAreaScrollbar.displayName
+    </ArkScrollArea.Scrollbar>
+  );
+};

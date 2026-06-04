@@ -1,83 +1,84 @@
-import { Button } from '@/components/ui/button'
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogImage,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Switch } from '@/components/ui/switch'
-import { toggleMusic, toggleSfx, useSettings } from '@/store/atoms/settings'
-import { Menu } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogImage,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
+import { Switch } from "@/components/ui/switch";
+import { toggleMusic, toggleSfx, useSettings } from "@/store/atoms/settings";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-const SettingDialog = () => {
-  const settings = useSettings()
+export const SettingDialog = () => {
+  const settings = useSettings();
 
   return (
-    <Dialog>
+    <ResponsiveDialog>
       <Tooltip>
         <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="white" size="icon">
+          <ResponsiveDialogTrigger asChild>
+            <Button size="icon" variant="white">
               <span className="sr-only">Open Settings</span>
               <Menu />
             </Button>
-          </DialogTrigger>
+          </ResponsiveDialogTrigger>
         </TooltipTrigger>
 
         <TooltipContent>Settings</TooltipContent>
       </Tooltip>
 
-      <DialogContent>
-        <DialogImage src="/images/msc/setting.webp" alt="Settings" />
+      <ResponsiveDialogContent>
+        <ResponsiveDialogImage alt="Settings" src="/images/msc/setting.webp" />
 
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Settings</ResponsiveDialogTitle>
 
-          <DialogDescription>
+          <ResponsiveDialogDescription>
             Change the game settings to fit your preferences.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
-        <div className="grid gap-5">
-          <div className="flex items-center justify-between">
-            <label htmlFor="toggle-music" className="font-semibold">
-              Music
-            </label>
+        <ResponsiveDialogBody>
+          <div className="grid gap-5">
+            <div className="flex items-center justify-between">
+              <label className="font-semibold" htmlFor="toggle-music">
+                Music
+              </label>
 
-            <Switch
-              id="toggle-music"
-              checked={settings.music}
-              onCheckedChange={toggleMusic}
-            />
+              <Switch
+                checked={settings.music}
+                id="toggle-music"
+                onCheckedChange={toggleMusic}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="font-semibold" htmlFor="toggle-sfx">
+                SFX
+              </label>
+
+              <Switch
+                checked={settings.sfx}
+                id="toggle-sfx"
+                onCheckedChange={toggleSfx}
+              />
+            </div>
           </div>
+        </ResponsiveDialogBody>
 
-          <div className="flex items-center justify-between">
-            <label htmlFor="toggle-sfx" className="font-semibold">
-              SFX
-            </label>
-
-            <Switch
-              id="toggle-sfx"
-              checked={settings.sfx}
-              onCheckedChange={toggleSfx}
-            />
-          </div>
-        </div>
-
-        <DialogFooter>
-          <DialogClose asChild>
+        <ResponsiveDialogFooter>
+          <ResponsiveDialogClose asChild>
             <Button size="xl">Close Settings</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-export default SettingDialog
+          </ResponsiveDialogClose>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
+  );
+};

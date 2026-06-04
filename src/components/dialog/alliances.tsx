@@ -1,24 +1,25 @@
-import { Button } from '@/components/ui/button'
-
+import { CircleOff, Handshake } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { CircleOff, Handshake } from 'lucide-react'
-import { DialogImage } from '../ui/dialog'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog'
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogImage,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
+import { DialogNavTrigger } from "./dialog-nav-trigger";
 
-const AllianceDialog = () => {
+interface AllianceDialogProps {
+  variant?: "bottom" | "header";
+}
+
+export const AllianceDialog = (props: AllianceDialogProps) => {
+  const { variant = "header" } = props;
+
   // const { count } = useAlliance()
   // const { money } = useWallet()
 
@@ -31,38 +32,36 @@ const AllianceDialog = () => {
   // }, [money])
 
   return (
-    <Dialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="white" size="icon">
-              <span className="sr-only">Open Alliances</span>
-              <Handshake />
-            </Button>
-          </DialogTrigger>
-        </TooltipTrigger>
+    <ResponsiveDialog>
+      <DialogNavTrigger
+        icon={Handshake}
+        label="Alliances"
+        value="alliances"
+        variant={variant}
+      />
 
-        <TooltipContent>Alliances</TooltipContent>
-      </Tooltip>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogImage
+          alt="Alliances"
+          src="/images/alliances/alliance.webp"
+        />
 
-      <DialogContent>
-        <DialogImage src="/images/alliances/alliance.webp" alt="Alliances" />
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Alliances</ResponsiveDialogTitle>
 
-        <DialogHeader>
-          <DialogTitle>Alliances</DialogTitle>
-
-          <DialogDescription>
+          <ResponsiveDialogDescription>
             Create an alliance with other kingdoms to increase the trade
             partnership between you.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
-        <div className="flex flex-col items-center justify-center gap-2 py-6 font-medium">
-          <CircleOff className="size-8" />
-          <p>There's no alliances available right now.</p>
-        </div>
+        <ResponsiveDialogBody>
+          <div className="flex flex-col items-center justify-center gap-2 py-6 font-medium">
+            <CircleOff className="size-8" />
+            <p>There's no alliances available right now.</p>
+          </div>
 
-        {/* <div className="flex flex-col gap-2 py-6 font-medium">
+          {/* <div className="flex flex-col gap-2 py-6 font-medium">
           <div className="flex items-center justify-between">
             <span className="font-semibold capitalize">Total</span>
 
@@ -84,16 +83,15 @@ const AllianceDialog = () => {
               <AnimatedNumber value={missingMoney} />
             )}
           </div>
-        </div> */}
+          </div> */}
+        </ResponsiveDialogBody>
 
-        <DialogFooter>
-          <DialogClose asChild>
+        <ResponsiveDialogFooter>
+          <ResponsiveDialogClose asChild>
             <Button size="xl">Close Alliances</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-export default AllianceDialog
+          </ResponsiveDialogClose>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
+  );
+};

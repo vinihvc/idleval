@@ -1,116 +1,115 @@
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogImage,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogImage,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 
-const AboutDialog = () => {
-  return (
-    <Dialog>
-      <DialogTrigger className="underline-offset-4 outline-hidden hover:underline focus-visible:underline">
-        About
-      </DialogTrigger>
+export const AboutDialog = () => (
+  <ResponsiveDialog>
+    <ResponsiveDialogTrigger className="underline-offset-4 outline-hidden hover:underline focus-visible:underline">
+      About
+    </ResponsiveDialogTrigger>
 
-      <DialogContent>
-        <DialogImage src="/images/msc/about.webp" alt="About" />
+    <ResponsiveDialogContent>
+      <ResponsiveDialogImage alt="About" src="/images/msc/about.webp" />
 
-        <DialogHeader>
-          <DialogTitle>About this game</DialogTitle>
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>About this game</ResponsiveDialogTitle>
 
-          <DialogDescription>
-            Idleval (Idle + Medieval) is a idle game where you can build your
-            own town, generate resources and upgrade your buildings.
-          </DialogDescription>
-        </DialogHeader>
+        <ResponsiveDialogDescription>
+          Idleval (Idle + Medieval) is a idle game where you can build your own
+          town, generate resources and upgrade your buildings.
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
 
+      <ResponsiveDialogBody>
         <div className="grid gap-2">
           <p className="font-semibold">Tecnologies</p>
 
           <ul className="list-disc pl-4">
             <li>
-              Made with{' '}
+              Made with{" "}
               <a
-                href="https://react.dev/"
                 className="font-medium underline hover:text-blue-600"
-                target="_blank"
+                href="https://react.dev/"
                 rel="noopener noreferrer nofollow"
+                target="_blank"
               >
                 React
               </a>
             </li>
             <li>
-              Styling with{' '}
+              Styling with{" "}
               <a
-                href="https://tailwindcss.com/"
                 className="font-medium underline hover:text-blue-600"
-                target="_blank"
+                href="https://tailwindcss.com/"
                 rel="noopener noreferrer nofollow"
+                target="_blank"
               >
                 Tailwind
-              </a>{' '}
+              </a>{" "}
             </li>
             <li>
-              Components with{' '}
+              Components with{" "}
               <a
-                href="https://www.radix-ui.com/"
                 className="font-medium underline hover:text-blue-600"
-                target="_blank"
+                href="https://shark.vini.one/"
                 rel="noopener noreferrer nofollow"
+                target="_blank"
               >
-                Radix UI
-              </a>{' '}
+                Shark UI
+              </a>{" "}
             </li>
             <li>
-              Icons by{' '}
+              Icons by{" "}
               <a
-                href="https://lucide.dev/"
                 className="font-medium underline hover:text-blue-600"
-                target="_blank"
+                href="https://lucide.dev/"
                 rel="noopener noreferrer nofollow"
+                target="_blank"
               >
                 Lucide
-              </a>{' '}
+              </a>{" "}
             </li>
             <li>
-              State management with{' '}
+              State management with{" "}
               <a
-                href="https://jotai.org/"
                 className="font-medium underline hover:text-blue-600"
-                target="_blank"
+                href="https://jotai.org/"
                 rel="noopener noreferrer nofollow"
+                target="_blank"
               >
                 Jotai
-              </a>{' '}
+              </a>{" "}
             </li>
             <li>
-              Images by{' '}
+              Images by{" "}
               <a
-                href="https://chatgpt.com"
                 className="font-medium underline hover:text-blue-600"
-                target="_blank"
+                href="https://chatgpt.com"
                 rel="noopener noreferrer nofollow"
+                target="_blank"
               >
                 ChatGPT
-              </a>{' '}
+              </a>{" "}
             </li>
           </ul>
         </div>
+      </ResponsiveDialogBody>
 
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button size="xl">Close About</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-export default AboutDialog
+      <ResponsiveDialogFooter>
+        <ResponsiveDialogClose asChild>
+          <Button size="xl">Close About</Button>
+        </ResponsiveDialogClose>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialogContent>
+  </ResponsiveDialog>
+);

@@ -1,1 +1,1 @@
-export * from './factory-card'
+export * from "./factory-card";
