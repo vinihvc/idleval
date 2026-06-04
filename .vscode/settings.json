@@ -1,17 +1,13 @@
 {
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"
   },
-  "tailwindCSS.experimental.classRegex": [
-    ["([\"'`][^\"'`]*.*?[\"'`])", "[\"'`]([^\"'`]*).*?[\"'`]"]
-  ],
-  "editor.formatOnPaste": true,
-  "emmet.showExpandedAbbreviation": "never",
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
-  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "[css]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
