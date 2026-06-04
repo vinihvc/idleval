@@ -1,7 +1,4 @@
 {
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "biomejs.biome",
   "editor.codeActionsOnSave": {

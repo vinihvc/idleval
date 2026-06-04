@@ -21,8 +21,8 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
         aria-label="Game navigation"
         className={cn(
           "border-background/20 bg-foreground/80 backdrop-blur-lg",
-          "[&_[data-slot=bottom-navigation-item]]:border-transparent [&_[data-slot=bottom-navigation-item]]:bg-transparent [&_[data-slot=bottom-navigation-item]]:text-background [&_[data-slot=bottom-navigation-item]]:shadow-none",
-          "[&_[data-slot=bottom-navigation-item]]:hover:bg-transparent [&_[data-slot=bottom-navigation-item]]:aria-selected:text-background"
+          "**:data-[slot=bottom-navigation-item]:border-transparent **:data-[slot=bottom-navigation-item]:bg-transparent **:data-[slot=bottom-navigation-item]:text-background **:data-[slot=bottom-navigation-item]:shadow-none",
+          "**:data-[slot=bottom-navigation-item]:hover:bg-transparent **:data-[slot=bottom-navigation-item]:aria-selected:text-background"
         )}
       >
         <UpgradesDialog variant="bottom" />
