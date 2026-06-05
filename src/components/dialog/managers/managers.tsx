@@ -1,5 +1,4 @@
-import { Briefcase } from "pixelarticons/react";
-import { DialogNavTrigger } from "@/components/dialog/dialog-nav-trigger";
+import type { PropsWithChildren } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,24 +8,15 @@ import {
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORIES, type FactoryType } from "@/content/factories";
+import { FACTORY_TYPES } from "@/content/factories";
 import { ManagersCard } from "./managers.card";
 
-interface ManagersDialogProps {
-  variant?: "bottom" | "header";
-}
-
-export const ManagersDialog = (props: ManagersDialogProps) => {
-  const { variant = "header" } = props;
+export const ManagersDialog = (props: PropsWithChildren) => {
+  const { children } = props;
 
   return (
     <ResponsiveDialog>
-      <DialogNavTrigger
-        icon={Briefcase}
-        label="Managers"
-        value="managers"
-        variant={variant}
-      />
+      {children}
 
       <ResponsiveDialogContent>
         <ResponsiveDialogImage
@@ -38,14 +28,15 @@ export const ManagersDialog = (props: ManagersDialogProps) => {
           <ResponsiveDialogTitle>Managers</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Appoint stewards to keep the works running while you ride afar.
+            Name legendary managers to keep each pillar running while you ride
+            afar.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {Object.entries(FACTORIES).map(([key]) => (
-              <ManagersCard factoryType={key as FactoryType} key={key} />
+            {FACTORY_TYPES.map((factoryType) => (
+              <ManagersCard factoryType={factoryType} key={factoryType} />
             ))}
           </div>
         </ResponsiveDialogBody>

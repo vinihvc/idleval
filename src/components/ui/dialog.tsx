@@ -7,7 +7,9 @@ import { Image } from "@unpic/react";
 import { Close } from "pixelarticons/react";
 import React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
+import { WaxSeal } from "@/components/icons/wax-seal";
 import { Button } from "@/components/ui/button";
+import { FantasyCorner } from "@/components/ui/fantasy/fantasy-corner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/cn";
 
@@ -194,17 +196,31 @@ export const DialogContent = (props: DialogContentProps) => {
           data-slot="dialog-content"
           {...rest}
         >
+          <FantasyCorner position="tl" />
+          <FantasyCorner position="tr" />
+          <FantasyCorner position="bl" />
+          <FantasyCorner position="br" />
+
           {children}
 
           {!!showCloseButton && (
             <DialogClose asChild>
               <Button
                 aria-label="Close"
-                className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 border-2 shadow-lg"
+                className={cn(
+                  "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2",
+                  "size-14",
+                  "rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
+                  "bg-transparent",
+                  "hover:bg-transparent hover:brightness-110",
+                  "focus-visible:brightness-110",
+                  "active:brightness-95"
+                )}
                 size="icon-xl"
-                variant="secondary"
+                variant="ghost"
               >
-                <Close />
+                <WaxSeal className="absolute inset-0 size-full" />
+                <Close className="size-6 drop-shadow-[0_1px_1px_rgba(80,0,0,0.75)]" />
               </Button>
             </DialogClose>
           )}
@@ -261,7 +277,7 @@ export const DialogHeader = (props: DialogHeaderProps) => {
   return (
     <ark.div
       className={cn(
-        "flex flex-col gap-1 text-center sm:mt-14 sm:text-left",
+        "flex flex-col gap-1 text-center sm:mt-12 sm:text-left",
         "p-(--space)",
         "in-[[data-slot=dialog-content]:has([data-slot=dialog-body])]:pb-3",
         className
@@ -316,12 +332,16 @@ export const DialogImage = (props: DialogImageProps) => {
       <Image
         aria-hidden
         className={cn(
-          "pixel-crisp pointer-events-none aspect-square size-20 rounded-full border-2 border-primary/40 bg-muted drop-shadow-lg sm:size-28 sm:border-4",
+          "pixel-crisp object-cover",
+          "aspect-square size-20 sm:size-28",
+          "bg-popover",
+          "rounded-full border-2 border-primary/40 drop-shadow-lg sm:border-4",
+          "pointer-events-none",
           className
         )}
-        height={200}
+        height={112}
         layout="constrained"
-        width={200}
+        width={112}
         {...rest}
       />
     </div>
@@ -335,7 +355,7 @@ export const DialogDescription = (
 
   return (
     <ArkDialog.Description
-      className={cn("text-xl leading-relaxed", className)}
+      className={cn("text-xl", className)}
       data-slot="dialog-description"
       {...rest}
     />
@@ -353,7 +373,7 @@ export const DialogFooter = (props: React.ComponentProps<typeof ark.div>) => {
     <ark.div
       className={cn(
         "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        "sm:rounded-b-[calc(var(--radius-2xl)-1px)]",
+        "sm:rounded-b-[calc(var(--radius-lg)-1px)]",
         "px-(--space) py-4",
         "bg-muted/48",
         "border-t",

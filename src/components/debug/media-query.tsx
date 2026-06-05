@@ -19,7 +19,7 @@ export const MediaQuery = () => {
         alignItems: "center",
         justifyContent: "center",
         borderRadius: "var(--radius-md)",
-        fontSize: "10px",
+        fontSize: "14px",
         fontWeight: "bold",
         color: "var(--background)",
         backgroundColor: "var(--foreground)",

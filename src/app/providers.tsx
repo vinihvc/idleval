@@ -1,9 +1,11 @@
-import { Provider as JotaiProvider } from "jotai";
-import { SoundProvider } from "@/components/ui/sound";
-import { store } from "@/store/store";
+import { OfflineBootstrap } from "@/providers/offline-bootstrap";
+import { SoundProvider } from "@/providers/sound";
+import { StoreProvider } from "@/providers/store";
 
 export const Providers = ({ children }: React.PropsWithChildren) => (
   <SoundProvider>
-    <JotaiProvider store={store}>{children}</JotaiProvider>
+    <StoreProvider>
+      <OfflineBootstrap>{children}</OfflineBootstrap>
+    </StoreProvider>
   </SoundProvider>
 );

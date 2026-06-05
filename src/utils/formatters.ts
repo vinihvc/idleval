@@ -1,86 +1,89 @@
+import type Decimal from "break_infinity.js";
+import { D, INFINITY_THRESHOLD, toDisplayNumber } from "@/utils/decimal";
+
+const buildRepeatedLetterSuffixes = (length: number, startExponent: number) =>
+  Array.from({ length: 26 }, (_, index) => {
+    const letter = String.fromCharCode(65 + index);
+
+    return {
+      value: D(`1e${startExponent + index * 3}`),
+      symbol: letter.repeat(length),
+    };
+  });
+
 const VALUE_RANGE = [
-  { value: 1, symbol: "" },
-  { value: 1e3, symbol: "K" },
-  { value: 1e6, symbol: "M" },
-  { value: 1e9, symbol: "B" },
-  { value: 1e12, symbol: "T" },
-  { value: 1e15, symbol: "AA" },
-  { value: 1e18, symbol: "BB" },
-  { value: 1e21, symbol: "CC" },
-  { value: 1e24, symbol: "DD" },
-  { value: 1e27, symbol: "EE" },
-  { value: 1e30, symbol: "FF" },
-  { value: 1e33, symbol: "GG" },
-  { value: 1e36, symbol: "HH" },
-  { value: 1e39, symbol: "II" },
-  { value: 1e42, symbol: "JJ" },
-  { value: 1e45, symbol: "KK" },
-  { value: 1e48, symbol: "LL" },
-  { value: 1e51, symbol: "MM" },
-  { value: 1e54, symbol: "NN" },
-  { value: 1e57, symbol: "OO" },
-  { value: 1e60, symbol: "PP" },
-  { value: 1e63, symbol: "QQ" },
-  { value: 1e66, symbol: "RR" },
-  { value: 1e69, symbol: "SS" },
-  { value: 1e72, symbol: "TT" },
-  { value: 1e75, symbol: "UU" },
-  { value: 1e78, symbol: "VV" },
-  { value: 1e81, symbol: "WW" },
-  { value: 1e84, symbol: "XX" },
-  { value: 1e87, symbol: "YY" },
-  { value: 1e90, symbol: "ZZ" },
+  { value: D(1), symbol: "" },
+  { value: D(1e3), symbol: "K" },
+  { value: D(1e6), symbol: "M" },
+  { value: D(1e9), symbol: "B" },
+  { value: D(1e12), symbol: "T" },
+  ...buildRepeatedLetterSuffixes(2, 15),
+  ...buildRepeatedLetterSuffixes(3, 93),
 ];
 
 const TRAILING_DECIMAL_ZEROS_RE = /\.0+$|(\.[0-9]*[1-9])0+$/;
 
+const findRange = (amount: Decimal) =>
+  VALUE_RANGE.slice()
+    .reverse()
+    .find((item) => amount.gte(item.value));
+
+const formatScaledValue = (amount: Decimal, rangeValue: Decimal) => {
+  const scaled = amount.div(rangeValue);
+  const displayValue = toDisplayNumber(scaled);
+
+  return displayValue.toFixed(2).replace(TRAILING_DECIMAL_ZEROS_RE, "$1");
+};
+
 /**
  * Minify number to show as K, M, B, T
  */
-export const amountFormatter = (amount: number) => {
-  const item = VALUE_RANGE.slice()
-    .reverse()
-    .find((item) => amount >= item.value);
+export const amountFormatter = (amount: number | Decimal) => {
+  const value = D(amount);
 
-  if (amount >= 1e93) {
+  if (value.gte(INFINITY_THRESHOLD)) {
     return "∞";
   }
 
+  if (value.lte(0)) {
+    return "0";
+  }
+
+  const item = findRange(value);
+
   if (item) {
-    const formattedValue = amount / item.value;
-    return `${formattedValue.toFixed(2).replace(TRAILING_DECIMAL_ZEROS_RE, "$1")}${item.symbol}`;
+    return `${formatScaledValue(value, item.value)}${item.symbol}`;
   }
 
   return "0";
 };
 
-export const amountFormatterWithDolarSign = (amount: number) =>
+export const amountFormatterWithDolarSign = (amount: number | Decimal) =>
   `$${amountFormatter(amount)}`;
 
-export const getAmountForNumberFlow = (amount: number) => {
-  if (amount >= 1e93) {
+export const getAmountForNumberFlow = (amount: number | Decimal) => {
+  const value = D(amount);
+
+  if (value.gte(INFINITY_THRESHOLD)) {
     return { kind: "infinity" as const };
   }
 
-  const item = VALUE_RANGE.slice()
-    .reverse()
-    .find((rangeItem) => amount >= rangeItem.value);
+  const item = findRange(value);
 
-  if (!item) {
+  if (!item || value.lte(0)) {
     return { kind: "value" as const, value: 0, suffix: "" };
   }
 
   return {
     kind: "value" as const,
-    value: amount / item.value,
+    value: toDisplayNumber(value.div(item.value)),
     suffix: item.symbol,
   };
 };
 
-export const suffixAmountFormatter = (amount: number) => {
-  const item = VALUE_RANGE.slice()
-    .reverse()
-    .find((item) => amount >= item.value);
+export const suffixAmountFormatter = (amount: number | Decimal) => {
+  const value = D(amount);
+  const item = findRange(value);
 
   if (item) {
     return `${item.symbol}`;
@@ -109,4 +112,33 @@ export const timeFormatter = (seconds: number) => {
   const remainingSeconds = seconds % 60;
 
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
+
+export const formatElapsedDuration = (elapsedMs: number) => {
+  const totalSeconds = Math.floor(elapsedMs / 1000);
+
+  if (totalSeconds < 60) {
+    return `${totalSeconds}s`;
+  }
+
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes < 60) {
+    return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours < 24) {
+    return remainingMinutes > 0
+      ? `${hours}h ${remainingMinutes}m`
+      : `${hours}h`;
+  }
+
+  const days = Math.floor(hours / 24);
+  const remainingHours = hours % 24;
+
+  return remainingHours > 0 ? `${days}d ${remainingHours}h` : `${days}d`;
 };

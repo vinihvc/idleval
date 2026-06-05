@@ -1,5 +1,4 @@
-import { Menu } from "pixelarticons/react";
-import { Button } from "@/components/ui/button";
+import type { PropsWithChildren } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -8,33 +7,17 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
-  ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
 import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { toggleMusic, toggleSfx, useSettings } from "@/store/atoms/settings";
 
-export const SettingDialog = () => {
+export const SettingDialog = (props: PropsWithChildren) => {
+  const { children } = props;
   const settings = useSettings();
 
   return (
     <ResponsiveDialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ResponsiveDialogTrigger asChild>
-            <Button size="icon-md" variant="white">
-              <span className="sr-only">Open Settings</span>
-              <Menu />
-            </Button>
-          </ResponsiveDialogTrigger>
-        </TooltipTrigger>
-
-        <TooltipContent>Settings</TooltipContent>
-      </Tooltip>
+      {children}
 
       <ResponsiveDialogContent>
         <ResponsiveDialogImage alt="Settings" src="/images/msc/setting.webp" />
@@ -49,7 +32,7 @@ export const SettingDialog = () => {
 
         <ResponsiveDialogBody>
           <div className="grid gap-4">
-            <div className="border-primary/25 flex items-center justify-between gap-3 rounded-md border bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
               <label className="font-semibold" htmlFor="toggle-music">
                 Music
               </label>
@@ -61,7 +44,7 @@ export const SettingDialog = () => {
               />
             </div>
 
-            <div className="border-primary/25 flex items-center justify-between gap-3 rounded-md border bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
               <label className="font-semibold" htmlFor="toggle-sfx">
                 SFX
               </label>

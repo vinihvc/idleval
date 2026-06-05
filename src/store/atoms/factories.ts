@@ -1,18 +1,31 @@
 import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { FACTORIES, type FactoryType } from "@/content/factories";
-import { store } from "@/store/store";
+import {
+  FACTORIES,
+  FACTORY_TYPES,
+  type FactoryType,
+} from "@/content/factories";
+import { managerCost, unitCost, upgradeCost } from "@/game/economy";
+import {
+  getFactoryProductionValue,
+  getFactoryTotalEarn,
+} from "@/game/factories";
+import type { FactoryPersistedState } from "@/game/types";
+import { store } from "@/providers/store";
+import { getGodsProductionMultiplier } from "@/store/atoms/gods";
+import type { GameValue } from "@/utils/decimal";
 import {
   type MscAtomProps,
   totalCanBuyByAmount,
   totalToPayByAmount,
 } from "./msc";
+import { touchLastSeen } from "./session";
 import { decreaseGold, hasGoldToBuy, increaseGold } from "./wallet";
 
-const INITIAL_FACTORY = "potato";
+const INITIAL_FACTORY: FactoryType = "grain";
 
 export const initialData = Object.fromEntries(
-  Object.keys(FACTORIES).map((factory) => [
+  FACTORY_TYPES.map((factory) => [
     factory,
     {
       amount: factory === INITIAL_FACTORY ? 1 : 0,
@@ -22,35 +35,44 @@ export const initialData = Object.fromEntries(
       isUnlocked: factory === INITIAL_FACTORY,
     },
   ])
-);
+) as unknown as Record<FactoryType, FactoryPersistedState>;
 
 export const factoriesAtom = atomWithStorage("factories", initialData);
 
-export const useFactory = (factory: FactoryType) => {
-  const factories = useAtomValue(factoriesAtom);
+const getFactoryConfig = (factory: FactoryType) => {
+  const state = store.get(factoriesAtom)[factory];
 
   return {
-    ...factories[factory],
-    ...FACTORIES[factory as FactoryType],
+    ...state,
+    ...FACTORIES[factory],
   };
 };
 
-/**
- * Get a factory from the store
- *
- * @param factory - The factory to get
- * @returns The factory
- */
-export const getFactory = (factory: FactoryType) => ({
-  ...store.get(factoriesAtom)[factory],
-  ...FACTORIES[factory as FactoryType],
-});
+export const useFactory = (factory: FactoryType) => {
+  const factories = useAtomValue(factoriesAtom);
+  const state = factories[factory];
+  const config = FACTORIES[factory];
 
-/**
- * Set the amount of a factory
- *
- * @param factory - The factory to set the amount of
- */
+  return {
+    ...state,
+    ...config,
+    managerCost: managerCost(config.baseBuyCost, state.amount),
+    upgradeCost: upgradeCost(config.baseBuyCost, state.amount),
+    nextUnitCost: unitCost(config.baseBuyCost, state.amount),
+  };
+};
+
+export const getFactory = (factory: FactoryType) => {
+  const config = getFactoryConfig(factory);
+
+  return {
+    ...config,
+    managerCost: managerCost(config.baseBuyCost, config.amount),
+    upgradeCost: upgradeCost(config.baseBuyCost, config.amount),
+    nextUnitCost: unitCost(config.baseBuyCost, config.amount),
+  };
+};
+
 export const setAmountBySelectedAmount = (
   factory: FactoryType,
   amount: MscAtomProps["amountToBuy"]
@@ -60,7 +82,7 @@ export const setAmountBySelectedAmount = (
 
   const canBuy = hasGoldToBuy(amountToPay);
 
-  if (!canBuy) {
+  if (!canBuy || amountToBuy <= 0) {
     return;
   }
 
@@ -75,11 +97,6 @@ export const setAmountBySelectedAmount = (
   decreaseGold(amountToPay);
 };
 
-/**
- * Start producing a factory
- *
- * @param factory - The factory to start producing
- */
 export const startProducing = (factory: FactoryType) => {
   const { isAutomated, isProducing, isUnlocked } = getFactory(factory);
 
@@ -96,12 +113,9 @@ export const startProducing = (factory: FactoryType) => {
   }));
 };
 
-/**
- * Stop producing a factory
- *
- * @param factory - The factory to stop producing
- */
 export const stopProducing = (factory: FactoryType) => {
+  const { isAutomated } = getFactory(factory);
+
   store.set(factoriesAtom, (prev) => ({
     ...prev,
     [factory]: {
@@ -111,17 +125,16 @@ export const stopProducing = (factory: FactoryType) => {
   }));
 
   increaseGold(factory);
+
+  if (isAutomated) {
+    touchLastSeen();
+  }
 };
 
-/**
- * Enable automation for a factory
- *
- * @param factory - The factory to enable automation for
- */
 export const autoFactory = (factory: FactoryType) => {
-  const { isUnlocked, automatedCost } = getFactory(factory);
+  const { isUnlocked, managerCost: cost } = getFactory(factory);
 
-  const canAutomate = hasGoldToBuy(automatedCost);
+  const canAutomate = hasGoldToBuy(cost);
 
   if (!(isUnlocked && canAutomate)) {
     return;
@@ -135,18 +148,13 @@ export const autoFactory = (factory: FactoryType) => {
     },
   }));
 
-  decreaseGold(automatedCost);
+  decreaseGold(cost);
 };
 
-/**
- * Upgrade a factory, generating more gold per second
- *
- * @param factory - The factory to upgrade
- */
 export const upgradeFactory = (factory: FactoryType) => {
-  const { isUnlocked, upgradeCost } = getFactory(factory);
+  const { isUnlocked, upgradeCost: cost } = getFactory(factory);
 
-  const canUpgrade = hasGoldToBuy(upgradeCost);
+  const canUpgrade = hasGoldToBuy(cost);
 
   if (!(isUnlocked && canUpgrade)) {
     return;
@@ -160,14 +168,9 @@ export const upgradeFactory = (factory: FactoryType) => {
     },
   }));
 
-  decreaseGold(upgradeCost);
+  decreaseGold(cost);
 };
 
-/**
- * Upgrade a factory to unlock
- *
- * @param factory - The factory to upgrade to unlock
- */
 export const unlockFactory = (factory: FactoryType) => {
   const { unlockPrice } = getFactory(factory);
 
@@ -189,21 +192,23 @@ export const unlockFactory = (factory: FactoryType) => {
   decreaseGold(unlockPrice);
 };
 
-export const getProductionValue = (factory: FactoryType) => {
+export const getProductionValue = (factory: FactoryType): GameValue => {
   const { productionValue, isUpgraded } = getFactory(factory);
 
-  return productionValue * (isUpgraded ? 2 : 1);
+  return getFactoryProductionValue({
+    godsProductionMultiplier: getGodsProductionMultiplier(),
+    isUpgraded,
+    productionValue,
+  });
 };
 
-/**
- * Get the total amount of gold a factory will earn after producing
- *
- * @param factory - The factory to get the total amount of gold for
- * @returns The total amount of gold a factory will earn after producing
- */
-export const totalToEarnAfterProduce = (factory: FactoryType) => {
-  const { amount } = getFactory(factory);
-  const productionValue = getProductionValue(factory);
+export const totalToEarnAfterProduce = (factory: FactoryType): GameValue => {
+  const { amount, isUpgraded, productionValue } = getFactory(factory);
 
-  return amount * productionValue;
+  return getFactoryTotalEarn({
+    amount,
+    godsProductionMultiplier: getGodsProductionMultiplier(),
+    isUpgraded,
+    productionValue,
+  });
 };

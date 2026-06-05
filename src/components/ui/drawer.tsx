@@ -6,8 +6,10 @@ import { Portal } from "@ark-ui/react/portal";
 import { Close } from "pixelarticons/react";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
+import { WaxSeal } from "@/components/icons/wax-seal";
 import { Button } from "@/components/ui/button";
 import { DialogImage } from "@/components/ui/dialog";
+import { FantasyCorner } from "@/components/ui/fantasy/fantasy-corner";
 import { cn } from "@/lib/cn";
 
 export const useDrawer = useDrawerContext;
@@ -248,6 +250,11 @@ export const DrawerContent = (props: DrawerContentProps) => {
               {...rest}
               data-slot="drawer-content"
             >
+              <FantasyCorner position="tl" />
+              <FantasyCorner position="tr" />
+              <FantasyCorner position="bl" />
+              <FantasyCorner position="br" />
+
               <DrawerGrabber />
 
               {children}
@@ -256,11 +263,20 @@ export const DrawerContent = (props: DrawerContentProps) => {
                 <DrawerClose asChild>
                   <Button
                     aria-label="Close"
-                    className="absolute top-2 right-2 border-2 shadow-lg"
+                    className={cn(
+                      "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2",
+                      "size-14",
+                      "rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
+                      "bg-transparent",
+                      "hover:bg-transparent hover:brightness-110",
+                      "focus-visible:brightness-110",
+                      "active:brightness-95"
+                    )}
                     size="icon-xl"
-                    variant="secondary"
+                    variant="ghost"
                   >
-                    <Close />
+                    <WaxSeal className="absolute inset-0 size-full" />
+                    <Close className="relative z-10 size-5 drop-shadow-[0_1px_1px_rgba(80,0,0,0.75)] sm:size-6" />
                   </Button>
                 </DrawerClose>
               )}
@@ -342,7 +358,7 @@ export const DrawerHeader = (props: DrawerHeaderProps) => {
     <ark.div
       className={cn(
         "flex shrink-0 flex-col gap-1 text-center",
-        "mt-4 p-(--space) pt-0",
+        "mt-4 p-(--space) pt-0 sm:mt-8",
         "in-[[data-slot=drawer-content]:has([data-slot=drawer-body])]:pb-3",
         className
       )}

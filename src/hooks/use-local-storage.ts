@@ -3,7 +3,6 @@ import React from "react";
 /**
  * Returns a stateful value, and a function to update it
  *
- *
  */
 export const useLocalStorage = <T>(
   key: string,

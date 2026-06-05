@@ -1,5 +1,6 @@
 import type React from "react";
 import { AboutDialog } from "@/components/dialog/about";
+import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { cn } from "@/lib/cn";
 
 interface FooterProps extends React.ComponentProps<"footer"> {}
@@ -17,7 +18,11 @@ export const Footer = (props: FooterProps) => {
     >
       <div className="flex justify-center gap-5 font-medium text-sm md:justify-end">
         <div>
-          <AboutDialog />
+          <AboutDialog>
+            <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
+              About
+            </ResponsiveDialogTrigger>
+          </AboutDialog>
         </div>
 
         <a

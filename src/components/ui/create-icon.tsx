@@ -45,6 +45,7 @@ export const createIcon = ({
 
     return (
       <svg
+        aria-hidden="true"
         className={cn("inline-flex", iconClassName, className)}
         viewBox={viewBox}
         {...defaults}

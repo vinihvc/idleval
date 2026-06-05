@@ -1,7 +1,14 @@
+import { InfoBox } from "pixelarticons/react";
 import type React from "react";
 import { FactoryDialog } from "@/components/dialog/factory";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
+import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
 import {
@@ -30,13 +37,14 @@ interface FactoryCardUpgradeProps extends React.ComponentProps<"div"> {
 export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
   const { factoryType, className, ...rest } = props;
 
-  const { isUnlocked, unlockPrice, name } = useFactory(factoryType);
+  const { isUnlocked, unlockPrice, name, nextUnitCost } =
+    useFactory(factoryType);
   const { value: amountToBuy } = useMsc();
-
   const totalCanBuy = totalCanBuyByAmount(factoryType, amountToBuy);
   const totalToPay = totalToPayByAmount(factoryType, amountToBuy);
 
   const totalGreaterThan0 = totalCanBuy > 0;
+  const buyPrice = totalGreaterThan0 ? totalToPay : nextUnitCost;
 
   const handleBuy = () => {
     if (isUnlocked) {
@@ -52,15 +60,15 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
 
   const buttonVariant = () => {
     if (!totalGreaterThan0) {
-      return "gray";
+      return "stone";
     }
     if (isUnlocked && canBuyAmount) {
       return "green";
     }
     if (!isUnlocked && canUnlock) {
-      return "gold";
+      return "default";
     }
-    return "gray";
+    return "stone";
   };
 
   return (
@@ -82,7 +90,7 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         }
         onClick={handleBuy}
         size="md"
-        variant={isLocked ? "gray" : buttonVariant()}
+        variant={isLocked ? "stone" : buttonVariant()}
       >
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
@@ -106,13 +114,20 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
           </>
         )}
 
-        {!(isUnlocked || canUnlock) || (!totalGreaterThan0 && "Empty coffers")}
-
         {isUnlocked && !canBuyAmount && (
           <>
             Empty coffers
             <NumberText className="normal-case">
-              {amountFormatterWithDolarSign(totalToPay)}
+              {amountFormatterWithDolarSign(buyPrice)}
+            </NumberText>
+          </>
+        )}
+
+        {isUnlocked && canBuyAmount && !totalGreaterThan0 && (
+          <>
+            Empty coffers
+            <NumberText className="normal-case">
+              {amountFormatterWithDolarSign(buyPrice)}
             </NumberText>
           </>
         )}
@@ -127,7 +142,20 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         )}
       </Button>
 
-      <FactoryDialog factoryType={factoryType} />
+      <FactoryDialog factoryType={factoryType}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ResponsiveDialogTrigger asChild>
+              <Button className="size-9 shrink-0" size="icon-lg" variant="blue">
+                <span className="sr-only">{`${name} ledger`}</span>
+                <InfoBox className="size-4" />
+              </Button>
+            </ResponsiveDialogTrigger>
+          </TooltipTrigger>
+
+          <TooltipContent>{`${name} ledger`}</TooltipContent>
+        </Tooltip>
+      </FactoryDialog>
     </div>
   );
 };

@@ -18,12 +18,15 @@ export const FactoryCard = (props: FactoryCardProps) => {
 
   const { isUnlocked, isAutomated } = useFactory(type);
 
-  const { seconds, isRunning } = useCountdown(type);
+  const { seconds, isRunning, cycleKey } = useCountdown(type);
 
   return (
     <article
       aria-disabled={!isUnlocked}
-      className={cn("relative flex min-w-0 items-center pl-10", className)}
+      className={cn(
+        "relative inset-shadow-xs flex min-w-0 items-center pl-10",
+        className
+      )}
       {...rest}
     >
       <FactoryCardProduce
@@ -33,12 +36,14 @@ export const FactoryCard = (props: FactoryCardProps) => {
 
       <div
         className={cn(
-          "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-lg border-3 py-2 pr-2 pl-14",
+          "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
           "border-primary/40 bg-popover/90 text-popover-foreground",
-          isUnlocked && "border-primary/60 shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
+          isUnlocked &&
+            "border-primary/60 shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
         )}
       >
         <Progress
+          cycleKey={cycleKey}
           factoryType={type}
           isAutomated={isAutomated}
           isUnlocked={isUnlocked && isRunning}

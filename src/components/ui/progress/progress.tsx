@@ -11,6 +11,10 @@ import classes from "./progress.module.css";
 
 interface ProgressProps extends React.ComponentProps<"div"> {
   /**
+   * Increments when a production cycle starts or completes, restarting the fill animation.
+   */
+  cycleKey?: number;
+  /**
    * The factory type
    */
   factoryType: FactoryType;
@@ -36,6 +40,7 @@ export const Progress = (props: ProgressProps) => {
   const {
     factoryType,
     value,
+    cycleKey = 0,
     isAutomated = false,
     isUnlocked = false,
     className,
@@ -44,7 +49,7 @@ export const Progress = (props: ProgressProps) => {
 
   const { productionTime } = useFactory(factoryType);
 
-  const animationDuration = `${productionTime + (isAutomated ? 0 : 1)}s`;
+  const animationDuration = `${productionTime}s`;
 
   return (
     <div
@@ -62,15 +67,15 @@ export const Progress = (props: ProgressProps) => {
           "h-full w-0 flex-1 bg-primary",
           isUnlocked && classes.fill
         )}
+        key={cycleKey}
         style={{ animationDuration }}
       />
 
       <div
         className={cn(
           "absolute inset-0 flex items-center justify-between px-2 font-semibold text-foreground text-lg tracking-wide",
-          borderedText({ variant: "white" })
+          borderedText({ variant: "cream" })
         )}
-        style={{ animationDuration }}
       >
         <span className="w-40 font-number tabular-nums">
           {timeFormatter(productionTime)}

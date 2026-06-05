@@ -10,7 +10,7 @@ export const Game = (props: React.ComponentProps<"div">) => {
         "container max-w-4xl",
         "relative overflow-hidden",
         "flex flex-col",
-        "max-sm:flex-1 max-sm:rounded-none max-sm:border-x-0 max-sm:py-16",
+        "pt-16 max-sm:flex-1 max-sm:rounded-none max-sm:border-x-0 sm:py-0",
         "sm:rounded-xl",
         className
       )}

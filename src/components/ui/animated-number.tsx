@@ -1,5 +1,7 @@
 import NumberFlow from "@number-flow/react";
 import { cn } from "@/lib/cn";
+import type { GameValue } from "@/utils/decimal";
+import { D } from "@/utils/decimal";
 import { getAmountForNumberFlow } from "@/utils/formatters";
 
 const amountFormat = {
@@ -17,12 +19,13 @@ interface AnimatedNumberProps extends React.ComponentProps<"div"> {
   /**
    * The value to display
    */
-  value: number;
+  value: number | GameValue;
 }
 
 export const AnimatedNumber = (props: AnimatedNumberProps) => {
   const { value, className, isDollar, ...rest } = props;
-  const display = getAmountForNumberFlow(value);
+
+  const display = getAmountForNumberFlow(D(value));
 
   return (
     <div

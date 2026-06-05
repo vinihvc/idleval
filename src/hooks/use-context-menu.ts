@@ -1,7 +1,7 @@
 import React from "react";
 import { IS_DEV } from "@/lib/envs";
 
-interface ContextMenuProps {
+interface DisableContextMenuProps {
   /**
    * Disables the context menu
    */
@@ -13,7 +13,7 @@ interface ContextMenuProps {
  *
  * @default false
  */
-export const useContextMenu = (props: ContextMenuProps = {}) => {
+export const useDisableContextMenu = (props: DisableContextMenuProps = {}) => {
   const { defaultIsDisabled = false } = props;
 
   React.useEffect(() => {

@@ -58,7 +58,7 @@ export const DebugTools = () => {
           <Button
             aria-label="Unlock all factories"
             onClick={unlockAllFactories}
-            variant="black"
+            variant="brown"
           >
             <Lock />
             <span className="max-md:sr-only">All factories</span>
@@ -66,7 +66,7 @@ export const DebugTools = () => {
           <Button
             aria-label="Enable all upgrades"
             onClick={enableAllUpgrades}
-            variant="gold"
+            variant="default"
           >
             <ArrowUpBox />
             <span className="max-md:sr-only">All upgrades</span>
@@ -83,7 +83,6 @@ export const DebugTools = () => {
             aria-label="Enable god mode"
             className="border-purple-600 bg-purple-500 text-purple-50"
             onClick={enableGodMode}
-            variant="default"
           >
             <Crown />
             <span className="max-md:sr-only">God mode</span>

@@ -1,5 +1,4 @@
-import { ArrowUpBox } from "pixelarticons/react";
-import { DialogNavTrigger } from "@/components/dialog/dialog-nav-trigger";
+import type { PropsWithChildren } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,24 +8,15 @@ import {
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORIES, type FactoryType } from "@/content/factories";
+import { FACTORY_TYPES } from "@/content/factories";
 import { UpgradesCard } from "./upgrades.card";
 
-interface UpgradesDialogProps {
-  variant?: "bottom" | "header";
-}
-
-export const UpgradesDialog = (props: UpgradesDialogProps) => {
-  const { variant = "header" } = props;
+export const UpgradesDialog = (props: PropsWithChildren) => {
+  const { children } = props;
 
   return (
     <ResponsiveDialog>
-      <DialogNavTrigger
-        icon={ArrowUpBox}
-        label="Upgrades"
-        value="upgrades"
-        variant={variant}
-      />
+      {children}
 
       <ResponsiveDialogContent>
         <ResponsiveDialogImage
@@ -38,14 +28,15 @@ export const UpgradesDialog = (props: UpgradesDialogProps) => {
           <ResponsiveDialogTitle>Upgrades</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Improve workshops and halls to double the crown&apos;s takings.
+            Build what makes the realm endure and double the crown&apos;s
+            takings from each pillar.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {Object.entries(FACTORIES).map(([key]) => (
-              <UpgradesCard factoryType={key as FactoryType} key={key} />
+            {FACTORY_TYPES.map((factoryType) => (
+              <UpgradesCard factoryType={factoryType} key={factoryType} />
             ))}
           </div>
         </ResponsiveDialogBody>

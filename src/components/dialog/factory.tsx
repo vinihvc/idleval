@@ -1,6 +1,5 @@
-import { InfoBox } from "pixelarticons/react";
+import type { PropsWithChildren } from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
-import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import {
   ResponsiveDialog,
@@ -10,18 +9,14 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
-  ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { FactoryType } from "@/content/factories";
-import { useFactory } from "@/store/atoms/factories";
+import { getProductionValue, useFactory } from "@/store/atoms/factories";
+import { getGodsProductionMultiplier } from "@/store/atoms/gods";
 import { goldEarnedByFactory } from "@/store/atoms/statistics";
+import { amountFormatter } from "@/utils/formatters";
 
-interface FactoryDialogProps {
+interface FactoryDialogProps extends PropsWithChildren {
   /**
    * The factory type
    */
@@ -29,24 +24,17 @@ interface FactoryDialogProps {
 }
 
 export const FactoryDialog = (props: FactoryDialogProps) => {
-  const { factoryType } = props;
+  const { children, factoryType } = props;
 
   const factory = useFactory(factoryType);
+  const yieldPerTap = getProductionValue(factoryType);
+  const yieldPerHour = yieldPerTap.times(3600).div(factory.productionTime);
+  const divineMultiplier = getGodsProductionMultiplier();
+  const showDivineBonus = divineMultiplier.gt(1);
 
   return (
     <ResponsiveDialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ResponsiveDialogTrigger asChild>
-            <Button className="size-9 shrink-0" size="icon-lg" variant="blue">
-              <span className="sr-only">{`${factory.name} ledger`}</span>
-              <InfoBox className="size-4" />
-            </Button>
-          </ResponsiveDialogTrigger>
-        </TooltipTrigger>
-
-        <TooltipContent>{`${factory.name} ledger`}</TooltipContent>
-      </Tooltip>
+      {children}
 
       <ResponsiveDialogContent>
         <ResponsiveDialogImage
@@ -64,30 +52,39 @@ export const FactoryDialog = (props: FactoryDialogProps) => {
 
         <ResponsiveDialogBody>
           <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
               <span className="shrink-0">Craft pace</span>
               <NumberText className="shrink-0 text-end text-2xl">
                 {factory.productionTime}s
               </NumberText>
             </div>
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
               <span className="shrink-0">Yield per tap</span>
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"
-                value={factory.productionValue}
+                value={yieldPerTap}
               />
             </div>
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
               <span className="shrink-0">Yield per hour</span>
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"
-                value={factory.productionValue * 3600}
+                value={yieldPerHour}
               />
             </div>
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground">
+            {showDivineBonus && (
+              <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
+                <span className="shrink-0">Divine bonus</span>
+                <NumberText className="shrink-0 text-end text-2xl">
+                  ×{amountFormatter(divineMultiplier)}
+                </NumberText>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
               <span className="shrink-0">Lifetime yield</span>
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"

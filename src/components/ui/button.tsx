@@ -3,8 +3,8 @@ import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
+import { type SoundsType, sound as soundFunction } from "@/providers/sound";
 import { useSettings } from "@/store/atoms/settings";
-import { type SoundsType, sound } from "./sound";
 import { borderedText } from "./text-border";
 
 export const buttonVariants = tv({
@@ -24,7 +24,15 @@ export const buttonVariants = tv({
   ],
   variants: {
     variant: {
-      black: [
+      default: [
+        "bg-primary",
+        "border-primary-foreground/30 shadow-primary/24",
+        "text-primary-foreground",
+        "active:brightness-95",
+        "hover:brightness-105",
+        "focus-visible:border-background",
+      ],
+      brown: [
         "bg-secondary",
         "text-foreground",
         "border-primary/40",
@@ -32,7 +40,7 @@ export const buttonVariants = tv({
         "hover:brightness-105",
         "focus-visible:ring-primary/50",
       ],
-      white: [
+      cream: [
         "bg-popover",
         "text-popover-foreground",
         "border-primary/60",
@@ -40,15 +48,7 @@ export const buttonVariants = tv({
         "hover:brightness-105",
         "focus-visible:ring-primary/50",
       ],
-      gold: [
-        "bg-primary",
-        "text-white",
-        "border-primary-foreground/30",
-        "active:brightness-95",
-        "hover:brightness-105",
-        "focus-visible:ring-primary/50",
-      ],
-      gray: [
+      stone: [
         "bg-muted",
         "text-foreground",
         "active:brightness-95",
@@ -69,21 +69,13 @@ export const buttonVariants = tv({
         "border-info-foreground/40",
         "hover:brightness-105 focus-visible:ring-info/50",
       ],
-      default: [
-        "bg-primary",
-        "border-transparent shadow-primary/24",
-        "text-primary-foreground",
-        "active:brightness-95",
-        "hover:brightness-105",
-        "focus-visible:border-background",
-      ],
       outline: [
         "bg-transparent",
         "text-foreground",
-        "border-input shadow-sm/5",
+        "border-border shadow-sm/5",
         "active:brightness-95",
-        "hover:text-accent-foreground hover:brightness-105",
-        "focus-visible:border-primary",
+        "hover:bg-muted/40",
+        "focus-visible:border-primary focus-visible:ring-primary/30",
       ],
       destructive: [
         "bg-destructive",
@@ -102,9 +94,10 @@ export const buttonVariants = tv({
         "hover:brightness-105",
       ],
       ghost: [
+        "text-foreground",
         "active:brightness-95",
         "hover:brightness-105",
-        "hover:text-accent-foreground",
+        "hover:bg-muted/50",
         "border-transparent",
         "focus-visible:border-primary",
       ],
@@ -134,11 +127,19 @@ export const buttonVariants = tv({
     },
   },
   defaultVariants: {
-    variant: "black",
+    variant: "brown",
     size: "md",
     clickEffect: true,
   },
 });
+
+export type ButtonColorVariant =
+  | "default"
+  | "brown"
+  | "cream"
+  | "stone"
+  | "green"
+  | "blue";
 
 export interface ButtonProps
   extends React.ComponentProps<typeof ark.button>,
@@ -160,15 +161,24 @@ export interface ButtonProps
    *
    * @default 'click'
    */
-  overrideSound?: SoundsType;
+  sound?: SoundsType;
 }
+
+const BORDERED_TEXT_VARIANTS = new Set<ButtonColorVariant>([
+  "default",
+  "brown",
+  "cream",
+  "green",
+  "stone",
+  "blue",
+]);
 
 export const Button = (props: ButtonProps) => {
   const {
     type = "button",
     variant,
     size,
-    overrideSound = "click",
+    sound = "click",
     asChild = false,
     isLoading = false,
     clickEffect,
@@ -182,32 +192,16 @@ export const Button = (props: ButtonProps) => {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (settings.sfx) {
-      sound.play(overrideSound);
+      soundFunction.play(sound);
     }
 
     onClick?.(event);
   };
 
-  let borderedVariant:
-    | "black"
-    | "white"
-    | "gold"
-    | "green"
-    | "gray"
-    | "blue"
-    | undefined;
-
-  if (variant === "gold") {
-    borderedVariant = "gold";
-  } else if (
-    variant === "black" ||
-    variant === "white" ||
-    variant === "green" ||
-    variant === "gray" ||
-    variant === "blue"
-  ) {
-    borderedVariant = variant;
-  }
+  const borderedVariant =
+    variant && BORDERED_TEXT_VARIANTS.has(variant as ButtonColorVariant)
+      ? (variant as ButtonColorVariant)
+      : undefined;
 
   const isIconSize = typeof size === "string" && size.startsWith("icon");
 

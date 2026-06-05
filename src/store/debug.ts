@@ -1,37 +1,42 @@
-import { FACTORIES, type FactoryType } from "@/content/factories";
-import { allianceAtom } from "./atoms/alliance";
-import { factoriesAtom, initialData } from "./atoms/factories";
-import { mscAtom } from "./atoms/msc";
+import { FACTORY_TYPES } from "@/content/factories";
+import { resetRunProgress } from "@/game/reset-run";
+import { store } from "@/providers/store";
+import { D, deserializeDecimal, serializeDecimal } from "@/utils/decimal";
+import { factoriesAtom } from "./atoms/factories";
+import { godsAtom } from "./atoms/gods";
 import { statisticsAtom } from "./atoms/statistics";
 import { walletAtom } from "./atoms/wallet";
-import { store } from "./store";
 
-export const DEBUG_GOLD_AMOUNT = 1_000_000;
-export const GOD_MODE_GOLD_AMOUNT = 1e15;
+export const DEBUG_GOLD_AMOUNT = D(1_000_000);
+export const GOD_MODE_GOLD_AMOUNT = D("1e100");
 
 const initialStatistics = Object.fromEntries(
-  Object.keys(FACTORIES).map((factory) => [
+  FACTORY_TYPES.map((factory) => [
     factory,
-    { quantity: 0, goldSpent: 0, goldEarned: 0 },
+    {
+      quantity: 0,
+      goldSpent: serializeDecimal(D(0)),
+      goldEarned: serializeDecimal(D(0)),
+    },
   ])
 );
 
 export const resetGameState = () => {
-  store.set(walletAtom, { gold: 0 });
-  store.set(factoriesAtom, initialData);
+  resetRunProgress();
   store.set(statisticsAtom, {
-    goldEarned: 0,
-    goldSpent: 0,
+    goldEarned: serializeDecimal(D(0)),
+    goldSpent: serializeDecimal(D(0)),
     factories: initialStatistics,
   });
-  store.set(allianceAtom, { count: 0 });
-  store.set(mscAtom, { amountToBuy: 1 });
+  store.set(godsAtom, { count: 0 });
 };
 
 export const addDebugGold = () => {
   store.set(walletAtom, (prev) => ({
     ...prev,
-    gold: prev.gold + DEBUG_GOLD_AMOUNT,
+    gold: serializeDecimal(
+      deserializeDecimal(prev.gold).plus(DEBUG_GOLD_AMOUNT)
+    ),
   }));
 };
 
@@ -42,7 +47,7 @@ const setAllFactoriesFlag = (
   store.set(factoriesAtom, (prev) => {
     const next = { ...prev };
 
-    for (const factory of Object.keys(FACTORIES) as FactoryType[]) {
+    for (const factory of FACTORY_TYPES) {
       next[factory] = { ...next[factory], [flag]: value };
     }
 
@@ -62,7 +67,7 @@ export const unlockAllFactories = () => {
   store.set(factoriesAtom, (prev) => {
     const next = { ...prev };
 
-    for (const factory of Object.keys(FACTORIES) as FactoryType[]) {
+    for (const factory of FACTORY_TYPES) {
       const { amount } = next[factory];
 
       next[factory] = {
@@ -80,5 +85,5 @@ export const enableGodMode = () => {
   unlockAllFactories();
   enableAllUpgrades();
   enableAllManagers();
-  store.set(walletAtom, { gold: GOD_MODE_GOLD_AMOUNT });
+  store.set(walletAtom, { gold: serializeDecimal(GOD_MODE_GOLD_AMOUNT) });
 };

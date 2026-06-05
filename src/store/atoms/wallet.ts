@@ -1,78 +1,78 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { atomWithStorage } from "jotai/utils";
 import type { FactoryType } from "@/content/factories";
-import { store } from "@/store/store";
-import { getFactory } from "./factories";
+import { store } from "@/providers/store";
+import {
+  D,
+  deserializeDecimal,
+  type GameValue,
+  serializeDecimal,
+} from "@/utils/decimal";
+import { getFactory, getProductionValue } from "./factories";
 import { setStatistics } from "./statistics";
 
 interface WalletState {
-  gold: number;
+  gold: string;
 }
 
-const migrateWallet = (parsed: Record<string, unknown>): WalletState => {
-  if (typeof parsed.gold === "number") {
-    return { gold: parsed.gold };
-  }
+export const walletAtom = atomWithStorage("wallet-v4", {
+  gold: serializeDecimal(D(0)),
+} satisfies WalletState);
 
-  if (typeof parsed.money === "number") {
-    return { gold: parsed.money };
-  }
+export const getGold = (): GameValue =>
+  deserializeDecimal(store.get(walletAtom).gold);
 
-  return { gold: 0 };
+export const useWallet = () => {
+  const { gold } = useAtomValue(walletAtom);
+
+  return {
+    gold: deserializeDecimal(gold),
+  };
 };
 
-const walletStorage = createJSONStorage<WalletState>(() => localStorage, {
-  reviver: (key, value) => {
-    if (key === "" && value && typeof value === "object") {
-      return migrateWallet(value as Record<string, unknown>);
+export const increaseGold = (factory: FactoryType) => {
+  const { amount } = getFactory(factory);
+  const productionValue = getProductionValue(factory);
+  const goldEarned = productionValue.times(amount);
+
+  setStatistics(factory, goldEarned);
+
+  store.set(walletAtom, (prev) => ({
+    ...prev,
+    gold: serializeDecimal(deserializeDecimal(prev.gold).plus(goldEarned)),
+  }));
+};
+
+export const bulkIncreaseGold = (
+  entries: { factory: FactoryType; gold: GameValue }[]
+) => {
+  let total = D(0);
+
+  for (const { factory, gold } of entries) {
+    if (gold.lte(0)) {
+      continue;
     }
 
-    return value;
-  },
-});
+    setStatistics(factory, gold);
+    total = total.plus(gold);
+  }
 
-export const walletAtom = atomWithStorage("wallet", { gold: 0 }, walletStorage);
-
-export const useWallet = () => useAtomValue(walletAtom);
-
-/**
- * Increase the amount of gold in the wallet
- *
- * @param factory - The factory that produced the gold
- */
-export const increaseGold = (factory: FactoryType) => {
-  const { amount, productionValue, isUpgraded } = getFactory(factory);
-
-  const goldEarned = amount * productionValue * (isUpgraded ? 2 : 1);
-
-  setStatistics(factory);
+  if (total.lte(0)) {
+    return;
+  }
 
   store.set(walletAtom, (prev) => ({
     ...prev,
-    gold: prev.gold + goldEarned,
+    gold: serializeDecimal(deserializeDecimal(prev.gold).plus(total)),
   }));
 };
 
-/**
- * Decrease the amount of gold in the wallet
- *
- * @param amount - The amount of gold to decrease
- */
-export const decreaseGold = (amount: number) => {
+export const hasGoldToBuy = (price: number | GameValue) =>
+  getGold().gte(D(price));
+
+export const decreaseGold = (amount: number | GameValue) => {
   store.set(walletAtom, (prev) => ({
     ...prev,
-    gold: prev.gold - amount,
+    gold: serializeDecimal(deserializeDecimal(prev.gold).minus(D(amount))),
   }));
-};
-
-/**
- * Check if the wallet has enough gold to buy an item
- *
- * @param price - The price of the item
- * @returns `true` if the wallet has enough gold, `false` otherwise
- */
-export const hasGoldToBuy = (price: number) => {
-  const wallet = store.get(walletAtom);
-
-  return wallet.gold >= price;
 };

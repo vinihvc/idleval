@@ -4,11 +4,11 @@ export const borderedText = tv({
   base: "[paint-order:stroke_fill]",
   variants: {
     variant: {
-      white: ["[-webkit-text-stroke-color:oklch(0.35_0.05_70)]"],
-      gold: ["[-webkit-text-stroke-color:oklch(0.28_0.06_70)]"],
-      black: ["[-webkit-text-stroke-color:oklch(0.2_0.03_55)]"],
+      default: ["[-webkit-text-stroke-color:oklch(0.92_0.07_84)]"],
+      cream: ["[-webkit-text-stroke-color:oklch(0.35_0.05_70)]"],
+      brown: ["[-webkit-text-stroke-color:oklch(0.2_0.03_55)]"],
       green: ["[-webkit-text-stroke-color:oklch(0.35_0.1_155)]"],
-      gray: ["[-webkit-text-stroke-color:oklch(0.25_0.03_60)]"],
+      stone: ["[-webkit-text-stroke-color:oklch(0.25_0.03_60)]"],
       blue: ["[-webkit-text-stroke-color:oklch(0.35_0.1_250)]"],
     },
     size: {
@@ -18,7 +18,7 @@ export const borderedText = tv({
     },
   },
   defaultVariants: {
-    variant: "black",
+    variant: "brown",
     size: "md",
   },
 });

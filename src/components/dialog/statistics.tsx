@@ -1,4 +1,4 @@
-import { Chart } from "pixelarticons/react";
+import type { PropsWithChildren } from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import {
   ResponsiveDialog,
@@ -9,25 +9,15 @@ import {
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORIES, type FactoryType } from "@/content/factories";
+import { FACTORY_TYPES } from "@/content/factories";
 import { goldEarnedByFactory, totalGoldEarned } from "@/store/atoms/statistics";
-import { DialogNavTrigger } from "./dialog-nav-trigger";
 
-interface StatisticsDialogProps {
-  variant?: "bottom" | "header";
-}
-
-export const StatisticsDialog = (props: StatisticsDialogProps) => {
-  const { variant = "header" } = props;
+export const StatisticsDialog = (props: PropsWithChildren) => {
+  const { children } = props;
 
   return (
     <ResponsiveDialog>
-      <DialogNavTrigger
-        icon={Chart}
-        label="Statistics"
-        value="statistics"
-        variant={variant}
-      />
+      {children}
 
       <ResponsiveDialogContent>
         <ResponsiveDialogImage
@@ -45,7 +35,7 @@ export const StatisticsDialog = (props: StatisticsDialogProps) => {
 
         <ResponsiveDialogBody>
           <div className="grid gap-2">
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
               <span className="shrink-0 capitalize">Realm total</span>
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"
@@ -53,15 +43,15 @@ export const StatisticsDialog = (props: StatisticsDialogProps) => {
               />
             </div>
 
-            {Object.entries(FACTORIES).map(([key]) => (
+            {FACTORY_TYPES.map((factory) => (
               <div
-                className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-2 font-medium text-lg text-popover-foreground"
-                key={key}
+                className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground"
+                key={factory}
               >
-                <span className="shrink-0 capitalize">{key}</span>
+                <span className="shrink-0 capitalize">{factory}</span>
                 <AnimatedNumber
                   className="shrink-0 text-end text-2xl"
-                  value={goldEarnedByFactory(key as FactoryType)}
+                  value={goldEarnedByFactory(factory)}
                 />
               </div>
             ))}

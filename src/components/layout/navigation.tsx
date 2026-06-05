@@ -1,12 +1,22 @@
+import { ArrowUpBox, Briefcase, Chart, Crown } from "pixelarticons/react";
 import type React from "react";
-import { AllianceDialog } from "@/components/dialog/alliances";
+import { GodsDialog } from "@/components/dialog/gods/gods";
 import { ManagersDialog } from "@/components/dialog/managers/managers";
 import { StatisticsDialog } from "@/components/dialog/statistics";
 import { UpgradesDialog } from "@/components/dialog/upgrades/upgrades";
 import {
+  BottomNavigationItem,
+  BottomNavigationItemIcon,
   BottomNavigationList,
   BottomNavigation as BottomNavigationRoot,
 } from "@/components/ui/bottom-navigation";
+import { Button } from "@/components/ui/button";
+import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
 
 interface BottomNavigationProps
@@ -25,13 +35,69 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
           "**:data-[slot=bottom-navigation-item]:aria-selected:text-primary **:data-[slot=bottom-navigation-item]:hover:text-primary"
         )}
       >
-        <UpgradesDialog variant="bottom" />
+        <UpgradesDialog>
+          <BottomNavigationItem asChild value="upgrades">
+            <ResponsiveDialogTrigger asChild>
+              <button
+                className="flex size-full flex-col items-center justify-center"
+                type="button"
+              >
+                <BottomNavigationItemIcon>
+                  <ArrowUpBox />
+                </BottomNavigationItemIcon>
+                <span className="sr-only">Upgrades</span>
+              </button>
+            </ResponsiveDialogTrigger>
+          </BottomNavigationItem>
+        </UpgradesDialog>
 
-        <ManagersDialog variant="bottom" />
+        <ManagersDialog>
+          <BottomNavigationItem asChild value="managers">
+            <ResponsiveDialogTrigger asChild>
+              <button
+                className="flex size-full flex-col items-center justify-center"
+                type="button"
+              >
+                <BottomNavigationItemIcon>
+                  <Briefcase />
+                </BottomNavigationItemIcon>
+                <span className="sr-only">Managers</span>
+              </button>
+            </ResponsiveDialogTrigger>
+          </BottomNavigationItem>
+        </ManagersDialog>
 
-        <AllianceDialog variant="bottom" />
+        <GodsDialog>
+          <BottomNavigationItem asChild value="gods">
+            <ResponsiveDialogTrigger asChild>
+              <button
+                className="flex size-full flex-col items-center justify-center"
+                type="button"
+              >
+                <BottomNavigationItemIcon>
+                  <Crown />
+                </BottomNavigationItemIcon>
+                <span className="sr-only">Gods</span>
+              </button>
+            </ResponsiveDialogTrigger>
+          </BottomNavigationItem>
+        </GodsDialog>
 
-        <StatisticsDialog variant="bottom" />
+        <StatisticsDialog>
+          <BottomNavigationItem asChild value="statistics">
+            <ResponsiveDialogTrigger asChild>
+              <button
+                className="flex size-full flex-col items-center justify-center"
+                type="button"
+              >
+                <BottomNavigationItemIcon>
+                  <Chart />
+                </BottomNavigationItemIcon>
+                <span className="sr-only">Statistics</span>
+              </button>
+            </ResponsiveDialogTrigger>
+          </BottomNavigationItem>
+        </StatisticsDialog>
       </BottomNavigationList>
     </BottomNavigationRoot>
   );
@@ -47,13 +113,61 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
       className={cn("flex items-center gap-2 max-sm:hidden", className)}
       {...rest}
     >
-      <UpgradesDialog variant="header" />
+      <UpgradesDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ResponsiveDialogTrigger asChild>
+              <Button size="icon-md" variant="cream">
+                <span className="sr-only">Upgrades</span>
+                <ArrowUpBox />
+              </Button>
+            </ResponsiveDialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Upgrades</TooltipContent>
+        </Tooltip>
+      </UpgradesDialog>
 
-      <ManagersDialog variant="header" />
+      <ManagersDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ResponsiveDialogTrigger asChild>
+              <Button size="icon-md" variant="cream">
+                <span className="sr-only">Managers</span>
+                <Briefcase />
+              </Button>
+            </ResponsiveDialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Managers</TooltipContent>
+        </Tooltip>
+      </ManagersDialog>
 
-      <AllianceDialog variant="header" />
+      <GodsDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ResponsiveDialogTrigger asChild>
+              <Button size="icon-md" variant="cream">
+                <span className="sr-only">Gods</span>
+                <Crown />
+              </Button>
+            </ResponsiveDialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Gods</TooltipContent>
+        </Tooltip>
+      </GodsDialog>
 
-      <StatisticsDialog variant="header" />
+      <StatisticsDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ResponsiveDialogTrigger asChild>
+              <Button size="icon-md" variant="cream">
+                <span className="sr-only">Statistics</span>
+                <Chart />
+              </Button>
+            </ResponsiveDialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Statistics</TooltipContent>
+        </Tooltip>
+      </StatisticsDialog>
     </nav>
   );
 };

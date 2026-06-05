@@ -1,5 +1,4 @@
 import { Image } from "@unpic/react";
-import { Lock } from "pixelarticons/react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
@@ -33,12 +32,12 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
         <Button
           className={cn(
             "group relative",
-            "size-22",
+            "size-24",
             "text-foreground",
             "border-3",
             "shrink-0",
             "rounded-full border-primary/70",
-            "transition-shadow hover:shadow-[0_0_12px_oklch(0.78_0.12_85/0.35)]",
+            "transition-all hover:border-primary/80",
             "data-[producing=true]:focus-visible:border-info data-[producing=true]:focus-visible:ring-info/50",
             "data-[producing=true]:border-info",
             className
@@ -56,7 +55,8 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
               alt={`Produce ${factoryType}`}
               className={cn(
                 "rounded-full",
-                "bg-muted p-1",
+                "object-contain",
+                "bg-popover p-1",
                 "pixel-crisp",
                 "pointer-events-none",
                 "group-data-[unlocked=false]:grayscale"
@@ -68,7 +68,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
             />
 
             {isUpgraded && (
-              <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-primary/50 bg-primary">
+              <div className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border border-secondary bg-primary">
                 <NumberText className="font-bold text-primary-foreground text-sm">
                   2x
                 </NumberText>
@@ -89,17 +89,11 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
                   "rounded-lg border-3 border-primary/40",
                   "fade-in-50 slide-in-from-bottom-1 animate-in",
                   "group-data-[producing=true]:border-info-foreground/40 group-data-[producing=true]:bg-info group-data-[producing=true]:text-white",
-                  borderedText({ variant: isProducing ? "blue" : "white" })
+                  borderedText({ variant: isProducing ? "blue" : "cream" })
                 )}
               >
                 <AnimatedNumber value={amount} />
               </span>
-            </div>
-          )}
-
-          {!isUnlocked && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Lock className="size-5" />
             </div>
           )}
         </Button>

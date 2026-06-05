@@ -19,6 +19,7 @@
     "@number-flow/react": "^0.6.0",
     "@tailwindcss/vite": "^4.3.0",
     "@unpic/react": "^1.0.2",
+    "break_infinity.js": "^2.2.0",
     "clsx": "^2.1.1",
     "jotai": "^2.20.0",
     "pixelarticons": "^2.1.2",

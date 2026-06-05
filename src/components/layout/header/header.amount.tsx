@@ -21,7 +21,7 @@ export const AmountToBuy = () => {
           className="w-14"
           onClick={toggleAmountToBuy}
           size="icon-md"
-          variant="white"
+          variant="cream"
         >
           <span>
             <NumberText className="font-semibold text-xl capitalize">

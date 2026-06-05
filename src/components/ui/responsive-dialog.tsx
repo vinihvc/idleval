@@ -53,7 +53,9 @@ export const useResponsiveDialog = () => {
 
 export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
   const { onOpenChange, ...rest } = props;
+
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
   const Component = isDesktop ? Dialog : Drawer;
 
   const handleOpenChange = onOpenChange

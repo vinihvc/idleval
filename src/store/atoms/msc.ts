@@ -1,9 +1,10 @@
 import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import type { FactoryType } from "@/content/factories";
-import { store } from "@/store/store";
+import { getAffordableUnitCount, getPurchaseTotalCost } from "@/game/purchases";
+import { store } from "@/providers/store";
 import { getFactory } from "./factories";
-import { hasGoldToBuy, walletAtom } from "./wallet";
+import { getGold } from "./wallet";
 
 export const AMOUNT_TO_BUY = [
   {
@@ -80,64 +81,27 @@ export const toggleAmountToBuy = () => {
   }));
 };
 
-/**
- * Get the total amount of a factory that can be bought by amount
- *
- * @param factory - The factory to get the total amount of
- * @returns The total amount of a factory that can be bought by amount
- */
 export const totalCanBuyByAmount = (
   factory: FactoryType,
   amount: MscAtomProps["amountToBuy"]
 ) => {
-  const { gold } = store.get(walletAtom);
-  const { buyCost } = getFactory(factory);
+  const gold = getGold();
+  const { baseBuyCost, amount: owned } = getFactory(factory);
 
-  // Return the total amount of gold divided by the buy cost
-  if (amount === "max") {
-    return Math.max(0, Math.floor(gold / buyCost));
-  }
-
-  // Return the total amount of gold divided by the buy cost
-  if (amount === 10) {
-    const totalCanBuy = Math.floor((gold * 0.1) / buyCost);
-
-    // If gold is greater than the buy cost but 10% is less than 1, return at least 1
-    if (gold >= buyCost) {
-      return Math.max(1, totalCanBuy);
-    }
-
-    return 0;
-  }
-
-  // Return the total amount of gold divided by the buy cost
-  if (amount === 50) {
-    const totalCanBuy = Math.floor((gold * 0.5) / buyCost);
-
-    // If gold is greater than the buy cost but 50% is less than 1, return at least 1
-    if (gold >= buyCost) {
-      return Math.max(1, totalCanBuy);
-    }
-
-    return 0;
-  }
-
-  // Return 1 if gold is greater than the buy cost, otherwise return 0
-  return hasGoldToBuy(buyCost) ? 1 : 0;
+  return getAffordableUnitCount({
+    amount,
+    baseBuyCost,
+    gold,
+    owned,
+  });
 };
 
-/**
- * Get the total amount to pay for a factory by amount
- *
- * @param factory - The factory to get the total amount to pay for
- * @returns The total amount to pay for a factory by amount
- */
 export const totalToPayByAmount = (
   factory: FactoryType,
   amount: MscAtomProps["amountToBuy"]
 ) => {
+  const { baseBuyCost, amount: owned } = getFactory(factory);
   const totalCanBuy = totalCanBuyByAmount(factory, amount);
-  const { buyCost } = getFactory(factory);
 
-  return totalCanBuy * buyCost;
+  return getPurchaseTotalCost(baseBuyCost, owned, totalCanBuy);
 };

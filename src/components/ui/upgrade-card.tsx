@@ -1,138 +1,68 @@
 import { Image } from "@unpic/react";
-import { ArrowUpBox, Briefcase } from "pixelarticons/react";
-import React from "react";
+import type React from "react";
 import { Button } from "@/components/ui/button";
-import type { FactoryType } from "@/content/factories";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
-import { useFactory } from "@/store/atoms/factories";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
-type UpgradeCardType = "upgrade" | "manager";
-
-interface UpgradeCardContextType {
-  /**
-   * Whether the player can afford the purchase right now
-   */
-  canAfford: boolean;
-  /**
-   * Whether the upgrade or manager is already owned
-   */
-  isComplete: boolean;
-}
-
-const UpgradeCardContext = React.createContext({} as UpgradeCardContextType);
-
-interface UpgradeCardProps extends React.ComponentProps<"div"> {
-  /**
-   * Whether the player can afford the purchase right now
-   */
-  canAfford: boolean;
-  /**
-   * The factory type
-   */
-  factoryType: FactoryType;
-  /**
-   * Image to display on the card
-   */
+export interface UpgradeCardProps extends React.ComponentProps<"article"> {
+  affordable?: boolean;
+  complete?: boolean;
+  description?: string;
   image: string;
-  /**
-   * Whether the upgrade or manager is already owned
-   */
-  isComplete: boolean;
-  /**
-   * The type of card
-   */
-  type: UpgradeCardType;
+  title?: string;
 }
-
-const ICON_MAP = {
-  upgrade: { tooltip: "Improve", icon: ArrowUpBox },
-  manager: { tooltip: "Steward", icon: Briefcase },
-};
 
 export const UpgradeCard = (props: UpgradeCardProps) => {
   const {
-    factoryType,
-    type,
     image,
-    canAfford,
-    isComplete,
+    title,
+    description,
+    affordable,
+    complete,
     className,
     children,
     ...rest
   } = props;
 
-  const { name } = useFactory(factoryType);
-
-  const { tooltip, icon: Icon } = ICON_MAP[type];
-
   return (
-    <UpgradeCardContext.Provider value={{ canAfford, isComplete }}>
-      <article
-        className={cn(
-          "group relative",
-          "bg-muted",
-          "transition-all",
-          "inset-shadow-xs overflow-hidden rounded-md border-3",
-          'data-[affordable="true"]:border-success/80',
-          'data-[complete="true"]:border-success data-[complete="true"]:bg-success',
-          "focus-visible: outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50",
-          className
+    <article
+      className={cn(
+        "group relative",
+        "bg-muted",
+        "transition-all",
+        "inset-shadow-xs overflow-hidden rounded-md border-3",
+        "data-[affordable=true]:border-success/80",
+        "data-[complete=true]:border-success data-[complete=true]:bg-success",
+        "focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50",
+        className
+      )}
+      data-affordable={affordable}
+      data-complete={complete}
+      {...rest}
+    >
+      <div className="relative aspect-square w-full overflow-hidden border-inherit border-b-2">
+        <Image
+          alt=""
+          aria-hidden
+          className="pixel-crisp pointer-events-none size-full object-cover"
+          height={112}
+          layout="constrained"
+          src={image}
+          width={112}
+        />
+        {title && (
+          <p className="absolute inset-x-0 bottom-0 bg-background/85 px-2 py-1 text-center font-medium text-foreground text-sm leading-tight">
+            {title}
+          </p>
         )}
-        data-affordable={canAfford}
-        data-complete={isComplete}
-        {...rest}
-      >
-        <div className="relative aspect-square w-full overflow-hidden border-inherit border-b-2">
-          <Image
-            alt={factoryType}
-            className="pixel-crisp pointer-events-none size-full object-cover"
-            height={200}
-            layout="constrained"
-            src={image}
-            width={200}
-          />
-        </div>
+      </div>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="absolute top-1 left-1">
-              <div
-                className={cn(
-                  "flex size-7 items-center justify-center rounded-lg border-2 border-primary/60 bg-secondary text-secondary-foreground"
-                )}
-              >
-                <Image
-                  alt=""
-                  aria-hidden
-                  className="pixel-crisp pointer-events-none size-full rounded-md object-contain"
-                  height={28}
-                  layout="constrained"
-                  src={`/images/factories/${factoryType}.webp`}
-                  width={28}
-                />
-              </div>
-            </div>
-          </TooltipTrigger>
-
-          <TooltipContent>{name}</TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="absolute top-1 right-1">
-              <div className="flex size-7 items-center justify-center rounded-lg border-2 border-primary/60 bg-secondary text-secondary-foreground">
-                <Icon className="size-4" />
-              </div>
-            </div>
-          </TooltipTrigger>
-
-          <TooltipContent>{tooltip}</TooltipContent>
-        </Tooltip>
-
-        {children}
-      </article>
-    </UpgradeCardContext.Provider>
+      {children}
+    </article>
   );
 };
 
@@ -141,30 +71,55 @@ export const UpgradeCardTrigger = (
 ) => {
   const { className, ...rest } = props;
 
-  const { canAfford, isComplete } = useUpgradeCard();
-
   return (
     <Button
       className={cn(
         "w-full",
         "font-medium text-sm",
-        "rounded-none border-0",
+        "inset-shadow-none rounded-none border-0",
         className
       )}
       clickEffect={false}
-      overrideSound="upgrade"
-      variant={isComplete || canAfford ? "green" : "black"}
+      size="sm"
       {...rest}
     />
   );
 };
 
-const useUpgradeCard = () => {
-  const context = React.useContext(UpgradeCardContext);
+interface UpgradeCardBadgeProps extends React.ComponentProps<"div"> {
+  /**
+   * The icon to display in the badge
+   */
+  icon: React.ReactNode;
+  /**
+   * The position of the badge
+   */
+  position?: "left" | "right";
+}
 
-  if (!context) {
-    throw new Error("UpgradeCard must be used within a UpgradeCardContext");
-  }
+export const UpgradeCardBadge = (props: UpgradeCardBadgeProps) => {
+  const { position = "right", icon, className, children } = props;
 
-  return context;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div
+          className={cn(
+            "absolute top-1",
+            position === "left" ? "left-1" : "right-1"
+          )}
+        >
+          <div
+            className={cn(
+              "flex size-7 items-center justify-center rounded-lg border-2 border-secondary bg-popover text-secondary-foreground",
+              className
+            )}
+          >
+            {icon}
+          </div>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>{children}</TooltipContent>
+    </Tooltip>
+  );
 };
