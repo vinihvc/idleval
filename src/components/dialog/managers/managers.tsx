@@ -1,4 +1,3 @@
-import type { PropsWithChildren } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -11,7 +10,7 @@ import {
 import { FACTORY_TYPES } from "@/content/factories";
 import { ManagersCard } from "./managers.card";
 
-export const ManagersDialog = (props: PropsWithChildren) => {
+export const ManagersDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
   return (

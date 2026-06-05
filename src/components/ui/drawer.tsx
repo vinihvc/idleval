@@ -264,7 +264,7 @@ export const DrawerContent = (props: DrawerContentProps) => {
                   <Button
                     aria-label="Close"
                     className={cn(
-                      "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2",
+                      "absolute top-2 right-2",
                       "size-14",
                       "rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                       "bg-transparent",

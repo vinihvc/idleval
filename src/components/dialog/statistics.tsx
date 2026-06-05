@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type React from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import {
   ResponsiveDialog,
@@ -12,7 +12,7 @@ import {
 import { FACTORY_TYPES } from "@/content/factories";
 import { goldEarnedByFactory, totalGoldEarned } from "@/store/atoms/statistics";
 
-export const StatisticsDialog = (props: PropsWithChildren) => {
+export const StatisticsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
   return (

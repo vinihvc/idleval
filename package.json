@@ -18,6 +18,7 @@
     "@fontsource/jersey-10": "^5.2.8",
     "@number-flow/react": "^0.6.0",
     "@tailwindcss/vite": "^4.3.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "@unpic/react": "^1.0.2",
     "break_infinity.js": "^2.2.0",
     "clsx": "^2.1.1",

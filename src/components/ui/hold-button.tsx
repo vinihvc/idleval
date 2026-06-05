@@ -1,105 +1,118 @@
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { useLongPress } from "@uidotdev/usehooks";
+import React from "react";
 import { cn } from "@/lib/cn";
+import { Button, type ButtonProps } from "./button";
 
-interface HoldActionButtonProps extends ButtonProps {
-  buttonComponent?: React.ComponentType<ButtonProps>;
+interface HoldButtonProps extends ButtonProps {
+  /**
+   * The duration of the hold in milliseconds
+   *
+   * @default 1000
+   */
   durationMs?: number;
-  holdingChildren?: React.ReactNode;
+  /**
+   * Content shown while the button is being held
+   *
+   * @default "Hold..."
+   */
+  holdLabel?: React.ReactNode;
+  /**
+   * The function to call when the hold is complete
+   */
   onHoldComplete?: () => void;
 }
 
-export const HoldActionButton = (props: HoldActionButtonProps) => {
+export const HoldButton = (props: HoldButtonProps) => {
   const {
-    buttonComponent: Component = Button,
-    className,
     disabled,
     durationMs = 1000,
-    holdingChildren = "Hold...",
+    holdLabel = "Hold...",
     onClick,
     onHoldComplete,
+    onBlur,
     onKeyDown,
     onKeyUp,
-    onPointerCancel,
-    onPointerDown,
-    onPointerLeave,
-    onPointerUp,
     children,
+    className,
     ...rest
   } = props;
 
-  const [isHolding, setIsHolding] = useState(false);
-  const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isHolding, setIsHolding] = React.useState(false);
+  const keyboardHoldRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
-  const clearHold = () => {
-    if (holdTimeoutRef.current) {
-      clearTimeout(holdTimeoutRef.current);
-      holdTimeoutRef.current = null;
+  const completeHold = React.useCallback(() => {
+    setIsHolding(false);
+    onHoldComplete?.();
+  }, [onHoldComplete]);
+
+  const clearKeyboardHold = React.useCallback(() => {
+    if (keyboardHoldRef.current) {
+      clearTimeout(keyboardHoldRef.current);
+      keyboardHoldRef.current = null;
     }
     setIsHolding(false);
-  };
+  }, []);
 
-  const startHold = () => {
-    if (disabled || holdTimeoutRef.current) {
+  const startKeyboardHold = React.useCallback(() => {
+    if (disabled || keyboardHoldRef.current) {
       return;
     }
 
     setIsHolding(true);
-    holdTimeoutRef.current = setTimeout(() => {
-      holdTimeoutRef.current = null;
-      setIsHolding(false);
-      onHoldComplete?.();
+    keyboardHoldRef.current = setTimeout(() => {
+      keyboardHoldRef.current = null;
+      completeHold();
     }, durationMs);
-  };
+  }, [completeHold, disabled, durationMs]);
 
-  useEffect(
-    () => () => {
-      if (holdTimeoutRef.current) {
-        clearTimeout(holdTimeoutRef.current);
+  const longPressHandlers = useLongPress(
+    () => {
+      if (!disabled) {
+        completeHold();
       }
     },
-    []
+    {
+      onCancel: () => {
+        if (!disabled) {
+          setIsHolding(false);
+        }
+      },
+      onStart: () => {
+        if (!disabled) {
+          setIsHolding(true);
+        }
+      },
+      threshold: durationMs,
+    }
   );
 
   return (
-    <Component
+    <Button
       className={cn("overflow-hidden", className)}
       disabled={disabled}
+      onBlur={(event) => {
+        clearKeyboardHold();
+        onBlur?.(event);
+      }}
       onClick={(event) => {
         event.preventDefault();
         onClick?.(event);
       }}
       onKeyDown={(event) => {
         if (event.key === " " || event.key === "Enter") {
-          startHold();
+          startKeyboardHold();
         }
         onKeyDown?.(event);
       }}
       onKeyUp={(event) => {
         if (event.key === " " || event.key === "Enter") {
-          clearHold();
+          clearKeyboardHold();
         }
         onKeyUp?.(event);
       }}
-      onPointerCancel={(event) => {
-        clearHold();
-        onPointerCancel?.(event);
-      }}
-      onPointerDown={(event) => {
-        if (event.button === 0) {
-          startHold();
-        }
-        onPointerDown?.(event);
-      }}
-      onPointerLeave={(event) => {
-        clearHold();
-        onPointerLeave?.(event);
-      }}
-      onPointerUp={(event) => {
-        clearHold();
-        onPointerUp?.(event);
-      }}
+      {...longPressHandlers}
       {...rest}
     >
       <span
@@ -111,8 +124,8 @@ export const HoldActionButton = (props: HoldActionButtonProps) => {
         style={{ transitionDuration: `${durationMs}ms` }}
       />
       <span className="relative z-10 flex items-center gap-2">
-        {isHolding ? holdingChildren : children}
+        {isHolding ? holdLabel : children}
       </span>
-    </Component>
+    </Button>
   );
 };

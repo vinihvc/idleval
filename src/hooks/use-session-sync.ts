@@ -1,21 +1,23 @@
+import { useVisibilityChange } from "@uidotdev/usehooks";
 import React from "react";
 import { touchLastSeen } from "@/store/atoms/session";
 
 const HEARTBEAT_MS = 60_000;
 
 export const useSessionSync = () => {
-  React.useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        touchLastSeen();
-      }
-    };
+  const isVisible = useVisibilityChange();
 
+  React.useEffect(() => {
+    if (!isVisible) {
+      touchLastSeen();
+    }
+  }, [isVisible]);
+
+  React.useEffect(() => {
     const handleBeforeUnload = () => {
       touchLastSeen();
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     const heartbeat = window.setInterval(() => {
@@ -23,7 +25,6 @@ export const useSessionSync = () => {
     }, HEARTBEAT_MS);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.clearInterval(heartbeat);
     };

@@ -1,5 +1,5 @@
+import { useMediaQuery } from "@uidotdev/usehooks";
 import React from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogBody,

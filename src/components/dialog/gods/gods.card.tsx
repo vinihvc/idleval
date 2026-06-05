@@ -7,7 +7,7 @@ import { getGodGoldRequired } from "@/game/gods";
 import { useGods } from "@/store/atoms/gods";
 import { hasGoldToBuy } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
-import { GodConfirmButton } from "./god-confirm";
+import { GodConfirmButton } from "./gods";
 
 interface GodsCardProps {
   godIndex: number;

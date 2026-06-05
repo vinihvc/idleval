@@ -25,6 +25,7 @@ export const SoundProvider = ({ children }: React.PropsWithChildren) => {
   const [coinSound] = useSoundHook("/sounds/coin.wav");
   const [upgradeSound] = useSoundHook("/sounds/upgrade.wav");
   const [autoSound] = useSoundHook("/sounds/auto.wav");
+  const [praySound] = useSoundHook("/sounds/pray.wav");
 
   // Store all players in the ref
   soundPlayers.current = {
@@ -32,6 +33,7 @@ export const SoundProvider = ({ children }: React.PropsWithChildren) => {
     coin: coinSound,
     upgrade: upgradeSound,
     auto: autoSound,
+    pray: praySound,
   };
 
   const play = React.useCallback((type: SoundsType, _volume = 1) => {

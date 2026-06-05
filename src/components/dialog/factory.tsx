@@ -1,4 +1,3 @@
-import type { PropsWithChildren } from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { NumberText } from "@/components/ui/number-text";
 import {
@@ -16,7 +15,7 @@ import { getGodsProductionMultiplier } from "@/store/atoms/gods";
 import { goldEarnedByFactory } from "@/store/atoms/statistics";
 import { amountFormatter } from "@/utils/formatters";
 
-interface FactoryDialogProps extends PropsWithChildren {
+interface FactoryDialogProps extends React.PropsWithChildren {
   /**
    * The factory type
    */
@@ -24,7 +23,7 @@ interface FactoryDialogProps extends PropsWithChildren {
 }
 
 export const FactoryDialog = (props: FactoryDialogProps) => {
-  const { children, factoryType } = props;
+  const { factoryType, children } = props;
 
   const factory = useFactory(factoryType);
   const yieldPerTap = getProductionValue(factoryType);

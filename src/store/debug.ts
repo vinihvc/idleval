@@ -7,7 +7,7 @@ import { godsAtom } from "./atoms/gods";
 import { statisticsAtom } from "./atoms/statistics";
 import { walletAtom } from "./atoms/wallet";
 
-export const DEBUG_GOLD_AMOUNT = D(1_000_000);
+export const DEBUG_GOLD_AMOUNT = D(100_000_000_000);
 export const GOD_MODE_GOLD_AMOUNT = D("1e100");
 
 const initialStatistics = Object.fromEntries(

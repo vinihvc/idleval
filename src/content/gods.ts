@@ -1,4 +1,3 @@
-/** Divine favor per tier — deities from the same peoples as each manager, not the same figures. */
 export const GODS = [
   {
     id: "huangdi",

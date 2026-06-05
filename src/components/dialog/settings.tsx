@@ -1,4 +1,3 @@
-import type { PropsWithChildren } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -11,8 +10,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { toggleMusic, toggleSfx, useSettings } from "@/store/atoms/settings";
 
-export const SettingDialog = (props: PropsWithChildren) => {
+export const SettingDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+
   const settings = useSettings();
 
   return (

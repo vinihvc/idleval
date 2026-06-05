@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -12,7 +12,7 @@ import {
 const linkClass =
   "font-semibold text-popover-foreground underline decoration-primary/60 underline-offset-4 transition-colors hover:decoration-primary";
 
-export const AboutDialog = (props: PropsWithChildren) => {
+export const AboutDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
   return (
