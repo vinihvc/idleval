@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import type { FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
 
@@ -7,7 +7,7 @@ export interface SessionState {
   lastSeenAt: number | null;
 }
 
-export const sessionAtom = atomWithStorage<SessionState>("session", {
+export const sessionAtom = persistedAtom<SessionState>("session", {
   lastSeenAt: null,
 });
 

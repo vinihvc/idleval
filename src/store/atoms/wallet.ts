@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import type { FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
 import {
@@ -14,7 +14,7 @@ interface WalletState {
   gold: string;
 }
 
-export const walletAtom = atomWithStorage("wallet-v4", {
+export const walletAtom = persistedAtom("wallet-v4", {
   gold: serializeDecimal(D(0)),
 } satisfies WalletState);
 

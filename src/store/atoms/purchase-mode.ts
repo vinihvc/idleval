@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import type { FactoryType } from "@/content/factories";
 import { getAffordableUnitCount, getPurchaseTotalCost } from "@/game/purchases";
 import { store } from "@/providers/store";
@@ -37,7 +37,7 @@ export interface PurchaseModeState {
   amountToBuy: (typeof AMOUNT_TO_BUY)[number]["value"];
 }
 
-export const purchaseModeAtom = atomWithStorage<PurchaseModeState>("msc", {
+export const purchaseModeAtom = persistedAtom<PurchaseModeState>("msc", {
   amountToBuy: 1,
 });
 

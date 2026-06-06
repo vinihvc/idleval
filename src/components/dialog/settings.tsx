@@ -26,6 +26,7 @@ const HOLD_TO_RESET_MS = 4000;
 
 export const SettingsDialog = () => {
   const settings = useSettings();
+
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -79,32 +80,21 @@ export const SettingsDialog = () => {
               </Field>
             </FieldGroup>
 
-            <div className="grid gap-2 rounded-md border border-destructive/30 bg-destructive/8 p-3">
-              <p className="font-semibold text-popover-foreground text-sm">
-                Start over
-              </p>
-
-              <p className="text-popover-foreground/80 text-xs">
-                Erase all progress and begin a fresh reign. This cannot be
-                undone.
-              </p>
-
-              <HoldButton
-                aria-label={`Hold for ${HOLD_TO_RESET_MS / 1000} seconds to reset the game.`}
-                className="w-full"
-                durationMs={HOLD_TO_RESET_MS}
-                holdLabel="Hold..."
-                onHoldComplete={() => {
-                  resetGame();
-                  setOpen(false);
-                }}
-                size="lg"
-                variant="destructive"
-              >
-                <Reload />
-                Reset game
-              </HoldButton>
-            </div>
+            <HoldButton
+              aria-label={`Hold for ${HOLD_TO_RESET_MS / 1000} seconds to reset the game.`}
+              className="w-full"
+              durationMs={HOLD_TO_RESET_MS}
+              holdLabel="Hold..."
+              onHoldComplete={() => {
+                resetGame();
+                setOpen(false);
+              }}
+              size="lg"
+              variant="destructive"
+            >
+              <Reload />
+              Reset game
+            </HoldButton>
           </div>
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>

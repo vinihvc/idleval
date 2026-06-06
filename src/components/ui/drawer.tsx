@@ -419,21 +419,33 @@ interface DrawerBodyProps extends React.ComponentProps<typeof ark.div> {
 export const DrawerBody = (props: DrawerBodyProps) => {
   const { scrollFade = false, className, ...rest } = props;
 
+  const bodyClassName = cn(
+    "min-h-0 flex-1",
+    "p-(--space)",
+    "text-lg max-sm:text-center",
+    "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
+    "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
+    className
+  );
+
+  if (scrollFade) {
+    return (
+      <ScrollArea className="min-h-0 flex-1" scrollFade>
+        <ark.div
+          className={bodyClassName}
+          data-slot="drawer-body"
+          {...rest}
+        />
+      </ScrollArea>
+    );
+  }
+
   return (
-    <ScrollArea scrollFade={scrollFade}>
-      <ark.div
-        className={cn(
-          "min-h-0 flex-1",
-          "p-(--space)",
-          "text-lg max-sm:text-center",
-          "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
-          "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
-          className
-        )}
-        data-slot="drawer-body"
-        {...rest}
-      />
-    </ScrollArea>
+    <ark.div
+      className={cn(bodyClassName, "overflow-y-auto overscroll-contain")}
+      data-slot="drawer-body"
+      {...rest}
+    />
   );
 };
 

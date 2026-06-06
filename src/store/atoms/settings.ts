@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import { store } from "@/providers/store";
 
-export const settingsAtom = atomWithStorage("settings", {
+export const settingsAtom = persistedAtom("settings", {
   music: true,
   musicVolume: 0.8,
   sfx: true,

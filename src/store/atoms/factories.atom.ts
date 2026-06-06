@@ -1,4 +1,4 @@
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import type { FactoryPersistedState } from "@/game/types";
 
@@ -17,4 +17,4 @@ export const initialData = Object.fromEntries(
   ])
 ) as Record<FactoryType, FactoryPersistedState>;
 
-export const factoriesAtom = atomWithStorage("factories", initialData);
+export const factoriesAtom = persistedAtom("factories", initialData);

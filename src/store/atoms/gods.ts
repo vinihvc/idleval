@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import { GOD_COUNT } from "@/content/gods";
 import { getGodGoldRequired, getTotalProductionMultiplier } from "@/game/gods";
 import { sound } from "@/providers/sound";
@@ -12,7 +12,7 @@ export interface GodsState {
   count: number;
 }
 
-export const godsAtom = atomWithStorage<GodsState>("gods", { count: 0 });
+export const godsAtom = persistedAtom<GodsState>("gods", { count: 0 });
 
 export const useGods = () => useAtomValue(godsAtom);
 

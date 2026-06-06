@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { persistedAtom } from "@/store/storage";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
 import {
@@ -38,7 +38,7 @@ export const createInitialStatistics = (): Record<
 
 export const initialStatistics = createInitialStatistics();
 
-export const statisticsAtom = atomWithStorage("statistics", {
+export const statisticsAtom = persistedAtom("statistics", {
   goldEarned: serializeDecimal(D(0)),
   goldSpent: serializeDecimal(D(0)),
   factories: initialStatistics,

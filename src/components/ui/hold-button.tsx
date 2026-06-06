@@ -78,7 +78,7 @@ export const HoldButton = (props: HoldButtonProps) => {
 
   return (
     <Button
-      className={cn("overflow-hidden", className)}
+      className={cn("touch-manipulation overflow-hidden", className)}
       disabled={disabled}
       onBlur={(event) => {
         cancelHold();

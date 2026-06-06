@@ -8,7 +8,7 @@ export const Game = (props: React.ComponentProps<"div">) => {
     <FantasyPanel
       className={cn(
         "container max-w-4xl",
-        "relative overflow-hidden",
+        "relative min-h-0 overflow-hidden",
         "flex flex-col",
         "pt-16 max-sm:flex-1 max-sm:rounded-none max-sm:border-x-0 sm:py-0",
         "sm:rounded-xl",
