@@ -64,3 +64,6 @@ export const GODS = [
 export type God = (typeof GODS)[number];
 
 export const GOD_COUNT = GODS.length;
+
+export const getGodIndex = (god: Pick<God, "id">): number =>
+  GODS.findIndex((entry) => entry.id === god.id);

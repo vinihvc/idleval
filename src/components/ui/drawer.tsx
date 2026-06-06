@@ -6,11 +6,12 @@ import { Portal } from "@ark-ui/react/portal";
 import { Close } from "pixelarticons/react";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { WaxSeal } from "@/components/icons/wax-seal";
 import { Button } from "@/components/ui/button";
 import { DialogImage } from "@/components/ui/dialog";
-import { FantasyCorner } from "@/components/ui/fantasy/fantasy-corner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/cn";
+import { WaxSeal } from "../icons/wax-seal";
+import { FantasyCorner } from "./fantasy/fantasy-corner";
 
 export const useDrawer = useDrawerContext;
 
@@ -121,7 +122,7 @@ const drawerPositionerVariants = tv({
   variants: {
     variant: {
       default: "",
-      inset: "sm:p-4",
+      inset: "p-2",
     },
   },
   defaultVariants: {
@@ -250,14 +251,12 @@ export const DrawerContent = (props: DrawerContentProps) => {
               {...rest}
               data-slot="drawer-content"
             >
-              <FantasyCorner position="tl" />
-              <FantasyCorner position="tr" />
-              <FantasyCorner position="bl" />
-              <FantasyCorner position="br" />
-
               <DrawerGrabber />
 
               {children}
+
+              <FantasyCorner position="tl" />
+              <FantasyCorner position="tr" />
 
               {!!showCloseButton && (
                 <DrawerClose asChild>
@@ -395,11 +394,12 @@ export const DrawerTitle = (
 };
 
 export const DrawerDescription = (
-  props: React.ComponentProps<typeof ark.div>
+  props: React.ComponentProps<typeof ArkDrawer.Description>
 ) => {
   const { className, ...rest } = props;
+
   return (
-    <ark.div
+    <ArkDrawer.Description
       className={cn("text-xl leading-relaxed", className)}
       data-slot="drawer-description"
       {...rest}
@@ -417,20 +417,23 @@ interface DrawerBodyProps extends React.ComponentProps<typeof ark.div> {
 }
 
 export const DrawerBody = (props: DrawerBodyProps) => {
-  const { scrollFade: _scrollFade = false, className, ...rest } = props;
+  const { scrollFade = false, className, ...rest } = props;
 
   return (
-    <ark.div
-      className={cn(
-        "min-h-0 flex-1 overflow-y-auto overscroll-contain",
-        "p-(--space)",
-        "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
-        "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
-        className
-      )}
-      data-slot="drawer-body"
-      {...rest}
-    />
+    <ScrollArea scrollFade={scrollFade}>
+      <ark.div
+        className={cn(
+          "min-h-0 flex-1",
+          "p-(--space)",
+          "text-lg max-sm:text-center",
+          "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
+          "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
+          className
+        )}
+        data-slot="drawer-body"
+        {...rest}
+      />
+    </ScrollArea>
   );
 };
 
@@ -451,9 +454,7 @@ export const DrawerFooter = (props: React.ComponentProps<typeof ark.div>) => {
         "**:data-[slot=drawer-content-inner]:flex-col-reverse **:data-[slot=drawer-content-inner]:gap-2",
         "flex flex-col-reverse gap-2",
         "sm:rounded-none",
-        "px-(--space) py-4",
-        "bg-muted/48",
-        "border-t",
+        "px-(--space) pt-4",
         className
       )}
       data-slot="drawer-footer"

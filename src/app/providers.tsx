@@ -3,9 +3,9 @@ import { SoundProvider } from "@/providers/sound";
 import { StoreProvider } from "@/providers/store";
 
 export const Providers = ({ children }: React.PropsWithChildren) => (
-  <SoundProvider>
-    <StoreProvider>
+  <StoreProvider>
+    <SoundProvider>
       <OfflineBootstrap>{children}</OfflineBootstrap>
-    </StoreProvider>
-  </SoundProvider>
+    </SoundProvider>
+  </StoreProvider>
 );

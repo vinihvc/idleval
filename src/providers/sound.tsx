@@ -1,57 +1,64 @@
 import React from "react";
-import useSoundHook from "use-sound";
-
-export type SoundsType = "click" | "coin" | "upgrade" | "auto";
+import { soundEngine } from "@/audio/engine";
+import type { PlayOptions, SfxId } from "@/audio/types";
+import { getSettings, settingsAtom } from "@/store/atoms/settings";
+import { store } from "@/providers/store";
 
 interface SoundContextType {
-  play: (type: SoundsType, volume?: number) => void;
+  play: (id: SfxId, options?: PlayOptions) => void;
+  playMusic: () => void;
+  stopMusic: () => void;
+  pauseMusic: () => void;
 }
 
-const SoundContext = React.createContext<SoundContextType | undefined>(
-  undefined
-);
+const SoundContext = React.createContext<SoundContextType | null>(null);
 
-// Global reference to store the play function
-let globalPlay: ((type: SoundsType, volume?: number) => void) | null = null;
+export type { SfxId as SoundsType } from "@/audio/types";
 
 export const SoundProvider = ({ children }: React.PropsWithChildren) => {
-  // Refs to store sound players
-  const soundPlayers = React.useRef<
-    Record<SoundsType, ReturnType<typeof useSoundHook>[0]>
-  >({} as Record<SoundsType, ReturnType<typeof useSoundHook>[0]>);
+  React.useEffect(() => {
+    soundEngine.init(
+      getSettings,
+      (callback) => store.sub(settingsAtom, callback)
+    );
 
-  // Initialize sound players for each type
-  const [clickSound] = useSoundHook("/sounds/click.wav");
-  const [coinSound] = useSoundHook("/sounds/coin.wav");
-  const [upgradeSound] = useSoundHook("/sounds/upgrade.wav");
-  const [autoSound] = useSoundHook("/sounds/auto.wav");
-  const [praySound] = useSoundHook("/sounds/pray.wav");
+    const unlock = () => {
+      soundEngine.unlock();
+    };
 
-  // Store all players in the ref
-  soundPlayers.current = {
-    click: clickSound,
-    coin: coinSound,
-    upgrade: upgradeSound,
-    auto: autoSound,
-    pray: praySound,
-  };
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
 
-  const play = React.useCallback((type: SoundsType, _volume = 1) => {
-    const player = soundPlayers.current[type];
-    if (player) {
-      player();
-    }
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      soundEngine.dispose();
+    };
   }, []);
 
-  // Store the play function in the global reference
-  globalPlay = play;
+  const value = React.useMemo<SoundContextType>(
+    () => ({
+      play: (id, options) => {
+        soundEngine.play(id, options);
+      },
+      playMusic: () => {
+        soundEngine.playMusic();
+      },
+      stopMusic: () => {
+        soundEngine.stopMusic();
+      },
+      pauseMusic: () => {
+        soundEngine.pauseMusic();
+      },
+    }),
+    []
+  );
 
   return (
-    <SoundContext.Provider value={{ play }}>{children}</SoundContext.Provider>
+    <SoundContext.Provider value={value}>{children}</SoundContext.Provider>
   );
 };
 
-// Hook for using within React components
 export const useSound = () => {
   const context = React.useContext(SoundContext);
 
@@ -62,15 +69,17 @@ export const useSound = () => {
   return context;
 };
 
-// Helper for using outside React components
 export const sound = {
-  play: (type: SoundsType, volume?: number) => {
-    if (!globalPlay) {
-      console.warn(
-        "Sound system not initialized. Make sure SoundProvider is mounted."
-      );
-      return;
-    }
-    globalPlay(type, volume);
+  play: (id: SfxId, options?: PlayOptions) => {
+    soundEngine.play(id, options);
+  },
+  playMusic: () => {
+    soundEngine.playMusic();
+  },
+  stopMusic: () => {
+    soundEngine.stopMusic();
+  },
+  pauseMusic: () => {
+    soundEngine.pauseMusic();
   },
 };

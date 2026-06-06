@@ -1,3 +1,8 @@
+import { Menu, Reload } from "pixelarticons/react";
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { HoldButton } from "@/components/ui/hold-button";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -6,18 +11,37 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toggleMusic, toggleSfx, useSettings } from "@/store/atoms/settings";
+import { resetGame } from "@/store/reset";
 
-export const SettingDialog = (props: React.PropsWithChildren) => {
-  const { children } = props;
+const HOLD_TO_RESET_MS = 4000;
 
+export const SettingsDialog = () => {
   const settings = useSettings();
+  const [open, setOpen] = React.useState(false);
 
   return (
-    <ResponsiveDialog>
-      {children}
+    <ResponsiveDialog onOpenChange={setOpen} open={open}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ResponsiveDialogTrigger asChild>
+            <Button size="icon-md" variant="cream">
+              <span className="sr-only">Open Settings</span>
+              <Menu />
+            </Button>
+          </ResponsiveDialogTrigger>
+        </TooltipTrigger>
+
+        <TooltipContent>Settings</TooltipContent>
+      </Tooltip>
 
       <ResponsiveDialogContent>
         <ResponsiveDialogImage alt="Settings" src="/images/msc/setting.webp" />
@@ -32,28 +56,54 @@ export const SettingDialog = (props: React.PropsWithChildren) => {
 
         <ResponsiveDialogBody>
           <div className="grid gap-4">
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
-              <label className="font-semibold" htmlFor="toggle-music">
-                Music
-              </label>
+            <FieldGroup>
+              <Field
+                className="rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground"
+                orientation="horizontal"
+                reverse
+              >
+                <Switch
+                  checked={settings.music}
+                  onCheckedChange={toggleMusic}
+                />
+                <FieldLabel className="font-semibold">Music</FieldLabel>
+              </Field>
 
-              <Switch
-                checked={settings.music}
-                id="toggle-music"
-                onCheckedChange={toggleMusic}
-              />
-            </div>
+              <Field
+                className="rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground"
+                orientation="horizontal"
+                reverse
+              >
+                <Switch checked={settings.sfx} onCheckedChange={toggleSfx} />
+                <FieldLabel className="font-semibold">SFX</FieldLabel>
+              </Field>
+            </FieldGroup>
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground text-sm">
-              <label className="font-semibold" htmlFor="toggle-sfx">
-                SFX
-              </label>
+            <div className="grid gap-2 rounded-md border border-destructive/30 bg-destructive/8 p-3">
+              <p className="font-semibold text-popover-foreground text-sm">
+                Start over
+              </p>
 
-              <Switch
-                checked={settings.sfx}
-                id="toggle-sfx"
-                onCheckedChange={toggleSfx}
-              />
+              <p className="text-popover-foreground/80 text-xs">
+                Erase all progress and begin a fresh reign. This cannot be
+                undone.
+              </p>
+
+              <HoldButton
+                aria-label={`Hold for ${HOLD_TO_RESET_MS / 1000} seconds to reset the game.`}
+                className="w-full"
+                durationMs={HOLD_TO_RESET_MS}
+                holdLabel="Hold..."
+                onHoldComplete={() => {
+                  resetGame();
+                  setOpen(false);
+                }}
+                size="lg"
+                variant="destructive"
+              >
+                <Reload />
+                Reset game
+              </HoldButton>
             </div>
           </div>
         </ResponsiveDialogBody>

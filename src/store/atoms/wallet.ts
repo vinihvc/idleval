@@ -8,7 +8,6 @@ import {
   type GameValue,
   serializeDecimal,
 } from "@/utils/decimal";
-import { getFactory, getProductionValue } from "./factories";
 import { setStatistics } from "./statistics";
 
 interface WalletState {
@@ -30,10 +29,13 @@ export const useWallet = () => {
   };
 };
 
-export const increaseGold = (factory: FactoryType) => {
-  const { amount } = getFactory(factory);
-  const productionValue = getProductionValue(factory);
-  const goldEarned = productionValue.times(amount);
+export const increaseGoldByAmount = (
+  factory: FactoryType,
+  goldEarned: GameValue
+) => {
+  if (goldEarned.lte(0)) {
+    return;
+  }
 
   setStatistics(factory, goldEarned);
 

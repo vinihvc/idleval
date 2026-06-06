@@ -1,5 +1,5 @@
-import { useLongPress } from "@uidotdev/usehooks";
 import React from "react";
+import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/cn";
 import { Button, type ButtonProps } from "./button";
 
@@ -22,70 +22,58 @@ interface HoldButtonProps extends ButtonProps {
   onHoldComplete?: () => void;
 }
 
+const isHoldKey = (key: string) => key === " " || key === "Enter";
+
 export const HoldButton = (props: HoldButtonProps) => {
   const {
-    disabled,
     durationMs = 1000,
     holdLabel = "Hold...",
+    disabled,
     onClick,
     onHoldComplete,
     onBlur,
     onKeyDown,
     onKeyUp,
-    children,
     className,
+    children,
     ...rest
   } = props;
 
+  const { trigger, cancel } = useWebHaptics();
   const [isHolding, setIsHolding] = React.useState(false);
-  const keyboardHoldRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const completeHold = React.useCallback(() => {
-    setIsHolding(false);
-    onHoldComplete?.();
-  }, [onHoldComplete]);
-
-  const clearKeyboardHold = React.useCallback(() => {
-    if (keyboardHoldRef.current) {
-      clearTimeout(keyboardHoldRef.current);
-      keyboardHoldRef.current = null;
+  const cancelHold = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
+    cancel();
     setIsHolding(false);
-  }, []);
+  };
 
-  const startKeyboardHold = React.useCallback(() => {
-    if (disabled || keyboardHoldRef.current) {
+  const startHold = () => {
+    if (disabled || timerRef.current) {
       return;
     }
 
+    trigger("light");
     setIsHolding(true);
-    keyboardHoldRef.current = setTimeout(() => {
-      keyboardHoldRef.current = null;
-      completeHold();
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      setIsHolding(false);
+      trigger("success");
+      onHoldComplete?.();
     }, durationMs);
-  }, [completeHold, disabled, durationMs]);
+  };
 
-  const longPressHandlers = useLongPress(
-    () => {
-      if (!disabled) {
-        completeHold();
+  React.useEffect(
+    () => () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
     },
-    {
-      onCancel: () => {
-        if (!disabled) {
-          setIsHolding(false);
-        }
-      },
-      onStart: () => {
-        if (!disabled) {
-          setIsHolding(true);
-        }
-      },
-      threshold: durationMs,
-    }
+    []
   );
 
   return (
@@ -93,7 +81,7 @@ export const HoldButton = (props: HoldButtonProps) => {
       className={cn("overflow-hidden", className)}
       disabled={disabled}
       onBlur={(event) => {
-        clearKeyboardHold();
+        cancelHold();
         onBlur?.(event);
       }}
       onClick={(event) => {
@@ -101,18 +89,22 @@ export const HoldButton = (props: HoldButtonProps) => {
         onClick?.(event);
       }}
       onKeyDown={(event) => {
-        if (event.key === " " || event.key === "Enter") {
-          startKeyboardHold();
+        if (isHoldKey(event.key)) {
+          startHold();
         }
         onKeyDown?.(event);
       }}
       onKeyUp={(event) => {
-        if (event.key === " " || event.key === "Enter") {
-          clearKeyboardHold();
+        if (isHoldKey(event.key)) {
+          cancelHold();
         }
         onKeyUp?.(event);
       }}
-      {...longPressHandlers}
+      onMouseDown={startHold}
+      onMouseLeave={cancelHold}
+      onMouseUp={cancelHold}
+      onTouchEnd={cancelHold}
+      onTouchStart={startHold}
       {...rest}
     >
       <span

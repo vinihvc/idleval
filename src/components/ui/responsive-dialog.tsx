@@ -28,6 +28,7 @@ import {
 interface RootResponsiveDialogProps extends React.PropsWithChildren {
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
+  role?: "dialog" | "alertdialog";
 }
 
 interface ResponsiveDialogProps extends React.PropsWithChildren {
@@ -52,7 +53,7 @@ export const useResponsiveDialog = () => {
 };
 
 export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
-  const { onOpenChange, ...rest } = props;
+  const { role, onOpenChange, ...rest } = props;
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -66,7 +67,7 @@ export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
 
   return (
     <ResponsiveDialogContext.Provider value={{ isDesktop }}>
-      <Component onOpenChange={handleOpenChange} {...rest} />
+      <Component onOpenChange={handleOpenChange} role={role} {...rest} />
     </ResponsiveDialogContext.Provider>
   );
 };
@@ -106,7 +107,7 @@ export const ResponsiveDialogContent = (
     ...drawerProps
   } = props;
 
-  return <DrawerContent {...drawerProps} />;
+  return <DrawerContent variant="inset" {...drawerProps} />;
 };
 
 export const ResponsiveDialogImage = (
@@ -147,6 +148,7 @@ export const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
 
 export const ResponsiveDialogBody = (props: ResponsiveDialogProps) => {
   const { isDesktop } = useResponsiveDialog();
+
   const { className, ...rest } = props;
 
   if (isDesktop) {

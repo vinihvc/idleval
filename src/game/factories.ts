@@ -33,9 +33,3 @@ export const getFactoryProductionValue = ({
  */
 export const getFactoryEarnPerCycle = (input: FactoryEarnInput): GameValue =>
   getFactoryProductionValue(input).times(input.amount);
-
-/**
- * Calculates the total gold awarded by a completed factory production action.
- */
-export const getFactoryTotalEarn = (input: FactoryEarnInput): GameValue =>
-  getFactoryEarnPerCycle(input);

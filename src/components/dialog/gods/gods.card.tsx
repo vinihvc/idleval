@@ -2,24 +2,24 @@ import { CheckboxOn } from "pixelarticons/react";
 import { Badge } from "@/components/ui/badge";
 import { NumberText } from "@/components/ui/number-text";
 import { UpgradeCard, UpgradeCardTrigger } from "@/components/ui/upgrade-card";
-import { GODS } from "@/content/gods";
+import { type God, getGodIndex } from "@/content/gods";
 import { getGodGoldRequired } from "@/game/gods";
 import { useGods } from "@/store/atoms/gods";
 import { hasGoldToBuy } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
-import { GodConfirmButton } from "./gods";
+import { GodConfirmButton } from "./gods.confirm-button";
 
 interface GodsCardProps {
-  godIndex: number;
+  god: God;
   onInvoke?: () => void;
 }
 
 export const GodsCard = (props: GodsCardProps) => {
-  const { godIndex, onInvoke } = props;
+  const { god, onInvoke } = props;
 
   const { count: godsLevel } = useGods();
 
-  const god = GODS[godIndex];
+  const godIndex = getGodIndex(god);
   const goldRequired = getGodGoldRequired(godIndex);
   const canAfford = hasGoldToBuy(goldRequired);
 
@@ -76,7 +76,6 @@ export const GodsCard = (props: GodsCardProps) => {
         <GodConfirmButton
           disabled={!actionable}
           god={god}
-          godIndex={godIndex}
           onInvoke={onInvoke}
           sound="click"
           variant="green"

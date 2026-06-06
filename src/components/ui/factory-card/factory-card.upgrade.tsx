@@ -19,8 +19,8 @@ import {
 import {
   totalCanBuyByAmount,
   totalToPayByAmount,
-  useMsc,
-} from "@/store/atoms/msc";
+  usePurchaseMode,
+} from "@/store/atoms/purchase-mode";
 import { hasGoldToBuy } from "@/store/atoms/wallet";
 import {
   amountFormatter,
@@ -39,7 +39,7 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
 
   const { isUnlocked, unlockPrice, name, nextUnitCost } =
     useFactory(factoryType);
-  const { value: amountToBuy } = useMsc();
+  const { value: amountToBuy } = usePurchaseMode();
   const totalCanBuy = totalCanBuyByAmount(factoryType, amountToBuy);
   const totalToPay = totalToPayByAmount(factoryType, amountToBuy);
 

@@ -2,12 +2,14 @@ import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { store } from "@/providers/store";
 
-const settingsAtom = atomWithStorage("settings", {
+export const settingsAtom = atomWithStorage("settings", {
   music: true,
   musicVolume: 0.8,
   sfx: true,
   sfxVolume: 0.8,
 });
+
+export const getSettings = () => store.get(settingsAtom);
 
 export const useSettings = () => useAtomValue(settingsAtom);
 

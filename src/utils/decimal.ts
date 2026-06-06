@@ -15,9 +15,6 @@ export const ONE = D(1);
 
 export const INFINITY_THRESHOLD = D("1e171");
 
-export const canAfford = (gold: Decimal, price: Decimal): boolean =>
-  gold.gte(price);
-
 export const serializeDecimal = (value: Decimal): string => value.toString();
 
 export const deserializeDecimal = (value: string | number): Decimal => D(value);

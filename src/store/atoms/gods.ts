@@ -2,8 +2,9 @@ import { useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { GOD_COUNT } from "@/content/gods";
 import { getGodGoldRequired, getTotalProductionMultiplier } from "@/game/gods";
-import { resetRunProgress } from "@/game/reset-run";
+import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
+import { resetRunProgress } from "@/store/reset";
 import type { GameValue } from "@/utils/decimal";
 import { getGold } from "./wallet";
 
@@ -19,6 +20,12 @@ export const getGodsLevel = (): number => store.get(godsAtom).count;
 
 export const getGodsProductionMultiplier = (): GameValue =>
   getTotalProductionMultiplier(getGodsLevel());
+
+export const useGodsProductionMultiplier = (): GameValue => {
+  const { count } = useGods();
+
+  return getTotalProductionMultiplier(count);
+};
 
 export const canInvokeGod = (): boolean => {
   const level = getGodsLevel();

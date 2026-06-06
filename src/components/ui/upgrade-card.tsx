@@ -55,9 +55,18 @@ export const UpgradeCard = (props: UpgradeCardProps) => {
           width={112}
         />
         {title && (
-          <p className="absolute inset-x-0 bottom-0 bg-background/85 px-2 py-1 text-center font-medium text-foreground text-sm leading-tight">
-            {title}
-          </p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="absolute inset-x-0 bottom-0 bg-background/85 px-2 py-1 text-center font-medium text-foreground text-sm leading-tight">
+                {title}
+              </p>
+            </TooltipTrigger>
+            {description && (
+              <TooltipContent className="max-w-xs">
+                {description}
+              </TooltipContent>
+            )}
+          </Tooltip>
         )}
       </div>
 

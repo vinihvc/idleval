@@ -4,7 +4,6 @@ import { tv, type VariantProps } from "tailwind-variants";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
 import { type SoundsType, sound as soundFunction } from "@/providers/sound";
-import { useSettings } from "@/store/atoms/settings";
 import { borderedText } from "./text-border";
 
 export const buttonVariants = tv({
@@ -122,7 +121,7 @@ export const buttonVariants = tv({
       "icon-xl": 'size-10 [&_svg:not([class*="size-"])]:size-5',
     },
     clickEffect: {
-      true: "active:scale-[0.98]",
+      true: "active:scale-[0.99]",
       false: "",
     },
   },

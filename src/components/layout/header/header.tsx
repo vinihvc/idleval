@@ -1,7 +1,9 @@
 import type React from "react";
+import { SettingsDialog } from "@/components/dialog/settings";
 import { Coin } from "@/components/icons/coin";
 import { HeaderNavigation } from "@/components/layout/navigation";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { borderedText } from "@/components/ui/text-border";
 import {
   Tooltip,
   TooltipContent,
@@ -28,13 +30,18 @@ export const Header = (props: HeaderProps) => {
     >
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border-3 border-primary/70 bg-popover pr-2 transition-all">
+          <div className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border-3 border-primary/70 bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
             <Coin
               aria-hidden
               className="absolute top-0 -left-2 size-10 shrink-0 -translate-y-1.5 drop-shadow-md"
             />
 
-            <span className="font-bold font-number text-popover-foreground text-xl tabular-nums">
+            <span
+              className={cn(
+                "font-bold font-number text-popover-foreground text-xl tabular-nums",
+                borderedText({ variant: "default" })
+              )}
+            >
               <AnimatedNumber isDollar value={gold} />
             </span>
           </div>
@@ -47,6 +54,7 @@ export const Header = (props: HeaderProps) => {
 
       <nav className="flex gap-2">
         <AmountToBuy />
+        <SettingsDialog />
       </nav>
     </header>
   );

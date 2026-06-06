@@ -3,7 +3,7 @@ import { atomWithStorage } from "jotai/utils";
 import type { FactoryType } from "@/content/factories";
 import { getAffordableUnitCount, getPurchaseTotalCost } from "@/game/purchases";
 import { store } from "@/providers/store";
-import { getFactory } from "./factories";
+import { getFactory } from "@/store/atoms/factories";
 import { getGold } from "./wallet";
 
 export const AMOUNT_TO_BUY = [
@@ -12,41 +12,37 @@ export const AMOUNT_TO_BUY = [
     symbol: "x",
     description: "1",
     value: 1,
-    math: "unit",
   },
   {
     name: "10",
     symbol: "%",
     description: "10%",
     value: 10,
-    math: "percentage",
   },
   {
     name: "50",
     symbol: "%",
     description: "50%",
     value: 50,
-    math: "percentage",
   },
   {
     name: "max",
     symbol: "",
     description: "all you can afford",
     value: "max",
-    math: "percentage",
   },
 ] as const;
 
-export interface MscAtomProps {
+export interface PurchaseModeState {
   amountToBuy: (typeof AMOUNT_TO_BUY)[number]["value"];
 }
 
-export const mscAtom = atomWithStorage<MscAtomProps>("msc", {
+export const purchaseModeAtom = atomWithStorage<PurchaseModeState>("msc", {
   amountToBuy: 1,
 });
 
-export const useMsc = () => {
-  const { amountToBuy } = useAtomValue(mscAtom);
+export const usePurchaseMode = () => {
+  const { amountToBuy } = useAtomValue(purchaseModeAtom);
 
   const found = AMOUNT_TO_BUY.find((a) => a.value === amountToBuy);
 
@@ -57,9 +53,12 @@ export const useMsc = () => {
   return found;
 };
 
+/** @deprecated Use `usePurchaseMode` */
+export const useMsc = usePurchaseMode;
+
 const getNextAmountToBuy = (
-  current: MscAtomProps["amountToBuy"]
-): MscAtomProps["amountToBuy"] => {
+  current: PurchaseModeState["amountToBuy"]
+): PurchaseModeState["amountToBuy"] => {
   if (current === 1) {
     return 10;
   }
@@ -76,14 +75,14 @@ const getNextAmountToBuy = (
 };
 
 export const toggleAmountToBuy = () => {
-  store.set(mscAtom, (prev) => ({
+  store.set(purchaseModeAtom, (prev) => ({
     amountToBuy: getNextAmountToBuy(prev.amountToBuy),
   }));
 };
 
 export const totalCanBuyByAmount = (
   factory: FactoryType,
-  amount: MscAtomProps["amountToBuy"]
+  amount: PurchaseModeState["amountToBuy"]
 ) => {
   const gold = getGold();
   const { baseBuyCost, amount: owned } = getFactory(factory);
@@ -98,7 +97,7 @@ export const totalCanBuyByAmount = (
 
 export const totalToPayByAmount = (
   factory: FactoryType,
-  amount: MscAtomProps["amountToBuy"]
+  amount: PurchaseModeState["amountToBuy"]
 ) => {
   const { baseBuyCost, amount: owned } = getFactory(factory);
   const totalCanBuy = totalCanBuyByAmount(factory, amount);

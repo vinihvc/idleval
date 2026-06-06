@@ -1,35 +1,14 @@
 import { FACTORY_TYPES } from "@/content/factories";
-import { resetRunProgress } from "@/game/reset-run";
 import { store } from "@/providers/store";
+import { resetGame } from "@/store/reset";
 import { D, deserializeDecimal, serializeDecimal } from "@/utils/decimal";
 import { factoriesAtom } from "./atoms/factories";
-import { godsAtom } from "./atoms/gods";
-import { statisticsAtom } from "./atoms/statistics";
 import { walletAtom } from "./atoms/wallet";
 
 export const DEBUG_GOLD_AMOUNT = D(100_000_000_000);
 export const GOD_MODE_GOLD_AMOUNT = D("1e100");
 
-const initialStatistics = Object.fromEntries(
-  FACTORY_TYPES.map((factory) => [
-    factory,
-    {
-      quantity: 0,
-      goldSpent: serializeDecimal(D(0)),
-      goldEarned: serializeDecimal(D(0)),
-    },
-  ])
-);
-
-export const resetGameState = () => {
-  resetRunProgress();
-  store.set(statisticsAtom, {
-    goldEarned: serializeDecimal(D(0)),
-    goldSpent: serializeDecimal(D(0)),
-    factories: initialStatistics,
-  });
-  store.set(godsAtom, { count: 0 });
-};
+export const resetGameState = resetGame;
 
 export const addDebugGold = () => {
   store.set(walletAtom, (prev) => ({

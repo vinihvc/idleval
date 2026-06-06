@@ -19,8 +19,8 @@ Step into a medieval realm where you build, expand, and defend. Recruit heroes, 
 - TypeScript
 - Tailwind CSS
 - Jotai
-- Lucide Icons
-- Shadcn UI
+- Pixelarticons
+- Shark UI (Ark UI)
 
 ### Installation
 

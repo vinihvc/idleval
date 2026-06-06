@@ -55,7 +55,7 @@ export const TooltipContent = (
             "px-2.5 py-1",
             "bg-foreground",
             "font-medium text-background text-base",
-            "rounded-lg shadow-lg/5",
+            "rounded-lg border-2 border-secondary shadow-lg/5",
             "origin-(--transform-origin) animate-in",
             "fade-in-0 zoom-in-[98%]",
             "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%]",
@@ -70,8 +70,6 @@ export const TooltipContent = (
           data-slot="tooltip-content"
           {...rest}
         >
-          <TooltipArrow />
-
           {children}
         </ArkTooltip.Content>
       </ArkTooltip.Positioner>

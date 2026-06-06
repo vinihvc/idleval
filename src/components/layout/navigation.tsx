@@ -4,102 +4,51 @@ import { GodsDialog } from "@/components/dialog/gods/gods";
 import { ManagersDialog } from "@/components/dialog/managers/managers";
 import { StatisticsDialog } from "@/components/dialog/statistics";
 import { UpgradesDialog } from "@/components/dialog/upgrades/upgrades";
-import {
-  BottomNavigationItem,
-  BottomNavigationItemIcon,
-  BottomNavigationList,
-  BottomNavigation as BottomNavigationRoot,
-} from "@/components/ui/bottom-navigation";
-import { Button } from "@/components/ui/button";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { DialogNavItem } from "@/components/layout/dialog-nav-item";
 import { cn } from "@/lib/cn";
 
-interface BottomNavigationProps
-  extends React.ComponentProps<typeof BottomNavigationRoot> {}
+interface BottomNavigationProps extends React.ComponentProps<"nav"> {}
 
 export const BottomNavigation = (props: BottomNavigationProps) => {
   const { className, ...rest } = props;
 
   return (
-    <BottomNavigationRoot className={cn("sm:hidden", className)} {...rest}>
-      <BottomNavigationList
-        aria-label="Game navigation"
-        className={cn(
-          "border-primary/40 bg-secondary/95 backdrop-blur-lg",
-          "**:data-[slot=bottom-navigation-item]:border-transparent **:data-[slot=bottom-navigation-item]:bg-transparent **:data-[slot=bottom-navigation-item]:text-foreground/70 **:data-[slot=bottom-navigation-item]:shadow-none",
-          "**:data-[slot=bottom-navigation-item]:aria-selected:text-primary **:data-[slot=bottom-navigation-item]:hover:text-primary"
-        )}
-      >
-        <UpgradesDialog>
-          <BottomNavigationItem asChild value="upgrades">
-            <ResponsiveDialogTrigger asChild>
-              <button
-                className="flex size-full flex-col items-center justify-center"
-                type="button"
-              >
-                <BottomNavigationItemIcon>
-                  <ArrowUpBox />
-                </BottomNavigationItemIcon>
-                <span className="sr-only">Upgrades</span>
-              </button>
-            </ResponsiveDialogTrigger>
-          </BottomNavigationItem>
-        </UpgradesDialog>
-
-        <ManagersDialog>
-          <BottomNavigationItem asChild value="managers">
-            <ResponsiveDialogTrigger asChild>
-              <button
-                className="flex size-full flex-col items-center justify-center"
-                type="button"
-              >
-                <BottomNavigationItemIcon>
-                  <Briefcase />
-                </BottomNavigationItemIcon>
-                <span className="sr-only">Managers</span>
-              </button>
-            </ResponsiveDialogTrigger>
-          </BottomNavigationItem>
-        </ManagersDialog>
-
-        <GodsDialog>
-          <BottomNavigationItem asChild value="gods">
-            <ResponsiveDialogTrigger asChild>
-              <button
-                className="flex size-full flex-col items-center justify-center"
-                type="button"
-              >
-                <BottomNavigationItemIcon>
-                  <Crown />
-                </BottomNavigationItemIcon>
-                <span className="sr-only">Gods</span>
-              </button>
-            </ResponsiveDialogTrigger>
-          </BottomNavigationItem>
-        </GodsDialog>
-
-        <StatisticsDialog>
-          <BottomNavigationItem asChild value="statistics">
-            <ResponsiveDialogTrigger asChild>
-              <button
-                className="flex size-full flex-col items-center justify-center"
-                type="button"
-              >
-                <BottomNavigationItemIcon>
-                  <Chart />
-                </BottomNavigationItemIcon>
-                <span className="sr-only">Statistics</span>
-              </button>
-            </ResponsiveDialogTrigger>
-          </BottomNavigationItem>
-        </StatisticsDialog>
-      </BottomNavigationList>
-    </BottomNavigationRoot>
+    <nav
+      aria-label="Game navigation"
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-10 sm:hidden",
+        "flex min-h-14 w-full items-center justify-around",
+        "border-primary/40 border-t-2 bg-secondary/95 backdrop-blur-lg",
+        "pb-[env(safe-area-inset-bottom,0px)]",
+        className
+      )}
+      {...rest}
+    >
+      <DialogNavItem
+        dialog={UpgradesDialog}
+        icon={<ArrowUpBox />}
+        label="Upgrades"
+        variant="bottom"
+      />
+      <DialogNavItem
+        dialog={ManagersDialog}
+        icon={<Briefcase />}
+        label="Managers"
+        variant="bottom"
+      />
+      <DialogNavItem
+        dialog={GodsDialog}
+        icon={<Crown />}
+        label="Gods"
+        variant="bottom"
+      />
+      <DialogNavItem
+        dialog={StatisticsDialog}
+        icon={<Chart />}
+        label="Statistics"
+        variant="bottom"
+      />
+    </nav>
   );
 };
 
@@ -113,61 +62,22 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
       className={cn("flex items-center gap-2 max-sm:hidden", className)}
       {...rest}
     >
-      <UpgradesDialog>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ResponsiveDialogTrigger asChild>
-              <Button size="icon-md" variant="cream">
-                <span className="sr-only">Upgrades</span>
-                <ArrowUpBox />
-              </Button>
-            </ResponsiveDialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>Upgrades</TooltipContent>
-        </Tooltip>
-      </UpgradesDialog>
-
-      <ManagersDialog>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ResponsiveDialogTrigger asChild>
-              <Button size="icon-md" variant="cream">
-                <span className="sr-only">Managers</span>
-                <Briefcase />
-              </Button>
-            </ResponsiveDialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>Managers</TooltipContent>
-        </Tooltip>
-      </ManagersDialog>
-
-      <GodsDialog>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ResponsiveDialogTrigger asChild>
-              <Button size="icon-md" variant="cream">
-                <span className="sr-only">Gods</span>
-                <Crown />
-              </Button>
-            </ResponsiveDialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>Gods</TooltipContent>
-        </Tooltip>
-      </GodsDialog>
-
-      <StatisticsDialog>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ResponsiveDialogTrigger asChild>
-              <Button size="icon-md" variant="cream">
-                <span className="sr-only">Statistics</span>
-                <Chart />
-              </Button>
-            </ResponsiveDialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>Statistics</TooltipContent>
-        </Tooltip>
-      </StatisticsDialog>
+      <DialogNavItem
+        dialog={UpgradesDialog}
+        icon={<ArrowUpBox />}
+        label="Upgrades"
+      />
+      <DialogNavItem
+        dialog={ManagersDialog}
+        icon={<Briefcase />}
+        label="Managers"
+      />
+      <DialogNavItem dialog={GodsDialog} icon={<Crown />} label="Gods" />
+      <DialogNavItem
+        dialog={StatisticsDialog}
+        icon={<Chart />}
+        label="Statistics"
+      />
     </nav>
   );
 };

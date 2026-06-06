@@ -248,6 +248,7 @@ export const DialogBody = (props: DialogBodyProps) => {
         className={cn(
           "flex-1",
           "p-(--space)",
+          "text-lg max-sm:text-center",
           "overflow-auto",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-header])]:pt-0",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1",

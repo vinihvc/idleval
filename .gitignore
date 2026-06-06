@@ -8,6 +8,7 @@ node_modules
 
 # testing
 coverage
+.playwright-mcp
 
 # next.js
 .next/

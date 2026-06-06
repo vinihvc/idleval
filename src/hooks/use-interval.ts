@@ -5,7 +5,7 @@ type IntervalFunction = () => unknown;
 /**
  * Hook that fixes the delay of setInterval
  *
- * @param handler a handler function to be called when clicked outside
+ * @param handler the callback invoked on each interval tick
  * @param delay the delay in milliseconds
  */
 export const useInterval = (handler: IntervalFunction, delay?: number) => {

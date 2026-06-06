@@ -1,14 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
+import { borderedText } from "@/components/ui/text-border";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toggleAmountToBuy, useMsc } from "@/store/atoms/msc";
+import { cn } from "@/lib/cn";
+import {
+  toggleAmountToBuy,
+  usePurchaseMode,
+} from "@/store/atoms/purchase-mode";
 
 export const AmountToBuy = () => {
-  const amount = useMsc();
+  const amount = usePurchaseMode();
 
   if (!amount) {
     return null;
@@ -24,7 +29,12 @@ export const AmountToBuy = () => {
           variant="cream"
         >
           <span>
-            <NumberText className="font-semibold text-xl capitalize">
+            <NumberText
+              className={cn(
+                "font-semibold text-xl capitalize",
+                borderedText({ variant: "default" })
+              )}
+            >
               {`${amount.value}${amount.symbol}`}
             </NumberText>
           </span>

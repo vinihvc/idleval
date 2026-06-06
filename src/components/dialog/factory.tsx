@@ -1,3 +1,5 @@
+import { CalendarRange, Clock, Crown, Hand, Heart } from "pixelarticons/react";
+import type React from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { NumberText } from "@/components/ui/number-text";
 import {
@@ -9,16 +11,14 @@ import {
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
+import { StatRow } from "@/components/ui/stat-row";
 import type { FactoryType } from "@/content/factories";
-import { getProductionValue, useFactory } from "@/store/atoms/factories";
-import { getGodsProductionMultiplier } from "@/store/atoms/gods";
-import { goldEarnedByFactory } from "@/store/atoms/statistics";
+import { useFactory, useProductionValue } from "@/store/atoms/factories";
+import { useGodsProductionMultiplier } from "@/store/atoms/gods";
+import { useGoldEarnedByFactory } from "@/store/atoms/statistics";
 import { amountFormatter } from "@/utils/formatters";
 
 interface FactoryDialogProps extends React.PropsWithChildren {
-  /**
-   * The factory type
-   */
   factoryType: FactoryType;
 }
 
@@ -26,9 +26,10 @@ export const FactoryDialog = (props: FactoryDialogProps) => {
   const { factoryType, children } = props;
 
   const factory = useFactory(factoryType);
-  const yieldPerTap = getProductionValue(factoryType);
+  const yieldPerTap = useProductionValue(factoryType);
   const yieldPerHour = yieldPerTap.times(3600).div(factory.productionTime);
-  const divineMultiplier = getGodsProductionMultiplier();
+  const divineMultiplier = useGodsProductionMultiplier();
+  const lifetimeYield = useGoldEarnedByFactory(factoryType);
   const showDivineBonus = divineMultiplier.gt(1);
 
   return (
@@ -51,45 +52,75 @@ export const FactoryDialog = (props: FactoryDialogProps) => {
 
         <ResponsiveDialogBody>
           <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
-              <span className="shrink-0">Craft pace</span>
+            <StatRow
+              label={
+                <span className="flex items-center gap-2">
+                  <Clock aria-hidden className="size-5 shrink-0" />
+                  Craft pace
+                </span>
+              }
+            >
               <NumberText className="shrink-0 text-end text-2xl">
                 {factory.productionTime}s
               </NumberText>
-            </div>
+            </StatRow>
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
-              <span className="shrink-0">Yield per tap</span>
+            <StatRow
+              label={
+                <span className="flex items-center gap-2">
+                  <Hand aria-hidden className="size-5 shrink-0" />
+                  Yield per tap
+                </span>
+              }
+            >
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"
                 value={yieldPerTap}
               />
-            </div>
+            </StatRow>
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
-              <span className="shrink-0">Yield per hour</span>
+            <StatRow
+              label={
+                <span className="flex items-center gap-2">
+                  <CalendarRange aria-hidden className="size-5 shrink-0" />
+                  Yield per hour
+                </span>
+              }
+            >
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"
                 value={yieldPerHour}
               />
-            </div>
+            </StatRow>
 
             {showDivineBonus && (
-              <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
-                <span className="shrink-0">Divine bonus</span>
+              <StatRow
+                label={
+                  <span className="flex items-center gap-2">
+                    <Crown aria-hidden className="size-5 shrink-0" />
+                    Divine bonus
+                  </span>
+                }
+              >
                 <NumberText className="shrink-0 text-end text-2xl">
                   ×{amountFormatter(divineMultiplier)}
                 </NumberText>
-              </div>
+              </StatRow>
             )}
 
-            <div className="flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground">
-              <span className="shrink-0">Lifetime yield</span>
+            <StatRow
+              label={
+                <span className="flex items-center gap-2">
+                  <Heart aria-hidden className="size-5 shrink-0" />
+                  Lifetime yield
+                </span>
+              }
+            >
               <AnimatedNumber
                 className="shrink-0 text-end text-2xl"
-                value={goldEarnedByFactory(factoryType)}
+                value={lifetimeYield}
               />
-            </div>
+            </StatRow>
           </div>
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>

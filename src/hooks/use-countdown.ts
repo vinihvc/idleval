@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import React from "react";
 import type { FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
-import { stopProducing, useFactory } from "@/store/atoms/factories";
+import { completeProductionCycle, useFactory } from "@/store/atoms/factories";
 import { offlineCycleProgressAtom } from "@/store/atoms/session";
 import { useInterval } from "./use-interval";
 
@@ -68,7 +68,7 @@ export const useCountdown = (factory: FactoryType) => {
       setSeconds((prev) => {
         if (prev <= 1) {
           setIsRunning(isUnlocked && isAutomated);
-          stopProducing(factory);
+          completeProductionCycle(factory);
           setCycleKey((key) => key + 1);
           return productionTime;
         }
