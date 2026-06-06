@@ -265,7 +265,7 @@ export const DrawerContent = (props: DrawerContentProps) => {
                     className={cn(
                       "absolute top-2 right-2",
                       "size-14",
-                      "rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
+                      "inset-shadow-none rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                       "bg-transparent",
                       "hover:bg-transparent hover:brightness-110",
                       "focus-visible:brightness-110",

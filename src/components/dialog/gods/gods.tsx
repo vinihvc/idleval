@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,14 +8,11 @@ import {
   ResponsiveDialogImage,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { GOD_COUNT, GODS } from "@/content/gods";
-import { useGods } from "@/store/atoms/gods";
+import { GODS } from "@/content/gods";
 import { GodsCard } from "./gods.card";
 
 export const GodsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
-
-  const { count: godsLevel } = useGods();
 
   const [open, setOpen] = React.useState(false);
 
@@ -28,14 +24,7 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
         <ResponsiveDialogImage alt="Gods" src="/images/gods/gods.webp" />
 
         <ResponsiveDialogHeader>
-          <div className="flex items-center justify-between gap-2">
-            <ResponsiveDialogTitle>Gods</ResponsiveDialogTitle>
-
-            <Badge variant="secondary">
-              <span className="font-semibold">Gods worshiped:</span>
-              {` ${godsLevel} / ${GOD_COUNT}`}
-            </Badge>
-          </div>
+          <ResponsiveDialogTitle>Gods</ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
             Each invocation is an offering of sacrifice: surrender everything
