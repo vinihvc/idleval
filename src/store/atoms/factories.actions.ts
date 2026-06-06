@@ -78,6 +78,10 @@ export const completeProductionCycle = (factory: FactoryType) => {
 
   increaseGoldByAmount(factory, goldEarned);
 
+  if (!isAutomated) {
+    sound.play("coin");
+  }
+
   if (isAutomated) {
     touchLastSeen();
   }

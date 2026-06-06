@@ -1,11 +1,11 @@
 export type SoundCategory = "sfx" | "music";
 
 export interface PlayOptions {
-  volume?: number;
   rate?: number;
+  volume?: number;
 }
 
-export type SfxId = "click" | "coin" | "upgrade" | "auto" | "pray";
+export type SfxId = "click" | "coin" | "upgrade" | "pray";
 
 export type MusicId = "theme";
 

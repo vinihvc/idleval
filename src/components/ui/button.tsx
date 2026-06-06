@@ -187,12 +187,8 @@ export const Button = (props: ButtonProps) => {
     ...rest
   } = props;
 
-  const settings = useSettings();
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (settings.sfx) {
-      soundFunction.play(sound);
-    }
+    soundFunction.play(sound);
 
     onClick?.(event);
   };

@@ -30,7 +30,6 @@
     "react-dom": "^19.2.7",
     "tailwind-merge": "^3.6.0",
     "tailwind-variants": "^3.2.2",
-    "use-sound": "^5.0.0",
     "web-haptics": "^0.0.6"
   },
   "devDependencies": {

@@ -1,12 +1,12 @@
 import type { SoundCategory, SoundId } from "./types";
 
 export interface SoundDefinition {
-  src: string;
   category: SoundCategory;
-  volume: number;
-  pool?: number;
-  throttleMs?: number;
   loop?: boolean;
+  pool?: number;
+  src: string;
+  throttleMs?: number;
+  volume: number;
 }
 
 export const SOUND_REGISTRY = {
@@ -26,13 +26,6 @@ export const SOUND_REGISTRY = {
     src: "/sounds/upgrade.wav",
     category: "sfx",
     volume: 0.8,
-  },
-  auto: {
-    src: "/sounds/auto.wav",
-    category: "sfx",
-    volume: 0.5,
-    pool: 3,
-    throttleMs: 120,
   },
   pray: {
     src: "/sounds/pray.wav",

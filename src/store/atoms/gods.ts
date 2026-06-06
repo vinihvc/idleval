@@ -59,6 +59,7 @@ export const invokeGod = (): boolean => {
   }));
 
   resetRunProgress();
+  sound.play("pray");
 
   return true;
 };

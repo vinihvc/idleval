@@ -1,14 +1,14 @@
 import React from "react";
 import { soundEngine } from "@/audio/engine";
 import type { PlayOptions, SfxId } from "@/audio/types";
-import { getSettings, settingsAtom } from "@/store/atoms/settings";
 import { store } from "@/providers/store";
+import { getSettings, settingsAtom } from "@/store/atoms/settings";
 
 interface SoundContextType {
+  pauseMusic: () => void;
   play: (id: SfxId, options?: PlayOptions) => void;
   playMusic: () => void;
   stopMusic: () => void;
-  pauseMusic: () => void;
 }
 
 const SoundContext = React.createContext<SoundContextType | null>(null);
@@ -17,9 +17,8 @@ export type { SfxId as SoundsType } from "@/audio/types";
 
 export const SoundProvider = ({ children }: React.PropsWithChildren) => {
   React.useEffect(() => {
-    soundEngine.init(
-      getSettings,
-      (callback) => store.sub(settingsAtom, callback)
+    soundEngine.init(getSettings, (callback) =>
+      store.sub(settingsAtom, callback)
     );
 
     const unlock = () => {

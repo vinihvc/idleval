@@ -2,6 +2,7 @@ import {
   DEFAULT_POOL_SIZE,
   MUSIC_ID,
   SOUND_REGISTRY,
+  type SoundDefinition,
 } from "./registry";
 import type { PlayOptions, SoundId, SoundSettings } from "./types";
 
@@ -13,9 +14,9 @@ type AudioFactory = (src?: string) => HTMLAudioElement;
 const defaultAudioFactory: AudioFactory = (src) => new Audio(src);
 
 export class SoundEngine {
-  private pools = new Map<SoundId, HTMLAudioElement[]>();
-  private poolIndex = new Map<SoundId, number>();
-  private lastPlayed = new Map<SoundId, number>();
+  private readonly pools = new Map<SoundId, HTMLAudioElement[]>();
+  private readonly poolIndex = new Map<SoundId, number>();
+  private readonly lastPlayed = new Map<SoundId, number>();
   private musicElement: HTMLAudioElement | null = null;
   private unlocked = false;
   private musicWantsPlay = false;
@@ -55,8 +56,9 @@ export class SoundEngine {
   }
 
   preload() {
-    for (const [id, definition] of Object.entries(SOUND_REGISTRY)) {
+    for (const [id, entry] of Object.entries(SOUND_REGISTRY)) {
       const soundId = id as SoundId;
+      const definition = entry as SoundDefinition;
 
       if (definition.category === "music") {
         continue;
@@ -82,7 +84,7 @@ export class SoundEngine {
   }
 
   play(id: SoundId, options?: PlayOptions) {
-    const definition = SOUND_REGISTRY[id];
+    const definition = SOUND_REGISTRY[id] as SoundDefinition;
 
     if (definition.category === "music") {
       this.playMusic();
