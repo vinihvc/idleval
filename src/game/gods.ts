@@ -16,3 +16,52 @@ export const getTotalProductionMultiplier = (level: number): GameValue => {
 
 export const getMultiplierAfterInvocation = (godIndex: number): GameValue =>
   getTotalProductionMultiplier(godIndex + 1);
+
+export type GodCardStatus = "completed" | "available" | "locked" | "future";
+
+/**
+ * Whether all gods have already been invoked.
+ */
+export const isGodInvocationComplete = (godsLevel: number): boolean =>
+  godsLevel >= GOD_COUNT;
+
+/**
+ * UI-facing progression status for a god card.
+ */
+export const getGodCardStatus = (
+  godIndex: number,
+  godsLevel: number
+): GodCardStatus => {
+  if (godIndex < godsLevel) {
+    return "completed";
+  }
+
+  if (godIndex === godsLevel) {
+    return "available";
+  }
+
+  if (godIndex === godsLevel + 1) {
+    return "locked";
+  }
+
+  return "future";
+};
+
+/**
+ * Whether the player can invoke the god at the given index.
+ */
+export const canInvokeGodAtIndex = (
+  godIndex: number,
+  godsLevel: number,
+  gold: GameValue
+): boolean => {
+  if (isGodInvocationComplete(godsLevel)) {
+    return false;
+  }
+
+  if (godIndex !== godsLevel) {
+    return false;
+  }
+
+  return gold.gte(getGodGoldRequired(godIndex));
+};

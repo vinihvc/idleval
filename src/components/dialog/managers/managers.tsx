@@ -36,7 +36,7 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-4">
             {FACTORY_TYPES.map((factoryType) => (
               <ManagersCard factoryType={factoryType} key={factoryType} />
             ))}

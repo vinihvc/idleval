@@ -1,23 +1,41 @@
-import {
-  DEFAULT_POOL_SIZE,
-  MUSIC_ID,
-  SOUND_REGISTRY,
-  type SoundDefinition,
-} from "./registry";
+import { MUSIC_ID, SOUND_REGISTRY, type SoundDefinition } from "./registry";
 import type { PlayOptions, SoundId, SoundSettings } from "./types";
 
 type SettingsGetter = () => SoundSettings;
 type SettingsSubscriber = (callback: () => void) => () => void;
+type AudioContextFactory = () => AudioContext;
+type FetchAudioFn = (src: string) => Promise<ArrayBuffer>;
 
-type AudioFactory = (src?: string) => HTMLAudioElement;
+const defaultFetchAudio = async (src: string) => {
+  const response = await fetch(src);
 
-const defaultAudioFactory: AudioFactory = (src) => new Audio(src);
+  if (!response.ok) {
+    throw new Error(`Failed to load audio: ${src}`);
+  }
+
+  return response.arrayBuffer();
+};
+
+const clearMediaSession = () => {
+  if (!("mediaSession" in navigator)) {
+    return;
+  }
+
+  navigator.mediaSession.metadata = null;
+  navigator.mediaSession.playbackState = "none";
+};
 
 export class SoundEngine {
-  private readonly pools = new Map<SoundId, HTMLAudioElement[]>();
-  private readonly poolIndex = new Map<SoundId, number>();
+  private context: AudioContext | null = null;
+  private sfxGain: GainNode | null = null;
+  private musicGain: GainNode | null = null;
+  private readonly buffers = new Map<SoundId, AudioBuffer>();
+  private readonly activeSources = new Map<
+    SoundId,
+    Set<AudioBufferSourceNode>
+  >();
+  private musicSource: AudioBufferSourceNode | null = null;
   private readonly lastPlayed = new Map<SoundId, number>();
-  private musicElement: HTMLAudioElement | null = null;
   private unlocked = false;
   private musicWantsPlay = false;
   private unsubscribe: (() => void) | null = null;
@@ -27,19 +45,39 @@ export class SoundEngine {
     sfx: true,
     sfxVolume: 0.8,
   });
-  private createAudio: AudioFactory = defaultAudioFactory;
+  private createContext: AudioContextFactory = () => new AudioContext();
+  private fetchAudio: FetchAudioFn = defaultFetchAudio;
 
   init(
     getSettings: SettingsGetter,
     subscribe: SettingsSubscriber,
-    options?: { createAudio?: AudioFactory }
+    options?: {
+      createContext?: AudioContextFactory;
+      fetchAudio?: FetchAudioFn;
+      preloadBuffers?: Partial<Record<SoundId, AudioBuffer>>;
+    }
   ) {
     this.getSettings = getSettings;
-    if (options?.createAudio) {
-      this.createAudio = options.createAudio;
+
+    if (options?.createContext) {
+      this.createContext = options.createContext;
     }
 
-    this.preload();
+    if (options?.fetchAudio) {
+      this.fetchAudio = options.fetchAudio;
+    }
+
+    this.ensureContext();
+
+    if (options?.preloadBuffers) {
+      for (const [id, buffer] of Object.entries(options.preloadBuffers)) {
+        if (buffer) {
+          this.buffers.set(id as SoundId, buffer);
+        }
+      }
+    } else {
+      this.loadBuffers().catch(() => undefined);
+    }
     this.unsubscribe?.();
     this.unsubscribe = subscribe(() => {
       this.syncFromSettings();
@@ -49,6 +87,9 @@ export class SoundEngine {
 
   unlock() {
     this.unlocked = true;
+    clearMediaSession();
+
+    this.context?.resume().catch(() => undefined);
 
     if (this.musicWantsPlay) {
       this.playMusic();
@@ -56,31 +97,7 @@ export class SoundEngine {
   }
 
   preload() {
-    for (const [id, entry] of Object.entries(SOUND_REGISTRY)) {
-      const soundId = id as SoundId;
-      const definition = entry as SoundDefinition;
-
-      if (definition.category === "music") {
-        continue;
-      }
-
-      const poolSize = definition.pool ?? DEFAULT_POOL_SIZE;
-      const pool: HTMLAudioElement[] = [];
-
-      for (let index = 0; index < poolSize; index += 1) {
-        const audio = this.createAudio(definition.src);
-        audio.preload = "auto";
-
-        if (definition.loop) {
-          audio.loop = true;
-        }
-
-        pool.push(audio);
-      }
-
-      this.pools.set(soundId, pool);
-      this.poolIndex.set(soundId, 0);
-    }
+    this.loadBuffers().catch(() => undefined);
   }
 
   play(id: SoundId, options?: PlayOptions) {
@@ -108,17 +125,47 @@ export class SoundEngine {
       this.lastPlayed.set(id, now);
     }
 
-    const audio = this.acquireAudio(id);
-    const volume =
-      definition.volume * settings.sfxVolume * (options?.volume ?? 1);
+    const buffer = this.buffers.get(id);
 
-    audio.volume = clampVolume(volume);
-    audio.playbackRate = options?.rate ?? 1;
-    audio.currentTime = 0;
+    if (!(buffer && this.context && this.sfxGain)) {
+      return;
+    }
 
-    audio.play().catch(() => {
-      // Autoplay or missing asset — ignore silently.
-    });
+    if (this.context.state === "suspended" && this.unlocked) {
+      this.context.resume().catch(() => undefined);
+    }
+
+    const source = this.context.createBufferSource();
+    source.buffer = buffer;
+    source.loop = definition.loop ?? false;
+    source.playbackRate.value = options?.rate ?? 1;
+
+    const gain = this.context.createGain();
+    gain.gain.value = clampVolume(
+      definition.volume * settings.sfxVolume * (options?.volume ?? 1)
+    );
+
+    source.connect(gain);
+    gain.connect(this.sfxGain);
+
+    const sources =
+      this.activeSources.get(id) ?? new Set<AudioBufferSourceNode>();
+    sources.add(source);
+    this.activeSources.set(id, sources);
+
+    source.onended = () => {
+      sources.delete(source);
+      source.disconnect();
+      gain.disconnect();
+    };
+
+    try {
+      source.start(0);
+    } catch {
+      sources.delete(source);
+      source.disconnect();
+      gain.disconnect();
+    }
   }
 
   stop(id: SoundId) {
@@ -129,16 +176,23 @@ export class SoundEngine {
       return;
     }
 
-    const pool = this.pools.get(id);
+    const sources = this.activeSources.get(id);
 
-    if (!pool) {
+    if (!sources) {
       return;
     }
 
-    for (const audio of pool) {
-      audio.pause();
-      audio.currentTime = 0;
+    for (const source of sources) {
+      try {
+        source.stop();
+      } catch {
+        // Already stopped.
+      }
+
+      source.disconnect();
     }
+
+    sources.clear();
   }
 
   playMusic() {
@@ -158,44 +212,103 @@ export class SoundEngine {
 
     const definition = SOUND_REGISTRY[MUSIC_ID];
 
-    if (!this.musicElement) {
-      this.musicElement = this.createAudio(definition.src);
-      this.musicElement.loop = true;
-      this.musicElement.preload = "auto";
+    if (this.musicGain) {
+      this.musicGain.gain.value = clampVolume(
+        definition.volume * settings.musicVolume
+      );
     }
 
-    this.musicElement.volume = clampVolume(
-      definition.volume * settings.musicVolume
-    );
+    if (this.musicSource) {
+      return;
+    }
 
-    this.musicElement.play().catch(() => {
-      // Autoplay blocked until user interaction.
-    });
+    const buffer = this.buffers.get(MUSIC_ID);
+
+    if (!(buffer && this.context && this.musicGain)) {
+      return;
+    }
+
+    if (this.context.state === "suspended") {
+      this.context.resume().catch(() => undefined);
+    }
+
+    const source = this.context.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    source.connect(this.musicGain);
+
+    source.onended = () => {
+      if (this.musicSource === source) {
+        this.musicSource = null;
+      }
+    };
+
+    this.musicSource = source;
+
+    try {
+      source.start(0);
+    } catch {
+      this.musicSource = null;
+      source.disconnect();
+    }
   }
 
   stopMusic() {
     this.musicWantsPlay = false;
 
-    if (!this.musicElement) {
+    if (!this.musicSource) {
       return;
     }
 
-    this.musicElement.pause();
-    this.musicElement.currentTime = 0;
+    try {
+      this.musicSource.stop();
+    } catch {
+      // Already stopped.
+    }
+
+    this.musicSource.disconnect();
+    this.musicSource = null;
   }
 
   pauseMusic() {
-    this.musicElement?.pause();
+    if (!this.musicSource) {
+      return;
+    }
+
+    try {
+      this.musicSource.stop();
+    } catch {
+      // Already stopped.
+    }
+
+    this.musicSource.disconnect();
+    this.musicSource = null;
   }
 
   dispose() {
     this.unsubscribe?.();
     this.unsubscribe = null;
     this.stopMusic();
-    this.pools.clear();
-    this.poolIndex.clear();
+
+    for (const sources of this.activeSources.values()) {
+      for (const source of sources) {
+        try {
+          source.stop();
+        } catch {
+          // Already stopped.
+        }
+
+        source.disconnect();
+      }
+    }
+
+    this.activeSources.clear();
+    this.buffers.clear();
     this.lastPlayed.clear();
-    this.musicElement = null;
+    this.context?.close().catch(() => undefined);
+    this.context = null;
+    this.sfxGain = null;
+    this.musicGain = null;
     this.unlocked = false;
     this.musicWantsPlay = false;
   }
@@ -203,9 +316,9 @@ export class SoundEngine {
   private syncFromSettings() {
     const settings = this.getSettings();
 
-    if (this.musicElement) {
+    if (this.musicGain) {
       const definition = SOUND_REGISTRY[MUSIC_ID];
-      this.musicElement.volume = clampVolume(
+      this.musicGain.gain.value = clampVolume(
         definition.volume * settings.musicVolume
       );
     }
@@ -218,19 +331,48 @@ export class SoundEngine {
     this.stopMusic();
   }
 
-  private acquireAudio(id: SoundId): HTMLAudioElement {
-    const pool = this.pools.get(id);
-
-    if (!pool || pool.length === 0) {
-      return this.createAudio(SOUND_REGISTRY[id].src);
+  private ensureContext() {
+    if (this.context) {
+      return;
     }
 
-    const index = this.poolIndex.get(id) ?? 0;
-    const audio = pool[index];
+    this.context = this.createContext();
+    this.sfxGain = this.context.createGain();
+    this.musicGain = this.context.createGain();
+    this.sfxGain.gain.value = 1;
+    this.musicGain.gain.value = 1;
+    this.sfxGain.connect(this.context.destination);
+    this.musicGain.connect(this.context.destination);
+  }
 
-    this.poolIndex.set(id, (index + 1) % pool.length);
+  private async loadBuffers() {
+    this.ensureContext();
 
-    return audio;
+    const context = this.context;
+
+    if (!context) {
+      return;
+    }
+
+    const entries = Object.entries(SOUND_REGISTRY) as [
+      SoundId,
+      SoundDefinition,
+    ][];
+
+    await Promise.all(
+      entries.map(async ([soundId, definition]) => {
+        try {
+          const data = await this.fetchAudio(definition.src);
+          const buffer = await context.decodeAudioData(data.slice(0));
+
+          if (buffer) {
+            this.buffers.set(soundId, buffer);
+          }
+        } catch {
+          // Missing asset or decode failure — ignore silently.
+        }
+      })
+    );
   }
 }
 

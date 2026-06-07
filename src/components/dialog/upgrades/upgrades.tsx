@@ -36,7 +36,7 @@ export const UpgradesDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-4">
             {FACTORY_TYPES.map((factoryType) => (
               <UpgradesCard factoryType={factoryType} key={factoryType} />
             ))}

@@ -47,6 +47,33 @@ export const usePurchaseMode = () => {
 
   const found = AMOUNT_TO_BUY.find((a) => a.value === amountToBuy);
 
+  // #region agent log
+  if (typeof window !== "undefined") {
+    fetch("http://127.0.0.1:7620/ingest/0d90553c-a60c-49af-9fa4-e621890cbf4b", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Debug-Session-Id": "ece29d",
+      },
+      body: JSON.stringify({
+        sessionId: "ece29d",
+        runId: "pre-fix",
+        hypothesisId: "B-E",
+        location: "purchase-mode.ts:usePurchaseMode",
+        message: "Purchase mode atom resolution",
+        data: {
+          rawAmountToBuy: amountToBuy,
+          rawType: typeof amountToBuy,
+          resolvedValue: found?.value ?? AMOUNT_TO_BUY[0].value,
+          resolvedName: found?.name ?? AMOUNT_TO_BUY[0].name,
+          fallbackUsed: !found,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => undefined);
+  }
+  // #endregion
+
   if (!found) {
     return AMOUNT_TO_BUY[0];
   }

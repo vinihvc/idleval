@@ -1,5 +1,5 @@
 import { D, type GameValue } from "@/utils/decimal";
-import { ECONOMY } from "./economy";
+import { canAfford, ECONOMY } from "./economy";
 
 interface FactoryProductionValueInput {
   /** Multiplier granted by invoked gods and applied to factory production. */
@@ -33,3 +33,85 @@ export const getFactoryProductionValue = ({
  */
 export const getFactoryEarnPerCycle = (input: FactoryEarnInput): GameValue =>
   getFactoryProductionValue(input).times(input.amount);
+
+const SECONDS_PER_HOUR = 3600;
+
+interface FactoryProductionState {
+  isAutomated: boolean;
+  isProducing: boolean;
+  isUnlocked: boolean;
+}
+
+interface ManualProductionState extends FactoryProductionState {
+  isProducing: boolean;
+}
+
+interface ManagerPurchaseState {
+  cost: GameValue;
+  gold: GameValue;
+  isAutomated: boolean;
+  isUnlocked: boolean;
+}
+
+interface UpgradePurchaseState {
+  cost: GameValue;
+  gold: GameValue;
+  isUnlocked: boolean;
+  isUpgraded: boolean;
+}
+
+/**
+ * Calculates hourly yield from per-cycle yield and cycle duration.
+ */
+export const getFactoryYieldPerHour = (
+  yieldPerCycle: GameValue,
+  productionTime: number
+): GameValue => yieldPerCycle.times(SECONDS_PER_HOUR).div(productionTime);
+
+/**
+ * Display label for the production upgrade multiplier.
+ */
+export const getUpgradeMultiplierLabel = (): string =>
+  `${ECONOMY.upgradeProductionMultiplier}x`;
+
+/**
+ * Whether a factory should be driven by the production scheduler.
+ */
+export const isFactoryProductionActive = ({
+  isAutomated,
+  isProducing,
+  isUnlocked,
+}: FactoryProductionState): boolean =>
+  isUnlocked && (isAutomated || isProducing);
+
+/**
+ * Whether the player can start a manual production tap.
+ */
+export const canStartManualProduction = ({
+  isAutomated,
+  isProducing,
+  isUnlocked,
+}: ManualProductionState): boolean =>
+  isUnlocked && !isAutomated && !isProducing;
+
+/**
+ * Whether the player can appoint a manager for this factory.
+ */
+export const canPurchaseManager = ({
+  cost,
+  gold,
+  isAutomated,
+  isUnlocked,
+}: ManagerPurchaseState): boolean =>
+  isUnlocked && !isAutomated && canAfford(gold, cost);
+
+/**
+ * Whether the player can purchase the production upgrade.
+ */
+export const canPurchaseUpgrade = ({
+  cost,
+  gold,
+  isUnlocked,
+  isUpgraded,
+}: UpgradePurchaseState): boolean =>
+  isUnlocked && !isUpgraded && canAfford(gold, cost);

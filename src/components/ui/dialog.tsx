@@ -5,7 +5,7 @@ import { ark } from "@ark-ui/react/factory";
 import { Portal } from "@ark-ui/react/portal";
 import { Image, type ImageProps } from "@unpic/react";
 import { Close } from "pixelarticons/react";
-import React from "react";
+import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { WaxSeal } from "@/components/icons/wax-seal";
 import { Button } from "@/components/ui/button";
@@ -14,17 +14,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/cn";
 
 export const useDialog = useDialogContext;
-
-interface DialogContextProps {
-  /**
-   * Used internally to show or hide overlay
-   *
-   * @default true
-   */
-  modal?: boolean;
-}
-
-const DialogContext = React.createContext({} as DialogContextProps);
 
 export const Dialog = (props: React.ComponentProps<typeof ArkDialog.Root>) => {
   const {
@@ -35,14 +24,13 @@ export const Dialog = (props: React.ComponentProps<typeof ArkDialog.Root>) => {
   } = props;
 
   return (
-    <DialogContext.Provider value={{ modal }}>
-      <ArkDialog.Root
-        lazyMount={lazyMount}
-        modal={modal}
-        unmountOnExit={unmountOnExit}
-        {...rest}
-      />
-    </DialogContext.Provider>
+    <ArkDialog.Root
+      closeOnInteractOutside
+      lazyMount={lazyMount}
+      modal={modal}
+      unmountOnExit={unmountOnExit}
+      {...rest}
+    />
   );
 };
 
@@ -66,12 +54,6 @@ export const DialogOverlay = (
   props: React.ComponentProps<typeof ArkDialog.Backdrop>
 ) => {
   const { className, ...rest } = props;
-
-  const { modal } = _useDialog();
-
-  if (!modal) {
-    return null;
-  }
 
   return (
     <ArkDialog.Backdrop
@@ -250,7 +232,6 @@ export const DialogBody = (props: DialogBodyProps) => {
           "p-(--space)",
           "text-lg max-sm:text-center",
           "overflow-auto",
-          "in-[[data-slot=dialog-content]:has([data-slot=dialog-header])]:pt-0",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1",
           className
         )}
@@ -278,11 +259,11 @@ export const DialogHeader = (props: DialogHeaderProps) => {
   return (
     <ark.div
       className={cn(
-        "sm:mt-12",
+        "sm:mt-6",
         "flex flex-col gap-1",
         "text-center sm:text-left",
         "p-(--space)",
-        "in-[[data-slot=dialog-content]:has([data-slot=dialog-body])]:pb-3",
+        "in-[[data-slot=dialog-content]:has([data-slot=dialog-body])]:pb-0",
         className
       )}
       data-slot="dialog-header"
@@ -324,7 +305,13 @@ export const DialogMedia = (props: React.ComponentProps<typeof ark.div>) => {
   return (
     <ark.div
       className={cn(
-        "absolute -top-12 left-1/2 inline-flex rounded-full border-4 border-primary/80 bg-secondary p-1 max-md:-translate-x-1/2 sm:-top-18 sm:border-6 md:left-2",
+        "absolute top-0 left-1/2 -translate-y-2/3 max-md:-translate-x-1/2 md:left-2",
+        "inline-flex items-center justify-center",
+        "size-24",
+        "p-1",
+        "bg-card",
+        "rounded-full border-8 border-secondary ring-4 ring-primary drop-shadow-lg sm:border-6",
+        "overflow-hidden",
         className
       )}
       data-slot="dialog-media"
@@ -344,9 +331,8 @@ export const DialogImage = (
       aria-hidden
       className={cn(
         "pixel-crisp object-cover",
-        "aspect-square size-20 sm:size-28",
+        "aspect-square size-14 sm:size-18",
         "bg-popover",
-        "rounded-full border-2 border-primary/40 drop-shadow-lg sm:border-4",
         "pointer-events-none",
         className
       )}
@@ -394,14 +380,4 @@ export const DialogFooter = (props: React.ComponentProps<typeof ark.div>) => {
       {...rest}
     />
   );
-};
-
-const _useDialog = () => {
-  const context = React.useContext(DialogContext);
-
-  if (!context) {
-    throw new Error("useDialog must be used within a DialogProvider");
-  }
-
-  return context;
 };

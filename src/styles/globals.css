@@ -52,8 +52,8 @@
   --secondary: oklch(0.38 0.06 55);
   --secondary-foreground: oklch(0.92 0.05 85);
 
-  --tertiary: oklch(0.42 0.12 25);
-  --tertiary-foreground: oklch(0.9 0.05 85);
+  --tertiary: oklch(0.48 0.16 298);
+  --tertiary-foreground: oklch(0.72 0.12 298);
 
   --muted: oklch(0.32 0.05 55);
   --muted-foreground: oklch(0.78 0.05 80);
@@ -62,7 +62,7 @@
   --accent-foreground: oklch(0.92 0.05 85);
 
   --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(26.228% 0.05464 28.234);
+  --destructive-foreground: oklch(0.72 0.14 27);
 
   --popover: oklch(0.88 0.06 85);
   --popover-foreground: oklch(0.28 0.06 55);
@@ -119,12 +119,5 @@
 @layer utilities {
   .pixel-crisp {
     image-rendering: pixelated;
-  }
-
-  .fantasy-panel-shadow {
-    box-shadow:
-      0 4px 0 oklch(0.62 0.1 75),
-      0 8px 24px oklch(0 0 0 / 0.45),
-      inset 0 1px 0 oklch(1 0 0 / 0.12);
   }
 }

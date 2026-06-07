@@ -82,11 +82,11 @@ const FactoryStatTile = (props: FactoryStatTileProps) => {
         <Image
           alt=""
           aria-hidden
-          className="pixel-crisp pointer-events-none size-7 rounded-md object-contain"
-          height={28}
+          className="pixel-crisp pointer-events-none size-8 rounded-md object-contain"
+          height={32}
           layout="constrained"
           src={`/images/factories/${factory}.webp`}
-          width={28}
+          width={32}
         />
       }
       label={FACTORIES[factory].name}

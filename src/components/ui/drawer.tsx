@@ -158,9 +158,9 @@ const drawerContentVariants = tv({
     "has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-env(safe-area-inset-bottom,0px)))]",
     "max-sm:has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-var(--spacing)*14-env(safe-area-inset-bottom,0)))]",
     "-mb-(--bleed) pb-[calc(1.5rem+env(safe-area-inset-bottom,0)+var(--bleed))]",
-    "border-4 border-primary/60 bg-popover",
+    "border-4 border-primary bg-popover",
     "text-popover-foreground",
-    "fantasy-panel-shadow inset-shadow-xs",
+    "inset-shadow-xs",
     "flex min-h-0 flex-col",
     "duration-300 ease-in-out will-change-transform",
     "data-swiping:select-none",
@@ -251,8 +251,8 @@ export const DrawerContent = (props: DrawerContentProps) => {
                 }),
                 className
               )}
-              {...rest}
               data-slot="drawer-content"
+              {...rest}
             >
               <DrawerGrabber />
 
@@ -267,7 +267,7 @@ export const DrawerContent = (props: DrawerContentProps) => {
                     aria-label="Close"
                     className={cn(
                       "absolute top-2 right-2",
-                      "size-14",
+                      "size-12",
                       "inset-shadow-none rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                       "bg-transparent",
                       "hover:bg-transparent hover:brightness-110",
@@ -426,7 +426,6 @@ export const DrawerBody = (props: DrawerBodyProps) => {
     "min-h-0 flex-1",
     "p-(--space)",
     "text-lg max-sm:text-center",
-    "in-[[data-slot=drawer-content]:has([data-slot=drawer-header])]:pt-0",
     "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
     className
   );

@@ -10,9 +10,6 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 
-const linkClass =
-  "font-semibold text-popover-foreground underline decoration-primary/60 underline-offset-4 transition-colors hover:decoration-primary";
-
 export const AboutDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
@@ -38,15 +35,15 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
 
         <ResponsiveDialogBody>
           <div className="grid gap-3">
-            <p className="font-display font-semibold text-lg text-popover-foreground tracking-wide">
+            <p className="font-display font-semibold text-lg text-muted tracking-wide">
               Royal Codex
             </p>
 
-            <ul className="list-disc space-y-1 pl-4 text-popover-foreground/90 leading-relaxed">
+            <ul className="list-disc space-y-1 pl-4 text-muted leading-relaxed">
               <li>
                 Made with{" "}
                 <a
-                  className={linkClass}
+                  className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
                   href="https://react.dev/"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
@@ -57,7 +54,7 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
               <li>
                 Styling with{" "}
                 <a
-                  className={linkClass}
+                  className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
                   href="https://tailwindcss.com/"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
@@ -68,7 +65,7 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
               <li>
                 Components with{" "}
                 <a
-                  className={linkClass}
+                  className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
                   href="https://shark.vini.one/"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
@@ -79,7 +76,7 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
               <li>
                 Icons by{" "}
                 <a
-                  className={linkClass}
+                  className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
                   href="https://pixelarticons.com/"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
@@ -90,7 +87,7 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
               <li>
                 State management with{" "}
                 <a
-                  className={linkClass}
+                  className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
                   href="https://jotai.org/"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
@@ -101,7 +98,7 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
               <li>
                 Images by{" "}
                 <a
-                  className={linkClass}
+                  className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
                   href="https://chatgpt.com"
                   rel="noopener noreferrer nofollow"
                   target="_blank"

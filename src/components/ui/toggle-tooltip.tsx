@@ -41,13 +41,18 @@ export const ToggleTooltipContent = (
 
   return (
     <Portal>
-      <ArkPopover.Positioner data-slot="toggle-tooltip-positioner">
+      <ArkPopover.Positioner
+        className="z-100"
+        data-slot="toggle-tooltip-positioner"
+      >
         <ArkPopover.Content
           className={cn(
-            "z-50 w-fit max-sm:hidden",
-            "px-2.5 py-1",
+            "z-100",
+            "relative",
+            "w-full max-w-[calc(100vw-2rem)] sm:w-fit sm:max-w-[min(20rem,calc(100vw-2rem))]",
+            "px-3 py-2",
             "bg-foreground",
-            "font-medium text-background text-base",
+            "font-medium text-background text-xl",
             "rounded-lg border-2 border-secondary shadow-lg/5",
             "origin-(--transform-origin) animate-in",
             "fade-in-0 zoom-in-[98%]",
@@ -64,6 +69,8 @@ export const ToggleTooltipContent = (
           {...rest}
         >
           {children}
+
+          <ToggleTooltipClose className="absolute inset-0 focus-visible:outline-none" />
         </ArkPopover.Content>
       </ArkPopover.Positioner>
     </Portal>
@@ -91,3 +98,7 @@ export const ToggleTooltipArrow = (
     </ArkPopover.Arrow>
   );
 };
+
+export const ToggleTooltipClose = (
+  props: React.ComponentProps<typeof ArkPopover.CloseTrigger>
+) => <ArkPopover.CloseTrigger data-slot="toggle-tooltip-close" {...props} />;

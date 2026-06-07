@@ -20,6 +20,7 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
       factoryType={factoryType}
       image={`/images/upgrades/${factoryType}.webp`}
       onAction={() => upgradeFactory(factoryType)}
+      purchaseKind="upgrade"
       title={upgrade.name}
     />
   );

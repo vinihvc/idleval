@@ -1,38 +1,74 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SoundEngine } from "./engine";
+import type { SoundId } from "./types";
 
-interface MockAudioInstance {
-  currentTime: number;
-  loop: boolean;
-  pause: ReturnType<typeof vi.fn>;
-  play: ReturnType<typeof vi.fn>;
-  playbackRate: number;
-  preload: string;
-  src: string;
-  volume: number;
+interface MockGainNode {
+  connect: ReturnType<typeof vi.fn>;
+  disconnect: ReturnType<typeof vi.fn>;
+  gain: { value: number };
 }
 
-const createMockAudio = () => {
-  const instances: MockAudioInstance[] = [];
+interface MockBufferSource {
+  buffer: AudioBuffer | null;
+  connect: ReturnType<typeof vi.fn>;
+  disconnect: ReturnType<typeof vi.fn>;
+  loop: boolean;
+  onended: (() => void) | null;
+  playbackRate: { value: number };
+  start: ReturnType<typeof vi.fn>;
+  stop: ReturnType<typeof vi.fn>;
+}
 
-  const MockAudio = vi.fn((src?: string) => {
-    const instance: MockAudioInstance = {
-      src: src ?? "",
-      volume: 1,
-      playbackRate: 1,
-      currentTime: 0,
-      loop: false,
-      preload: "",
-      play: vi.fn().mockResolvedValue(undefined),
-      pause: vi.fn(),
+const createMockBuffer = () => ({}) as AudioBuffer;
+
+const createMockWebAudio = () => {
+  const sources: MockBufferSource[] = [];
+  const gains: MockGainNode[] = [];
+  const destination = {} as AudioDestinationNode;
+
+  const createGain = vi.fn(() => {
+    const gain: MockGainNode = {
+      gain: { value: 1 },
+      connect: vi.fn(),
+      disconnect: vi.fn(),
     };
-
-    instances.push(instance);
-
-    return instance as unknown as HTMLAudioElement;
+    gains.push(gain);
+    return gain as unknown as GainNode;
   });
 
-  return { MockAudio, instances };
+  const createBufferSource = vi.fn(() => {
+    const source: MockBufferSource = {
+      buffer: null,
+      loop: false,
+      playbackRate: { value: 1 },
+      onended: null,
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+      start: vi.fn(),
+      stop: vi.fn(),
+    };
+    sources.push(source);
+    return source as unknown as AudioBufferSourceNode;
+  });
+
+  const context = {
+    state: "running" as AudioContextState,
+    destination,
+    createGain,
+    createBufferSource,
+    decodeAudioData: vi.fn().mockResolvedValue(createMockBuffer()),
+    resume: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined),
+  } as unknown as AudioContext;
+
+  const preloadBuffers = Object.fromEntries(
+    (["click", "coin", "upgrade", "hold", "theme"] as SoundId[]).map((id) => [
+      id,
+      createMockBuffer(),
+    ])
+  ) as Partial<Record<SoundId, AudioBuffer>>;
+
+  return { context, sources, gains, preloadBuffers };
 };
 
 describe("SoundEngine", () => {
@@ -43,7 +79,7 @@ describe("SoundEngine", () => {
     sfx: boolean;
     sfxVolume: number;
   };
-  let mockAudio: ReturnType<typeof createMockAudio>;
+  let mockWebAudio: ReturnType<typeof createMockWebAudio>;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -55,7 +91,7 @@ describe("SoundEngine", () => {
       sfx: true,
       sfxVolume: 0.8,
     };
-    mockAudio = createMockAudio();
+    mockWebAudio = createMockWebAudio();
 
     engine.init(
       () => settings,
@@ -64,9 +100,8 @@ describe("SoundEngine", () => {
         return () => undefined;
       },
       {
-        createAudio: mockAudio.MockAudio as unknown as (
-          src?: string
-        ) => HTMLAudioElement,
+        createContext: () => mockWebAudio.context,
+        preloadBuffers: mockWebAudio.preloadBuffers,
       }
     );
   });
@@ -80,53 +115,37 @@ describe("SoundEngine", () => {
   it("does not play SFX when sfx is disabled", () => {
     settings.sfx = false;
 
-    const playCallsBefore = mockAudio.instances.reduce(
-      (total, instance) => total + instance.play.mock.calls.length,
-      0
-    );
+    const sourcesBefore = mockWebAudio.sources.length;
 
     engine.play("click");
 
-    const playCallsAfter = mockAudio.instances.reduce(
-      (total, instance) => total + instance.play.mock.calls.length,
-      0
-    );
-
-    expect(playCallsAfter).toBe(playCallsBefore);
+    expect(mockWebAudio.sources.length).toBe(sourcesBefore);
   });
 
   it("applies composite volume from registry, settings, and override", () => {
     engine.play("click", { volume: 0.5 });
 
-    const clickAudio = mockAudio.instances.find((instance) =>
-      instance.src.includes("click.wav")
+    const playGain = mockWebAudio.gains.find(
+      (gain) => gain.gain.value === 0.5 * 0.8 * 0.5
     );
 
-    expect(clickAudio?.volume).toBeCloseTo(0.6 * 0.8 * 0.5);
+    expect(playGain).toBeDefined();
+    expect(
+      mockWebAudio.sources[mockWebAudio.sources.length - 1]?.start
+    ).toHaveBeenCalled();
   });
 
   it("throttles rapid coin plays", () => {
     engine.play("coin");
     engine.play("coin");
 
-    const coinPlays = mockAudio.instances.filter((instance) =>
-      instance.src.includes("coin.wav")
-    );
-
-    expect(
-      coinPlays.filter((instance) => instance.play.mock.calls.length > 0)
-    ).toHaveLength(1);
+    expect(mockWebAudio.sources).toHaveLength(1);
 
     vi.advanceTimersByTime(120);
 
     engine.play("coin");
 
-    const playedCoinInstances = mockAudio.instances.filter(
-      (instance) =>
-        instance.src.includes("coin.wav") && instance.play.mock.calls.length > 0
-    );
-
-    expect(playedCoinInstances.length).toBeGreaterThanOrEqual(2);
+    expect(mockWebAudio.sources.length).toBeGreaterThanOrEqual(2);
   });
 
   it("does not start music when music is disabled", () => {
@@ -134,39 +153,58 @@ describe("SoundEngine", () => {
     engine.unlock();
     engine.playMusic();
 
-    const musicAudio = mockAudio.instances.find((instance) =>
-      instance.src.includes("music.wav")
-    );
+    const musicSource = mockWebAudio.sources.find((source) => source.loop);
 
-    expect(musicAudio?.play).toBeUndefined();
+    expect(musicSource).toBeUndefined();
   });
 
   it("starts music after unlock when music is enabled", () => {
     engine.unlock();
     engine.playMusic();
 
-    const musicAudio = mockAudio.instances.find((instance) =>
-      instance.src.includes("music.wav")
+    const musicSource = mockWebAudio.sources.find((source) => source.loop);
+
+    expect(musicSource?.loop).toBe(true);
+    expect(musicSource?.start).toHaveBeenCalled();
+
+    const musicGain = mockWebAudio.gains.find(
+      (gain) => gain.gain.value === 0.4 * 0.8
     );
 
-    expect(musicAudio?.loop).toBe(true);
-    expect(musicAudio?.play).toHaveBeenCalled();
-    expect(musicAudio?.volume).toBeCloseTo(0.4 * 0.8);
+    expect(musicGain).toBeDefined();
   });
 
   it("loops hold SFX while playing and stops on release", () => {
     engine.play("hold");
 
-    const holdAudio = mockAudio.instances.find((instance) =>
-      instance.src.includes("hold.wav")
-    );
+    const holdSource = mockWebAudio.sources[mockWebAudio.sources.length - 1];
 
-    expect(holdAudio?.loop).toBe(true);
-    expect(holdAudio?.play).toHaveBeenCalled();
+    expect(holdSource?.loop).toBe(true);
+    expect(holdSource?.start).toHaveBeenCalled();
 
     engine.stop("hold");
 
-    expect(holdAudio?.pause).toHaveBeenCalled();
-    expect(holdAudio?.currentTime).toBe(0);
+    expect(holdSource?.stop).toHaveBeenCalled();
+  });
+
+  it("clears media session on unlock", () => {
+    const metadataDescriptor = {
+      configurable: true,
+      value: { title: "Idleval" },
+      writable: true,
+    };
+
+    Object.defineProperty(navigator, "mediaSession", {
+      configurable: true,
+      value: {
+        metadata: metadataDescriptor.value,
+        playbackState: "playing",
+      },
+    });
+
+    engine.unlock();
+
+    expect(navigator.mediaSession.metadata).toBeNull();
+    expect(navigator.mediaSession.playbackState).toBe("none");
   });
 });

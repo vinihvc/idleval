@@ -1,6 +1,7 @@
 import { atom } from "jotai";
 import {
   computeOfflineEarnings,
+  meetsMinimumOfflineDuration,
   type OfflineFactoryResult,
 } from "@/game/offline-earnings";
 import { store } from "@/providers/store";
@@ -19,12 +20,6 @@ export interface OfflineSummary {
   results: OfflineFactoryResult[];
   totalGold: GameValue;
 }
-
-/** Minimum time away before offline earnings are applied or shown. */
-export const MIN_OFFLINE_MS = 60_000;
-
-export const meetsMinimumOfflineDuration = (elapsedMs: number): boolean =>
-  elapsedMs >= MIN_OFFLINE_MS;
 
 export const offlineSummaryAtom = atom<OfflineSummary | null>(null);
 

@@ -24,8 +24,8 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
       <BottomNavigationList
         aria-label="Game navigation"
         className={cn(
-          "z-[60]",
-          "border-primary/40 bg-secondary/95 backdrop-blur-lg",
+          "z-60",
+          "border-primary bg-secondary/95 backdrop-blur-lg",
           "**:data-[slot=bottom-navigation-item]:border-transparent **:data-[slot=bottom-navigation-item]:bg-transparent **:data-[slot=bottom-navigation-item]:text-foreground/70 **:data-[slot=bottom-navigation-item]:shadow-none",
           "**:data-[slot=bottom-navigation-item]:aria-selected:text-primary **:data-[slot=bottom-navigation-item]:hover:text-primary"
         )}

@@ -5,6 +5,7 @@ import {
   FACTORY_TYPES,
   type FactoryType,
 } from "@/content/factories";
+import { isFactoryProductionActive } from "@/game/factories";
 import { useInterval } from "@/hooks/use-interval";
 import { store } from "@/providers/store";
 import { completeProductionCycle } from "@/store/atoms/factories";
@@ -116,11 +117,9 @@ export const useProductionScheduler = () => {
 
   const hasRunningFactory = React.useMemo(
     () =>
-      FACTORY_TYPES.some((factory) => {
-        const { isAutomated, isProducing, isUnlocked } = factories[factory];
-
-        return isUnlocked && (isAutomated || isProducing);
-      }),
+      FACTORY_TYPES.some((factory) =>
+        isFactoryProductionActive(factories[factory])
+      ),
     [factories]
   );
 
@@ -131,8 +130,7 @@ export const useProductionScheduler = () => {
 
       for (const factory of FACTORY_TYPES) {
         const state = factories[factory];
-        const isActive =
-          state.isUnlocked && (state.isAutomated || state.isProducing);
+        const isActive = isFactoryProductionActive(state);
         const currentTick = previousTicks[factory];
         const syncResult = isActive
           ? syncActiveFactoryTick(

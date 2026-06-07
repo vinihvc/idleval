@@ -77,3 +77,11 @@ export const managerCost = (baseBuyCost: number, _owned: number): GameValue =>
  */
 export const upgradeCost = (baseBuyCost: number, _owned: number): GameValue =>
   D(baseBuyCost).times(ECONOMY.upgradeBaseFactor);
+
+/**
+ * Whether the player has enough gold to pay a given price.
+ */
+export const canAfford = (
+  gold: GameValue,
+  price: number | GameValue
+): boolean => gold.gte(D(price));

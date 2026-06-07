@@ -20,7 +20,7 @@ export const FantasyPanel = (props: FantasyPanelProps) => {
       className={cn(
         "relative",
         variant === "stone" && [
-          "fantasy-panel-shadow inset-shadow-xs border-2 border-primary/60 bg-secondary/32 sm:bg-secondary/80",
+          "inset-shadow-xs border-2 border-primary/60 bg-secondary/32 sm:bg-secondary/80",
         ],
         variant === "parchment" && [
           "inset-shadow-xs border-2 border-primary/40 bg-popover text-popover-foreground",

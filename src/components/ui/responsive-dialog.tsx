@@ -77,7 +77,12 @@ export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
 
   return (
     <ResponsiveDialogContext.Provider value={{ isDesktop }}>
-      <Component onOpenChange={handleOpenChange} role={role} {...rest} />
+      <Component
+        modal={false}
+        onOpenChange={handleOpenChange}
+        role={role}
+        {...rest}
+      />
     </ResponsiveDialogContext.Provider>
   );
 };
@@ -151,10 +156,7 @@ export const ResponsiveDialogHeader = (props: ResponsiveDialogProps) => {
 
   return (
     <DrawerHeader
-      className={cn(
-        "has-[data-slot=drawer-tooltip]:flex-row has-[data-slot=drawer-tooltip]:items-center has-[data-slot=drawer-tooltip]:justify-center has-[data-slot=drawer-tooltip]:gap-2",
-        className
-      )}
+      className={cn("flex-row items-center justify-center gap-2", className)}
       {...rest}
     />
   );

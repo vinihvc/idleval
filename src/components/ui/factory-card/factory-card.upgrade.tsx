@@ -11,6 +11,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { FactoryType } from "@/content/factories";
+import {
+  canPurchaseUnits,
+  canUnlockFactory,
+  isFactorySealed,
+} from "@/game/purchases";
 import { cn } from "@/lib/cn";
 import {
   setAmountBySelectedAmount,
@@ -42,7 +47,8 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
     useFactory(factoryType);
   const { gold: goldSerialized } = useAtomValue(walletAtom);
   const gold = deserializeDecimal(goldSerialized);
-  const { value: amountToBuy } = usePurchaseMode();
+  const purchaseMode = usePurchaseMode();
+  const { value: amountToBuy } = purchaseMode;
   const { totalCanBuy, totalToPay } = React.useMemo(
     () =>
       computePurchaseTotals(
@@ -53,6 +59,55 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
       ),
     [amountToBuy, goldSerialized, amount, baseBuyCost]
   );
+
+  // #region agent log
+  React.useEffect(() => {
+    fetch("http://127.0.0.1:7620/ingest/0d90553c-a60c-49af-9fa4-e621890cbf4b", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Debug-Session-Id": "ece29d",
+      },
+      body: JSON.stringify({
+        sessionId: "ece29d",
+        runId: "pre-fix",
+        hypothesisId: "A-B-E",
+        location: "factory-card.upgrade.tsx:purchase-state",
+        message: "Factory purchase button state",
+        data: {
+          factoryType,
+          purchaseModeValue: purchaseMode.value,
+          purchaseModeName: purchaseMode.name,
+          amountToBuyType: typeof amountToBuy,
+          amountToBuy,
+          owned: amount,
+          baseBuyCost,
+          gold: gold.toString(),
+          totalCanBuy,
+          totalToPay: totalToPay.toString(),
+          canBuyAmount: canPurchaseUnits({
+            gold,
+            quantity: totalCanBuy,
+            totalToPay,
+          }),
+          isUnlocked,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => undefined);
+  }, [
+    factoryType,
+    purchaseMode.value,
+    purchaseMode.name,
+    amountToBuy,
+    amount,
+    baseBuyCost,
+    gold,
+    totalCanBuy,
+    totalToPay,
+    isUnlocked,
+  ]);
+  // #endregion
 
   const totalGreaterThan0 = totalCanBuy > 0;
   const buyPrice = totalGreaterThan0 ? totalToPay : nextUnitCost;
@@ -65,9 +120,13 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
     }
   };
 
-  const canBuyAmount = gold.gte(totalToPay);
-  const canUnlock = gold.gte(unlockPrice);
-  const isLocked = !(isUnlocked || canUnlock);
+  const canBuyAmount = canPurchaseUnits({
+    gold,
+    quantity: totalCanBuy,
+    totalToPay,
+  });
+  const canUnlock = canUnlockFactory(gold, unlockPrice);
+  const isLocked = isFactorySealed({ isUnlocked, gold, unlockPrice });
 
   const buttonVariant = () => {
     if (!totalGreaterThan0) {
@@ -106,18 +165,25 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
             <span className="flex items-center gap-1">
-              Buy <NumberText>{amountFormatter(totalCanBuy)}</NumberText>{" "}
-              <span className="max-sm:hidden">{name}</span>
+              Buy{" "}
+              <NumberText variant="green">
+                {amountFormatter(totalCanBuy)}
+              </NumberText>{" "}
+              <span className="max-sm:hidden md:max-lg:hidden">{name}</span>
             </span>
 
-            <NumberText>{amountFormatterWithDolarSign(totalToPay)}</NumberText>
+            <NumberText variant="green">
+              {amountFormatterWithDolarSign(totalToPay)}
+            </NumberText>
           </>
         )}
 
         {!isUnlocked && canUnlock && (
           <>
             Unlock
-            <NumberText>{amountFormatterWithDolarSign(unlockPrice)}</NumberText>
+            <NumberText variant="default">
+              {amountFormatterWithDolarSign(unlockPrice)}
+            </NumberText>
           </>
         )}
 

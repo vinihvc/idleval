@@ -8,6 +8,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { FactoryType } from "@/content/factories";
+import {
+  canStartManualProduction,
+  getUpgradeMultiplierLabel,
+} from "@/game/factories";
 import { cn } from "@/lib/cn";
 import { startProducing, useFactory } from "@/store/atoms/factories";
 import { capitalize } from "@/utils/formatters";
@@ -44,7 +48,9 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           data-auto={isAutomated}
           data-producing={isProducing}
           data-unlocked={isUnlocked}
-          disabled={isProducing || !isUnlocked || isAutomated}
+          disabled={
+            !canStartManualProduction({ isProducing, isUnlocked, isAutomated })
+          }
           onClick={() => startProducing(factoryType)}
           size="icon-md"
           {...rest}
@@ -58,27 +64,27 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
               "group-data-[producing=true]:border-info"
             )}
           >
-            <Image
-              alt={`Produce ${factoryType}`}
-              className={cn(
-                "size-16",
-                "p-2",
-                "object-contain",
-                "bg-card",
-                "pixel-crisp rounded-full ring-4 ring-offset-4 ring-offset-secondary",
-                "pointer-events-none",
-                "group-data-[unlocked=false]:grayscale"
-              )}
-              height={64}
-              layout="constrained"
-              src={`/images/factories/${factoryType}.webp`}
-              width={64}
-            />
+            <div className="size-16 overflow-hidden rounded-full bg-card p-2 ring-4 ring-offset-4 ring-offset-secondary">
+              <Image
+                alt={`Produce ${factoryType}`}
+                className={cn(
+                  "",
+                  "object-contain",
+                  "pixel-crisp",
+                  "pointer-events-none",
+                  "group-data-[unlocked=false]:grayscale"
+                )}
+                height={64}
+                layout="constrained"
+                src={`/images/factories/${factoryType}.webp`}
+                width={64}
+              />
+            </div>
 
             {isUpgraded && (
               <div className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border border-secondary bg-primary">
                 <NumberText className="text-xs" variant="cream">
-                  2x
+                  {getUpgradeMultiplierLabel()}
                 </NumberText>
               </div>
             )}
@@ -100,7 +106,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
                   borderedText({ variant: isProducing ? "blue" : "cream" })
                 )}
               >
-                <NumberText>{amount}</NumberText>
+                <NumberText variant="cream">{amount}</NumberText>
               </span>
             </div>
           )}

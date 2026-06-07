@@ -3,9 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { NumberText } from "@/components/ui/number-text";
 import { UpgradeCard, UpgradeCardTrigger } from "@/components/ui/upgrade-card";
 import { type God, getGodIndex } from "@/content/gods";
-import { getGodGoldRequired } from "@/game/gods";
+import {
+  canInvokeGodAtIndex,
+  getGodCardStatus,
+  getGodGoldRequired,
+} from "@/game/gods";
 import { useGods } from "@/store/atoms/gods";
-import { hasGoldToBuy } from "@/store/atoms/wallet";
+import { useWallet } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
 import { GodConfirmButton } from "./gods.confirm-button";
 
@@ -18,25 +22,12 @@ export const GodsCard = (props: GodsCardProps) => {
   const { god, onInvoke } = props;
 
   const { count: godsLevel } = useGods();
+  const { gold } = useWallet();
 
   const godIndex = getGodIndex(god);
   const goldRequired = getGodGoldRequired(godIndex);
-  const canAfford = hasGoldToBuy(goldRequired);
-
-  const getCardStatus = () => {
-    if (godIndex < godsLevel) {
-      return "completed" as const;
-    }
-    if (godIndex === godsLevel) {
-      return "available" as const;
-    }
-    if (godIndex === godsLevel + 1) {
-      return "locked" as const;
-    }
-    return "future" as const;
-  };
-
-  const status = getCardStatus();
+  const status = getGodCardStatus(godIndex, godsLevel);
+  const canAfford = canInvokeGodAtIndex(godIndex, godsLevel, gold);
   const isNextInvocation = godIndex === godsLevel;
   const complete = status === "completed";
   const affordable = status === "available" && canAfford;

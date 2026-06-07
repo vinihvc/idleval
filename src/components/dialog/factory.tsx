@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/responsive-dialog";
 import { StatTile } from "@/components/ui/stats";
 import type { FactoryType } from "@/content/factories";
+import { getFactoryYieldPerHour } from "@/game/factories";
 import { useFactory, useProductionValue } from "@/store/atoms/factories";
 import { useGoldEarnedByFactory } from "@/store/atoms/statistics";
 
@@ -32,7 +33,10 @@ const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
 
   const factory = useFactory(factoryType);
   const yieldPerTap = useProductionValue(factoryType);
-  const yieldPerHour = yieldPerTap.times(3600).div(factory.productionTime);
+  const yieldPerHour = getFactoryYieldPerHour(
+    yieldPerTap,
+    factory.productionTime
+  );
   const lifetimeYield = useGoldEarnedByFactory(factoryType);
 
   return (

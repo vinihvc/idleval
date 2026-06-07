@@ -36,7 +36,7 @@ export const OfflineEarningsDialog = (props: OfflineEarningsDialogProps) => {
 
   return (
     <ResponsiveDialog onOpenChange={handleOpenChange} open role="alertdialog">
-      <ResponsiveDialogContent showCloseButton={false}>
+      <ResponsiveDialogContent draggable={false} showCloseButton={false}>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage alt="Treasury" src="/images/msc/gift.webp" />
         </ResponsiveDialogMedia>
@@ -56,10 +56,7 @@ export const OfflineEarningsDialog = (props: OfflineEarningsDialogProps) => {
         <ResponsiveDialogBody>
           <div className="flex flex-col items-center gap-2 py-2">
             <span className="font-medium text-lg">You earned</span>
-            <NumberText
-              className="text-4xl text-primary tracking-widest"
-              size="lg"
-            >
+            <NumberText className="text-3xl text-primary" size="lg">
               {amountFormatterWithDolarSign(summary.totalGold)}
             </NumberText>
           </div>

@@ -10,6 +10,8 @@ export const borderedText = tv({
       green: ["[-webkit-text-stroke-color:oklch(0.35_0.1_155)]"],
       stone: ["[-webkit-text-stroke-color:oklch(0.25_0.03_60)]"],
       blue: ["[-webkit-text-stroke-color:oklch(0.35_0.1_250)]"],
+      purple: ["[-webkit-text-stroke-color:oklch(0.35_0.1_298)]"],
+      red: ["[-webkit-text-stroke-color:oklch(0.35_0.12_27)]"],
     },
     size: {
       sm: ["[-webkit-text-stroke-width:2px]"],

@@ -1,5 +1,11 @@
 import type { FactoryType } from "@/content/factories";
-import { getFactoryEarnPerCycle } from "@/game/factories";
+import {
+  canPurchaseManager,
+  canPurchaseUpgrade,
+  canStartManualProduction,
+  getFactoryEarnPerCycle,
+} from "@/game/factories";
+import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { D } from "@/utils/decimal";
@@ -13,7 +19,7 @@ import {
 } from "./purchase-mode";
 import { touchLastSeen } from "./session";
 import { recordGoldSpent, recordQuantity } from "./statistics";
-import { decreaseGold, hasGoldToBuy, increaseGoldByAmount } from "./wallet";
+import { decreaseGold, getGold, increaseGoldByAmount } from "./wallet";
 
 export const setAmountBySelectedAmount = (
   factory: FactoryType,
@@ -22,9 +28,13 @@ export const setAmountBySelectedAmount = (
   const amountToPay = totalToPayByAmount(factory, amount);
   const amountToBuy = totalCanBuyByAmount(factory, amount);
 
-  const canBuy = hasGoldToBuy(amountToPay);
-
-  if (!canBuy || amountToBuy <= 0) {
+  if (
+    !canPurchaseUnits({
+      gold: getGold(),
+      quantity: amountToBuy,
+      totalToPay: amountToPay,
+    })
+  ) {
     return;
   }
 
@@ -44,7 +54,7 @@ export const setAmountBySelectedAmount = (
 export const startProducing = (factory: FactoryType) => {
   const { isAutomated, isProducing, isUnlocked } = getFactory(factory);
 
-  if (isProducing || isAutomated || !isUnlocked) {
+  if (!canStartManualProduction({ isProducing, isAutomated, isUnlocked })) {
     return;
   }
 
@@ -91,11 +101,9 @@ export const completeProductionCycle = (factory: FactoryType) => {
 export const stopProducing = completeProductionCycle;
 
 export const autoFactory = (factory: FactoryType) => {
-  const { isUnlocked, managerCost: cost } = getFactory(factory);
+  const { isAutomated, isUnlocked, managerCost: cost } = getFactory(factory);
 
-  const canAutomate = hasGoldToBuy(cost);
-
-  if (!(isUnlocked && canAutomate)) {
+  if (!canPurchaseManager({ isUnlocked, isAutomated, gold: getGold(), cost })) {
     return;
   }
 
@@ -112,11 +120,9 @@ export const autoFactory = (factory: FactoryType) => {
 };
 
 export const upgradeFactory = (factory: FactoryType) => {
-  const { isUnlocked, upgradeCost: cost } = getFactory(factory);
+  const { isUnlocked, isUpgraded, upgradeCost: cost } = getFactory(factory);
 
-  const canUpgrade = hasGoldToBuy(cost);
-
-  if (!(isUnlocked && canUpgrade)) {
+  if (!canPurchaseUpgrade({ isUnlocked, isUpgraded, gold: getGold(), cost })) {
     return;
   }
 
@@ -135,9 +141,7 @@ export const upgradeFactory = (factory: FactoryType) => {
 export const unlockFactory = (factory: FactoryType) => {
   const { unlockPrice } = getFactory(factory);
 
-  const canUnlock = hasGoldToBuy(unlockPrice);
-
-  if (!canUnlock) {
+  if (!canUnlockFactory(getGold(), unlockPrice)) {
     return;
   }
 

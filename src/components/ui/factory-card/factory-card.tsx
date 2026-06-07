@@ -37,9 +37,8 @@ export const FactoryCard = (props: FactoryCardProps) => {
       <div
         className={cn(
           "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
-          "border-primary/40 bg-popover/90 text-popover-foreground",
-          isUnlocked &&
-            "border-primary/60 shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
+          "border-primary bg-popover/90 text-popover-foreground",
+          isUnlocked && "shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
         )}
       >
         <Progress

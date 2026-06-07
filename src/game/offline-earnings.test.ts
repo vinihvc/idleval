@@ -1,10 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { FACTORIES } from "@/content/factories";
-import { computeOfflineEarnings } from "@/game/offline-earnings";
+import {
+  computeOfflineEarnings,
+  MIN_OFFLINE_MS,
+  meetsMinimumOfflineDuration,
+} from "@/game/offline-earnings";
 import { initialData } from "@/store/atoms/factories.atom";
 import { D } from "@/utils/decimal";
 
 describe("offline-earnings", () => {
+  it("meetsMinimumOfflineDuration at the 60s threshold", () => {
+    expect(meetsMinimumOfflineDuration(MIN_OFFLINE_MS - 1)).toBe(false);
+    expect(meetsMinimumOfflineDuration(MIN_OFFLINE_MS)).toBe(true);
+  });
+
   it("returns empty results when lastSeenAt is null", () => {
     const result = computeOfflineEarnings(Date.now(), null, initialData, D(1));
 

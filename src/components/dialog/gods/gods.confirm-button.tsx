@@ -16,7 +16,7 @@ export const GodConfirmButton = (props: GodConfirmButtonProps) => {
   return (
     <HoldButton
       aria-label={`Hold  to invoke ${god.name}.`}
-      className="inset-shadow-none w-full rounded-none border-0"
+      className="inset-shadow-none w-full rounded-none rounded-b-md border"
       holdLabel="Hold..."
       onHoldComplete={() => {
         if (invokeGod()) {

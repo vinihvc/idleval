@@ -68,6 +68,13 @@ export const buttonVariants = tv({
         "border-info-foreground/40",
         "hover:brightness-105 focus-visible:ring-info/50",
       ],
+      purple: [
+        "bg-tertiary",
+        "text-white",
+        "active:brightness-95",
+        "border-tertiary-foreground/40",
+        "hover:brightness-105 focus-visible:ring-tertiary/50",
+      ],
       outline: [
         "bg-transparent",
         "text-foreground",
@@ -79,10 +86,9 @@ export const buttonVariants = tv({
       destructive: [
         "bg-destructive",
         "text-white",
-        "border-transparent shadow-destructive/24",
         "active:brightness-95",
-        "hover:brightness-105",
-        "focus-visible:border-background focus-visible:ring-destructive-foreground/32",
+        "border-destructive-foreground/40",
+        "hover:brightness-105 focus-visible:ring-destructive/50",
       ],
       secondary: [
         "bg-secondary",
@@ -132,14 +138,6 @@ export const buttonVariants = tv({
   },
 });
 
-export type ButtonColorVariant =
-  | "default"
-  | "brown"
-  | "cream"
-  | "stone"
-  | "green"
-  | "blue";
-
 export interface ButtonProps
   extends React.ComponentProps<typeof ark.button>,
     VariantProps<typeof buttonVariants> {
@@ -163,19 +161,10 @@ export interface ButtonProps
   sound?: SoundsType;
 }
 
-const BORDERED_TEXT_VARIANTS = new Set<ButtonColorVariant>([
-  "default",
-  "brown",
-  "cream",
-  "green",
-  "stone",
-  "blue",
-]);
-
 export const Button = (props: ButtonProps) => {
   const {
     type = "button",
-    variant,
+    variant = "default",
     size,
     sound = "click",
     asChild = false,
@@ -193,12 +182,7 @@ export const Button = (props: ButtonProps) => {
     onClick?.(event);
   };
 
-  const borderedVariant =
-    variant && BORDERED_TEXT_VARIANTS.has(variant as ButtonColorVariant)
-      ? (variant as ButtonColorVariant)
-      : undefined;
-
-  const isIconSize = typeof size === "string" && size.startsWith("icon");
+  const borderedVariant = BUTTON_TEXT_BORDER[variant];
 
   return (
     <ark.button
@@ -206,7 +190,6 @@ export const Button = (props: ButtonProps) => {
       className={cn(
         buttonVariants({ variant, size, clickEffect }),
         borderedVariant &&
-          !isIconSize &&
           borderedText({ variant: borderedVariant, size: "lg" }),
         className
       )}
@@ -236,3 +219,18 @@ export const Button = (props: ButtonProps) => {
     </ark.button>
   );
 };
+
+export const BUTTON_TEXT_BORDER = {
+  default: "default",
+  brown: "brown",
+  cream: "cream",
+  stone: "stone",
+  green: "green",
+  blue: "blue",
+  purple: "purple",
+  destructive: "red",
+  outline: "default",
+  secondary: "brown",
+  ghost: "cream",
+  link: "default",
+} as const;

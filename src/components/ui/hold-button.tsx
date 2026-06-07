@@ -23,8 +23,6 @@ interface HoldButtonProps extends ButtonProps {
   onHoldComplete?: () => void;
 }
 
-const isHoldKey = (key: string) => key === " " || key === "Enter";
-
 export const HoldButton = (props: HoldButtonProps) => {
   const {
     durationMs = 3400,
@@ -40,25 +38,114 @@ export const HoldButton = (props: HoldButtonProps) => {
     ...rest
   } = props;
 
-  const { trigger, cancel } = useWebHaptics();
-  const [isHolding, setIsHolding] = React.useState(false);
-  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { isHolding, holdHandlers } = useHoldPress({
+    durationMs,
+    disabled,
+    onHoldComplete,
+  });
 
-  const stopHoldSound = () => {
-    sound.stop("hold");
+  const handleBlur = (event: React.FocusEvent<HTMLButtonElement>) => {
+    holdHandlers.onBlur();
+    onBlur?.(event);
   };
 
-  const cancelHold = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    holdHandlers.onClick(event);
+    onClick?.(event);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    holdHandlers.onKeyDown(event);
+    onKeyDown?.(event);
+  };
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    holdHandlers.onKeyUp(event);
+    onKeyUp?.(event);
+  };
+
+  return (
+    <Button
+      className={cn(
+        "touch-manipulation select-none overflow-hidden text-sm [-webkit-touch-callout:none]",
+        className
+      )}
+      clickEffect={false}
+      disabled={disabled}
+      onBlur={handleBlur}
+      onClick={handleClick}
+      onContextMenu={holdHandlers.onContextMenu}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
+      onMouseDown={holdHandlers.onMouseDown}
+      onMouseLeave={holdHandlers.onMouseLeave}
+      onMouseUp={holdHandlers.onMouseUp}
+      onTouchCancel={holdHandlers.onTouchCancel}
+      onTouchEnd={holdHandlers.onTouchEnd}
+      onTouchStart={holdHandlers.onTouchStart}
+      {...rest}
+    >
+      <HoldProgress active={isHolding} durationMs={durationMs} />
+      <span className="relative z-10 flex items-center gap-2">
+        {isHolding ? holdLabel : children}
+      </span>
+    </Button>
+  );
+};
+
+const isHoldKey = (key: string) => key === " " || key === "Enter";
+
+interface HoldProgressProps {
+  active: boolean;
+  durationMs: number;
+}
+
+const HoldProgress = (props: HoldProgressProps) => {
+  const { active, durationMs } = props;
+
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-y-0 left-0 w-full origin-left bg-white/25",
+        active
+          ? "scale-x-100 transition-transform ease-linear"
+          : "scale-x-0 transition-none"
+      )}
+      style={active ? { transitionDuration: `${durationMs}ms` } : undefined}
+    />
+  );
+};
+
+interface UseHoldPressOptions {
+  disabled?: boolean;
+  durationMs: number;
+  onHoldComplete?: () => void;
+}
+
+const useHoldPress = (options: UseHoldPressOptions) => {
+  const { durationMs, disabled, onHoldComplete } = options;
+
+  const { trigger, cancel } = useWebHaptics();
+
+  const [isHolding, setIsHolding] = React.useState(false);
+
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onHoldCompleteRef = React.useRef(onHoldComplete);
+
+  onHoldCompleteRef.current = onHoldComplete;
+
+  const cancelHold = React.useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-    stopHoldSound();
+    sound.stop("hold");
     cancel();
     setIsHolding(false);
-  };
+  }, [cancel]);
 
-  const startHold = () => {
+  const startHold = React.useCallback(() => {
     if (disabled || timerRef.current) {
       return;
     }
@@ -68,76 +155,46 @@ export const HoldButton = (props: HoldButtonProps) => {
     setIsHolding(true);
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
-      stopHoldSound();
+      sound.stop("hold");
       setIsHolding(false);
       trigger("success");
-      onHoldComplete?.();
+      onHoldCompleteRef.current?.();
     }, durationMs);
-  };
+  }, [disabled, durationMs, trigger]);
 
-  React.useEffect(
-    () => () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    },
-    []
-  );
+  React.useEffect(() => () => cancelHold(), [cancelHold]);
 
-  return (
-    <Button
-      className={cn(
-        "touch-manipulation select-none overflow-hidden [-webkit-touch-callout:none]",
-        className
-      )}
-      disabled={disabled}
-      onBlur={(event) => {
-        cancelHold();
-        onBlur?.(event);
-      }}
-      onClick={(event) => {
+  const holdHandlers = React.useMemo(
+    () => ({
+      onBlur: cancelHold,
+      onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        onClick?.(event);
-      }}
-      onContextMenu={(event) => event.preventDefault()}
-      onKeyDown={(event) => {
-        if (isHoldKey(event.key)) {
+      },
+      onContextMenu: (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+      },
+      onKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (!event.repeat && isHoldKey(event.key)) {
           startHold();
         }
-        onKeyDown?.(event);
-      }}
-      onKeyUp={(event) => {
+      },
+      onKeyUp: (event: React.KeyboardEvent<HTMLButtonElement>) => {
         if (isHoldKey(event.key)) {
           cancelHold();
         }
-        onKeyUp?.(event);
-      }}
-      onMouseDown={startHold}
-      onMouseLeave={cancelHold}
-      onMouseUp={cancelHold}
-      onTouchCancel={cancelHold}
-      onTouchEnd={cancelHold}
-      onTouchStart={(event) => {
+      },
+      onMouseDown: startHold,
+      onMouseLeave: cancelHold,
+      onMouseUp: cancelHold,
+      onTouchCancel: cancelHold,
+      onTouchEnd: cancelHold,
+      onTouchStart: (event: React.TouchEvent<HTMLButtonElement>) => {
         event.preventDefault();
         startHold();
-      }}
-      {...rest}
-    >
-      <span
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute inset-y-0 left-0 w-full origin-left select-none bg-white/25",
-          isHolding
-            ? "scale-x-100 transition-transform ease-linear"
-            : "scale-x-0 transition-none"
-        )}
-        style={
-          isHolding ? { transitionDuration: `${durationMs}ms` } : undefined
-        }
-      />
-      <span className="relative z-10 flex items-center gap-2">
-        {isHolding ? holdLabel : children}
-      </span>
-    </Button>
+      },
+    }),
+    [cancelHold, startHold]
   );
+
+  return { isHolding, holdHandlers };
 };

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { MIN_OFFLINE_MS, meetsMinimumOfflineDuration } from "@/store/offline";
+import {
+  MIN_OFFLINE_MS,
+  meetsMinimumOfflineDuration,
+} from "@/game/offline-earnings";
 
 describe("offline", () => {
   it("requires at least one minute away before applying offline earnings", () => {

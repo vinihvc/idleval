@@ -1,10 +1,9 @@
 import { useAtomValue } from "jotai";
-import { persistedAtom } from "@/store/storage";
-import { GOD_COUNT } from "@/content/gods";
-import { getGodGoldRequired, getTotalProductionMultiplier } from "@/game/gods";
+import { canInvokeGodAtIndex, getTotalProductionMultiplier } from "@/game/gods";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { resetRunProgress } from "@/store/reset";
+import { persistedAtom } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold } from "./wallet";
 
@@ -30,27 +29,13 @@ export const useGodsProductionMultiplier = (): GameValue => {
 export const canInvokeGod = (): boolean => {
   const level = getGodsLevel();
 
-  if (level >= GOD_COUNT) {
-    return false;
-  }
-
-  const gold = getGold();
-  const required = getGodGoldRequired(level);
-
-  return gold.gte(required);
+  return canInvokeGodAtIndex(level, level, getGold());
 };
 
 export const invokeGod = (): boolean => {
   const level = getGodsLevel();
 
-  if (level >= GOD_COUNT) {
-    return false;
-  }
-
-  const gold = getGold();
-  const required = getGodGoldRequired(level);
-
-  if (gold.lt(required)) {
+  if (!canInvokeGodAtIndex(level, level, getGold())) {
     return false;
   }
 
@@ -59,7 +44,7 @@ export const invokeGod = (): boolean => {
   }));
 
   resetRunProgress();
-  sound.play("pray");
+  sound.play("upgrade");
 
   return true;
 };

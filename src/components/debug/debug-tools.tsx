@@ -50,7 +50,7 @@ export const DebugTools = () => {
             <Coins />
             <span className="max-md:sr-only">
               Add{" "}
-              <NumberText>
+              <NumberText variant="green">
                 {amountFormatterWithDolarSign(DEBUG_GOLD_AMOUNT)}
               </NumberText>
             </span>
@@ -81,8 +81,8 @@ export const DebugTools = () => {
           </Button>
           <Button
             aria-label="Enable god mode"
-            className="border-purple-600 bg-purple-500 text-purple-50"
             onClick={enableGodMode}
+            variant="purple"
           >
             <Crown />
             <span className="max-md:sr-only">God mode</span>

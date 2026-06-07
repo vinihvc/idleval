@@ -3,18 +3,20 @@ import { CheckboxOn } from "pixelarticons/react";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { NumberText } from "@/components/ui/number-text";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { UpgradeCardFrame } from "@/components/ui/upgrade-card/upgrade-card.frame";
 import type { FactoryType } from "@/content/factories";
+import { canPurchaseManager, canPurchaseUpgrade } from "@/game/factories";
 import { cn } from "@/lib/cn";
 import { useFactory } from "@/store/atoms/factories";
-import { hasGoldToBuy } from "@/store/atoms/wallet";
+import { useWallet } from "@/store/atoms/wallet";
 import type { GameValue } from "@/utils/decimal";
 import { amountFormatter } from "@/utils/formatters";
-import { NumberText } from "./number-text";
 
 interface UpgradeCardBaseProps extends React.ComponentProps<"article"> {
   affordable?: boolean;
@@ -36,6 +38,7 @@ interface UpgradeCardFactoryProps extends UpgradeCardBaseProps {
   cost: GameValue;
   factoryType: FactoryType;
   onAction: () => void;
+  purchaseKind: "manager" | "upgrade";
 }
 
 export type UpgradeCardProps =
@@ -60,14 +63,30 @@ const UpgradeCardWithFactoryAction = (props: UpgradeCardFactoryProps) => {
     description,
     complete,
     onAction,
+    purchaseKind,
     ...rest
   } = props;
 
-  const { isUnlocked, name } = useFactory(factoryType);
+  const { isAutomated, isUnlocked, isUpgraded, name } = useFactory(factoryType);
+  const { gold } = useWallet();
 
-  const canBuy = hasGoldToBuy(cost);
-  const affordable = isUnlocked && !complete && canBuy;
+  const canBuy =
+    purchaseKind === "manager"
+      ? canPurchaseManager({
+          isUnlocked,
+          isAutomated,
+          gold,
+          cost,
+        })
+      : canPurchaseUpgrade({
+          isUnlocked,
+          isUpgraded,
+          gold,
+          cost,
+        });
+  const affordable = !complete && canBuy;
   const actionable = complete || affordable;
+  const isDisabled = complete ? false : !canBuy;
 
   const getTriggerContent = () => {
     if (!isUnlocked) {
@@ -80,7 +99,7 @@ const UpgradeCardWithFactoryAction = (props: UpgradeCardFactoryProps) => {
       <>
         <span>{actionLabel}</span>
         <Badge variant="default">
-          <NumberText>{amountFormatter(cost)}</NumberText>
+          <NumberText variant="default">{amountFormatter(cost)}</NumberText>
         </Badge>
       </>
     );
@@ -111,7 +130,7 @@ const UpgradeCardWithFactoryAction = (props: UpgradeCardFactoryProps) => {
         {name}
       </UpgradeCardBadge>
       <UpgradeCardTrigger
-        disabled={!(isUnlocked && canBuy)}
+        disabled={isDisabled}
         onClick={onAction}
         sound="upgrade"
         variant={actionable ? "green" : "brown"}
@@ -140,11 +159,9 @@ const UpgradeCardLayout = (
     <article
       className={cn(
         "group relative",
-        "bg-muted",
+        "bg-primary",
         "transition-all",
-        "inset-shadow-xs overflow-hidden rounded-md border-3",
-        "data-[affordable=true]:border-success/80",
-        "data-[complete=true]:border-success data-[complete=true]:bg-success",
+        "inset-shadow-xs rounded-lg p-1.5",
         "focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50",
         className
       )}
@@ -152,29 +169,22 @@ const UpgradeCardLayout = (
       data-complete={complete}
       {...rest}
     >
-      <div className="relative aspect-square w-full overflow-hidden border-inherit border-b-2">
+      <UpgradeCardFrame />
+
+      <div className="relative aspect-square w-full overflow-hidden border-primary/30 group-data-[affordable=true]:border-success/50 group-data-[complete=true]:border-success/70">
         <Image
           alt=""
           aria-hidden
-          className="pixel-crisp pointer-events-none size-full object-cover"
+          className="pixel-crisp pointer-events-none size-full rounded-t-md object-cover"
           height={112}
           layout="constrained"
           src={image}
           width={112}
         />
         {title && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <p className="absolute inset-x-0 bottom-0 bg-background/85 px-2 py-1 text-center font-medium text-foreground text-sm leading-tight">
-                {title}
-              </p>
-            </TooltipTrigger>
-            {description && (
-              <TooltipContent className="max-w-xs">
-                {description}
-              </TooltipContent>
-            )}
-          </Tooltip>
+          <p className="absolute inset-x-0 bottom-0 bg-background/85 px-2 py-1 text-center font-medium text-foreground text-sm leading-tight">
+            {title}
+          </p>
         )}
       </div>
 
@@ -193,11 +203,10 @@ export const UpgradeCardTrigger = (
       className={cn(
         "w-full",
         "font-medium text-sm",
-        "inset-shadow-none rounded-none border-0",
+        "inset-shadow-none rounded-none rounded-b-md border",
         className
       )}
       clickEffect={false}
-      size="sm"
       {...rest}
     />
   );
@@ -216,8 +225,8 @@ export const UpgradeCardBadge = (props: UpgradeCardBadgeProps) => {
       <TooltipTrigger asChild>
         <div
           className={cn(
-            "absolute top-1",
-            position === "left" ? "left-1" : "right-1"
+            "absolute top-2 z-20",
+            position === "left" ? "left-2" : "right-2"
           )}
         >
           <div

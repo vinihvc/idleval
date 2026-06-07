@@ -37,7 +37,7 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-4">
             {GODS.map((god) => (
               <GodsCard
                 god={god}

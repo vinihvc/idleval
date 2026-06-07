@@ -63,7 +63,7 @@ export const SettingsDialog = () => {
           <div className="grid gap-4">
             <FieldGroup>
               <Field
-                className="rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground"
+                className="rounded-md border border-primary bg-popover-foreground/6 px-3 py-3 text-popover-foreground"
                 orientation="horizontal"
                 reverse
               >
@@ -75,7 +75,7 @@ export const SettingsDialog = () => {
               </Field>
 
               <Field
-                className="rounded-md border border-primary/25 bg-popover-foreground/6 px-3 py-3 text-popover-foreground"
+                className="rounded-md border border-primary bg-popover-foreground/6 px-3 py-3 text-popover-foreground"
                 orientation="horizontal"
                 reverse
               >
@@ -86,13 +86,13 @@ export const SettingsDialog = () => {
 
             <HoldButton
               aria-label="Hold  to reset the game."
-              className="w-full"
+              className="w-full text-lg"
               holdLabel="Hold..."
               onHoldComplete={() => {
                 resetGame();
                 setOpen(false);
               }}
-              size="lg"
+              size="xl"
               variant="destructive"
             >
               <Reload />

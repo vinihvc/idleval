@@ -25,7 +25,7 @@ export const Header = (props: HeaderProps) => {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 flex items-center justify-between border-primary/30 border-b-2 bg-secondary/90 p-3 backdrop-blur-md sm:sticky",
+        "fixed inset-x-0 top-0 z-50 flex items-center justify-between border-primary border-b-2 bg-secondary/90 p-3 backdrop-blur-md sm:sticky",
         className
       )}
       {...rest}
@@ -35,7 +35,7 @@ export const Header = (props: HeaderProps) => {
           <TooltipTrigger asChild>
             <ResponsiveDialogTrigger asChild>
               <button
-                className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 cursor-pointer items-center justify-end whitespace-nowrap rounded-md border-3 border-primary/70 bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 cursor-pointer items-center justify-end whitespace-nowrap rounded-md border-3 border-primary bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 type="button"
               >
                 <Coin

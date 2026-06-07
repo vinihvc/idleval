@@ -20,6 +20,7 @@ export const ManagersCard = (props: ManagersCardProps) => {
       factoryType={factoryType}
       image={`/images/managers/${factoryType}.webp`}
       onAction={() => autoFactory(factoryType)}
+      purchaseKind="manager"
       title={manager.name}
     />
   );
