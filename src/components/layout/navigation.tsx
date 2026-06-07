@@ -1,3 +1,4 @@
+import { Trans, useLingui } from "@lingui/react/macro";
 import { ArrowUpBox, Briefcase, Crown } from "pixelarticons/react";
 import type React from "react";
 import { GodsDialog } from "@/components/dialog/gods/gods";
@@ -18,11 +19,12 @@ interface BottomNavigationProps
 
 export const BottomNavigation = (props: BottomNavigationProps) => {
   const { className, ...rest } = props;
+  const { t } = useLingui();
 
   return (
     <BottomNavigationRoot className={cn("sm:hidden", className)} {...rest}>
       <BottomNavigationList
-        aria-label="Game navigation"
+        aria-label={t`Game navigation`}
         className={cn(
           "z-60",
           "border-primary bg-secondary/95 backdrop-blur-lg",
@@ -40,7 +42,9 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
                 <BottomNavigationItemIcon>
                   <ArrowUpBox />
                 </BottomNavigationItemIcon>
-                <span className="sr-only">Upgrades</span>
+                <span className="sr-only">
+                  <Trans>Upgrades</Trans>
+                </span>
               </button>
             </ResponsiveDialogTrigger>
           </BottomNavigationItem>
@@ -56,7 +60,9 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
                 <BottomNavigationItemIcon>
                   <Briefcase />
                 </BottomNavigationItemIcon>
-                <span className="sr-only">Managers</span>
+                <span className="sr-only">
+                  <Trans>Managers</Trans>
+                </span>
               </button>
             </ResponsiveDialogTrigger>
           </BottomNavigationItem>
@@ -72,7 +78,9 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
                 <BottomNavigationItemIcon>
                   <Crown />
                 </BottomNavigationItemIcon>
-                <span className="sr-only">Gods</span>
+                <span className="sr-only">
+                  <Trans>Gods</Trans>
+                </span>
               </button>
             </ResponsiveDialogTrigger>
           </BottomNavigationItem>
@@ -86,6 +94,7 @@ interface HeaderNavigationProps extends React.ComponentProps<"nav"> {}
 
 export const HeaderNavigation = (props: HeaderNavigationProps) => {
   const { className, ...rest } = props;
+  const { t } = useLingui();
 
   return (
     <nav
@@ -95,14 +104,14 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
       <DialogNavItem
         dialog={UpgradesDialog}
         icon={<ArrowUpBox />}
-        label="Upgrades"
+        label={t`Upgrades`}
       />
       <DialogNavItem
         dialog={ManagersDialog}
         icon={<Briefcase />}
-        label="Managers"
+        label={t`Managers`}
       />
-      <DialogNavItem dialog={GodsDialog} icon={<Crown />} label="Gods" />
+      <DialogNavItem dialog={GodsDialog} icon={<Crown />} label={t`Gods`} />
     </nav>
   );
 };

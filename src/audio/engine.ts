@@ -40,9 +40,7 @@ export class SoundEngine {
   private musicWantsPlay = false;
   private unsubscribe: (() => void) | null = null;
   private getSettings: SettingsGetter = () => ({
-    music: true,
     musicVolume: 0.8,
-    sfx: true,
     sfxVolume: 0.8,
   });
   private createContext: AudioContextFactory = () => new AudioContext();
@@ -110,7 +108,7 @@ export class SoundEngine {
 
     const settings = this.getSettings();
 
-    if (!settings.sfx) {
+    if (settings.sfxVolume <= 0) {
       return;
     }
 
@@ -198,7 +196,7 @@ export class SoundEngine {
   playMusic() {
     const settings = this.getSettings();
 
-    if (!settings.music) {
+    if (settings.musicVolume <= 0) {
       this.musicWantsPlay = false;
       this.stopMusic();
       return;
@@ -323,7 +321,7 @@ export class SoundEngine {
       );
     }
 
-    if (settings.music && this.unlocked) {
+    if (settings.musicVolume > 0 && this.unlocked) {
       this.playMusic();
       return;
     }

@@ -1,4 +1,6 @@
+import { getDifficultyLevel } from "@/store/atoms/settings";
 import { D, type GameValue } from "@/utils/decimal";
+import { applyDifficultyIncome } from "./difficulty";
 import { canAfford, ECONOMY } from "./economy";
 
 interface FactoryProductionValueInput {
@@ -18,18 +20,28 @@ interface FactoryEarnInput extends FactoryProductionValueInput {
 /**
  * Calculates the production value of a single factory unit after upgrades and
  * global god multipliers are applied.
+ *
+ * @example
+ * getFactoryProductionValue({ productionValue: 20, isUpgraded: false, godsProductionMultiplier: D(3) }).toNumber() // 60
+ * getFactoryProductionValue({ productionValue: 20, isUpgraded: true, godsProductionMultiplier: D(3) }).toNumber() // 120
  */
 export const getFactoryProductionValue = ({
   godsProductionMultiplier,
   isUpgraded,
   productionValue,
 }: FactoryProductionValueInput): GameValue =>
-  D(productionValue)
-    .times(isUpgraded ? ECONOMY.upgradeProductionMultiplier : 1)
-    .times(godsProductionMultiplier);
+  applyDifficultyIncome(
+    D(productionValue)
+      .times(isUpgraded ? ECONOMY.upgradeProductionMultiplier : 1)
+      .times(godsProductionMultiplier),
+    getDifficultyLevel()
+  );
 
 /**
  * Calculates how much gold a factory earns when one production cycle finishes.
+ *
+ * @example
+ * getFactoryEarnPerCycle({ amount: 3, productionValue: 10, isUpgraded: false, godsProductionMultiplier: D(1) }).toNumber() // 30
  */
 export const getFactoryEarnPerCycle = (input: FactoryEarnInput): GameValue =>
   getFactoryProductionValue(input).times(input.amount);
@@ -62,6 +74,9 @@ interface UpgradePurchaseState {
 
 /**
  * Calculates hourly yield from per-cycle yield and cycle duration.
+ *
+ * @example
+ * getFactoryYieldPerHour(D(10), 10).toNumber() // 3600
  */
 export const getFactoryYieldPerHour = (
   yieldPerCycle: GameValue,
@@ -70,12 +85,19 @@ export const getFactoryYieldPerHour = (
 
 /**
  * Display label for the production upgrade multiplier.
+ *
+ * @example
+ * getUpgradeMultiplierLabel() // "2x"
  */
 export const getUpgradeMultiplierLabel = (): string =>
   `${ECONOMY.upgradeProductionMultiplier}x`;
 
 /**
  * Whether a factory should be driven by the production scheduler.
+ *
+ * @example
+ * isFactoryProductionActive({ isUnlocked: true, isAutomated: true, isProducing: false }) // true
+ * isFactoryProductionActive({ isUnlocked: false, isAutomated: true, isProducing: false }) // false
  */
 export const isFactoryProductionActive = ({
   isAutomated,
@@ -86,6 +108,10 @@ export const isFactoryProductionActive = ({
 
 /**
  * Whether the player can start a manual production tap.
+ *
+ * @example
+ * canStartManualProduction({ isUnlocked: true, isAutomated: false, isProducing: false }) // true
+ * canStartManualProduction({ isUnlocked: true, isAutomated: true, isProducing: false }) // false
  */
 export const canStartManualProduction = ({
   isAutomated,
@@ -96,6 +122,10 @@ export const canStartManualProduction = ({
 
 /**
  * Whether the player can appoint a manager for this factory.
+ *
+ * @example
+ * canPurchaseManager({ isUnlocked: true, isAutomated: false, gold: D(100), cost: D(50) }) // true
+ * canPurchaseManager({ isUnlocked: true, isAutomated: true, gold: D(100), cost: D(50) }) // false
  */
 export const canPurchaseManager = ({
   cost,
@@ -107,6 +137,10 @@ export const canPurchaseManager = ({
 
 /**
  * Whether the player can purchase the production upgrade.
+ *
+ * @example
+ * canPurchaseUpgrade({ isUnlocked: true, isUpgraded: false, gold: D(100), cost: D(50) }) // true
+ * canPurchaseUpgrade({ isUnlocked: true, isUpgraded: true, gold: D(100), cost: D(50) }) // false
  */
 export const canPurchaseUpgrade = ({
   cost,

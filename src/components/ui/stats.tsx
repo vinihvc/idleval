@@ -34,11 +34,11 @@ export const StatTile = (props: StatTileProps) => {
         >
           <span
             aria-hidden
-            className="flex shrink-0 items-center justify-center text-popover-foreground [&_svg:not([class*='size-'])]:size-5 [&_svg]:shrink-0 [&_svg]:opacity-80"
+            className="flex shrink-0 items-center justify-center text-muted [&_svg:not([class*='size-'])]:size-5 [&_svg]:shrink-0 [&_svg]:opacity-80"
           >
             {icon}
           </span>
-          <div className="w-full text-center font-medium text-2xl text-popover-foreground">
+          <div className="w-full text-center font-medium text-2xl text-muted">
             {children}
           </div>
         </div>
@@ -55,7 +55,7 @@ export const StatRow = (props: StatRowProps) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-popover-foreground",
+        "flex items-center justify-between gap-3 rounded-md border border-primary/25 bg-popover-foreground/6 px-3.5 py-1 font-medium text-lg text-muted",
         className
       )}
       {...rest}

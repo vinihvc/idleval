@@ -1,3 +1,5 @@
+import { Trans, useLingui } from "@lingui/react/macro";
+import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -8,11 +10,12 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORY_TYPES } from "@/content/factories";
+import { FACTORY_TYPES } from "@/content/factories.types";
 import { ManagersCard } from "./managers.card";
 
 export const ManagersDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+  const { t } = useLingui();
 
   return (
     <ResponsiveDialog>
@@ -21,17 +24,21 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt="Manager"
+            alt={t`Manager`}
             src="/images/managers/manager.webp"
           />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Managers</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>
+            <Trans>Managers</Trans>
+          </ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Name legendary managers to keep each pillar running while you ride
-            afar.
+            <Trans>
+              Name legendary managers to keep each pillar running while you ride
+              afar.
+            </Trans>
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 

@@ -16,6 +16,7 @@ const scrollAreaVariants = tv({
     "rounded-[inherit]",
     "outline-none",
     "scrollbar-none",
+    "overscroll-contain",
     "outline-none",
   ],
   variants: {

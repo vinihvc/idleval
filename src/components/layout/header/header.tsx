@@ -1,3 +1,4 @@
+import { Trans } from "@lingui/react/macro";
 import type React from "react";
 import { SettingsDialog } from "@/components/dialog/settings";
 import { StatisticsDialog } from "@/components/dialog/statistics";
@@ -25,7 +26,9 @@ export const Header = (props: HeaderProps) => {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 flex items-center justify-between border-primary border-b-2 bg-secondary/90 p-3 backdrop-blur-md sm:sticky",
+        "z-50 flex shrink-0 items-center justify-between border-primary border-b-2 bg-secondary/90 p-3 backdrop-blur-md",
+        "max-sm:pt-[calc(var(--spacing)*3+env(safe-area-inset-top,0))]",
+        "sm:sticky sm:top-0",
         className
       )}
       {...rest}
@@ -45,19 +48,23 @@ export const Header = (props: HeaderProps) => {
 
                 <span
                   className={cn(
-                    "font-bold font-number text-popover-foreground text-xl tabular-nums",
+                    "font-bold font-number text-muted text-xl tabular-nums",
                     borderedText({ variant: "default" })
                   )}
                 >
                   <FormattedNumber isDollar value={gold} />
                 </span>
 
-                <span className="sr-only">Statistics</span>
+                <span className="sr-only">
+                  <Trans>Statistics</Trans>
+                </span>
               </button>
             </ResponsiveDialogTrigger>
           </TooltipTrigger>
 
-          <TooltipContent>Statistics</TooltipContent>
+          <TooltipContent>
+            <Trans>Statistics</Trans>
+          </TooltipContent>
         </Tooltip>
       </StatisticsDialog>
 

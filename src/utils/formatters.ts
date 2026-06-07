@@ -36,7 +36,13 @@ const formatScaledValue = (amount: Decimal, rangeValue: Decimal) => {
 };
 
 /**
- * Minify number to show as K, M, B, T
+ * Abbreviates a number with K, M, B, T and extended letter suffixes.
+ *
+ * @example
+ * amountFormatter(999) // "999"
+ * amountFormatter(1500) // "1.5K"
+ * amountFormatter(D("2500000")) // "2.5M"
+ * amountFormatter(D("1e200")) // "∞"
  */
 export const amountFormatter = (amount: number | Decimal) => {
   const value = D(amount);
@@ -58,9 +64,22 @@ export const amountFormatter = (amount: number | Decimal) => {
   return "0";
 };
 
+/**
+ * Same as amountFormatter, prefixed with a dollar sign.
+ *
+ * @example
+ * amountFormatterWithDolarSign(1500) // "$1.5K"
+ */
 export const amountFormatterWithDolarSign = (amount: number | Decimal) =>
   `$${amountFormatter(amount)}`;
 
+/**
+ * Returns only the magnitude suffix for a value, without the numeric part.
+ *
+ * @example
+ * suffixAmountFormatter(1500) // "K"
+ * suffixAmountFormatter(500) // ""
+ */
 export const suffixAmountFormatter = (amount: number | Decimal) => {
   const value = D(amount);
   const item = findRange(value);
@@ -94,6 +113,15 @@ export const timeFormatter = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
+/**
+ * Formats elapsed milliseconds as a human-readable duration.
+ *
+ * @example
+ * formatElapsedDuration(45_000) // "45s"
+ * formatElapsedDuration(125_000) // "2m 5s"
+ * formatElapsedDuration(3_600_000) // "1h"
+ * formatElapsedDuration(86_400_000) // "1d"
+ */
 export const formatElapsedDuration = (elapsedMs: number) => {
   const totalSeconds = Math.floor(elapsedMs / 1000);
 

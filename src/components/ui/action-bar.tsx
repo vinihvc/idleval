@@ -236,7 +236,7 @@ export const ActionBarContent = (
               "rounded-xl border shadow-lg/5",
               "px-[calc(var(--space)+2px)] py-(--space)",
               "bg-popover",
-              "text-popover-foreground",
+              "text-muted",
               "pointer-events-auto",
               className
             )}
@@ -343,7 +343,7 @@ export const ActionBarBody = (props: React.ComponentProps<typeof ark.div>) => {
 };
 
 const _useActionBar = () => {
-  const context = React.useContext(ActionBarContext);
+  const context = React.use(ActionBarContext);
 
   if (!context) {
     throw new Error("useActionBar must be used within a ActionBarProvider.");

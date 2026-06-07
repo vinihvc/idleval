@@ -1,13 +1,17 @@
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
-import { FACTORIES, type FactoryType } from "@/content/factories";
+import { FACTORY_DATA } from "@/content/factories.data";
+import type { FactoryType } from "@/content/factories.types";
+import { applyDifficultyCost } from "@/game/difficulty";
 import { managerCost, unitCost, upgradeCost } from "@/game/economy";
 import {
   getFactoryEarnPerCycle,
   getFactoryProductionValue,
 } from "@/game/factories";
 import type { FactoryPersistedState } from "@/game/types";
+import { useLocalizedFactory } from "@/hooks/use-localized-factory";
 import { store } from "@/providers/store";
+import { getDifficultyLevel } from "@/store/atoms/settings";
 import type { GameValue } from "@/utils/decimal";
 import { factoriesAtom } from "./factories.atom";
 import {
@@ -44,17 +48,23 @@ const getFactoryConfig = (factory: FactoryType) => {
 
   return {
     ...state,
-    ...FACTORIES[factory],
+    ...FACTORY_DATA[factory],
   };
 };
 
+const getScaledUnlockPrice = (unlockPrice: number): GameValue =>
+  applyDifficultyCost(unlockPrice, getDifficultyLevel());
+
 export const useFactory = (factory: FactoryType) => {
   const state = useAtomValue(getFactoryStateAtom(factory));
-  const config = FACTORIES[factory];
+  const config = FACTORY_DATA[factory];
+  const localized = useLocalizedFactory(factory);
 
   return {
     ...state,
     ...config,
+    ...localized,
+    unlockPrice: getScaledUnlockPrice(config.unlockPrice),
     managerCost: managerCost(config.baseBuyCost, state.amount),
     upgradeCost: upgradeCost(config.baseBuyCost, state.amount),
     nextUnitCost: unitCost(config.baseBuyCost, state.amount),
@@ -66,6 +76,7 @@ export const getFactory = (factory: FactoryType) => {
 
   return {
     ...config,
+    unlockPrice: getScaledUnlockPrice(FACTORY_DATA[factory].unlockPrice),
     managerCost: managerCost(config.baseBuyCost, config.amount),
     upgradeCost: upgradeCost(config.baseBuyCost, config.amount),
     nextUnitCost: unitCost(config.baseBuyCost, config.amount),

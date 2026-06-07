@@ -1,3 +1,4 @@
+import { Trans } from "@lingui/react/macro";
 import type React from "react";
 import { AboutDialog } from "@/components/dialog/about";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
@@ -20,7 +21,7 @@ export const Footer = (props: FooterProps) => {
         <div>
           <AboutDialog>
             <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
-              About
+              <Trans>About</Trans>
             </ResponsiveDialogTrigger>
           </AboutDialog>
         </div>

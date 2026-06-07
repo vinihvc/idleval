@@ -12,8 +12,6 @@ export type MusicId = "theme";
 export type SoundId = SfxId | MusicId;
 
 export interface SoundSettings {
-  music: boolean;
   musicVolume: number;
-  sfx: boolean;
   sfxVolume: number;
 }

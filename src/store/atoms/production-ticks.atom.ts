@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
 import {
   FACTORIES,
@@ -48,3 +48,6 @@ export const getFactoryTickAtom = (factory: FactoryType) => {
 
   return factoryTickAtom;
 };
+
+export const useFactoryTick = (factory: FactoryType) =>
+  useAtomValue(getFactoryTickAtom(factory));

@@ -1,3 +1,5 @@
+import { Trans } from "@lingui/react/macro";
+import type React from "react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import { borderedText } from "@/components/ui/text-border";
@@ -12,12 +14,46 @@ import {
   usePurchaseMode,
 } from "@/store/atoms/purchase-mode";
 
+const getPurchaseLabel = (
+  value: ReturnType<typeof usePurchaseMode>["value"]
+): React.ReactNode => {
+  if (value === 1) {
+    return (
+      <Trans id="purchase.mode.1">Purchase 1 unit in one stroke</Trans>
+    );
+  }
+
+  if (value === 10) {
+    return (
+      <Trans id="purchase.mode.10pct">
+        Purchase 10% of your gold in one stroke
+      </Trans>
+    );
+  }
+
+  if (value === 50) {
+    return (
+      <Trans id="purchase.mode.50pct">
+        Purchase 50% of your gold in one stroke
+      </Trans>
+    );
+  }
+
+  return (
+    <Trans id="purchase.mode.max">
+      Purchase all you can afford in one stroke
+    </Trans>
+  );
+};
+
 export const AmountToBuy = () => {
   const amount = usePurchaseMode();
 
   if (!amount) {
     return null;
   }
+
+  const label = getPurchaseLabel(amount.value);
 
   return (
     <Tooltip>
@@ -39,13 +75,11 @@ export const AmountToBuy = () => {
             </NumberText>
           </span>
 
-          <span className="sr-only">
-            {`Purchase ${amount.description} in one stroke`}
-          </span>
+          <span className="sr-only">{label}</span>
         </Button>
       </TooltipTrigger>
 
-      <TooltipContent>{`Purchase ${amount.description} in one stroke`}</TooltipContent>
+      <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   );
 };

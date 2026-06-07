@@ -1,3 +1,4 @@
+import { Trans, useLingui } from "@lingui/react/macro";
 import React from "react";
 import {
   ResponsiveDialog,
@@ -14,6 +15,7 @@ import { GodsCard } from "./gods.card";
 
 export const GodsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+  const { t } = useLingui();
 
   const [open, setOpen] = React.useState(false);
 
@@ -23,16 +25,19 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
 
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
-          <ResponsiveDialogImage alt="Gods" src="/images/gods/gods.webp" />
+          <ResponsiveDialogImage alt={t`Gods`} src="/images/gods/gods.webp" />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Gods</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>
+            <Trans>Gods</Trans>
+          </ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Each invocation is an offering of sacrifice: surrender everything
-            you have now, and the gods will return even greater abundance in the
-            future.
+            <Trans>
+              Surrender everything you have now, and the gods will return even
+              greater abundance in the future.
+            </Trans>
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 

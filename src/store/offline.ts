@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import {
   computeOfflineEarnings,
   meetsMinimumOfflineDuration,
@@ -22,6 +22,8 @@ export interface OfflineSummary {
 }
 
 export const offlineSummaryAtom = atom<OfflineSummary | null>(null);
+
+export const useOfflineSummary = () => useAtomValue(offlineSummaryAtom);
 
 const clearManualProducing = () => {
   store.set(factoriesAtom, (prev) => {

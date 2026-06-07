@@ -53,15 +53,11 @@ export const DrawerProvider = (
   );
 };
 
-const DRAWER_MAX_SNAP = 0.95;
-// Snap `1` = min(content height, viewport); `0.95` = max pull-up (see max-h-[95svh]).
-const DRAWER_SNAP_POINTS: [number, number] = [1, DRAWER_MAX_SNAP];
-
 export const Drawer = (props: React.ComponentProps<typeof ArkDrawer.Root>) => {
   const {
     lazyMount = false,
     unmountOnExit = false,
-    snapPoints = DRAWER_SNAP_POINTS,
+    snapPoints = [1, 0.98],
     defaultSnapPoint = 1,
     snapToSequentialPoints = true,
     ...rest
@@ -115,7 +111,7 @@ const drawerPositionerVariants = tv({
     "w-screen overscroll-contain",
     // Reserve space for DrawerMedia (-top-12 / sm:-top-18) so it stays on-screen
     "pt-12 sm:pt-18",
-    "max-sm:pb-[calc(var(--spacing)*14+env(safe-area-inset-bottom,0))]",
+    "max-sm:pb-(--bottom-nav-height)",
     "has-data-[swipe-direction=up]:items-start",
     "has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0",
     "has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0",
@@ -153,13 +149,14 @@ const drawerContentVariants = tv({
     "group/drawer",
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
-    "max-h-[95svh] w-full",
-    "max-sm:max-h-[calc(95svh-var(--spacing)*14-env(safe-area-inset-bottom,0))]",
+    "max-h-[98svh] w-full",
+    "max-sm:max-h-[calc(98svh-var(--bottom-nav-height))]",
     "has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-env(safe-area-inset-bottom,0px)))]",
-    "max-sm:has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-var(--spacing)*14-env(safe-area-inset-bottom,0)))]",
+    "max-sm:has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-var(--bottom-nav-height)))]",
     "-mb-(--bleed) pb-[calc(1.5rem+env(safe-area-inset-bottom,0)+var(--bleed))]",
+    "max-sm:mb-0 max-sm:pb-[calc(var(--space)+env(safe-area-inset-bottom,0))]",
     "border-4 border-primary bg-popover",
-    "text-popover-foreground",
+    "text-muted",
     "inset-shadow-xs",
     "flex min-h-0 flex-col",
     "duration-300 ease-in-out will-change-transform",
@@ -387,7 +384,7 @@ export const DrawerTitle = (
   return (
     <ArkDrawer.Title
       className={cn(
-        "font-display font-semibold text-popover-foreground text-xl leading-snug tracking-wide",
+        "muted font-display font-semibold text-xl leading-snug tracking-wide",
         className
       )}
       data-slot="drawer-title"

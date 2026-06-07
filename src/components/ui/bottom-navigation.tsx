@@ -12,11 +12,7 @@ export const BottomNavigation = (
 
   return (
     <ArkTabs.Root
-      className={cn(
-        "w-full",
-        "min-h-[calc(var(--spacing)*14+env(safe-area-inset-bottom,0))]",
-        className
-      )}
+      className={cn("w-full shrink-0 sm:hidden", className)}
       data-slot="bottom-navigation"
       {...rest}
     />
@@ -31,9 +27,8 @@ export const BottomNavigationList = (
   return (
     <ArkTabs.List
       className={cn(
-        "fixed inset-x-0 bottom-0 z-10",
-        "flex w-full items-center justify-around",
-        "min-h-14 shrink-0",
+        "flex w-full shrink-0 items-center justify-around",
+        "min-h-14",
         "border-t-2 bg-background/60 backdrop-blur-sm",
         "pb-[env(safe-area-inset-bottom,0px)]",
         className

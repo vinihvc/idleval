@@ -15,7 +15,7 @@ Step into a medieval realm where you build, expand, and defend. Recruit heroes, 
 
 ## Technologies
 
-- Vite
+- Vite 8 (Rolldown + Oxc) + React Compiler
 - TypeScript
 - Tailwind CSS
 - Jotai

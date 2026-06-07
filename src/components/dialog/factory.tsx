@@ -1,3 +1,4 @@
+import { useLingui } from "@lingui/react/macro";
 import { CalendarRange, Clock, Hand, Heart } from "pixelarticons/react";
 import React from "react";
 import { FormattedNumber } from "@/components/ui/formatted-number";
@@ -12,7 +13,7 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { StatTile } from "@/components/ui/stats";
-import type { FactoryType } from "@/content/factories";
+import type { FactoryType } from "@/content/factories.types";
 import { getFactoryYieldPerHour } from "@/game/factories";
 import { useFactory, useProductionValue } from "@/store/atoms/factories";
 import { useGoldEarnedByFactory } from "@/store/atoms/statistics";
@@ -30,6 +31,7 @@ interface FactoryDialogBodyProps {
 
 const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
   const { factoryType } = props;
+  const { t } = useLingui();
 
   const factory = useFactory(factoryType);
   const yieldPerTap = useProductionValue(factoryType);
@@ -43,7 +45,7 @@ const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
     <>
       <ResponsiveDialogMedia>
         <ResponsiveDialogImage
-          alt={`Factory of ${factory.name}`}
+          alt={t`Factory of ${factory.name}`}
           src={`/images/factories/${factoryType}.webp`}
         />
       </ResponsiveDialogMedia>
@@ -58,19 +60,19 @@ const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
 
       <ResponsiveDialogBody>
         <div className="flex gap-1.5">
-          <StatTile icon={<Clock />} label="Craft pace">
+          <StatTile icon={<Clock />} label={t`Craft pace`}>
             <FormattedNumber value={factory.productionTime} />s
           </StatTile>
 
-          <StatTile icon={<Hand />} label="Yield per tap">
+          <StatTile icon={<Hand />} label={t`Yield per tap`}>
             <FormattedNumber value={yieldPerTap} />
           </StatTile>
 
-          <StatTile icon={<CalendarRange />} label="Yield per hour">
+          <StatTile icon={<CalendarRange />} label={t`Yield per hour`}>
             <FormattedNumber value={yieldPerHour} />
           </StatTile>
 
-          <StatTile icon={<Heart />} label="Lifetime yield">
+          <StatTile icon={<Heart />} label={t`Lifetime yield`}>
             <FormattedNumber value={lifetimeYield} />
           </StatTile>
         </div>

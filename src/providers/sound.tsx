@@ -1,13 +1,30 @@
+import { useAtomValue } from "jotai";
 import React from "react";
 import { soundEngine } from "@/audio/engine";
 import type { PlayOptions, SfxId } from "@/audio/types";
 import { store } from "@/providers/store";
-import { getSettings, settingsAtom } from "@/store/atoms/settings";
+import {
+  getSettings,
+  setMusicVolume,
+  setSfxVolume,
+  settingsAtom,
+} from "@/store/atoms/settings";
+
+interface LegacySettings {
+  music?: boolean;
+  musicVolume?: number;
+  sfx?: boolean;
+  sfxVolume?: number;
+}
 
 interface SoundContextType {
+  musicVolume: number;
   pauseMusic: () => void;
   play: (id: SfxId, options?: PlayOptions) => void;
   playMusic: () => void;
+  setMusicVolume: (value: number) => void;
+  setSfxVolume: (value: number) => void;
+  sfxVolume: number;
   stop: (id: SfxId) => void;
   stopMusic: () => void;
 }
@@ -16,8 +33,29 @@ const SoundContext = React.createContext<SoundContextType | null>(null);
 
 export type { SfxId as SoundsType } from "@/audio/types";
 
+const migrateLegacySettings = () => {
+  const raw = store.get(settingsAtom) as LegacySettings & {
+    difficulty?: string;
+  };
+
+  if (!("music" in raw || "sfx" in raw)) {
+    return;
+  }
+
+  store.set(settingsAtom, (prev) => ({
+    ...prev,
+    musicVolume:
+      raw.music === false ? 0 : (raw.musicVolume ?? prev.musicVolume),
+    sfxVolume: raw.sfx === false ? 0 : (raw.sfxVolume ?? prev.sfxVolume),
+  }));
+};
+
 export const SoundProvider = ({ children }: React.PropsWithChildren) => {
+  const { musicVolume, sfxVolume } = useAtomValue(settingsAtom);
+
   React.useEffect(() => {
+    migrateLegacySettings();
+
     soundEngine.init(getSettings, (callback) =>
       store.sub(settingsAtom, callback)
     );
@@ -38,6 +76,10 @@ export const SoundProvider = ({ children }: React.PropsWithChildren) => {
 
   const value = React.useMemo<SoundContextType>(
     () => ({
+      musicVolume,
+      sfxVolume,
+      setMusicVolume,
+      setSfxVolume,
       play: (id, options) => {
         soundEngine.play(id, options);
       },
@@ -54,7 +96,7 @@ export const SoundProvider = ({ children }: React.PropsWithChildren) => {
         soundEngine.pauseMusic();
       },
     }),
-    []
+    [musicVolume, sfxVolume]
   );
 
   return (

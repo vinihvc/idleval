@@ -93,8 +93,9 @@ export const dialogContentVariants = tv({
     "row-start-2",
     "max-h-full min-h-0 w-full min-w-0",
     "flex flex-col gap-2",
-    "bg-popover text-popover-foreground",
-    "fantasy-panel-shadow rounded-xl border-4 border-primary",
+    "bg-popover",
+    "text-muted",
+    "rounded-xl border-4 border-primary ring-2 ring-secondary",
     "inset-shadow-xs",
     "outline-none",
     "translate-y-[calc(-1.25rem*var(--nested-layer-count))]",
@@ -118,15 +119,6 @@ export const dialogContentVariants = tv({
       "6xl": ["max-w-7xl"],
       fullscreen: ["size-full"],
     },
-    bottomStickOnMobile: {
-      true: [
-        "max-sm:max-w-none",
-        "max-sm:rounded-none max-sm:rounded-t-2xl max-sm:border-x-0 max-sm:border-t max-sm:border-b-0",
-        "max-sm:opacity-[calc(1-min(var(--nested-dialogs),1))]",
-        "max-sm:data-[state=closed]:slide-out-to-bottom-5 max-sm:data-[state=open]:slide-in-from-bottom-5",
-        "max-sm:data-[state=closed]:zoom-out-100 max-sm:data-[state=open]:zoom-in-100",
-      ],
-    },
   },
   defaultVariants: {
     size: "md",
@@ -136,12 +128,6 @@ export const dialogContentVariants = tv({
 interface DialogContentProps
   extends React.ComponentProps<typeof ArkDialog.Content>,
     VariantProps<typeof dialogContentVariants> {
-  /**
-   * Stick the dialog to the bottom of the screen on mobile
-   *
-   * @default true
-   */
-  bottomStickOnMobile?: boolean;
   /**
    * Show close button at the top right corner
    *
@@ -153,7 +139,6 @@ interface DialogContentProps
 export const DialogContent = (props: DialogContentProps) => {
   const {
     showCloseButton = true,
-    bottomStickOnMobile = true,
     size = "md",
     className,
     children,
@@ -164,17 +149,9 @@ export const DialogContent = (props: DialogContentProps) => {
     <Portal>
       <DialogOverlay />
 
-      <DialogPositioner
-        className={cn(
-          bottomStickOnMobile &&
-            "max-sm:grid-rows-[minmax(3rem,1fr)_auto] max-sm:overflow-y-auto max-sm:p-0 max-sm:pt-0"
-        )}
-      >
+      <DialogPositioner>
         <ArkDialog.Content
-          className={cn(
-            dialogContentVariants({ size, bottomStickOnMobile }),
-            className
-          )}
+          className={cn(dialogContentVariants({ size }), className)}
           data-slot="dialog-content"
           {...rest}
         >
@@ -260,7 +237,7 @@ export const DialogHeader = (props: DialogHeaderProps) => {
     <ark.div
       className={cn(
         "sm:mt-6",
-        "flex flex-col gap-1",
+        "flex flex-col gap-0.5",
         "text-center sm:text-left",
         "p-(--space)",
         "in-[[data-slot=dialog-content]:has([data-slot=dialog-body])]:pb-0",
@@ -290,7 +267,7 @@ export const DialogTitle = (
   return (
     <ArkDialog.Title
       className={cn(
-        "font-display font-semibold text-2xl text-popover-foreground tracking-wide",
+        "font-display font-semibold text-2xl text-muted tracking-wide",
         className
       )}
       data-slot="dialog-title"

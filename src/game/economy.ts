@@ -1,4 +1,6 @@
 import Decimal from "break_infinity.js";
+import { applyDifficultyCost } from "@/game/difficulty";
+import { getDifficultyLevel } from "@/store/atoms/settings";
 import { D, type GameValue } from "@/utils/decimal";
 
 export const ECONOMY = {
@@ -12,12 +14,24 @@ const UNIT_COST_RATE = D(ECONOMY.unitCostMultiplier);
 
 /**
  * Cost of the next single unit given how many are already owned.
+ * Scales exponentially by 1.15x per owned unit.
+ *
+ * @example
+ * unitCost(10, 0).toNumber() // 10
+ * unitCost(10, 1).toNumber() // 11.5
  */
 export const unitCost = (baseBuyCost: number, owned: number): GameValue =>
-  D(baseBuyCost).times(Decimal.pow(UNIT_COST_RATE, owned));
+  applyDifficultyCost(
+    D(baseBuyCost).times(Decimal.pow(UNIT_COST_RATE, owned)),
+    getDifficultyLevel()
+  );
 
 /**
  * Total cost to buy `quantity` units starting from `owned` units.
+ *
+ * @example
+ * bulkBuyCost(10, 0, 0).toNumber() // 0
+ * bulkBuyCost(10, 0, 3).toNumber() // 34 (10 + 11.5 + 12.65, floored)
  */
 export const bulkBuyCost = (
   baseBuyCost: number,
@@ -33,11 +47,19 @@ export const bulkBuyCost = (
   );
   const growth = Decimal.pow(UNIT_COST_RATE, quantity).minus(1);
 
-  return firstUnitCost.times(growth).div(UNIT_COST_RATE.minus(1)).floor();
+  return applyDifficultyCost(
+    firstUnitCost.times(growth).div(UNIT_COST_RATE.minus(1)).floor(),
+    getDifficultyLevel()
+  );
 };
 
 /**
  * Maximum number of units affordable with `gold` starting from `owned` units.
+ *
+ * @example
+ * maxAffordable(10, 0, D(5)) // 0
+ * maxAffordable(10, 0, D(10)) // 1
+ * maxAffordable(10, 0, D(100)) // 6
  */
 export const maxAffordable = (
   baseBuyCost: number,
@@ -67,19 +89,35 @@ export const maxAffordable = (
 };
 
 /**
- * Manager cost is a fixed milestone per factory tier.
+ * Manager cost is a fixed milestone per factory tier (base × 220).
+ *
+ * @example
+ * managerCost(75, 0).toNumber() // 16500
  */
 export const managerCost = (baseBuyCost: number, _owned: number): GameValue =>
-  D(baseBuyCost).times(ECONOMY.managerBaseFactor);
+  applyDifficultyCost(
+    D(baseBuyCost).times(ECONOMY.managerBaseFactor),
+    getDifficultyLevel()
+  );
 
 /**
- * Upgrade cost is a fixed milestone per factory tier.
+ * Upgrade cost is a fixed milestone per factory tier (base × 1000).
+ *
+ * @example
+ * upgradeCost(75, 0).toNumber() // 75000
  */
 export const upgradeCost = (baseBuyCost: number, _owned: number): GameValue =>
-  D(baseBuyCost).times(ECONOMY.upgradeBaseFactor);
+  applyDifficultyCost(
+    D(baseBuyCost).times(ECONOMY.upgradeBaseFactor),
+    getDifficultyLevel()
+  );
 
 /**
  * Whether the player has enough gold to pay a given price.
+ *
+ * @example
+ * canAfford(D(100), 99) // true
+ * canAfford(D(100), 101) // false
  */
 export const canAfford = (
   gold: GameValue,

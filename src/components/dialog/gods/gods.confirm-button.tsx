@@ -1,23 +1,25 @@
+import { useLingui } from "@lingui/react/macro";
 import type React from "react";
 import { HoldButton } from "@/components/ui/hold-button";
 import type { UpgradeCardTrigger } from "@/components/ui/upgrade-card";
-import type { God } from "@/content/gods";
+import type { LocalizedGod } from "@/hooks/use-localized-god";
 import { invokeGod } from "@/store/atoms/gods";
 
 interface GodConfirmButtonProps
   extends React.ComponentProps<typeof UpgradeCardTrigger> {
-  god: God;
+  god: LocalizedGod;
   onInvoke?: () => void;
 }
 
 export const GodConfirmButton = (props: GodConfirmButtonProps) => {
   const { god, onInvoke, children, ...rest } = props;
+  const { t } = useLingui();
 
   return (
     <HoldButton
-      aria-label={`Hold  to invoke ${god.name}.`}
+      aria-label={t`Hold to invoke ${god.name}.`}
       className="inset-shadow-none w-full rounded-none rounded-b-md border"
-      holdLabel="Hold..."
+      holdLabel={t`Hold...`}
       onHoldComplete={() => {
         if (invokeGod()) {
           onInvoke?.();

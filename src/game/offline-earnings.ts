@@ -21,6 +21,13 @@ export interface OfflineFactoryResult {
 /** Minimum time away before offline earnings are applied or shown. */
 export const MIN_OFFLINE_MS = 60_000;
 
+/**
+ * Whether the elapsed offline time meets the minimum threshold (60s).
+ *
+ * @example
+ * meetsMinimumOfflineDuration(59_999) // false
+ * meetsMinimumOfflineDuration(60_000) // true
+ */
 export const meetsMinimumOfflineDuration = (elapsedMs: number): boolean =>
   elapsedMs >= MIN_OFFLINE_MS;
 
@@ -54,6 +61,13 @@ const getEarnPerCycle = (
 /**
  * Simulates automated factory production for the time elapsed since the last
  * session and returns the per-factory and total offline rewards.
+ *
+ * @example
+ * computeOfflineEarnings(Date.now(), null, factories, D(1))
+ * // { elapsedMs: 0, totalGold: D(0), results: [] }
+ *
+ * computeOfflineEarnings(120_000, 0, { grain: { isAutomated: true, isUnlocked: true, amount: 2, ... } }, D(1))
+ * // { elapsedMs: 120000, totalGold: D(...), results: [{ factory: "grain", cycles: N, goldEarned: D(...), secondsRemaining: N }] }
  */
 export const computeOfflineEarnings = (
   now: number,

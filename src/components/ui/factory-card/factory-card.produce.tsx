@@ -1,3 +1,4 @@
+import { Trans, useLingui } from "@lingui/react/macro";
 import { Image } from "@unpic/react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
@@ -7,27 +8,29 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { FactoryType } from "@/content/factories";
 import {
   canStartManualProduction,
   getUpgradeMultiplierLabel,
 } from "@/game/factories";
 import { cn } from "@/lib/cn";
-import { startProducing, useFactory } from "@/store/atoms/factories";
-import { capitalize } from "@/utils/formatters";
+import { startProducing } from "@/store/atoms/factories";
+import { useFactoryCard } from "./factory-card.context";
 
-interface FactoryCardProduceProps extends React.ComponentProps<typeof Button> {
-  /**
-   * The factory type
-   */
-  factoryType: FactoryType;
-}
+interface FactoryCardProduceProps extends React.ComponentProps<typeof Button> {}
 
 export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
-  const { factoryType, className, ...rest } = props;
+  const { className, ...rest } = props;
+  const { t } = useLingui();
 
-  const { name, amount, isProducing, isUnlocked, isAutomated, isUpgraded } =
-    useFactory(factoryType);
+  const {
+    factoryType,
+    name,
+    amount,
+    isProducing,
+    isUnlocked,
+    isAutomated,
+    isUpgraded,
+  } = useFactoryCard();
 
   return (
     <Tooltip>
@@ -66,7 +69,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           >
             <div className="size-16 overflow-hidden rounded-full bg-card p-2 ring-4 ring-offset-4 ring-offset-secondary">
               <Image
-                alt={`Produce ${factoryType}`}
+                alt={t`Produce ${name}`}
                 className={cn(
                   "",
                   "object-contain",
@@ -90,7 +93,9 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
             )}
           </div>
 
-          <span className="sr-only">{`Produce ${name}`}</span>
+          <span className="sr-only">
+            <Trans>Produce {name}</Trans>
+          </span>
 
           {isUnlocked && (
             <div className="absolute -bottom-2">
@@ -113,7 +118,9 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
         </Button>
       </TooltipTrigger>
 
-      <TooltipContent>{`Produce ${capitalize(factoryType)}`}</TooltipContent>
+      <TooltipContent>
+        <Trans>Produce {name}</Trans>
+      </TooltipContent>
     </Tooltip>
   );
 };

@@ -183,10 +183,7 @@ export const FieldRequiredIndicator = (
   return (
     <ArkField.RequiredIndicator
       aria-hidden
-      className={cn(
-        "select-none text-destructive text-sm",
-        className
-      )}
+      className={cn("select-none text-destructive text-sm", className)}
       data-slot="field-required-indicator"
       {...rest}
     >
@@ -290,10 +287,7 @@ export const FieldError = (
 
   return (
     <ArkField.ErrorText
-      className={cn(
-        "font-normal text-destructive text-sm",
-        className
-      )}
+      className={cn("font-normal text-destructive text-sm", className)}
       data-slot="field-error"
       {...rest}
     />

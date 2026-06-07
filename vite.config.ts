@@ -1,11 +1,20 @@
 import path from "node:path";
+import { lingui, linguiTransformerBabelPreset } from "@lingui/vite-plugin";
+import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    lingui(),
+    babel({
+      presets: [linguiTransformerBabelPreset(), reactCompilerPreset()],
+    }),
+    tailwindcss(),
+  ],
   base: "",
   resolve: {
     alias: {
@@ -14,6 +23,7 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
+    minify: "oxc",
     rolldownOptions: {
       output: {
         codeSplitting: {

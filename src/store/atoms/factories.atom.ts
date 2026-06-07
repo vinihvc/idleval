@@ -1,6 +1,7 @@
-import { persistedAtom } from "@/store/storage";
+import { useAtomValue } from "jotai";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import type { FactoryPersistedState } from "@/game/types";
+import { persistedAtom } from "@/store/storage";
 
 const INITIAL_FACTORY: FactoryType = "grain";
 
@@ -18,3 +19,5 @@ export const initialData = Object.fromEntries(
 ) as Record<FactoryType, FactoryPersistedState>;
 
 export const factoriesAtom = persistedAtom("factories", initialData);
+
+export const useFactories = () => useAtomValue(factoriesAtom);

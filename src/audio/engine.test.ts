@@ -74,9 +74,7 @@ const createMockWebAudio = () => {
 describe("SoundEngine", () => {
   let engine: SoundEngine;
   let settings: {
-    music: boolean;
     musicVolume: number;
-    sfx: boolean;
     sfxVolume: number;
   };
   let mockWebAudio: ReturnType<typeof createMockWebAudio>;
@@ -86,9 +84,7 @@ describe("SoundEngine", () => {
 
     engine = new SoundEngine();
     settings = {
-      music: true,
       musicVolume: 0.8,
-      sfx: true,
       sfxVolume: 0.8,
     };
     mockWebAudio = createMockWebAudio();
@@ -112,8 +108,8 @@ describe("SoundEngine", () => {
     vi.restoreAllMocks();
   });
 
-  it("does not play SFX when sfx is disabled", () => {
-    settings.sfx = false;
+  it("does not play SFX when sfx volume is zero", () => {
+    settings.sfxVolume = 0;
 
     const sourcesBefore = mockWebAudio.sources.length;
 
@@ -126,7 +122,7 @@ describe("SoundEngine", () => {
     engine.play("click", { volume: 0.5 });
 
     const playGain = mockWebAudio.gains.find(
-      (gain) => gain.gain.value === 0.5 * 0.8 * 0.5
+      (gain) => gain.gain.value === 0.4 * 0.8 * 0.5
     );
 
     expect(playGain).toBeDefined();
@@ -148,8 +144,8 @@ describe("SoundEngine", () => {
     expect(mockWebAudio.sources.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("does not start music when music is disabled", () => {
-    settings.music = false;
+  it("does not start music when music volume is zero", () => {
+    settings.musicVolume = 0;
     engine.unlock();
     engine.playMusic();
 

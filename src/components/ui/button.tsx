@@ -41,7 +41,7 @@ export const buttonVariants = tv({
       ],
       cream: [
         "bg-popover",
-        "text-popover-foreground",
+        "text-muted",
         "border-primary/60",
         "active:brightness-95",
         "hover:brightness-105",
@@ -75,14 +75,6 @@ export const buttonVariants = tv({
         "border-tertiary-foreground/40",
         "hover:brightness-105 focus-visible:ring-tertiary/50",
       ],
-      outline: [
-        "bg-transparent",
-        "text-foreground",
-        "border-border shadow-sm/5",
-        "active:brightness-95",
-        "hover:bg-muted/40",
-        "focus-visible:border-primary focus-visible:ring-primary/30",
-      ],
       destructive: [
         "bg-destructive",
         "text-white",
@@ -90,27 +82,12 @@ export const buttonVariants = tv({
         "border-destructive-foreground/40",
         "hover:brightness-105 focus-visible:ring-destructive/50",
       ],
-      secondary: [
-        "bg-secondary",
-        "text-secondary-foreground",
-        "border-primary",
-        "focus-visible:border-primary",
-        "active:brightness-95",
-        "hover:brightness-105",
-      ],
       ghost: [
         "text-foreground",
         "active:brightness-95",
         "hover:brightness-105",
         "hover:bg-muted/50",
         "border-transparent",
-        "focus-visible:border-primary",
-      ],
-      link: [
-        "active:brightness-95",
-        "border-transparent",
-        "text-primary underline-offset-4",
-        "hover:underline",
         "focus-visible:border-primary",
       ],
     },
@@ -154,11 +131,11 @@ export interface ButtonProps
    */
   isLoading?: boolean;
   /**
-   * If `true`, the button will play a sound when clicked.
+   * Sound played on click. Pass `false` to disable.
    *
    * @default 'click'
    */
-  sound?: SoundsType;
+  sound?: SoundsType | false;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -177,7 +154,9 @@ export const Button = (props: ButtonProps) => {
   } = props;
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    soundFunction.play(sound);
+    if (sound !== false) {
+      soundFunction.play(sound);
+    }
 
     onClick?.(event);
   };
@@ -229,8 +208,5 @@ export const BUTTON_TEXT_BORDER = {
   blue: "blue",
   purple: "purple",
   destructive: "red",
-  outline: "default",
-  secondary: "brown",
   ghost: "cream",
-  link: "default",
 } as const;

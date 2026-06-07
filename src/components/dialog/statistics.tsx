@@ -1,3 +1,4 @@
+import { Trans, useLingui } from "@lingui/react/macro";
 import { Image } from "@unpic/react";
 import type React from "react";
 import { Coin } from "@/components/icons/coin";
@@ -13,11 +14,9 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { StatTile } from "@/components/ui/stats";
-import {
-  FACTORIES,
-  FACTORY_TYPES,
-  type FactoryType,
-} from "@/content/factories";
+import { FACTORY_TYPES, type FactoryType } from "@/content/factories.types";
+import { useLocalizedFactoryName } from "@/hooks/use-localized-factory";
+import { useGods } from "@/store/atoms/gods";
 import {
   useGoldEarnedByFactory,
   useTotalGoldEarned,
@@ -25,8 +24,10 @@ import {
 
 export const StatisticsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+  const { t } = useLingui();
 
   const totalGold = useTotalGoldEarned();
+  const { count: godsInvoked } = useGods();
 
   return (
     <ResponsiveDialog>
@@ -35,16 +36,18 @@ export const StatisticsDialog = (props: React.PropsWithChildren) => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt="Statistics"
+            alt={t`Statistics`}
             src="/images/msc/statistic.webp"
           />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Statistics</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>
+            <Trans>Statistics</Trans>
+          </ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Review the ledgers of your realm&apos;s triumphs.
+            <Trans>Review the ledgers of your realm&apos;s triumphs.</Trans>
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
@@ -52,9 +55,26 @@ export const StatisticsDialog = (props: React.PropsWithChildren) => {
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             <StatTile
               icon={<Coin aria-hidden className="size-6 shrink-0" />}
-              label="Realm total"
+              label={t`Realm total`}
             >
               <FormattedNumber value={totalGold} />
+            </StatTile>
+
+            <StatTile
+              icon={
+                <Image
+                  alt=""
+                  aria-hidden
+                  className="pixel-crisp pointer-events-none size-8 rounded-md object-contain"
+                  height={32}
+                  layout="constrained"
+                  src="/images/gods/gods.webp"
+                  width={32}
+                />
+              }
+              label={t`Gods`}
+            >
+              <FormattedNumber value={godsInvoked} />
             </StatTile>
 
             {FACTORY_TYPES.map((factory) => (
@@ -75,6 +95,7 @@ const FactoryStatTile = (props: FactoryStatTileProps) => {
   const { factory } = props;
 
   const goldEarned = useGoldEarnedByFactory(factory);
+  const name = useLocalizedFactoryName(factory);
 
   return (
     <StatTile
@@ -89,7 +110,7 @@ const FactoryStatTile = (props: FactoryStatTileProps) => {
           width={32}
         />
       }
-      label={FACTORIES[factory].name}
+      label={name}
     >
       <FormattedNumber value={goldEarned} />
     </StatTile>

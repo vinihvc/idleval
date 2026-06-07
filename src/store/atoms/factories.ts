@@ -8,7 +8,7 @@ export {
   unlockFactory,
   upgradeFactory,
 } from "./factories.actions";
-export { factoriesAtom, initialData } from "./factories.atom";
+export { factoriesAtom, initialData, useFactories } from "./factories.atom";
 export {
   getFactory,
   getProductionValue,

@@ -1,9 +1,9 @@
-import { Progress } from "@/components/ui/progress/progress";
+import React from "react";
 import type { FactoryType } from "@/content/factories";
-import { useCountdown } from "@/hooks/use-countdown";
 import { cn } from "@/lib/cn";
-import { useFactory } from "@/store/atoms/factories";
+import { FactoryCardProvider, useFactoryCard } from "./factory-card.context";
 import { FactoryCardProduce } from "./factory-card.produce";
+import { FactoryCardProgress } from "./factory-card.progress";
 import { FactoryCardUpgrade } from "./factory-card.upgrade";
 
 interface FactoryCardProps extends React.ComponentProps<"article"> {
@@ -13,44 +13,62 @@ interface FactoryCardProps extends React.ComponentProps<"article"> {
   type: FactoryType;
 }
 
-export const FactoryCard = (props: FactoryCardProps) => {
-  const { type, className, ...rest } = props;
+const FactoryCardContent = (props: Omit<FactoryCardProps, "type">) => {
+  const { className, ...rest } = props;
 
-  const { isUnlocked, isAutomated } = useFactory(type);
+  const { name, isUnlocked, isAutomated, isProducing, isLocked } =
+    useFactoryCard();
 
-  const { seconds, isRunning, cycleKey } = useCountdown(type);
+  const headingId = React.useId();
 
   return (
-    <article
-      aria-disabled={!isUnlocked}
-      className={cn(
-        "relative inset-shadow-xs flex min-w-0 items-center pl-10",
-        className
-      )}
-      {...rest}
-    >
-      <FactoryCardProduce
-        className="absolute top-1/2 left-0 z-10 -translate-y-1/2"
-        factoryType={type}
-      />
+    <>
+      <h3 className="sr-only" id={headingId}>
+        {name}
+      </h3>
 
-      <div
+      <article
+        aria-labelledby={headingId}
         className={cn(
-          "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
-          "border-primary bg-popover/90 text-popover-foreground",
-          isUnlocked && "shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
+          "relative inset-shadow-xs flex min-w-0 items-center pl-10",
+          className
         )}
+        data-automated={isAutomated}
+        data-locked={isLocked}
+        data-producing={isProducing}
+        data-unlocked={isUnlocked}
+        {...rest}
       >
-        <Progress
-          cycleKey={cycleKey}
-          factoryType={type}
-          isAutomated={isAutomated}
-          isUnlocked={isUnlocked && isRunning}
-          value={seconds}
-        />
+        <FactoryCardProduce className="absolute top-1/2 left-0 z-10 -translate-y-1/2" />
 
-        <FactoryCardUpgrade factoryType={type} />
-      </div>
-    </article>
+        <div
+          className={cn(
+            "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
+            "border-primary bg-popover/90 text-muted",
+            isLocked && "border-popover-foreground/25 border-dashed opacity-80",
+            isProducing &&
+              "border-info shadow-[inset_0_0_12px_oklch(0.65_0.12_240/0.12)]",
+            isUnlocked &&
+              !isLocked &&
+              !isProducing &&
+              "shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
+          )}
+        >
+          <FactoryCardProgress />
+
+          <FactoryCardUpgrade />
+        </div>
+      </article>
+    </>
+  );
+};
+
+export const FactoryCard = (props: FactoryCardProps) => {
+  const { type, ...rest } = props;
+
+  return (
+    <FactoryCardProvider factoryType={type}>
+      <FactoryCardContent {...rest} />
+    </FactoryCardProvider>
   );
 };

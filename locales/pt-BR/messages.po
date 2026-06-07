@@ -1,0 +1,591 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-06-07 15:51-0600\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: pt-BR\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. placeholder {0}: timeFormatter(elapsed)
+#. placeholder {1}: amountFormatterWithDolarSign(totalEarn)
+#. js-lingui-explicit-id
+#: src/components/ui/factory-card/factory-card.progress.tsx:37
+#~ msgid "{0} remaining, earns {1}"
+#~ msgstr "{0} restantes, rende {1}"
+
+#. placeholder {0}: timeFormatter(elapsed)
+#. placeholder {1}: amountFormatterWithDolarSign(totalEarn)
+#: src/components/ui/factory-card/factory-card.progress.tsx:37
+msgid "{0} remaining, earns {1}"
+msgstr "{0} restantes, rende {1}"
+
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:159
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:165
+msgid "{name} ledger"
+msgstr "Registro de {name}"
+
+#: src/components/dialog/about.tsx:33
+msgid "A realm does not fall for lack of gold; it falls for lack of granary, "
+"lance, and law. Raise your settlement from a single field of grain, "
+"gather tribute, and strengthen every guild and workshop, even while you "
+"ride afar."
+msgstr "Um reino não cai por falta de ouro; cai por falta de celeiro, lança e "
+"lei. Erga seu assentamento a partir de um único campo de grãos, "
+"arrecade tributos e fortaleça cada guilda e oficina, mesmo enquanto "
+"cavalga longe."
+
+#: src/components/dialog/about.tsx:24
+#: src/components/layout/footer.tsx:24
+msgid "About"
+msgstr "Sobre"
+
+#: src/components/dialog/about.tsx:29
+msgid "About the Realm"
+msgstr "Sobre o Reino"
+
+#: src/components/dialog/managers/managers.card.tsx:49
+msgid "Appoint"
+msgstr "Nomear"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:60
+msgid "factory.crossbow.manager.name"
+msgstr "Arjuna"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:44
+msgid "factory.iron.upgrade.name"
+msgstr "Arsenais"
+
+#: src/components/dialog/settings.tsx:243
+msgid "Audio"
+msgstr "Áudio"
+
+#: src/components/dialog/gods/gods.card.tsx:49
+msgid "Await prior god"
+msgstr "Aguarde o deus anterior"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:32
+msgid "factory.mill.upgrade.name"
+msgstr "Fornos reais"
+
+#: src/components/dialog/welcome.tsx:90
+msgid "Begin the realm"
+msgstr "Começar o reino"
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:82
+msgid "god.shango.description"
+msgstr "Vincule suas forjas a Shango, o trovão iorubá; o ferro repica quando o "
+"machado duplo cai."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:78
+msgid "factory.reliquary.description"
+msgstr "Ossos sob vidro e oferendas lacradas em cera; peregrinos pagam em prata "
+"e assombro."
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:94
+msgid "god.inti.description"
+msgstr "Curve-se a Inti dos Andes; templos solares flamejam e a prata dos "
+"peregrinos corre até seu santuário."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:36
+msgid "factory.mill.manager.name"
+msgstr "Brigid"
+
+#: src/components/dialog/upgrades/upgrades.tsx:37
+msgid "Build what makes the realm endure and double the crown's takings from "
+"each pillar."
+msgstr "Construa o que faz o reino perdurar e dobre a arrecadação da coroa em "
+"cada pilar."
+
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:106
+msgid "Buy"
+msgstr "Comprar"
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:78
+msgid "god.dagda.description"
+msgstr "Chame o Dagda da Irlanda; seu caldeirão e harpa engordam cada roda ao "
+"longo do rio."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:21
+msgid "factory.grain.upgrade.description"
+msgstr "Canais e celeiros reais ligados ao rio; a fome raramente retorna."
+
+#: src/components/dialog/managers/managers.card.tsx:41
+#: src/components/dialog/upgrades/upgrades.card.tsx:41
+msgid "Charter required"
+msgstr "Carta real necessária"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:69
+msgid "factory.longship.upgrade.description"
+msgstr "Companhias charter plantam colônias e carregam especiarias, lã e prata; "
+"cada viagem alarga o cofre da coroa."
+
+#: src/components/dialog/offline-earnings.tsx:71
+msgid "Claim & Continue"
+msgstr "Receber e continuar"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:68
+msgid "factory.longship.upgrade.name"
+msgstr "Comércio colonial"
+
+#: src/components/dialog/about.tsx:76
+msgid "Components with <0>Shark UI</0>"
+msgstr "Componentes com <0>Shark UI</0>"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:57
+msgid "factory.crossbow.upgrade.description"
+msgstr "Engenhos de contrapeso e equipes de cerco; muralhas desmoronam antes da "
+"investida, e resgates seguem cada brecha."
+
+#: src/components/dialog/factory.tsx:63
+msgid "Craft pace"
+msgstr "Ritmo de produção"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:53
+msgid "factory.crossbow.name"
+msgstr "Besta"
+
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:130
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:137
+msgid "Empty coffers"
+msgstr "Cofres vazios"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:81
+msgid "factory.reliquary.upgrade.description"
+msgstr "Cada lar paga o dízimo, cada criança aprende o credo, e oferendas de "
+"peregrinos incham o tesouro — a fé vira moeda por lei."
+
+#. placeholder {0}: factory.name
+#: src/components/dialog/factory.tsx:48
+msgid "Factory of {0}"
+msgstr "Fábrica de {0}"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:18
+msgid "factory.grain.description"
+msgstr "Encha os celeiros; um reino faminto não tem lei nem lança."
+
+#: src/components/layout/navigation.tsx:27
+msgid "Game navigation"
+msgstr "Navegação do jogo"
+
+#: src/components/dialog/gods/gods.tsx:28
+#: src/components/dialog/gods/gods.tsx:33
+#: src/components/dialog/statistics.tsx:75
+#: src/components/layout/navigation.tsx:82
+#: src/components/layout/navigation.tsx:114
+msgid "Gods"
+msgstr "Deuses"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:17
+msgid "factory.grain.name"
+msgstr "Grãos"
+
+#. placeholder {0}: god.name
+#: src/components/dialog/gods/gods.confirm-button.tsx:20
+msgid "Hold to invoke {0}."
+msgstr "Segure para invocar {0}."
+
+#: src/components/dialog/settings.tsx:269
+msgid "Hold to reset the game."
+msgstr "Segure para resetar o jogo."
+
+#: src/components/dialog/gods/gods.confirm-button.tsx:22
+#: src/components/dialog/settings.tsx:271
+msgid "Hold..."
+msgstr "Segure..."
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:73
+msgid "god.huangdi.name"
+msgstr "Huangdi"
+
+#: src/components/dialog/about.tsx:89
+msgid "Icons by <0>Pixelarticons</0>"
+msgstr "Ícones por <0>Pixelarticons</0>"
+
+#: src/components/dialog/welcome.tsx:77
+msgid "Idleval is a fantasy parody. No god, ruler, guild, manager, saint, "
+"monster, personality, or cosmic accountant in this game is meant to be "
+"taken seriously or treated as a real-world statement."
+msgstr "Idleval é uma paródia de fantasia. Nenhum deus, governante, guilda, "
+"gerente, santo, monstro, personalidade ou contador cósmico neste jogo "
+"deve ser levado a sério ou tratado como declaração do mundo real."
+
+#: src/components/dialog/about.tsx:115
+msgid "Images by <0>ChatGPT</0>"
+msgstr "Imagens por <0>ChatGPT</0>"
+
+#: src/components/dialog/upgrades/upgrades.card.tsx:49
+msgid "Improve"
+msgstr "Melhorar"
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:85
+msgid "god.indra.name"
+msgstr "Indra"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:42
+msgid "factory.iron.description"
+msgstr "Lingotes para arado, prego e lâmina; o ferro é o tendão do reino."
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:93
+msgid "god.inti.name"
+msgstr "Inti"
+
+#: src/components/dialog/gods/gods.card.tsx:63
+msgid "Invoke"
+msgstr "Invocar"
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:74
+msgid "god.huangdi.description"
+msgstr "Invoque o Imperador Amarelo da China; o Mandato enraíza colheita e "
+"dinastia em seu solo."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:41
+msgid "factory.iron.name"
+msgstr "Ferro"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:20
+msgid "factory.grain.upgrade.name"
+msgstr "Irrigação"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:66
+msgid "factory.longship.description"
+msgstr "Quilhas para saque, comércio e imposto; quem domina a água alarga a "
+"coroa."
+
+#: src/components/dialog/settings.tsx:217
+#: src/components/dialog/settings.tsx:222
+msgid "Language"
+msgstr "Idioma"
+
+#: src/components/dialog/factory.tsx:75
+msgid "Lifetime yield"
+msgstr "Rendimento total"
+
+#: src/components/dialog/gods/gods.card.tsx:55
+msgid "Locked"
+msgstr "Bloqueado"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:65
+msgid "factory.longship.name"
+msgstr "Drakkar"
+
+#: src/components/dialog/about.tsx:50
+msgid "Made with <0>React</0>"
+msgstr "Feito com <0>React</0>"
+
+#: src/components/dialog/managers/managers.tsx:27
+msgid "Manager"
+msgstr "Gerente"
+
+#: src/components/dialog/managers/managers.tsx:34
+#: src/components/layout/navigation.tsx:64
+#: src/components/layout/navigation.tsx:112
+msgid "Managers"
+msgstr "Gerentes"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:72
+msgid "factory.longship.manager.name"
+msgstr "Maui"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:33
+msgid "factory.mill.upgrade.description"
+msgstr "Rodas de moinho alimentam fornos reais; pão para exércitos e cidades "
+"sai dos fornos mais rápido que grãos jamais poderiam."
+
+#: src/components/dialog/settings.tsx:249
+msgid "Music"
+msgstr "Música"
+
+#: src/components/dialog/settings.tsx:250
+msgid "Mute music"
+msgstr "Silenciar música"
+
+#: src/components/dialog/settings.tsx:258
+msgid "Mute sound effects"
+msgstr "Silenciar efeitos sonoros"
+
+#: src/components/dialog/managers/managers.tsx:38
+msgid "Name legendary managers to keep each pillar running while you ride afar."
+msgstr "Nomeie gerentes lendários para manter cada pilar funcionando enquanto "
+"você cavalga longe."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:48
+msgid "factory.iron.manager.name"
+msgstr "Ogun"
+
+#: src/components/dialog/settings.tsx:184
+msgid "Open Settings"
+msgstr "Abrir configurações"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:84
+msgid "factory.reliquary.manager.name"
+msgstr "Pachacamac"
+
+#: src/components/ui/factory-card/factory-card.produce.tsx:72
+#: src/components/ui/factory-card/factory-card.produce.tsx:97
+#: src/components/ui/factory-card/factory-card.produce.tsx:122
+msgid "Produce {name}"
+msgstr "Produzir {name}"
+
+#: src/components/layout/header/header.amount.tsx:66
+#: src/components/layout/header/header.amount.tsx:72
+#~ msgid "Purchase {description} in one stroke"
+#~ msgstr "Comprar {description} de uma vez"
+
+#. js-lingui-explicit-id
+#: src/components/layout/header/header.amount.tsx:22
+msgid "purchase.mode.1"
+msgstr "Comprar 1 unidade de uma vez"
+
+#. js-lingui-explicit-id
+#: src/components/layout/header/header.amount.tsx:28
+msgid "purchase.mode.10pct"
+msgstr "Comprar 10% do seu ouro de uma vez"
+
+#. js-lingui-explicit-id
+#: src/components/layout/header/header.amount.tsx:36
+msgid "purchase.mode.50pct"
+msgstr "Comprar 50% do seu ouro de uma vez"
+
+#. js-lingui-explicit-id
+#: src/components/layout/header/header.amount.tsx:43
+msgid "purchase.mode.max"
+msgstr "Comprar tudo que puder de uma vez"
+
+#: src/components/dialog/welcome.tsx:67
+msgid "Raise a tiny realm, hire strange helpers, court impossible powers, and "
+"watch your coffers grow while you are away."
+msgstr "Erga um reino minúsculo, contrate ajudantes estranhos, corteje poderes "
+"impossíveis e veja seus cofres crescerem enquanto você estiver fora."
+
+#: src/components/dialog/statistics.tsx:58
+msgid "Realm total"
+msgstr "Total do reino"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:77
+msgid "factory.reliquary.name"
+msgstr "Relicário"
+
+#: src/components/dialog/settings.tsx:280
+msgid "Reset game"
+msgstr "Resetar jogo"
+
+#: src/components/dialog/statistics.tsx:50
+msgid "Review the ledgers of your realm's triumphs."
+msgstr "Revise os registros dos triunfos do seu reino."
+
+#: src/components/dialog/about.tsx:45
+msgid "Royal Codex"
+msgstr "Codex Real"
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:90
+msgid "god.tangaroa.description"
+msgstr "Navegue com Tangaroa da Polinésia; o pai do mar reivindica portos e "
+"cascos para sua coroa."
+
+#: src/components/dialog/settings.tsx:192
+#: src/components/dialog/settings.tsx:199
+#: src/components/dialog/settings.tsx:206
+msgid "Settings"
+msgstr "Configurações"
+
+#: src/components/dialog/settings.tsx:257
+msgid "SFX"
+msgstr "SFX"
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:81
+msgid "god.shango.name"
+msgstr "Shango"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:24
+msgid "factory.grain.manager.name"
+msgstr "Shennong"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:45
+msgid "factory.iron.upgrade.description"
+msgstr "Ferreiros transformam lingote em lâmina, cota, fivela e arado; cada "
+"leva marcha equipada e cada campo é ferrado."
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:86
+msgid "god.indra.description"
+msgstr "Fique sob Indra dos Vedas; o rei de mil olhos envia raios onde flechas "
+"falham."
+
+#: src/components/dialog/about.tsx:102
+msgid "State management with <0>Jotai</0>"
+msgstr "Gerenciamento de estado com <0>Jotai</0>"
+
+#: src/components/dialog/statistics.tsx:39
+#: src/components/dialog/statistics.tsx:46
+#: src/components/layout/header/header.tsx:59
+#: src/components/layout/header/header.tsx:66
+msgid "Statistics"
+msgstr "Estatísticas"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:54
+msgid "factory.crossbow.description"
+msgstr "Prods de aço e windlasses; muralhas pesam menos quando virotes voam "
+"certeiros."
+
+#: src/components/dialog/about.tsx:63
+msgid "Styling with <0>Tailwind</0>"
+msgstr "Estilização com <0>Tailwind</0>"
+
+#: src/components/dialog/gods/gods.tsx:37
+msgid "Surrender everything you have now, and the gods will return even greater "
+"abundance in the future."
+msgstr "Entregue tudo o que tem agora, e os deuses devolverão abundância ainda "
+"maior no futuro."
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:89
+msgid "god.tangaroa.name"
+msgstr "Tangaroa"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:85
+msgid "factory.reliquary.manager.description"
+msgstr "O criador e oráculo andino; oferendas em seu santuário atraem "
+"peregrinos de toda estrada."
+
+#. js-lingui-explicit-id
+#: src/content/gods.ts:77
+msgid "god.dagda.name"
+msgstr "O Dagda"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:25
+msgid "factory.grain.manager.description"
+msgstr "O agricultor divino do lore chinês; prova cada erva para que o povo "
+"saiba o que semear."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:37
+msgid "factory.mill.manager.description"
+msgstr "A guardiã irlandesa da chama e da roda; moinhos giram onde sua festa é "
+"celebrada."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:61
+msgid "factory.crossbow.manager.description"
+msgstr "O arqueiro incomparável do Mahabharata; sua guilda treina até o virote "
+"acertar o alvo."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:73
+msgid "factory.longship.manager.description"
+msgstr "O pescador polinésio de ilhas; aproxima costas e envia cascos ao mar."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:49
+msgid "factory.iron.manager.description"
+msgstr "O senhor iorubá do ferro e da estrada; forjas respondem quando sua "
+"facão golpeia pedra."
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:80
+msgid "factory.reliquary.upgrade.name"
+msgstr "Dízimos"
+
+#: src/components/dialog/offline-earnings.tsx:43
+msgid "Treasury"
+msgstr "Tesouro"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:56
+msgid "factory.crossbow.upgrade.name"
+msgstr "Trabucos"
+
+#: src/components/dialog/settings.tsx:210
+msgid "Tune courtly comforts to your liking."
+msgstr "Ajuste os confortos da corte ao seu gosto."
+
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:145
+msgid "Under seal"
+msgstr "Sob selo"
+
+#: src/components/ui/factory-card/factory-card.upgrade.tsx:121
+msgid "Unlock"
+msgstr "Desbloquear"
+
+#: src/components/dialog/upgrades/upgrades.tsx:26
+#: src/components/dialog/upgrades/upgrades.tsx:33
+#: src/components/layout/navigation.tsx:46
+#: src/components/layout/navigation.tsx:107
+msgid "Upgrades"
+msgstr "Melhorias"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:29
+msgid "factory.mill.name"
+msgstr "Moinho d'água"
+
+#: src/components/dialog/offline-earnings.tsx:50
+msgid "Welcome back"
+msgstr "Bem-vindo de volta"
+
+#: src/components/dialog/welcome.tsx:63
+msgid "Welcome to Idleval"
+msgstr "Bem-vindo ao Idleval"
+
+#. js-lingui-explicit-id
+#: src/content/factories.messages.ts:30
+msgid "factory.mill.description"
+msgstr "Rodas movidas pelo riacho; grãos moídos pagam a coroa mais rápido que a "
+"foice sozinha."
+
+#: src/components/dialog/factory.tsx:71
+msgid "Yield per hour"
+msgstr "Rendimento por hora"
+
+#: src/components/dialog/factory.tsx:67
+msgid "Yield per tap"
+msgstr "Rendimento por toque"
+
+#. placeholder {0}: formatElapsedDuration(summary.elapsedMs)
+#. placeholder {1}: amountFormatterWithDolarSign(summary.totalGold)
+#: src/components/dialog/offline-earnings.tsx:54
+msgid "You were away for <0>{0}</0> and earned<1> {1}</1>"
+msgstr "Você ficou ausente por <0>{0}</0> e ganhou<1> {1}</1>"

@@ -1,8 +1,12 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import React from "react";
 import { OfflineEarningsDialog } from "@/components/dialog/offline-earnings";
 import { useSessionSync } from "@/hooks/use-session-sync";
-import { applyOfflineEarnings, offlineSummaryAtom } from "@/store/offline";
+import {
+  applyOfflineEarnings,
+  offlineSummaryAtom,
+  useOfflineSummary,
+} from "@/store/offline";
 
 let hasAppliedOffline = false;
 
@@ -18,7 +22,7 @@ export const OfflineBootstrap = ({ children }: React.PropsWithChildren) => {
 };
 
 const useOfflineBootstrap = () => {
-  const summary = useAtomValue(offlineSummaryAtom);
+  const summary = useOfflineSummary();
   const setSummary = useSetAtom(offlineSummaryAtom);
 
   useSessionSync(() => {

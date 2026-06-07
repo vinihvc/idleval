@@ -1,7 +1,5 @@
 import { useMediaQuery } from "@uidotdev/usehooks";
-import { InfoBox } from "pixelarticons/react";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -29,15 +27,18 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
-  ToggleTooltip,
-  ToggleTooltipContent,
-  ToggleTooltipTrigger,
-} from "@/components/ui/toggle-tooltip";
-import { cn } from "@/lib/cn";
+  notifyDrawerOpen,
+  registerDrawer,
+} from "@/components/ui/drawer-exclusive";
 
 interface RootResponsiveDialogProps extends React.PropsWithChildren {
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
+  /**
+   * The role of the dialog
+   *
+   * @default "dialog"
+   */
   role?: "dialog" | "alertdialog";
 }
 
@@ -46,12 +47,12 @@ interface ResponsiveDialogProps extends React.PropsWithChildren {
   className?: string;
 }
 
-const ResponsiveDialogContext = React.createContext<{
-  isDesktop: boolean;
-} | null>(null);
+const ResponsiveDialogContext = React.createContext(
+  {} as { isDesktop: boolean }
+);
 
 export const useResponsiveDialog = () => {
-  const context = React.useContext(ResponsiveDialogContext);
+  const context = React.use(ResponsiveDialogContext);
 
   if (!context) {
     throw new Error(
@@ -63,13 +64,48 @@ export const useResponsiveDialog = () => {
 };
 
 export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
-  const { role, onOpenChange, ...rest } = props;
+  const { role = "dialog", open, onOpenChange, children, ...rest } = props;
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const drawerId = React.useId();
 
-  const Component = isDesktop ? Dialog : Drawer;
+  const isControlled = open !== undefined;
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const isOpen = isControlled ? open : internalOpen;
 
-  const handleOpenChange = onOpenChange
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (!isControlled) {
+        setInternalOpen(next);
+      }
+
+      onOpenChange?.(next);
+    },
+    [isControlled, onOpenChange]
+  );
+
+  React.useEffect(() => {
+    if (isDesktop) {
+      return;
+    }
+
+    return registerDrawer(drawerId, () => {
+      setOpen(false);
+    });
+  }, [drawerId, isDesktop, setOpen]);
+
+  const handleMobileOpenChange = React.useCallback(
+    (details: { open: boolean }) => {
+      if (details.open) {
+        notifyDrawerOpen(drawerId);
+      }
+
+      setOpen(details.open);
+    },
+    [drawerId, setOpen]
+  );
+
+  const handleDesktopOpenChange = onOpenChange
     ? (details: { open: boolean }) => {
         onOpenChange(details.open);
       }
@@ -77,12 +113,29 @@ export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
 
   return (
     <ResponsiveDialogContext.Provider value={{ isDesktop }}>
-      <Component
-        modal={false}
-        onOpenChange={handleOpenChange}
-        role={role}
-        {...rest}
-      />
+      {isDesktop ? (
+        <Dialog
+          closeOnInteractOutside={role === "dialog"}
+          onOpenChange={handleDesktopOpenChange}
+          open={open}
+          role={role}
+          {...rest}
+        >
+          {children}
+        </Dialog>
+      ) : (
+        <Drawer
+          closeOnInteractOutside={role === "dialog"}
+          modal={false}
+          onOpenChange={handleMobileOpenChange}
+          open={isOpen}
+          role={role}
+          trapFocus={false}
+          {...rest}
+        >
+          {children}
+        </Drawer>
+      )}
     </ResponsiveDialogContext.Provider>
   );
 };
@@ -115,12 +168,7 @@ export const ResponsiveDialogContent = (
     return <DialogContent {...props} />;
   }
 
-  const {
-    bottomStickOnMobile: _bottomStickOnMobile,
-    size: _size,
-    draggable: _draggable,
-    ...drawerProps
-  } = props;
+  const { size: _size, draggable: _draggable, ...drawerProps } = props;
 
   return <DrawerContent variant="inset" {...drawerProps} />;
 };
@@ -150,16 +198,9 @@ export const ResponsiveDialogHeader = (props: ResponsiveDialogProps) => {
 
   const { isDesktop } = useResponsiveDialog();
 
-  if (isDesktop) {
-    return <DialogHeader className={className} {...rest} />;
-  }
+  const Component = isDesktop ? DialogHeader : DrawerHeader;
 
-  return (
-    <DrawerHeader
-      className={cn("flex-row items-center justify-center gap-2", className)}
-      {...rest}
-    />
-  );
+  return <Component className={className} {...rest} />;
 };
 
 export const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
@@ -185,26 +226,9 @@ export const ResponsiveDialogDescription = (
 
   const { isDesktop } = useResponsiveDialog();
 
-  if (isDesktop) {
-    return <DialogDescription {...rest} />;
-  }
+  const Component = isDesktop ? DialogDescription : DrawerDescription;
 
-  if (hideDescription) {
-    return (
-      <ToggleTooltip>
-        <ToggleTooltipTrigger asChild>
-          <Button data-slot="drawer-tooltip" size="icon-xs" variant="blue">
-            <DrawerDescription aria-label="More information">
-              <InfoBox />
-            </DrawerDescription>
-          </Button>
-        </ToggleTooltipTrigger>
-        <ToggleTooltipContent>{rest.children}</ToggleTooltipContent>
-      </ToggleTooltip>
-    );
-  }
-
-  return <DrawerDescription {...rest} />;
+  return <Component {...rest} />;
 };
 
 export const ResponsiveDialogBody = (props: ResponsiveDialogProps) => {

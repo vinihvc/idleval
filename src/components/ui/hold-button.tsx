@@ -83,6 +83,7 @@ export const HoldButton = (props: HoldButtonProps) => {
       onTouchCancel={holdHandlers.onTouchCancel}
       onTouchEnd={holdHandlers.onTouchEnd}
       onTouchStart={holdHandlers.onTouchStart}
+      sound={false}
       {...rest}
     >
       <HoldProgress active={isHolding} durationMs={durationMs} />
@@ -174,8 +175,11 @@ const useHoldPress = (options: UseHoldPressOptions) => {
         event.preventDefault();
       },
       onKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>) => {
-        if (!event.repeat && isHoldKey(event.key)) {
-          startHold();
+        if (isHoldKey(event.key)) {
+          event.preventDefault();
+          if (!event.repeat) {
+            startHold();
+          }
         }
       },
       onKeyUp: (event: React.KeyboardEvent<HTMLButtonElement>) => {

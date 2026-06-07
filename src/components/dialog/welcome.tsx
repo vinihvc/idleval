@@ -1,3 +1,4 @@
+import { Trans } from "@lingui/react/macro";
 import { Image } from "@unpic/react";
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -58,20 +59,27 @@ export const WelcomeDialog = () => {
         />
 
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Welcome to Idleval</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>
+            <Trans>Welcome to Idleval</Trans>
+          </ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            Raise a tiny realm, hire strange helpers, court impossible powers,
-            and watch your coffers grow while you are away.
+            <Trans>
+              Raise a tiny realm, hire strange helpers, court impossible powers,
+              and watch your coffers grow while you are away.
+            </Trans>
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid gap-4 text-popover-foreground/90 leading-relaxed">
+          <div className="grid gap-4 text-muted/90 leading-relaxed">
             <p>
-              Idleval is a fantasy parody. No god, ruler, guild, manager, saint,
-              monster, personality, or cosmic accountant in this game is meant
-              to be taken seriously or treated as a real-world statement.
+              <Trans>
+                Idleval is a fantasy parody. No god, ruler, guild, manager,
+                saint, monster, personality, or cosmic accountant in this game
+                is meant to be taken seriously or treated as a real-world
+                statement.
+              </Trans>
             </p>
           </div>
         </ResponsiveDialogBody>
@@ -79,7 +87,7 @@ export const WelcomeDialog = () => {
         <ResponsiveDialogFooter>
           <ResponsiveDialogClose asChild>
             <Button size="lg" variant="default">
-              Begin the realm
+              <Trans>Begin the realm</Trans>
             </Button>
           </ResponsiveDialogClose>
         </ResponsiveDialogFooter>

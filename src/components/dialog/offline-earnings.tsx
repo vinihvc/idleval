@@ -1,9 +1,9 @@
+import { Trans, useLingui } from "@lingui/react/macro";
 import { useSetAtom } from "jotai";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import {
   ResponsiveDialog,
-  ResponsiveDialogBody,
   ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
@@ -25,6 +25,7 @@ interface OfflineEarningsDialogProps {
 
 export const OfflineEarningsDialog = (props: OfflineEarningsDialogProps) => {
   const { summary } = props;
+  const { t } = useLingui();
 
   const setSummary = useSetAtom(offlineSummaryAtom);
 
@@ -38,34 +39,36 @@ export const OfflineEarningsDialog = (props: OfflineEarningsDialogProps) => {
     <ResponsiveDialog onOpenChange={handleOpenChange} open role="alertdialog">
       <ResponsiveDialogContent draggable={false} showCloseButton={false}>
         <ResponsiveDialogMedia>
-          <ResponsiveDialogImage alt="Treasury" src="/images/msc/gift.webp" />
+          <ResponsiveDialogImage
+            alt={t`Treasury`}
+            src="/images/msc/gift.webp"
+          />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Welcome back</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>
+            <Trans>Welcome back</Trans>
+          </ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription hideDescription={false}>
-            You were away for{" "}
-            <span className="font-number text-2xl">
-              {" "}
-              {formatElapsedDuration(summary.elapsedMs)}
-            </span>
+            <Trans>
+              You were away for{" "}
+              <span className="font-number text-2xl">
+                {formatElapsedDuration(summary.elapsedMs)}
+              </span>{" "}
+              and earned
+              <NumberText className="text-2xl text-primary">
+                {" "}
+                {amountFormatterWithDolarSign(summary.totalGold)}
+              </NumberText>
+            </Trans>
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-
-        <ResponsiveDialogBody>
-          <div className="flex flex-col items-center gap-2 py-2">
-            <span className="font-medium text-lg">You earned</span>
-            <NumberText className="text-3xl text-primary" size="lg">
-              {amountFormatterWithDolarSign(summary.totalGold)}
-            </NumberText>
-          </div>
-        </ResponsiveDialogBody>
 
         <ResponsiveDialogFooter>
           <ResponsiveDialogClose asChild>
             <Button className="w-full" variant="default">
-              Claim &amp; Continue
+              <Trans>Claim &amp; Continue</Trans>
             </Button>
           </ResponsiveDialogClose>
         </ResponsiveDialogFooter>

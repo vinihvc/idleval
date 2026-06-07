@@ -40,6 +40,27 @@
   --color-success: var(--success);
   --color-info-foreground: var(--info-foreground);
   --color-info: var(--info);
+
+  --animate-indeterminate: indeterminate 1.5s ease-in-out infinite;
+  --animate-progress-fill: progress-fill 1s linear 1 forwards;
+}
+
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
 }
 
 :root {
@@ -81,6 +102,13 @@
   --border: oklch(0.42 0.08 70);
   --input: oklch(0.38 0.06 60);
   --ring: oklch(0.62 0.1 75);
+
+  --header-height: calc(var(--spacing) * 16);
+  --bottom-nav-height: calc(
+    var(--spacing) *
+    14 +
+    env(safe-area-inset-bottom, 0px)
+  );
 }
 
 @layer base {
@@ -95,11 +123,11 @@
   html {
     scrollbar-gutter: stable;
     color-scheme: dark;
-    @apply antialiased;
+    @apply antialiased h-svh overflow-hidden overscroll-none;
   }
 
   body {
-    @apply bg-background min-h-svh text-foreground flex flex-col scrollbar-thin overflow-y-scroll scrollbar-track-transparent scrollbar-thumb-primary/30 font-sans;
+    @apply bg-background fixed inset-0 flex h-svh w-full touch-manipulation flex-col overflow-hidden overscroll-none font-sans text-foreground;
   }
 
   main {
@@ -107,7 +135,7 @@
   }
 
   #root {
-    @apply relative h-full min-h-svh flex flex-col items-center justify-center sm:px-3 overflow-hidden;
+    @apply relative flex h-full min-h-0 flex-1 flex-col overflow-hidden overscroll-none max-sm:w-full sm:items-center sm:justify-center sm:px-3;
   }
 
   button:not(:disabled),
