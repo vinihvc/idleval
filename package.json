@@ -18,7 +18,6 @@
     "@fontsource/almendra": "^5.2.8",
     "@fontsource/grenze-gotisch": "^5.2.8",
     "@fontsource/jersey-10": "^5.2.8",
-    "@number-flow/react": "^0.6.0",
     "@tailwindcss/vite": "^4.3.0",
     "@uidotdev/usehooks": "^2.4.1",
     "@unpic/react": "^1.0.2",

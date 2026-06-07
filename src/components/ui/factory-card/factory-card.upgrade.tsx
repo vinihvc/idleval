@@ -1,5 +1,6 @@
+import { useAtomValue } from "jotai";
 import { InfoBox } from "pixelarticons/react";
-import type React from "react";
+import React from "react";
 import { FactoryDialog } from "@/components/dialog/factory";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
@@ -17,11 +18,11 @@ import {
   useFactory,
 } from "@/store/atoms/factories";
 import {
-  totalCanBuyByAmount,
-  totalToPayByAmount,
+  computePurchaseTotals,
   usePurchaseMode,
 } from "@/store/atoms/purchase-mode";
-import { hasGoldToBuy } from "@/store/atoms/wallet";
+import { walletAtom } from "@/store/atoms/wallet";
+import { deserializeDecimal } from "@/utils/decimal";
 import {
   amountFormatter,
   amountFormatterWithDolarSign,
@@ -37,11 +38,21 @@ interface FactoryCardUpgradeProps extends React.ComponentProps<"div"> {
 export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
   const { factoryType, className, ...rest } = props;
 
-  const { isUnlocked, unlockPrice, name, nextUnitCost } =
+  const { amount, baseBuyCost, isUnlocked, unlockPrice, name, nextUnitCost } =
     useFactory(factoryType);
+  const { gold: goldSerialized } = useAtomValue(walletAtom);
+  const gold = deserializeDecimal(goldSerialized);
   const { value: amountToBuy } = usePurchaseMode();
-  const totalCanBuy = totalCanBuyByAmount(factoryType, amountToBuy);
-  const totalToPay = totalToPayByAmount(factoryType, amountToBuy);
+  const { totalCanBuy, totalToPay } = React.useMemo(
+    () =>
+      computePurchaseTotals(
+        amountToBuy,
+        deserializeDecimal(goldSerialized),
+        amount,
+        baseBuyCost
+      ),
+    [amountToBuy, goldSerialized, amount, baseBuyCost]
+  );
 
   const totalGreaterThan0 = totalCanBuy > 0;
   const buyPrice = totalGreaterThan0 ? totalToPay : nextUnitCost;
@@ -54,8 +65,8 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
     }
   };
 
-  const canBuyAmount = hasGoldToBuy(totalToPay);
-  const canUnlock = hasGoldToBuy(unlockPrice);
+  const canBuyAmount = gold.gte(totalToPay);
+  const canUnlock = gold.gte(unlockPrice);
   const isLocked = !(isUnlocked || canUnlock);
 
   const buttonVariant = () => {
@@ -99,43 +110,35 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
               <span className="max-sm:hidden">{name}</span>
             </span>
 
-            <NumberText className="normal-case">
-              {amountFormatterWithDolarSign(totalToPay)}
-            </NumberText>
+            <NumberText>{amountFormatterWithDolarSign(totalToPay)}</NumberText>
           </>
         )}
 
         {!isUnlocked && canUnlock && (
           <>
             Unlock
-            <NumberText className="normal-case">
-              {amountFormatterWithDolarSign(unlockPrice)}
-            </NumberText>
+            <NumberText>{amountFormatterWithDolarSign(unlockPrice)}</NumberText>
           </>
         )}
 
         {isUnlocked && !canBuyAmount && (
           <>
             Empty coffers
-            <NumberText className="normal-case">
-              {amountFormatterWithDolarSign(buyPrice)}
-            </NumberText>
+            <NumberText>{amountFormatterWithDolarSign(buyPrice)}</NumberText>
           </>
         )}
 
         {isUnlocked && canBuyAmount && !totalGreaterThan0 && (
           <>
             Empty coffers
-            <NumberText className="normal-case">
-              {amountFormatterWithDolarSign(buyPrice)}
-            </NumberText>
+            <NumberText>{amountFormatterWithDolarSign(buyPrice)}</NumberText>
           </>
         )}
 
         {isLocked && (
           <>
             <span className="[-webkit-text-stroke-width:0]">Under seal</span>
-            <NumberText className="normal-case opacity-80">
+            <NumberText className="[-webkit-text-stroke-width:0]">
               {amountFormatterWithDolarSign(unlockPrice)}
             </NumberText>
           </>

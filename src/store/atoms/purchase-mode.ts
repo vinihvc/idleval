@@ -1,9 +1,10 @@
 import { useAtomValue } from "jotai";
-import { persistedAtom } from "@/store/storage";
 import type { FactoryType } from "@/content/factories";
 import { getAffordableUnitCount, getPurchaseTotalCost } from "@/game/purchases";
 import { store } from "@/providers/store";
 import { getFactory } from "@/store/atoms/factories";
+import { persistedAtom } from "@/store/storage";
+import type { GameValue } from "@/utils/decimal";
 import { getGold } from "./wallet";
 
 export const AMOUNT_TO_BUY = [
@@ -80,6 +81,23 @@ export const toggleAmountToBuy = () => {
   }));
 };
 
+export const computePurchaseTotals = (
+  amount: PurchaseModeState["amountToBuy"],
+  gold: GameValue,
+  owned: number,
+  baseBuyCost: number
+) => {
+  const totalCanBuy = getAffordableUnitCount({
+    amount,
+    baseBuyCost,
+    gold,
+    owned,
+  });
+  const totalToPay = getPurchaseTotalCost(baseBuyCost, owned, totalCanBuy);
+
+  return { totalCanBuy, totalToPay };
+};
+
 export const totalCanBuyByAmount = (
   factory: FactoryType,
   amount: PurchaseModeState["amountToBuy"]
@@ -99,8 +117,8 @@ export const totalToPayByAmount = (
   factory: FactoryType,
   amount: PurchaseModeState["amountToBuy"]
 ) => {
+  const gold = getGold();
   const { baseBuyCost, amount: owned } = getFactory(factory);
-  const totalCanBuy = totalCanBuyByAmount(factory, amount);
 
-  return getPurchaseTotalCost(baseBuyCost, owned, totalCanBuy);
+  return computePurchaseTotals(amount, gold, owned, baseBuyCost).totalToPay;
 };

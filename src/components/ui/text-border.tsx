@@ -12,13 +12,13 @@ export const borderedText = tv({
       blue: ["[-webkit-text-stroke-color:oklch(0.35_0.1_250)]"],
     },
     size: {
-      sm: ["[-webkit-text-stroke-width:1px]"],
-      md: ["[-webkit-text-stroke-width:2px]"],
-      lg: ["[-webkit-text-stroke-width:3px]"],
+      sm: ["[-webkit-text-stroke-width:2px]"],
+      md: ["[-webkit-text-stroke-width:3px]"],
+      lg: ["[-webkit-text-stroke-width:4px]"],
     },
   },
   defaultVariants: {
     variant: "brown",
-    size: "md",
+    size: "lg",
   },
 });

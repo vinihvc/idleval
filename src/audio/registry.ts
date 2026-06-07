@@ -32,6 +32,12 @@ export const SOUND_REGISTRY = {
     category: "sfx",
     volume: 0.9,
   },
+  hold: {
+    src: "/sounds/hold.wav",
+    category: "sfx",
+    volume: 0.7,
+    loop: true,
+  },
   theme: {
     src: "/sounds/music.wav",
     category: "music",

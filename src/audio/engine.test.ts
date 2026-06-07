@@ -153,4 +153,20 @@ describe("SoundEngine", () => {
     expect(musicAudio?.play).toHaveBeenCalled();
     expect(musicAudio?.volume).toBeCloseTo(0.4 * 0.8);
   });
+
+  it("loops hold SFX while playing and stops on release", () => {
+    engine.play("hold");
+
+    const holdAudio = mockAudio.instances.find((instance) =>
+      instance.src.includes("hold.wav")
+    );
+
+    expect(holdAudio?.loop).toBe(true);
+    expect(holdAudio?.play).toHaveBeenCalled();
+
+    engine.stop("hold");
+
+    expect(holdAudio?.pause).toHaveBeenCalled();
+    expect(holdAudio?.currentTime).toBe(0);
+  });
 });

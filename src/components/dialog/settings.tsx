@@ -10,6 +10,7 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
   ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
@@ -21,8 +22,6 @@ import {
 } from "@/components/ui/tooltip";
 import { toggleMusic, toggleSfx, useSettings } from "@/store/atoms/settings";
 import { resetGame } from "@/store/reset";
-
-const HOLD_TO_RESET_MS = 4000;
 
 export const SettingsDialog = () => {
   const settings = useSettings();
@@ -45,7 +44,12 @@ export const SettingsDialog = () => {
       </Tooltip>
 
       <ResponsiveDialogContent>
-        <ResponsiveDialogImage alt="Settings" src="/images/msc/setting.webp" />
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage
+            alt="Settings"
+            src="/images/msc/setting.webp"
+          />
+        </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Settings</ResponsiveDialogTitle>
@@ -81,9 +85,8 @@ export const SettingsDialog = () => {
             </FieldGroup>
 
             <HoldButton
-              aria-label={`Hold for ${HOLD_TO_RESET_MS / 1000} seconds to reset the game.`}
+              aria-label="Hold  to reset the game."
               className="w-full"
-              durationMs={HOLD_TO_RESET_MS}
               holdLabel="Hold..."
               onHoldComplete={() => {
                 resetGame();

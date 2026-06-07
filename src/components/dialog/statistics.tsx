@@ -1,7 +1,7 @@
 import { Image } from "@unpic/react";
 import type React from "react";
 import { Coin } from "@/components/icons/coin";
-import { AnimatedNumber } from "@/components/ui/animated-number";
+import { FormattedNumber } from "@/components/ui/formatted-number";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,10 +9,15 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { StatRow } from "@/components/ui/stat-row";
-import { FACTORIES, FACTORY_TYPES } from "@/content/factories";
+import { StatTile } from "@/components/ui/stats";
+import {
+  FACTORIES,
+  FACTORY_TYPES,
+  type FactoryType,
+} from "@/content/factories";
 import {
   useGoldEarnedByFactory,
   useTotalGoldEarned,
@@ -20,6 +25,7 @@ import {
 
 export const StatisticsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+
   const totalGold = useTotalGoldEarned();
 
   return (
@@ -27,10 +33,12 @@ export const StatisticsDialog = (props: React.PropsWithChildren) => {
       {children}
 
       <ResponsiveDialogContent>
-        <ResponsiveDialogImage
-          alt="Statistics"
-          src="/images/msc/statistic.webp"
-        />
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage
+            alt="Statistics"
+            src="/images/msc/statistic.webp"
+          />
+        </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Statistics</ResponsiveDialogTitle>
@@ -41,23 +49,16 @@ export const StatisticsDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid gap-2">
-            <StatRow
-              label={
-                <span className="flex items-center gap-2">
-                  <Coin aria-hidden className="size-5 shrink-0" />
-                  Realm total
-                </span>
-              }
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+            <StatTile
+              icon={<Coin aria-hidden className="size-6 shrink-0" />}
+              label="Realm total"
             >
-              <AnimatedNumber
-                className="shrink-0 text-end text-2xl"
-                value={totalGold}
-              />
-            </StatRow>
+              <FormattedNumber value={totalGold} />
+            </StatTile>
 
             {FACTORY_TYPES.map((factory) => (
-              <FactoryStatRow factory={factory} key={factory} />
+              <FactoryStatTile factory={factory} key={factory} />
             ))}
           </div>
         </ResponsiveDialogBody>
@@ -66,34 +67,31 @@ export const StatisticsDialog = (props: React.PropsWithChildren) => {
   );
 };
 
-const FactoryStatRow = ({
-  factory,
-}: {
-  factory: (typeof FACTORY_TYPES)[number];
-}) => {
+interface FactoryStatTileProps {
+  factory: FactoryType;
+}
+
+const FactoryStatTile = (props: FactoryStatTileProps) => {
+  const { factory } = props;
+
   const goldEarned = useGoldEarnedByFactory(factory);
 
   return (
-    <StatRow
-      label={
-        <span className="flex items-center gap-2">
-          <Image
-            alt=""
-            aria-hidden
-            className="pixel-crisp pointer-events-none size-6 rounded-md object-contain"
-            height={24}
-            layout="constrained"
-            src={`/images/factories/${factory}.webp`}
-            width={24}
-          />
-          {FACTORIES[factory].name}
-        </span>
+    <StatTile
+      icon={
+        <Image
+          alt=""
+          aria-hidden
+          className="pixel-crisp pointer-events-none size-7 rounded-md object-contain"
+          height={28}
+          layout="constrained"
+          src={`/images/factories/${factory}.webp`}
+          width={28}
+        />
       }
+      label={FACTORIES[factory].name}
     >
-      <AnimatedNumber
-        className="shrink-0 text-end text-2xl"
-        value={goldEarned}
-      />
-    </StatRow>
+      <FormattedNumber value={goldEarned} />
+    </StatTile>
   );
 };

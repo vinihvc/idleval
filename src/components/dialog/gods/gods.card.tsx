@@ -57,8 +57,10 @@ export const GodsCard = (props: GodsCardProps) => {
     return (
       <>
         <span>Invoke</span>
-        <Badge className="font-number normal-case" variant="default">
-          <NumberText>{amountFormatter(goldRequired)}</NumberText>
+        <Badge className="font-number" variant="default">
+          <NumberText variant="default">
+            {amountFormatter(goldRequired)}
+          </NumberText>
         </Badge>
       </>
     );

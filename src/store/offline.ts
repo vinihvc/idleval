@@ -20,6 +20,12 @@ export interface OfflineSummary {
   totalGold: GameValue;
 }
 
+/** Minimum time away before offline earnings are applied or shown. */
+export const MIN_OFFLINE_MS = 60_000;
+
+export const meetsMinimumOfflineDuration = (elapsedMs: number): boolean =>
+  elapsedMs >= MIN_OFFLINE_MS;
+
 export const offlineSummaryAtom = atom<OfflineSummary | null>(null);
 
 const clearManualProducing = () => {
@@ -57,6 +63,11 @@ export const applyOfflineEarnings = (
     factories,
     getGodsProductionMultiplier()
   );
+
+  if (!meetsMinimumOfflineDuration(computed.elapsedMs)) {
+    touchLastSeen(now);
+    return null;
+  }
 
   clearManualProducing();
 

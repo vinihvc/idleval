@@ -1,7 +1,6 @@
-import { CalendarRange, Clock, Crown, Hand, Heart } from "pixelarticons/react";
-import type React from "react";
-import { AnimatedNumber } from "@/components/ui/animated-number";
-import { NumberText } from "@/components/ui/number-text";
+import { CalendarRange, Clock, Hand, Heart } from "pixelarticons/react";
+import React from "react";
+import { FormattedNumber } from "@/components/ui/formatted-number";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,120 +8,83 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { StatRow } from "@/components/ui/stat-row";
+import { StatTile } from "@/components/ui/stats";
 import type { FactoryType } from "@/content/factories";
 import { useFactory, useProductionValue } from "@/store/atoms/factories";
-import { useGodsProductionMultiplier } from "@/store/atoms/gods";
 import { useGoldEarnedByFactory } from "@/store/atoms/statistics";
-import { amountFormatter } from "@/utils/formatters";
 
 interface FactoryDialogProps extends React.PropsWithChildren {
+  /**
+   * The factory type
+   */
   factoryType: FactoryType;
 }
 
-export const FactoryDialog = (props: FactoryDialogProps) => {
-  const { factoryType, children } = props;
+interface FactoryDialogBodyProps {
+  factoryType: FactoryType;
+}
+
+const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
+  const { factoryType } = props;
 
   const factory = useFactory(factoryType);
   const yieldPerTap = useProductionValue(factoryType);
   const yieldPerHour = yieldPerTap.times(3600).div(factory.productionTime);
-  const divineMultiplier = useGodsProductionMultiplier();
   const lifetimeYield = useGoldEarnedByFactory(factoryType);
-  const showDivineBonus = divineMultiplier.gt(1);
 
   return (
-    <ResponsiveDialog>
-      {children}
-
-      <ResponsiveDialogContent>
+    <>
+      <ResponsiveDialogMedia>
         <ResponsiveDialogImage
           alt={`Factory of ${factory.name}`}
           src={`/images/factories/${factoryType}.webp`}
         />
+      </ResponsiveDialogMedia>
 
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>{factory.name}</ResponsiveDialogTitle>
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>{factory.name}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
-            {factory.description}
-          </ResponsiveDialogDescription>
-        </ResponsiveDialogHeader>
+        <ResponsiveDialogDescription>
+          {factory.description}
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
 
-        <ResponsiveDialogBody>
-          <div className="space-y-2">
-            <StatRow
-              label={
-                <span className="flex items-center gap-2">
-                  <Clock aria-hidden className="size-5 shrink-0" />
-                  Craft pace
-                </span>
-              }
-            >
-              <NumberText className="shrink-0 text-end text-2xl">
-                {factory.productionTime}s
-              </NumberText>
-            </StatRow>
+      <ResponsiveDialogBody>
+        <div className="flex gap-1.5">
+          <StatTile icon={<Clock />} label="Craft pace">
+            <FormattedNumber value={factory.productionTime} />s
+          </StatTile>
 
-            <StatRow
-              label={
-                <span className="flex items-center gap-2">
-                  <Hand aria-hidden className="size-5 shrink-0" />
-                  Yield per tap
-                </span>
-              }
-            >
-              <AnimatedNumber
-                className="shrink-0 text-end text-2xl"
-                value={yieldPerTap}
-              />
-            </StatRow>
+          <StatTile icon={<Hand />} label="Yield per tap">
+            <FormattedNumber value={yieldPerTap} />
+          </StatTile>
 
-            <StatRow
-              label={
-                <span className="flex items-center gap-2">
-                  <CalendarRange aria-hidden className="size-5 shrink-0" />
-                  Yield per hour
-                </span>
-              }
-            >
-              <AnimatedNumber
-                className="shrink-0 text-end text-2xl"
-                value={yieldPerHour}
-              />
-            </StatRow>
+          <StatTile icon={<CalendarRange />} label="Yield per hour">
+            <FormattedNumber value={yieldPerHour} />
+          </StatTile>
 
-            {showDivineBonus && (
-              <StatRow
-                label={
-                  <span className="flex items-center gap-2">
-                    <Crown aria-hidden className="size-5 shrink-0" />
-                    Divine bonus
-                  </span>
-                }
-              >
-                <NumberText className="shrink-0 text-end text-2xl">
-                  ×{amountFormatter(divineMultiplier)}
-                </NumberText>
-              </StatRow>
-            )}
+          <StatTile icon={<Heart />} label="Lifetime yield">
+            <FormattedNumber value={lifetimeYield} />
+          </StatTile>
+        </div>
+      </ResponsiveDialogBody>
+    </>
+  );
+};
 
-            <StatRow
-              label={
-                <span className="flex items-center gap-2">
-                  <Heart aria-hidden className="size-5 shrink-0" />
-                  Lifetime yield
-                </span>
-              }
-            >
-              <AnimatedNumber
-                className="shrink-0 text-end text-2xl"
-                value={lifetimeYield}
-              />
-            </StatRow>
-          </div>
-        </ResponsiveDialogBody>
+export const FactoryDialog = (props: FactoryDialogProps) => {
+  const { factoryType, children } = props;
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <ResponsiveDialog onOpenChange={setOpen} open={open}>
+      {children}
+
+      <ResponsiveDialogContent>
+        {open ? <FactoryDialogBody factoryType={factoryType} /> : null}
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

@@ -1,7 +1,8 @@
 import { useAtomValue } from "jotai";
-import { persistedAtom } from "@/store/storage";
+import { selectAtom } from "jotai/utils";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
+import { persistedAtom } from "@/store/storage";
 import {
   D,
   deserializeDecimal,
@@ -46,6 +47,25 @@ export const statisticsAtom = persistedAtom("statistics", {
 
 export const useStatistics = () => useAtomValue(statisticsAtom);
 
+const factoryGoldEarnedAtoms = new Map<
+  FactoryType,
+  ReturnType<typeof selectAtom<StatisticsState, string>>
+>();
+
+const getFactoryGoldEarnedAtom = (factory: FactoryType) => {
+  let factoryGoldEarnedAtom = factoryGoldEarnedAtoms.get(factory);
+
+  if (!factoryGoldEarnedAtom) {
+    factoryGoldEarnedAtom = selectAtom(
+      statisticsAtom,
+      (statistics) => statistics.factories[factory].goldEarned
+    );
+    factoryGoldEarnedAtoms.set(factory, factoryGoldEarnedAtom);
+  }
+
+  return factoryGoldEarnedAtom;
+};
+
 export const useTotalGoldEarned = (): GameValue => {
   const { goldEarned } = useStatistics();
 
@@ -53,9 +73,9 @@ export const useTotalGoldEarned = (): GameValue => {
 };
 
 export const useGoldEarnedByFactory = (factory: FactoryType): GameValue => {
-  const { factories } = useStatistics();
+  const goldEarned = useAtomValue(getFactoryGoldEarnedAtom(factory));
 
-  return deserializeDecimal(factories[factory].goldEarned);
+  return deserializeDecimal(goldEarned);
 };
 
 export const setStatistics = (factory: FactoryType, goldEarned: GameValue) => {

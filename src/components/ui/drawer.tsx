@@ -7,7 +7,7 @@ import { Close } from "pixelarticons/react";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Button } from "@/components/ui/button";
-import { DialogImage } from "@/components/ui/dialog";
+import { DialogImage, DialogMedia } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/cn";
 import { WaxSeal } from "../icons/wax-seal";
@@ -113,8 +113,9 @@ const drawerPositionerVariants = tv({
     "fixed inset-0 z-50",
     "flex items-end justify-center",
     "w-screen overscroll-contain",
-    // Reserve space for DrawerImage (-top-12 / sm:-top-18) so it stays on-screen
+    // Reserve space for DrawerMedia (-top-12 / sm:-top-18) so it stays on-screen
     "pt-12 sm:pt-18",
+    "max-sm:pb-[calc(var(--spacing)*14+env(safe-area-inset-bottom,0))]",
     "has-data-[swipe-direction=up]:items-start",
     "has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0",
     "has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0",
@@ -153,7 +154,9 @@ const drawerContentVariants = tv({
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
     "max-h-[95svh] w-full",
+    "max-sm:max-h-[calc(95svh-var(--spacing)*14-env(safe-area-inset-bottom,0))]",
     "has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-env(safe-area-inset-bottom,0px)))]",
+    "max-sm:has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-var(--spacing)*14-env(safe-area-inset-bottom,0)))]",
     "-mb-(--bleed) pb-[calc(1.5rem+env(safe-area-inset-bottom,0)+var(--bleed))]",
     "border-4 border-primary/60 bg-popover",
     "text-popover-foreground",
@@ -431,11 +434,7 @@ export const DrawerBody = (props: DrawerBodyProps) => {
   if (scrollFade) {
     return (
       <ScrollArea className="min-h-0 flex-1" scrollFade>
-        <ark.div
-          className={bodyClassName}
-          data-slot="drawer-body"
-          {...rest}
-        />
+        <ark.div className={bodyClassName} data-slot="drawer-body" {...rest} />
       </ScrollArea>
     );
   }
@@ -449,9 +448,13 @@ export const DrawerBody = (props: DrawerBodyProps) => {
   );
 };
 
-export type DrawerImageProps = React.ComponentProps<typeof DialogImage>;
+export const DrawerMedia = (
+  props: React.ComponentProps<typeof DialogMedia>
+) => <DialogMedia data-slot="drawer-media" {...props} />;
 
-export const DrawerImage = DialogImage;
+export const DrawerImage = (
+  props: React.ComponentProps<typeof DialogImage>
+) => <DialogImage data-slot="drawer-image" {...props} />;
 
 export const DrawerClose = (
   props: React.ComponentProps<typeof ArkDrawer.CloseTrigger>

@@ -61,26 +61,6 @@ export const amountFormatter = (amount: number | Decimal) => {
 export const amountFormatterWithDolarSign = (amount: number | Decimal) =>
   `$${amountFormatter(amount)}`;
 
-export const getAmountForNumberFlow = (amount: number | Decimal) => {
-  const value = D(amount);
-
-  if (value.gte(INFINITY_THRESHOLD)) {
-    return { kind: "infinity" as const };
-  }
-
-  const item = findRange(value);
-
-  if (!item || value.lte(0)) {
-    return { kind: "value" as const, value: 0, suffix: "" };
-  }
-
-  return {
-    kind: "value" as const,
-    value: toDisplayNumber(value.div(item.value)),
-    suffix: item.symbol,
-  };
-};
-
 export const suffixAmountFormatter = (amount: number | Decimal) => {
   const value = D(amount);
   const item = findRange(value);

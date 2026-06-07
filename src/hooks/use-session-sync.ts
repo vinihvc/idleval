@@ -4,8 +4,34 @@ import { touchLastSeen } from "@/store/atoms/session";
 
 const HEARTBEAT_MS = 60_000;
 
-export const useSessionSync = () => {
+export const shouldApplyOfflineOnVisibilityChange = (
+  prevVisible: boolean | null,
+  nextVisible: boolean
+): boolean => prevVisible === false && nextVisible === true;
+
+export const useSessionSync = (onVisible?: () => void) => {
   const isVisible = useVisibilityChange();
+  const prevVisibleRef = React.useRef<boolean | null>(null);
+  const onVisibleRef = React.useRef(onVisible);
+
+  React.useEffect(() => {
+    onVisibleRef.current = onVisible;
+  }, [onVisible]);
+
+  React.useEffect(() => {
+    if (prevVisibleRef.current === null) {
+      prevVisibleRef.current = isVisible;
+      return;
+    }
+
+    if (
+      shouldApplyOfflineOnVisibilityChange(prevVisibleRef.current, isVisible)
+    ) {
+      onVisibleRef.current?.();
+    }
+
+    prevVisibleRef.current = isVisible;
+  }, [isVisible]);
 
   React.useEffect(() => {
     if (!isVisible) {

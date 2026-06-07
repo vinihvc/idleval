@@ -6,6 +6,7 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { GODS } from "@/content/gods";
@@ -21,7 +22,9 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
       {children}
 
       <ResponsiveDialogContent>
-        <ResponsiveDialogImage alt="Gods" src="/images/gods/gods.webp" />
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage alt="Gods" src="/images/gods/gods.webp" />
+        </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Gods</ResponsiveDialogTitle>
@@ -34,7 +37,7 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-2">
             {GODS.map((god) => (
               <GodsCard
                 god={god}

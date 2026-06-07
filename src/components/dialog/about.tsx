@@ -6,6 +6,7 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 
@@ -20,7 +21,9 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
       {children}
 
       <ResponsiveDialogContent>
-        <ResponsiveDialogImage alt="About" src="/images/msc/about.webp" />
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage alt="About" src="/images/msc/about.webp" />
+        </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>About the Realm</ResponsiveDialogTitle>

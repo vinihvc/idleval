@@ -1,8 +1,10 @@
 import type React from "react";
 import { SettingsDialog } from "@/components/dialog/settings";
+import { StatisticsDialog } from "@/components/dialog/statistics";
 import { Coin } from "@/components/icons/coin";
 import { HeaderNavigation } from "@/components/layout/navigation";
-import { AnimatedNumber } from "@/components/ui/animated-number";
+import { FormattedNumber } from "@/components/ui/formatted-number";
+import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { borderedText } from "@/components/ui/text-border";
 import {
   Tooltip,
@@ -28,27 +30,36 @@ export const Header = (props: HeaderProps) => {
       )}
       {...rest}
     >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border-3 border-primary/70 bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            <Coin
-              aria-hidden
-              className="absolute top-0 -left-2 size-10 shrink-0 -translate-y-1.5 drop-shadow-md"
-            />
+      <StatisticsDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ResponsiveDialogTrigger asChild>
+              <button
+                className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 cursor-pointer items-center justify-end whitespace-nowrap rounded-md border-3 border-primary/70 bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                type="button"
+              >
+                <Coin
+                  aria-hidden
+                  className="absolute top-0 -left-2 size-10 shrink-0 -translate-y-1.5 drop-shadow-md"
+                />
 
-            <span
-              className={cn(
-                "font-bold font-number text-popover-foreground text-xl tabular-nums",
-                borderedText({ variant: "default" })
-              )}
-            >
-              <AnimatedNumber isDollar value={gold} />
-            </span>
-          </div>
-        </TooltipTrigger>
+                <span
+                  className={cn(
+                    "font-bold font-number text-popover-foreground text-xl tabular-nums",
+                    borderedText({ variant: "default" })
+                  )}
+                >
+                  <FormattedNumber isDollar value={gold} />
+                </span>
 
-        <TooltipContent>Treasury Gold</TooltipContent>
-      </Tooltip>
+                <span className="sr-only">Statistics</span>
+              </button>
+            </ResponsiveDialogTrigger>
+          </TooltipTrigger>
+
+          <TooltipContent>Statistics</TooltipContent>
+        </Tooltip>
+      </StatisticsDialog>
 
       <HeaderNavigation />
 

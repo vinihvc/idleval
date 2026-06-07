@@ -2,9 +2,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import React from "react";
 import { OfflineEarningsDialog } from "@/components/dialog/offline-earnings";
 import { useSessionSync } from "@/hooks/use-session-sync";
-import { factoriesAtom } from "@/store/atoms/factories";
-import { sessionAtom } from "@/store/atoms/session";
-import { walletAtom } from "@/store/atoms/wallet";
 import { applyOfflineEarnings, offlineSummaryAtom } from "@/store/offline";
 
 let hasAppliedOffline = false;
@@ -24,11 +21,13 @@ const useOfflineBootstrap = () => {
   const summary = useAtomValue(offlineSummaryAtom);
   const setSummary = useSetAtom(offlineSummaryAtom);
 
-  useAtomValue(sessionAtom);
-  useAtomValue(factoriesAtom);
-  useAtomValue(walletAtom);
+  useSessionSync(() => {
+    const offlineSummary = applyOfflineEarnings();
 
-  useSessionSync();
+    if (offlineSummary) {
+      setSummary(offlineSummary);
+    }
+  });
 
   React.useEffect(() => {
     if (hasAppliedOffline) {

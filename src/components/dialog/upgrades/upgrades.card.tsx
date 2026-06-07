@@ -1,4 +1,4 @@
-import { FactoryActionCard } from "@/components/dialog/factory-action-card";
+import { UpgradeCard } from "@/components/ui/upgrade-card";
 import type { FactoryType } from "@/content/factories";
 import { upgradeFactory, useFactory } from "@/store/atoms/factories";
 
@@ -12,14 +12,15 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
   const { isUpgraded, upgradeCost, upgrade } = useFactory(factoryType);
 
   return (
-    <FactoryActionCard
+    <UpgradeCard
       actionLabel="Improve"
+      complete={isUpgraded}
       cost={upgradeCost}
+      description={upgrade.description}
       factoryType={factoryType}
-      imagePath={`/images/upgrades/${factoryType}.webp`}
-      isComplete={isUpgraded}
-      lore={upgrade}
+      image={`/images/upgrades/${factoryType}.webp`}
       onAction={() => upgradeFactory(factoryType)}
+      title={upgrade.name}
     />
   );
 };

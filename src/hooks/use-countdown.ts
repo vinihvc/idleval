@@ -1,83 +1,14 @@
 import { useAtomValue } from "jotai";
-import React from "react";
 import type { FactoryType } from "@/content/factories";
-import { store } from "@/providers/store";
-import { completeProductionCycle, useFactory } from "@/store/atoms/factories";
-import { offlineCycleProgressAtom } from "@/store/atoms/session";
-import { useInterval } from "./use-interval";
-
-const getInitialSeconds = (
-  factory: FactoryType,
-  productionTime: number,
-  isActive: boolean,
-  offlineProgress: Partial<Record<FactoryType, number>>
-) => {
-  const fromOffline = offlineProgress[factory];
-
-  if (fromOffline != null && isActive) {
-    return fromOffline;
-  }
-
-  return productionTime;
-};
+import { getFactoryTickAtom } from "@/store/atoms/production-ticks.atom";
 
 /**
- * Emit a countdown timer for a factory
+ * Read countdown state for a factory from the shared production scheduler.
  */
 export const useCountdown = (factory: FactoryType) => {
-  const { isUnlocked, isAutomated, isProducing, productionTime } =
-    useFactory(factory);
-
-  const offlineProgress = useAtomValue(offlineCycleProgressAtom);
-  const isActive = isUnlocked && (isAutomated || isProducing);
-  const consumedOfflineRef = React.useRef(false);
-
-  const [seconds, setSeconds] = React.useState(() =>
-    getInitialSeconds(factory, productionTime, isActive, offlineProgress)
-  );
-  const [cycleKey, setCycleKey] = React.useState(0);
-  const [isRunning, setIsRunning] = React.useState(isActive);
-
-  React.useEffect(() => {
-    if (isActive) {
-      if (!consumedOfflineRef.current && offlineProgress[factory] != null) {
-        consumedOfflineRef.current = true;
-        setSeconds(offlineProgress[factory] ?? productionTime);
-        setCycleKey((key) => key + 1);
-        setIsRunning(true);
-        store.set(offlineCycleProgressAtom, (prev) => {
-          const { [factory]: _removed, ...rest } = prev;
-
-          return rest;
-        });
-        return;
-      }
-
-      setSeconds(productionTime);
-      setCycleKey((key) => key + 1);
-      setIsRunning(true);
-      return;
-    }
-
-    consumedOfflineRef.current = false;
-    setIsRunning(false);
-  }, [factory, isActive, offlineProgress, productionTime]);
-
-  useInterval(
-    () => {
-      setSeconds((prev) => {
-        if (prev <= 1) {
-          setIsRunning(isUnlocked && isAutomated);
-          completeProductionCycle(factory);
-          setCycleKey((key) => key + 1);
-          return productionTime;
-        }
-
-        return prev - 1;
-      });
-    },
-    isRunning ? 1000 : undefined
+  const { cycleKey, isRunning, seconds } = useAtomValue(
+    getFactoryTickAtom(factory)
   );
 
-  return { seconds, isRunning, cycleKey };
+  return { cycleKey, isRunning, seconds };
 };

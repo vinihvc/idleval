@@ -121,6 +121,26 @@ export class SoundEngine {
     });
   }
 
+  stop(id: SoundId) {
+    const definition = SOUND_REGISTRY[id] as SoundDefinition;
+
+    if (definition.category === "music") {
+      this.stopMusic();
+      return;
+    }
+
+    const pool = this.pools.get(id);
+
+    if (!pool) {
+      return;
+    }
+
+    for (const audio of pool) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }
+
   playMusic() {
     const settings = this.getSettings();
 

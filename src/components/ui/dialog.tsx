@@ -3,7 +3,7 @@
 import { Dialog as ArkDialog, useDialogContext } from "@ark-ui/react/dialog";
 import { ark } from "@ark-ui/react/factory";
 import { Portal } from "@ark-ui/react/portal";
-import { Image } from "@unpic/react";
+import { Image, type ImageProps } from "@unpic/react";
 import { Close } from "pixelarticons/react";
 import React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
@@ -92,7 +92,7 @@ export const DialogPositioner = (
       className={cn(
         "fixed inset-0 z-50",
         "h-svh w-screen overflow-y-auto",
-        // Center dialog vertically; min top row reserves space for DialogImage (-top-12 / sm:-top-18)
+        // Center dialog vertically; min top row reserves space for DialogMedia (-top-12 / sm:-top-18)
         "grid min-h-svh grid-rows-[minmax(3rem,1fr)_auto_minmax(0,1fr)] justify-items-center",
         "p-4 sm:grid-rows-[minmax(4.5rem,1fr)_auto_minmax(0,1fr)]",
         className
@@ -110,9 +110,9 @@ export const dialogContentVariants = tv({
     "relative",
     "row-start-2",
     "max-h-full min-h-0 w-full min-w-0",
-    "flex flex-col gap-4",
+    "flex flex-col gap-2",
     "bg-popover text-popover-foreground",
-    "fantasy-panel-shadow rounded-xl border-4 border-primary/70",
+    "fantasy-panel-shadow rounded-xl border-4 border-primary",
     "inset-shadow-xs",
     "outline-none",
     "translate-y-[calc(-1.25rem*var(--nested-layer-count))]",
@@ -213,8 +213,8 @@ export const DialogContent = (props: DialogContentProps) => {
                   "inset-shadow-none rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                   "bg-transparent",
                   "hover:bg-transparent hover:brightness-110",
-                  "focus-visible:brightness-110",
-                  "active:brightness-95"
+                  "focus-visible:ring-0 focus-visible:brightness-110",
+                  "active:scale-95 active:brightness-95"
                 )}
                 size="icon-xl"
                 variant="ghost"
@@ -278,7 +278,9 @@ export const DialogHeader = (props: DialogHeaderProps) => {
   return (
     <ark.div
       className={cn(
-        "flex flex-col gap-1 text-center sm:mt-12 sm:text-left",
+        "sm:mt-12",
+        "flex flex-col gap-1",
+        "text-center sm:text-left",
         "p-(--space)",
         "in-[[data-slot=dialog-content]:has([data-slot=dialog-body])]:pb-3",
         className
@@ -316,36 +318,44 @@ export const DialogTitle = (
   );
 };
 
-interface DialogImageProps {
-  alt: string;
-  className?: string;
-  src: string;
-}
-
-export const DialogImage = (props: DialogImageProps) => {
+export const DialogMedia = (props: React.ComponentProps<typeof ark.div>) => {
   const { className, ...rest } = props;
 
   return (
-    <div
-      className="absolute -top-12 left-1/2 inline-flex rounded-full border-4 border-primary/80 bg-secondary p-1 max-md:-translate-x-1/2 sm:-top-18 sm:border-6 md:left-2"
+    <ark.div
+      className={cn(
+        "absolute -top-12 left-1/2 inline-flex rounded-full border-4 border-primary/80 bg-secondary p-1 max-md:-translate-x-1/2 sm:-top-18 sm:border-6 md:left-2",
+        className
+      )}
+      data-slot="dialog-media"
+      {...rest}
+    />
+  );
+};
+
+export const DialogImage = (
+  props: Pick<ImageProps, "alt" | "className" | "src">
+) => {
+  const { alt, className, src } = props;
+
+  return (
+    <Image
+      alt={alt}
+      aria-hidden
+      className={cn(
+        "pixel-crisp object-cover",
+        "aspect-square size-20 sm:size-28",
+        "bg-popover",
+        "rounded-full border-2 border-primary/40 drop-shadow-lg sm:border-4",
+        "pointer-events-none",
+        className
+      )}
       data-slot="dialog-image"
-    >
-      <Image
-        aria-hidden
-        className={cn(
-          "pixel-crisp object-cover",
-          "aspect-square size-20 sm:size-28",
-          "bg-popover",
-          "rounded-full border-2 border-primary/40 drop-shadow-lg sm:border-4",
-          "pointer-events-none",
-          className
-        )}
-        height={112}
-        layout="constrained"
-        width={112}
-        {...rest}
-      />
-    </div>
+      height={112}
+      layout="constrained"
+      src={src}
+      width={112}
+    />
   );
 };
 
@@ -376,8 +386,8 @@ export const DialogFooter = (props: React.ComponentProps<typeof ark.div>) => {
         "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
         "sm:rounded-b-[calc(var(--radius-lg)-1px)]",
         "px-(--space) py-4",
-        "bg-muted/48",
-        "border-t",
+        "bg-muted",
+        "border-primary border-t-4",
         className
       )}
       data-slot="dialog-footer"

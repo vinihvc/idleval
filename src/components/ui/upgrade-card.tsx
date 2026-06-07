@@ -1,14 +1,22 @@
 import { Image } from "@unpic/react";
+import { CheckboxOn } from "pixelarticons/react";
 import type React from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
+import { useFactory } from "@/store/atoms/factories";
+import { hasGoldToBuy } from "@/store/atoms/wallet";
+import type { GameValue } from "@/utils/decimal";
+import { amountFormatter } from "@/utils/formatters";
+import { NumberText } from "./number-text";
 
-export interface UpgradeCardProps extends React.ComponentProps<"article"> {
+interface UpgradeCardBaseProps extends React.ComponentProps<"article"> {
   affordable?: boolean;
   complete?: boolean;
   description?: string;
@@ -16,7 +24,107 @@ export interface UpgradeCardProps extends React.ComponentProps<"article"> {
   title?: string;
 }
 
+interface UpgradeCardCompoundProps extends UpgradeCardBaseProps {
+  actionLabel?: never;
+  cost?: never;
+  factoryType?: never;
+  onAction?: never;
+}
+
+interface UpgradeCardFactoryProps extends UpgradeCardBaseProps {
+  actionLabel: string;
+  cost: GameValue;
+  factoryType: FactoryType;
+  onAction: () => void;
+}
+
+export type UpgradeCardProps =
+  | UpgradeCardCompoundProps
+  | UpgradeCardFactoryProps;
+
 export const UpgradeCard = (props: UpgradeCardProps) => {
+  if ("factoryType" in props && props.factoryType) {
+    return <UpgradeCardWithFactoryAction {...props} />;
+  }
+
+  return <UpgradeCardLayout {...props} />;
+};
+
+const UpgradeCardWithFactoryAction = (props: UpgradeCardFactoryProps) => {
+  const {
+    actionLabel,
+    cost,
+    factoryType,
+    image,
+    title,
+    description,
+    complete,
+    onAction,
+    ...rest
+  } = props;
+
+  const { isUnlocked, name } = useFactory(factoryType);
+
+  const canBuy = hasGoldToBuy(cost);
+  const affordable = isUnlocked && !complete && canBuy;
+  const actionable = complete || affordable;
+
+  const getTriggerContent = () => {
+    if (!isUnlocked) {
+      return "Charter required";
+    }
+    if (complete) {
+      return <CheckboxOn />;
+    }
+    return (
+      <>
+        <span>{actionLabel}</span>
+        <Badge variant="default">
+          <NumberText>{amountFormatter(cost)}</NumberText>
+        </Badge>
+      </>
+    );
+  };
+
+  return (
+    <UpgradeCardLayout
+      affordable={affordable}
+      complete={complete}
+      description={description}
+      image={image}
+      title={title}
+      {...rest}
+    >
+      <UpgradeCardBadge
+        icon={
+          <Image
+            alt=""
+            aria-hidden
+            className="pixel-crisp pointer-events-none size-full rounded-md object-contain"
+            height={28}
+            layout="constrained"
+            src={`/images/factories/${factoryType}.webp`}
+            width={28}
+          />
+        }
+      >
+        {name}
+      </UpgradeCardBadge>
+      <UpgradeCardTrigger
+        disabled={!(isUnlocked && canBuy)}
+        onClick={onAction}
+        sound="upgrade"
+        variant={actionable ? "green" : "brown"}
+      >
+        {getTriggerContent()}
+      </UpgradeCardTrigger>
+    </UpgradeCardLayout>
+  );
+};
+
+const UpgradeCardLayout = (
+  props: UpgradeCardBaseProps & { children?: React.ReactNode }
+) => {
   const {
     image,
     title,
@@ -96,13 +204,7 @@ export const UpgradeCardTrigger = (
 };
 
 interface UpgradeCardBadgeProps extends React.ComponentProps<"div"> {
-  /**
-   * The icon to display in the badge
-   */
   icon: React.ReactNode;
-  /**
-   * The position of the badge
-   */
   position?: "left" | "right";
 }
 

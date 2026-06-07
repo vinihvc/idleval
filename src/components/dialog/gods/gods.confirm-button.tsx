@@ -4,8 +4,6 @@ import type { UpgradeCardTrigger } from "@/components/ui/upgrade-card";
 import type { God } from "@/content/gods";
 import { invokeGod } from "@/store/atoms/gods";
 
-const HOLD_TO_INVOKE_MS = 4000;
-
 interface GodConfirmButtonProps
   extends React.ComponentProps<typeof UpgradeCardTrigger> {
   god: God;
@@ -17,8 +15,8 @@ export const GodConfirmButton = (props: GodConfirmButtonProps) => {
 
   return (
     <HoldButton
-      aria-label={`Hold for ${HOLD_TO_INVOKE_MS / 1000} seconds to invoke ${god.name}.`}
-      durationMs={HOLD_TO_INVOKE_MS}
+      aria-label={`Hold  to invoke ${god.name}.`}
+      className="inset-shadow-none w-full rounded-none border-0"
       holdLabel="Hold..."
       onHoldComplete={() => {
         if (invokeGod()) {

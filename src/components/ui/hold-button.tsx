@@ -1,13 +1,14 @@
 import React from "react";
 import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/cn";
+import { sound } from "@/providers/sound";
 import { Button, type ButtonProps } from "./button";
 
 interface HoldButtonProps extends ButtonProps {
   /**
    * The duration of the hold in milliseconds
    *
-   * @default 1000
+   * @default 3400
    */
   durationMs?: number;
   /**
@@ -26,7 +27,7 @@ const isHoldKey = (key: string) => key === " " || key === "Enter";
 
 export const HoldButton = (props: HoldButtonProps) => {
   const {
-    durationMs = 1000,
+    durationMs = 3400,
     holdLabel = "Hold...",
     disabled,
     onClick,
@@ -43,11 +44,16 @@ export const HoldButton = (props: HoldButtonProps) => {
   const [isHolding, setIsHolding] = React.useState(false);
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const stopHoldSound = () => {
+    sound.stop("hold");
+  };
+
   const cancelHold = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
+    stopHoldSound();
     cancel();
     setIsHolding(false);
   };
@@ -58,9 +64,11 @@ export const HoldButton = (props: HoldButtonProps) => {
     }
 
     trigger("light");
+    sound.play("hold");
     setIsHolding(true);
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
+      stopHoldSound();
       setIsHolding(false);
       trigger("success");
       onHoldComplete?.();
@@ -78,7 +86,10 @@ export const HoldButton = (props: HoldButtonProps) => {
 
   return (
     <Button
-      className={cn("touch-manipulation overflow-hidden", className)}
+      className={cn(
+        "touch-manipulation select-none overflow-hidden [-webkit-touch-callout:none]",
+        className
+      )}
       disabled={disabled}
       onBlur={(event) => {
         cancelHold();
@@ -88,6 +99,7 @@ export const HoldButton = (props: HoldButtonProps) => {
         event.preventDefault();
         onClick?.(event);
       }}
+      onContextMenu={(event) => event.preventDefault()}
       onKeyDown={(event) => {
         if (isHoldKey(event.key)) {
           startHold();
@@ -103,17 +115,25 @@ export const HoldButton = (props: HoldButtonProps) => {
       onMouseDown={startHold}
       onMouseLeave={cancelHold}
       onMouseUp={cancelHold}
+      onTouchCancel={cancelHold}
       onTouchEnd={cancelHold}
-      onTouchStart={startHold}
+      onTouchStart={(event) => {
+        event.preventDefault();
+        startHold();
+      }}
       {...rest}
     >
       <span
         aria-hidden
         className={cn(
-          "absolute inset-y-0 left-0 w-full origin-left scale-x-0 bg-white/25 transition-transform ease-linear",
-          isHolding && "scale-x-100"
+          "pointer-events-none absolute inset-y-0 left-0 w-full origin-left select-none bg-white/25",
+          isHolding
+            ? "scale-x-100 transition-transform ease-linear"
+            : "scale-x-0 transition-none"
         )}
-        style={{ transitionDuration: `${durationMs}ms` }}
+        style={
+          isHolding ? { transitionDuration: `${durationMs}ms` } : undefined
+        }
       />
       <span className="relative z-10 flex items-center gap-2">
         {isHolding ? holdLabel : children}

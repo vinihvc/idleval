@@ -1,8 +1,7 @@
-import { ArrowUpBox, Briefcase, Chart, Crown } from "pixelarticons/react";
+import { ArrowUpBox, Briefcase, Crown } from "pixelarticons/react";
 import type React from "react";
 import { GodsDialog } from "@/components/dialog/gods/gods";
 import { ManagersDialog } from "@/components/dialog/managers/managers";
-import { StatisticsDialog } from "@/components/dialog/statistics";
 import { UpgradesDialog } from "@/components/dialog/upgrades/upgrades";
 import { DialogNavItem } from "@/components/layout/dialog-nav-item";
 import {
@@ -25,6 +24,7 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
       <BottomNavigationList
         aria-label="Game navigation"
         className={cn(
+          "z-[60]",
           "border-primary/40 bg-secondary/95 backdrop-blur-lg",
           "**:data-[slot=bottom-navigation-item]:border-transparent **:data-[slot=bottom-navigation-item]:bg-transparent **:data-[slot=bottom-navigation-item]:text-foreground/70 **:data-[slot=bottom-navigation-item]:shadow-none",
           "**:data-[slot=bottom-navigation-item]:aria-selected:text-primary **:data-[slot=bottom-navigation-item]:hover:text-primary"
@@ -77,22 +77,6 @@ export const BottomNavigation = (props: BottomNavigationProps) => {
             </ResponsiveDialogTrigger>
           </BottomNavigationItem>
         </GodsDialog>
-
-        <StatisticsDialog>
-          <BottomNavigationItem asChild value="statistics">
-            <ResponsiveDialogTrigger asChild>
-              <button
-                className="flex size-full flex-col items-center justify-center"
-                type="button"
-              >
-                <BottomNavigationItemIcon>
-                  <Chart />
-                </BottomNavigationItemIcon>
-                <span className="sr-only">Statistics</span>
-              </button>
-            </ResponsiveDialogTrigger>
-          </BottomNavigationItem>
-        </StatisticsDialog>
       </BottomNavigationList>
     </BottomNavigationRoot>
   );
@@ -119,11 +103,6 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
         label="Managers"
       />
       <DialogNavItem dialog={GodsDialog} icon={<Crown />} label="Gods" />
-      <DialogNavItem
-        dialog={StatisticsDialog}
-        icon={<Chart />}
-        label="Statistics"
-      />
     </nav>
   );
 };

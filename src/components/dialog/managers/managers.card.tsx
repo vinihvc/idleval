@@ -1,4 +1,4 @@
-import { FactoryActionCard } from "@/components/dialog/factory-action-card";
+import { UpgradeCard } from "@/components/ui/upgrade-card";
 import type { FactoryType } from "@/content/factories";
 import { autoFactory, useFactory } from "@/store/atoms/factories";
 
@@ -12,14 +12,15 @@ export const ManagersCard = (props: ManagersCardProps) => {
   const { isAutomated, managerCost, manager } = useFactory(factoryType);
 
   return (
-    <FactoryActionCard
+    <UpgradeCard
       actionLabel="Appoint"
+      complete={isAutomated}
       cost={managerCost}
+      description={manager.description}
       factoryType={factoryType}
-      imagePath={`/images/managers/${factoryType}.webp`}
-      isComplete={isAutomated}
-      lore={manager}
+      image={`/images/managers/${factoryType}.webp`}
       onAction={() => autoFactory(factoryType)}
+      title={manager.name}
     />
   );
 };

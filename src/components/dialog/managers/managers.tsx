@@ -5,6 +5,7 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { FACTORY_TYPES } from "@/content/factories";
@@ -18,10 +19,12 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
       {children}
 
       <ResponsiveDialogContent>
-        <ResponsiveDialogImage
-          alt="Manager"
-          src="/images/managers/manager.webp"
-        />
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage
+            alt="Manager"
+            src="/images/managers/manager.webp"
+          />
+        </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Managers</ResponsiveDialogTitle>
@@ -33,7 +36,7 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-2">
             {FACTORY_TYPES.map((factoryType) => (
               <ManagersCard factoryType={factoryType} key={factoryType} />
             ))}

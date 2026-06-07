@@ -1,5 +1,4 @@
 import { useSetAtom } from "jotai";
-import { Coins } from "pixelarticons/react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import {
@@ -11,9 +10,9 @@ import {
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogImage,
+  ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORIES } from "@/content/factories";
 import { type OfflineSummary, offlineSummaryAtom } from "@/store/offline";
 import {
   amountFormatterWithDolarSign,
@@ -36,53 +35,40 @@ export const OfflineEarningsDialog = (props: OfflineEarningsDialogProps) => {
   };
 
   return (
-    <ResponsiveDialog onOpenChange={handleOpenChange} open>
-      <ResponsiveDialogContent>
-        <ResponsiveDialogImage alt="Treasury" src="/images/msc/gift.webp" />
+    <ResponsiveDialog onOpenChange={handleOpenChange} open role="alertdialog">
+      <ResponsiveDialogContent showCloseButton={false}>
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage alt="Treasury" src="/images/msc/gift.webp" />
+        </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Welcome back</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
-            Your managers kept the realm earning while you were away for{" "}
-            {formatElapsedDuration(summary.elapsedMs)}.
+          <ResponsiveDialogDescription hideDescription={false}>
+            You were away for{" "}
+            <span className="font-number text-2xl">
+              {" "}
+              {formatElapsedDuration(summary.elapsedMs)}
+            </span>
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="flex flex-col items-center gap-4 py-2">
-            <div className="flex items-center gap-2 font-number text-2xl text-primary">
-              <Coins className="size-6" />
-              <NumberText>
-                {amountFormatterWithDolarSign(summary.totalGold)}
-              </NumberText>
-            </div>
-
-            {summary.results.length > 0 && (
-              <ul className="w-full space-y-2 text-sm">
-                {summary.results.map((result) => (
-                  <li
-                    className="flex items-center justify-between gap-2 rounded-md border border-primary/30 bg-muted/50 px-3.5 py-1"
-                    key={result.factory}
-                  >
-                    <span>{FACTORIES[result.factory].name}</span>
-                    <span className="font-number text-muted-foreground">
-                      {result.cycles}×{" "}
-                      <NumberText>
-                        {amountFormatterWithDolarSign(result.goldEarned)}
-                      </NumberText>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="flex flex-col items-center gap-2 py-2">
+            <span className="font-medium text-lg">You earned</span>
+            <NumberText
+              className="text-4xl text-primary tracking-widest"
+              size="lg"
+            >
+              {amountFormatterWithDolarSign(summary.totalGold)}
+            </NumberText>
           </div>
         </ResponsiveDialogBody>
 
         <ResponsiveDialogFooter>
           <ResponsiveDialogClose asChild>
             <Button className="w-full" variant="default">
-              Continue
+              Claim &amp; Continue
             </Button>
           </ResponsiveDialogClose>
         </ResponsiveDialogFooter>

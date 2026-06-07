@@ -1,10 +1,12 @@
 import { useAtomValue } from "jotai";
+import { selectAtom } from "jotai/utils";
 import { FACTORIES, type FactoryType } from "@/content/factories";
 import { managerCost, unitCost, upgradeCost } from "@/game/economy";
 import {
   getFactoryEarnPerCycle,
   getFactoryProductionValue,
 } from "@/game/factories";
+import type { FactoryPersistedState } from "@/game/types";
 import { store } from "@/providers/store";
 import type { GameValue } from "@/utils/decimal";
 import { factoriesAtom } from "./factories.atom";
@@ -12,6 +14,30 @@ import {
   getGodsProductionMultiplier,
   useGodsProductionMultiplier,
 } from "./gods";
+
+const factoryStateAtoms = new Map<
+  FactoryType,
+  ReturnType<
+    typeof selectAtom<
+      Record<FactoryType, FactoryPersistedState>,
+      FactoryPersistedState
+    >
+  >
+>();
+
+const getFactoryStateAtom = (factory: FactoryType) => {
+  let factoryStateAtom = factoryStateAtoms.get(factory);
+
+  if (!factoryStateAtom) {
+    factoryStateAtom = selectAtom(
+      factoriesAtom,
+      (factories) => factories[factory]
+    );
+    factoryStateAtoms.set(factory, factoryStateAtom);
+  }
+
+  return factoryStateAtom;
+};
 
 const getFactoryConfig = (factory: FactoryType) => {
   const state = store.get(factoriesAtom)[factory];
@@ -23,8 +49,7 @@ const getFactoryConfig = (factory: FactoryType) => {
 };
 
 export const useFactory = (factory: FactoryType) => {
-  const factories = useAtomValue(factoriesAtom);
-  const state = factories[factory];
+  const state = useAtomValue(getFactoryStateAtom(factory));
   const config = FACTORIES[factory];
 
   return {

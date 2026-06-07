@@ -1,5 +1,4 @@
 import { Image } from "@unpic/react";
-import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import { borderedText } from "@/components/ui/text-border";
@@ -33,10 +32,10 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           className={cn(
             "group relative",
             "size-24",
+            "bg-card",
             "text-foreground",
-            "border-3",
             "shrink-0",
-            "rounded-full border-primary/70",
+            "rounded-full border-3 border-primary/70",
             "transition-all hover:border-primary/80",
             "data-[producing=true]:focus-visible:border-info data-[producing=true]:focus-visible:ring-info/50",
             "data-[producing=true]:border-info",
@@ -50,26 +49,35 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           size="icon-md"
           {...rest}
         >
-          <div className="relative rounded-full border border-primary/40 p-1 group-data-[producing=true]:border-info">
+          <div
+            className={cn(
+              "relative",
+              "p-2",
+              "bg-secondary",
+              "rounded-full border-3 border-primary/40",
+              "group-data-[producing=true]:border-info"
+            )}
+          >
             <Image
               alt={`Produce ${factoryType}`}
               className={cn(
-                "rounded-full",
+                "size-16",
+                "p-2",
                 "object-contain",
-                "bg-popover p-1",
-                "pixel-crisp",
+                "bg-card",
+                "pixel-crisp rounded-full ring-4 ring-offset-4 ring-offset-secondary",
                 "pointer-events-none",
                 "group-data-[unlocked=false]:grayscale"
               )}
-              height={80}
+              height={64}
               layout="constrained"
               src={`/images/factories/${factoryType}.webp`}
-              width={80}
+              width={64}
             />
 
             {isUpgraded && (
               <div className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border border-secondary bg-primary">
-                <NumberText className="font-bold text-primary-foreground text-sm">
+                <NumberText className="text-xs" variant="cream">
                   2x
                 </NumberText>
               </div>
@@ -92,7 +100,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
                   borderedText({ variant: isProducing ? "blue" : "cream" })
                 )}
               >
-                <AnimatedNumber value={amount} />
+                <NumberText>{amount}</NumberText>
               </span>
             </div>
           )}

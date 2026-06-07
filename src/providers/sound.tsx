@@ -8,6 +8,7 @@ interface SoundContextType {
   pauseMusic: () => void;
   play: (id: SfxId, options?: PlayOptions) => void;
   playMusic: () => void;
+  stop: (id: SfxId) => void;
   stopMusic: () => void;
 }
 
@@ -40,6 +41,9 @@ export const SoundProvider = ({ children }: React.PropsWithChildren) => {
       play: (id, options) => {
         soundEngine.play(id, options);
       },
+      stop: (id) => {
+        soundEngine.stop(id);
+      },
       playMusic: () => {
         soundEngine.playMusic();
       },
@@ -71,6 +75,9 @@ export const useSound = () => {
 export const sound = {
   play: (id: SfxId, options?: PlayOptions) => {
     soundEngine.play(id, options);
+  },
+  stop: (id: SfxId) => {
+    soundEngine.stop(id);
   },
   playMusic: () => {
     soundEngine.playMusic();
