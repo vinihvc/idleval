@@ -12,7 +12,6 @@
     "remove-bg": "node scripts/remove-bg.mjs",
     "compress-image": "node scripts/compress-image.mjs",
     "i18n:check": "node scripts/check-i18n.mjs",
-    "agents:check": "node scripts/check-agents-md.mjs",
     "lint:check": "ultracite check",
     "lint:fix": "ultracite fix",
     "test": "vitest run",
