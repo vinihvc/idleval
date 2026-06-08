@@ -5,7 +5,7 @@ import {
   productionTicksAtom,
 } from "@/store/atoms/production-ticks.atom";
 import { purchaseModeAtom } from "@/store/atoms/purchase-mode";
-import { offlineCycleProgressAtom } from "@/store/atoms/session";
+import { offlineCycleProgressAtom } from "@/store/offline";
 import { walletAtom } from "@/store/atoms/wallet";
 import { D, serializeDecimal } from "@/utils/decimal";
 

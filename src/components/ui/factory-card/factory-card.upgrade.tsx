@@ -1,6 +1,5 @@
 import { InfoBox } from "pixelarticons/react/InfoBox";
-import React, { Suspense } from "react";
-import { LazyFactoryDialog } from "@/components/dialog/lazy";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
@@ -27,9 +26,11 @@ import {
 } from "@/utils/formatters";
 import { useFactoryCard } from "./factory-card.context";
 
-interface FactoryCardUpgradeProps extends React.ComponentProps<"div"> {}
+const LazyFactoryDialog = React.lazy(
+  () => import("@/components/dialog/factory/factory")
+);
 
-export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
+export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
 
   const {
@@ -150,12 +151,16 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         )}
       </Button>
 
-      <Suspense fallback={null}>
+      <React.Suspense fallback={null}>
         <LazyFactoryDialog factoryType={factoryType}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ResponsiveDialogTrigger asChild>
-                <Button className="size-9 shrink-0" size="icon-lg" variant="blue">
+                <Button
+                  className="size-9 shrink-0"
+                  size="icon-lg"
+                  variant="blue"
+                >
                   <span className="sr-only">{ledgerLabel}</span>
                   <InfoBox className="size-4" />
                 </Button>
@@ -165,7 +170,7 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
             <TooltipContent>{ledgerLabel}</TooltipContent>
           </Tooltip>
         </LazyFactoryDialog>
-      </Suspense>
+      </React.Suspense>
     </div>
   );
 };

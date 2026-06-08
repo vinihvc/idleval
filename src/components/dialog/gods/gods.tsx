@@ -53,3 +53,5 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
     </ResponsiveDialog>
   );
 };
+
+export default GodsDialog;

@@ -1,12 +1,16 @@
-import { Suspense } from "react";
-import { LazySettingsDialog } from "@/components/dialog/lazy";
+import React from "react";
+
+const LazySettingsDialog = React.lazy(
+  () => import("@/components/dialog/settings/settings")
+);
+
 import { AmountToBuy } from "./header.amount";
 
 export const HeaderActions = () => (
   <nav className="flex gap-2">
     <AmountToBuy />
-    <Suspense fallback={null}>
+    <React.Suspense fallback={null}>
       <LazySettingsDialog />
-    </Suspense>
+    </React.Suspense>
   </nav>
 );

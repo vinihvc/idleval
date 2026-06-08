@@ -49,3 +49,5 @@ export const UpgradesDialog = (props: React.PropsWithChildren) => {
     </ResponsiveDialog>
   );
 };
+
+export default UpgradesDialog;

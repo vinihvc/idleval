@@ -3,10 +3,13 @@ import { store } from "@/providers/store";
 import { factoriesAtom, initialData } from "@/store/atoms/factories.atom";
 import { godsAtom } from "@/store/atoms/gods";
 import { purchaseModeAtom } from "@/store/atoms/purchase-mode";
-import { offlineCycleProgressAtom, sessionAtom } from "@/store/atoms/session";
+import { sessionAtom } from "@/store/atoms/session";
 import { statisticsAtom } from "@/store/atoms/statistics";
 import { walletAtom } from "@/store/atoms/wallet";
-import { offlineSummaryAtom } from "@/store/offline";
+import {
+  offlineCycleProgressAtom,
+  offlineSummaryAtom,
+} from "@/store/offline";
 import { resetGame, resetRunProgress } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { D, deserializeDecimal } from "@/utils/decimal";

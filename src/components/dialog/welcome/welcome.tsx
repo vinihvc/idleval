@@ -46,7 +46,7 @@ export const WelcomeDialog = () => {
         <Image
           aria-hidden
           className={cn(
-            "absolute -top-12 left-1/2 inline-flex max-md:-translate-x-1/2 sm:-top-18 md:left-2",
+            "absolute -top-12 left-1/2 inline-flex -translate-x-1/2 sm:-top-18 md:left-2 md:translate-x-0",
             "pixel-crisp object-cover",
             "aspect-square size-22 sm:size-28",
             "drop-shadow-lg",
@@ -85,3 +85,5 @@ export const WelcomeDialog = () => {
     </ResponsiveDialog>
   );
 };
+
+export default WelcomeDialog;

@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type React from "react";
 import { render } from "vitest-browser-react";
 import type { AppLocale } from "@/i18n/locale";
 import { I18nProvider } from "@/i18n/provider";
@@ -11,7 +11,7 @@ interface RenderWithProvidersOptions {
 }
 
 export const renderWithProviders = async (
-  ui: ReactElement,
+  ui: React.ReactNode,
   options: RenderWithProvidersOptions = {}
 ) => {
   if (options.locale) {

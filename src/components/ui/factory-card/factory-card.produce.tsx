@@ -16,9 +16,9 @@ import { cn } from "@/lib/cn";
 import { startProducing } from "@/store/atoms/factories";
 import { useFactoryCard } from "./factory-card.context";
 
-interface FactoryCardProduceProps extends React.ComponentProps<typeof Button> {}
-
-export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
+export const FactoryCardProduce = (
+  props: React.ComponentProps<typeof Button>
+) => {
   const { className, ...rest } = props;
 
   const {
@@ -86,7 +86,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
             </div>
 
             {isUpgraded && (
-              <div className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border border-secondary bg-primary">
+              <div className="absolute -top-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full border-2 border-secondary bg-primary">
                 <NumberText className="text-xs" variant="cream">
                   {getUpgradeMultiplierLabel()}
                 </NumberText>

@@ -7,9 +7,7 @@ import { cn } from "@/lib/cn";
 
 export const useSlider = useSliderContext;
 
-interface SliderProps extends React.ComponentProps<typeof ArkSlider.Root> {}
-
-export const Slider = (props: SliderProps) => {
+export const Slider = (props: React.ComponentProps<typeof ArkSlider.Root>) => {
   const {
     value,
     defaultValue,

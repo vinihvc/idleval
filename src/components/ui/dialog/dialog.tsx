@@ -209,7 +209,7 @@ export const DialogBody = (props: DialogBodyProps) => {
       <ark.div
         className={cn(
           "p-(--space)",
-          "text-lg max-sm:text-center",
+          "text-center text-lg sm:text-left",
           "overflow-auto",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-header])]:pt-1",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1",
@@ -285,7 +285,7 @@ export const DialogMedia = (props: React.ComponentProps<typeof ark.div>) => {
   return (
     <ark.div
       className={cn(
-        "absolute top-0 left-1/2 -translate-y-2/3 max-md:-translate-x-1/2 md:left-2",
+        "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2/3 md:left-2 md:translate-x-0",
         "inline-flex items-center justify-center",
         "size-24",
         "p-1",

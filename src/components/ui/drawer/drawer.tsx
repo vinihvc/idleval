@@ -113,11 +113,12 @@ const drawerPositionerVariants = tv({
     "flex flex-col items-center justify-end",
     "w-screen overscroll-contain",
     // Full viewport height; sheet anchors to bottom-0 (nav overlays via z-index)
-    "max-sm:bottom-0 max-sm:overflow-visible",
-    "max-sm:pt-[calc(env(safe-area-inset-top,0)+var(--drawer-image-overflow))]",
-    "has-data-[swipe-direction=up]:justify-start has-data-[swipe-direction=up]:pt-0 has-data-[swipe-direction=up]:max-sm:bottom-0",
-    "has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0 has-data-[swipe-direction=left]:max-sm:bottom-0",
-    "has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0 has-data-[swipe-direction=right]:max-sm:bottom-0",
+    "bottom-0 overflow-visible",
+    "pt-[calc(env(safe-area-inset-top,0)+var(--drawer-image-overflow))]",
+    "sm:bottom-auto sm:pt-0",
+    "has-data-[swipe-direction=up]:bottom-0 has-data-[swipe-direction=up]:justify-start has-data-[swipe-direction=up]:pt-0 has-data-[swipe-direction=up]:sm:bottom-auto",
+    "has-data-[swipe-direction=left]:bottom-0 has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0 has-data-[swipe-direction=left]:sm:bottom-auto",
+    "has-data-[swipe-direction=right]:bottom-0 has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0 has-data-[swipe-direction=right]:sm:bottom-auto",
   ],
   variants: {
     variant: {
@@ -152,12 +153,13 @@ const drawerContentVariants = tv({
     "group/drawer",
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
-    "max-h-[92svh] w-full",
-    "max-sm:h-auto max-sm:max-h-[calc(92svh-env(safe-area-inset-top,0)-var(--drawer-image-overflow))] max-sm:shrink-0",
-    "max-sm:has-data-[slot=drawer-media]:overflow-visible",
+    "w-full",
+    "h-auto max-h-[calc(92svh-env(safe-area-inset-top,0)-var(--drawer-image-overflow))] shrink-0",
+    "has-data-[slot=drawer-media]:overflow-visible",
+    "mb-0 pb-(--bottom-nav-height)",
+    "sm:-mb-(--bleed) sm:max-h-[92svh] sm:shrink sm:pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
+    "sm:has-data-[slot=drawer-media]:overflow-hidden",
     "has-data-[slot=dialog-image]:max-h-[min(92svh,calc(92svh-var(--drawer-image-overflow)-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]",
-    "-mb-(--bleed) pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
-    "max-sm:mb-0 max-sm:pb-(--bottom-nav-height)",
     "border-4 border-primary bg-popover",
     "text-muted",
     "inset-shadow-xs",
@@ -420,14 +422,14 @@ interface DrawerBodyProps extends React.ComponentProps<typeof ark.div> {
 }
 
 export const DrawerBody = (props: DrawerBodyProps) => {
-  const { scrollFade = true, className, ...rest } = props;
+  const { scrollFade = false, className, ...rest } = props;
 
   return (
     <ScrollArea className="min-h-0 flex-1" scrollFade={scrollFade}>
       <ark.div
         className={cn(
-          "px-(--space) pt-(--space) max-sm:pb-0 sm:p-(--space)",
-          "text-lg max-sm:text-center",
+          "px-(--space) pt-(--space) pb-0 text-center",
+          "text-lg sm:p-(--space) sm:text-left",
           "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
           className
         )}

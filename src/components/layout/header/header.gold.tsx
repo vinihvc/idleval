@@ -1,5 +1,9 @@
-import { Suspense } from "react";
-import { LazyStatisticsDialog } from "@/components/dialog/lazy";
+import React from "react";
+
+const LazyStatisticsDialog = React.lazy(
+  () => import("@/components/dialog/statistics/statistics")
+);
+
 import { Coin } from "@/components/icons/coin";
 import { FormattedNumber } from "@/components/ui/formatted-number";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
@@ -17,7 +21,7 @@ export const HeaderGold = () => {
   const { gold } = useWallet();
 
   return (
-    <Suspense fallback={null}>
+    <React.Suspense fallback={null}>
       <LazyStatisticsDialog>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -28,12 +32,12 @@ export const HeaderGold = () => {
               >
                 <Coin
                   aria-hidden
-                  className="absolute top-0 -left-2 size-10 shrink-0 -translate-y-1.5 drop-shadow-md max-sm:size-8"
+                  className="absolute top-0 -left-2 size-8 shrink-0 -translate-y-1.5 drop-shadow-md sm:size-10"
                 />
 
                 <span
                   className={cn(
-                    "font-bold font-number text-muted text-xl tabular-nums max-sm:text-lg",
+                    "font-bold font-number text-lg text-muted tabular-nums sm:text-xl",
                     borderedText({ variant: "default" })
                   )}
                 >
@@ -48,6 +52,6 @@ export const HeaderGold = () => {
           <TooltipContent>{m["ui.statistics.title"]()}</TooltipContent>
         </Tooltip>
       </LazyStatisticsDialog>
-    </Suspense>
+    </React.Suspense>
   );
 };

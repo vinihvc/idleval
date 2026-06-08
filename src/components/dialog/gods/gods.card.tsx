@@ -2,7 +2,12 @@ import { CheckboxOn } from "pixelarticons/react/CheckboxOn";
 import { Badge } from "@/components/ui/badge";
 import { HoldButton } from "@/components/ui/hold-button";
 import { NumberText } from "@/components/ui/number-text";
-import { UpgradeCard, UpgradeCardTrigger } from "@/components/ui/upgrade-card";
+import {
+  UpgradeCard,
+  UpgradeCardTrigger,
+  upgradeCardFooterVariants,
+} from "@/components/ui/upgrade-card";
+import { cn } from "@/lib/cn";
 import { type GodType, getGod } from "@/content/gods";
 import {
   canInvokeGodAtIndex,
@@ -64,7 +69,7 @@ export const GodsCard = (props: GodsCardProps) => {
       {affordable ? (
         <HoldButton
           aria-label={m["ui.gods.holdToInvoke"]({ 0: localizedGod.name })}
-          className="inset-shadow-none w-full rounded-none rounded-b-md border"
+          className={cn(upgradeCardFooterVariants({ variant: "green" }), "border-success-foreground/30 bg-success text-white")}
           holdLabel={m["ui.common.hold"]()}
           onHoldComplete={() => {
             if (invokeGod(godIndex)) {

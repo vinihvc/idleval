@@ -156,10 +156,9 @@ export const ActionBar = (props: React.PropsWithChildren<ActionBarProps>) => {
   return <ActionBarContext.Provider value={context} {...rest} />;
 };
 
-export interface ActionBarTriggerProps
-  extends React.ComponentProps<typeof ark.button> {}
-
-export const ActionBarTrigger = (props: ActionBarTriggerProps) => {
+export const ActionBarTrigger = (
+  props: React.ComponentProps<typeof ark.button>
+) => {
   const { onClick, ...rest } = props;
 
   const { onOpen, isOpen } = _useActionBar();
@@ -250,10 +249,9 @@ export const ActionBarContent = (
   );
 };
 
-export interface ActionBarSeparatorProps
-  extends React.ComponentProps<typeof Separator> {}
-
-export const ActionBarSeparator = (props: ActionBarSeparatorProps) => {
+export const ActionBarSeparator = (
+  props: React.ComponentProps<typeof Separator>
+) => {
   const { className, ...rest } = props;
 
   return (
@@ -266,10 +264,9 @@ export const ActionBarSeparator = (props: ActionBarSeparatorProps) => {
   );
 };
 
-export interface ActionBarCloseProps
-  extends React.ComponentProps<typeof ark.button> {}
-
-export const ActionBarClose = (props: ActionBarCloseProps) => {
+export const ActionBarClose = (
+  props: React.ComponentProps<typeof ark.button>
+) => {
   const { className, onClick, ...rest } = props;
 
   const { onClose, isOpen } = _useActionBar();

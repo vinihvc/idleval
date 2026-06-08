@@ -49,3 +49,5 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
     </ResponsiveDialog>
   );
 };
+
+export default ManagersDialog;

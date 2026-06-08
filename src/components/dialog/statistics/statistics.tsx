@@ -115,3 +115,5 @@ const FactoryStatTile = (props: FactoryStatTileProps) => {
     </StatTile>
   );
 };
+
+export default StatisticsDialog;

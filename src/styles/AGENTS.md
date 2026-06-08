@@ -20,6 +20,7 @@ Global CSS — theme tokens, fonts, and Tailwind v4 variables.
 - Hardcode colors in TSX when a token exists
 - Edit `tw-animate-css` — external package
 - Add CSS modules in this folder
+- Use `max-sm:` / `max-md:` breakpoint variants — prefer mobile-first (`sm:`, `md:`, `lg:`)
 
 ## Patterns
 
@@ -40,4 +41,5 @@ Global CSS — theme tokens, fonts, and Tailwind v4 variables.
 
 ## Evolution
 
+- 2026-06-08 — Mobile-first breakpoints (`sm:`/`md:`) instead of `max-sm:`/`max-md:`
 - 2026-06-07 — Initial docs: globals.css + Tailwind v4 tokens

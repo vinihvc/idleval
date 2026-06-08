@@ -82,3 +82,5 @@ export const OfflineEarningsDialog = (props: OfflineEarningsDialogProps) => {
     </ResponsiveDialog>
   );
 };
+
+export default OfflineEarningsDialog;

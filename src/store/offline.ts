@@ -1,29 +1,34 @@
 import { atom, useAtomValue } from "jotai";
+import type { FactoryType } from "@/content/factories";
 import {
   computeOfflineEarnings,
   meetsMinimumOfflineDuration,
+  type OfflineEarningsComputed,
   type OfflineFactoryResult,
 } from "@/game/offline-earnings";
 import { store } from "@/providers/store";
 import { factoriesAtom } from "@/store/atoms/factories";
 import { getGodsProductionMultiplier } from "@/store/atoms/gods";
-import {
-  getLastSeenAt,
-  offlineCycleProgressAtom,
-  touchLastSeen,
-} from "@/store/atoms/session";
+import { getLastSeenAt, touchLastSeen } from "@/store/atoms/session";
 import { bulkIncreaseGold } from "@/store/atoms/wallet";
-import type { GameValue } from "@/utils/decimal";
 
-export interface OfflineSummary {
-  elapsedMs: number;
+export type OfflineSummary = Pick<
+  OfflineEarningsComputed,
+  "elapsedMs" | "totalGold"
+> & {
   results: OfflineFactoryResult[];
-  totalGold: GameValue;
-}
+};
 
 export const offlineSummaryAtom = atom<OfflineSummary | null>(null);
 
+export const offlineCycleProgressAtom = atom<
+  Partial<Record<FactoryType, number>>
+>({});
+
 export const useOfflineSummary = () => useAtomValue(offlineSummaryAtom);
+
+export const useOfflineCycleProgress = () =>
+  useAtomValue(offlineCycleProgressAtom);
 
 const clearManualProducing = () => {
   store.set(factoriesAtom, (prev) => {

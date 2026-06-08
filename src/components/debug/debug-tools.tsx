@@ -38,7 +38,7 @@ export const DebugTools = () => {
             variant="destructive"
           >
             <Reload />
-            <span className="max-md:sr-only">Reset </span>
+            <span className="hidden md:inline">Reset </span>
           </Button>
           <Button
             aria-label="Add debug gold"
@@ -46,7 +46,7 @@ export const DebugTools = () => {
             variant="green"
           >
             <Coins />
-            <span className="max-md:sr-only">
+            <span className="hidden md:inline">
               Add{" "}
               <NumberText variant="green">
                 {amountFormatterWithDolarSign(DEBUG_GOLD_AMOUNT)}
@@ -59,7 +59,7 @@ export const DebugTools = () => {
             variant="brown"
           >
             <Lock />
-            <span className="max-md:sr-only">Factories</span>
+            <span className="hidden md:inline">Factories</span>
           </Button>
           <Button
             aria-label="Enable all upgrades"
@@ -67,7 +67,7 @@ export const DebugTools = () => {
             variant="default"
           >
             <ArrowUpBox />
-            <span className="max-md:sr-only">Upgrades</span>
+            <span className="hidden md:inline">Upgrades</span>
           </Button>
           <Button
             aria-label="Enable all managers"
@@ -75,7 +75,7 @@ export const DebugTools = () => {
             variant="blue"
           >
             <Briefcase />
-            <span className="max-md:sr-only">Managers</span>
+            <span className="hidden md:inline">Managers</span>
           </Button>
           <Button
             aria-label="Enable god mode"
@@ -83,7 +83,7 @@ export const DebugTools = () => {
             variant="purple"
           >
             <Crown />
-            <span className="max-md:sr-only">God mode</span>
+            <span className="hidden md:inline">God mode</span>
           </Button>
         </ActionBarBody>
       </ActionBarContent>

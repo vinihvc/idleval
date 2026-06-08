@@ -9,21 +9,23 @@ import { FactoryCardUpgrade } from "./factory-card.upgrade";
 
 export const factoryCardPanelVariants = tv({
   base: [
-    "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
-    "border-primary bg-popover/90 text-muted",
+    "h-22 w-full min-w-0",
+    "py-2 pr-3 pl-16",
+    "grid gap-1",
+    "bg-popover/90",
+    "text-muted",
+    "inset-shadow-xs rounded-r-xl border-3 border-primary",
+    "overflow-hidden",
   ],
   variants: {
     locked: {
       true: "border-popover-foreground/25 border-dashed",
-      false: "",
     },
     producing: {
       true: "border-info shadow-[inset_0_0_12px_oklch(0.65_0.12_240/0.12)]",
-      false: "",
     },
     idle: {
       true: "shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]",
-      false: "",
     },
   },
 });

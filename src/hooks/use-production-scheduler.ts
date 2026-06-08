@@ -17,7 +17,7 @@ import {
 import {
   offlineCycleProgressAtom,
   useOfflineCycleProgress,
-} from "@/store/atoms/session";
+} from "@/store/offline";
 
 const tickRunningFactory = (
   factory: FactoryType,

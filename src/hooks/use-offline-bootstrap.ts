@@ -1,10 +1,17 @@
 import { useVisibilityChange } from "@uidotdev/usehooks";
+import { useSetAtom } from "jotai";
 import React from "react";
 import { touchLastSeen, touchLastSeenIfVisible } from "@/store/atoms/session";
+import {
+  applyOfflineEarnings,
+  type OfflineSummary,
+  offlineSummaryAtom,
+  useOfflineSummary,
+} from "@/store/offline";
 
 const HEARTBEAT_MS = 60_000;
 
-export const shouldApplyOfflineOnVisibilityChange = (
+export const shouldRunOnTabVisible = (
   prevVisible: boolean | null,
   nextVisible: boolean
 ): boolean => prevVisible === false && nextVisible === true;
@@ -12,14 +19,31 @@ export const shouldApplyOfflineOnVisibilityChange = (
 export const shouldHeartbeatTouchLastSeen = (isVisible: boolean): boolean =>
   isVisible;
 
-export const useSessionSync = (onVisible?: () => void) => {
+const applyAndShowSummary = (
+  setSummary: (summary: OfflineSummary | null) => void
+) => {
+  const summary = applyOfflineEarnings();
+
+  if (summary) {
+    setSummary(summary);
+  }
+};
+
+export const useOfflineBootstrap = (): OfflineSummary | null => {
+  const summary = useOfflineSummary();
+  const setSummary = useSetAtom(offlineSummaryAtom);
   const isVisible = useVisibilityChange();
   const prevVisibleRef = React.useRef<boolean | null>(null);
-  const onVisibleRef = React.useRef(onVisible);
+  const hasAppliedOnMount = React.useRef(false);
 
   React.useEffect(() => {
-    onVisibleRef.current = onVisible;
-  }, [onVisible]);
+    if (hasAppliedOnMount.current) {
+      return;
+    }
+
+    hasAppliedOnMount.current = true;
+    applyAndShowSummary(setSummary);
+  }, [setSummary]);
 
   React.useEffect(() => {
     if (prevVisibleRef.current === null) {
@@ -27,14 +51,12 @@ export const useSessionSync = (onVisible?: () => void) => {
       return;
     }
 
-    if (
-      shouldApplyOfflineOnVisibilityChange(prevVisibleRef.current, isVisible)
-    ) {
-      onVisibleRef.current?.();
+    if (shouldRunOnTabVisible(prevVisibleRef.current, isVisible)) {
+      applyAndShowSummary(setSummary);
     }
 
     prevVisibleRef.current = isVisible;
-  }, [isVisible]);
+  }, [isVisible, setSummary]);
 
   React.useEffect(() => {
     if (!isVisible) {
@@ -58,4 +80,6 @@ export const useSessionSync = (onVisible?: () => void) => {
       window.clearInterval(heartbeat);
     };
   }, []);
+
+  return summary;
 };

@@ -51,7 +51,7 @@ export const TooltipContent = (
       <ArkTooltip.Positioner data-slot="tooltip-positioner">
         <ArkTooltip.Content
           className={cn(
-            "z-50 w-fit max-sm:hidden",
+            "z-50 hidden w-fit sm:block",
             "px-2.5 py-1",
             "bg-foreground",
             "font-medium text-background text-base",

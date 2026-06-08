@@ -10,10 +10,9 @@ import {
 } from "@/utils/formatters";
 import { useFactoryCard } from "./factory-card.context";
 
-interface FactoryCardProgressProps
-  extends React.ComponentProps<typeof Progress> {}
-
-export const FactoryCardProgress = (props: FactoryCardProgressProps) => {
+export const FactoryCardProgress = (
+  props: React.ComponentProps<typeof Progress>
+) => {
   const { className, ...rest } = props;
 
   const {

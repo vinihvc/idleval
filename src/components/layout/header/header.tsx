@@ -4,20 +4,19 @@ import { cn } from "@/lib/cn";
 import { HeaderActions } from "./header.actions";
 import { HeaderGold } from "./header.gold";
 
-interface HeaderProps extends React.ComponentProps<"header"> {}
-
-export const Header = (props: HeaderProps) => {
+export const Header = (props: React.ComponentProps<"header">) => {
   const { className, ...rest } = props;
 
   return (
     <header
       className={cn(
         "z-50 flex shrink-0 items-center justify-between gap-1 border-primary border-b-2 bg-secondary/90 backdrop-blur-md",
-        "px-3 pt-[calc(env(safe-area-inset-top,0)+var(--spacing)*3)] pb-3",
-        "max-sm:gap-1 max-sm:px-2 max-sm:pb-2",
+        "px-2 pt-[calc(env(safe-area-inset-top,0)+var(--spacing)*3)] pb-2",
+        "sm:px-3 sm:pb-3",
         "sticky top-0 shrink-0",
         className
       )}
+      data-slot="header"
       {...rest}
     >
       <HeaderGold />

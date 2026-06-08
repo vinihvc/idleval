@@ -106,3 +106,5 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
     </ResponsiveDialog>
   );
 };
+
+export default AboutDialog;

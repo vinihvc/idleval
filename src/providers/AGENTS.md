@@ -34,7 +34,7 @@ React context providers and Jotai singleton — global application wiring.
 | `store.tsx` | `createStore()`, `StoreProvider`, export `store` |
 | `sound.tsx` | `SoundProvider`, `useSound()`, volumes + play API |
 | `production-scheduler.tsx` | Global production loop |
-| `offline-bootstrap.tsx` | Apply offline earnings on mount |
+| `offline-bootstrap.tsx` | Thin shell: `useOfflineBootstrap` + lazy welcome-back dialog |
 
 ## Neighbors
 
@@ -43,4 +43,5 @@ React context providers and Jotai singleton — global application wiring.
 
 ## Evolution
 
+- 2026-06-08 — Offline bootstrap is a thin provider; lifecycle lives in `use-offline-bootstrap`
 - 2026-06-07 — Initial docs: store singleton + sound + scheduler + offline

@@ -19,8 +19,7 @@
     "lint:fix": "ultracite fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@ark-ui/react": "5.37.0",
@@ -53,8 +52,6 @@
     "@vitest/browser-playwright": "^4.1.8",
     "@vitest/coverage-v8": "^4.1.8",
     "babel-plugin-react-compiler": "^1.0.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.0.7",
     "playwright": "^1.60.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.3.0",
@@ -64,10 +61,5 @@
     "vite": "^8.0.16",
     "vitest": "^4.1.8",
     "vitest-browser-react": "^2.2.0"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
-      "ultracite fix"
-    ]
   }
 }

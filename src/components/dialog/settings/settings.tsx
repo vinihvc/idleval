@@ -82,3 +82,5 @@ export const SettingsDialog = () => {
     </ResponsiveDialog>
   );
 };
+
+export default SettingsDialog;

@@ -15,7 +15,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 - Dialogs with `ResponsiveDialog` (Dialog ≥768px, Drawer below)
 - Ark UI primitives + `tailwind-variants` (`tv`) + `cn()`
 - Images with `@unpic/react` `Image`; icons with `pixelarticons/react/IconName` (per-icon imports, not the root barrel)
-- Lazy-load domain dialogs via `@/components/dialog/lazy` + `<Suspense fallback={null}>` at call sites; tests import dialog modules directly
+- Lazy-load domain dialogs via colocated `lazy.ts` + `<Suspense fallback={null}>` at call sites; tests import dialog modules directly
 
 ## Don't
 
@@ -40,7 +40,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 |-----------|------|
 | `ui/` | Design-system primitives (button, dialog, drawer, field, slider, toggle, select) |
 | `ui/factory-card/`, `ui/upgrade-card/` | Composites with provider + dot-notation subfiles |
-| `dialog/` | Domain overlays (`settings/`, `upgrades/`, `managers/`, `gods/`) |
+| `dialog/` | Domain overlays (`settings/`, `upgrades/`, `managers/`, `gods/`, `offline-earnings/`) |
 | `layout/` | Shell: `game-shell`, `game-panel`, `factory-grid`, `header/`, `navigation`, `footer` |
 | `icons/` | Custom SVGs (`coin`, `logo`, `wax-seal`) |
 | `debug/` | Dev-only (`debug-tools`, `media-query`) |
@@ -50,7 +50,6 @@ All game UI — primitives, overlays, shell, and debug tools.
 | File | Role |
 |------|------|
 | `ui/responsive-dialog/` | Adaptive Dialog/Drawer (768px breakpoint) |
-| `dialog/lazy.tsx` | `React.lazy` wrappers for domain dialogs |
 | `layout/factory-grid/` | Main factory grid |
 | `layout/navigation/` | Mobile + desktop nav |
 
@@ -61,6 +60,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 
 ## Evolution
 
+- 2026-06-08 — Dialog lazy wrappers inlined at call sites (no `lazy.ts` barrels)
 - 2026-06-07 — Tree-shaking: pixelarticons per-icon imports + lazy dialog wrappers
 - 2026-06-07 — Component folder layout + `*.test.tsx` browser tests (replacing `*.browser.tsx`)
 - 2026-06-07 — Browser component tests via vitest-browser-react

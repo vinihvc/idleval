@@ -142,21 +142,21 @@
     scrollbar-gutter: stable;
     color-scheme: dark;
     @apply antialiased overscroll-none;
-    @apply max-sm:h-svh max-sm:overflow-hidden;
-    @apply sm:min-h-svh sm:h-auto;
+    @apply h-svh overflow-hidden;
+    @apply sm:min-h-svh sm:h-auto sm:overflow-visible;
   }
 
   body {
     touch-action: manipulation;
     @apply bg-background flex w-full flex-col overscroll-none font-sans text-foreground;
-    @apply max-sm:fixed max-sm:inset-0 max-sm:h-svh max-sm:overflow-hidden;
-    @apply sm:relative sm:min-h-svh sm:h-auto;
+    @apply fixed inset-0 h-svh overflow-hidden;
+    @apply sm:relative sm:min-h-svh sm:h-auto sm:overflow-visible;
   }
 
   #root {
     @apply relative flex flex-col overscroll-none;
-    @apply max-sm:h-full max-sm:min-h-0 max-sm:flex-1 max-sm:w-full max-sm:overflow-hidden;
-    @apply sm:min-h-svh sm:h-auto sm:items-center sm:justify-center sm:px-3 sm:py-6;
+    @apply h-full min-h-0 flex-1 w-full overflow-hidden;
+    @apply sm:min-h-svh sm:h-auto sm:flex-none sm:overflow-visible sm:items-center sm:justify-center sm:px-3 sm:py-6;
   }
 
   main {

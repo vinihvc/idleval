@@ -108,11 +108,8 @@ export const ResponsiveDialogClose = (props: ResponsiveDialogProps) => {
   return <Component {...props} />;
 };
 
-interface ResponsiveDialogContentProps
-  extends React.ComponentProps<typeof DialogContent> {}
-
 export const ResponsiveDialogContent = (
-  props: ResponsiveDialogContentProps
+  props: React.ComponentProps<typeof DialogContent>
 ) => {
   const { isDesktop } = useResponsiveDialog();
 

@@ -1,13 +1,7 @@
 import { ArrowUpBox } from "pixelarticons/react/ArrowUpBox";
 import { Briefcase } from "pixelarticons/react/Briefcase";
 import { Crown } from "pixelarticons/react/Crown";
-import type React from "react";
-import { Suspense } from "react";
-import {
-  LazyGodsDialog,
-  LazyManagersDialog,
-  LazyUpgradesDialog,
-} from "@/components/dialog/lazy";
+import React from "react";
 import {
   BottomNavigation,
   BottomNavigationItem,
@@ -24,10 +18,21 @@ import {
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
-interface NavigationProps
-  extends React.ComponentProps<typeof BottomNavigation> {}
+const LazyUpgradesDialog = React.lazy(
+  () => import("@/components/dialog/upgrades/upgrades")
+);
 
-export const Navigation = (props: NavigationProps) => {
+const LazyManagersDialog = React.lazy(
+  () => import("@/components/dialog/managers/managers")
+);
+
+const LazyGodsDialog = React.lazy(
+  () => import("@/components/dialog/gods/gods")
+);
+
+export const Navigation = (
+  props: React.ComponentProps<typeof BottomNavigation>
+) => {
   const { className, ...rest } = props;
 
   return (
@@ -44,7 +49,7 @@ export const Navigation = (props: NavigationProps) => {
           "**:data-[slot=bottom-navigation-item]:aria-selected:text-primary **:data-[slot=bottom-navigation-item]:hover:text-primary"
         )}
       >
-        <Suspense fallback={null}>
+        <React.Suspense fallback={null}>
           <LazyUpgradesDialog>
             <BottomNavigationItem asChild value="upgrades">
               <ResponsiveDialogTrigger asChild>
@@ -60,9 +65,9 @@ export const Navigation = (props: NavigationProps) => {
               </ResponsiveDialogTrigger>
             </BottomNavigationItem>
           </LazyUpgradesDialog>
-        </Suspense>
+        </React.Suspense>
 
-        <Suspense fallback={null}>
+        <React.Suspense fallback={null}>
           <LazyManagersDialog>
             <BottomNavigationItem asChild value="managers">
               <ResponsiveDialogTrigger asChild>
@@ -78,9 +83,9 @@ export const Navigation = (props: NavigationProps) => {
               </ResponsiveDialogTrigger>
             </BottomNavigationItem>
           </LazyManagersDialog>
-        </Suspense>
+        </React.Suspense>
 
-        <Suspense fallback={null}>
+        <React.Suspense fallback={null}>
           <LazyGodsDialog>
             <BottomNavigationItem asChild value="gods">
               <ResponsiveDialogTrigger asChild>
@@ -96,23 +101,21 @@ export const Navigation = (props: NavigationProps) => {
               </ResponsiveDialogTrigger>
             </BottomNavigationItem>
           </LazyGodsDialog>
-        </Suspense>
+        </React.Suspense>
       </BottomNavigationList>
     </BottomNavigation>
   );
 };
 
-interface HeaderNavigationProps extends React.ComponentProps<"nav"> {}
-
-export const HeaderNavigation = (props: HeaderNavigationProps) => {
+export const HeaderNavigation = (props: React.ComponentProps<"nav">) => {
   const { className, ...rest } = props;
 
   return (
     <nav
-      className={cn("flex items-center gap-2 max-sm:hidden", className)}
+      className={cn("hidden items-center gap-2 sm:flex", className)}
       {...rest}
     >
-      <Suspense fallback={null}>
+      <React.Suspense fallback={null}>
         <LazyUpgradesDialog>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -126,8 +129,8 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
             <TooltipContent>{m["ui.nav.upgrades"]()}</TooltipContent>
           </Tooltip>
         </LazyUpgradesDialog>
-      </Suspense>
-      <Suspense fallback={null}>
+      </React.Suspense>
+      <React.Suspense fallback={null}>
         <LazyManagersDialog>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -141,8 +144,8 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
             <TooltipContent>{m["ui.nav.managers"]()}</TooltipContent>
           </Tooltip>
         </LazyManagersDialog>
-      </Suspense>
-      <Suspense fallback={null}>
+      </React.Suspense>
+      <React.Suspense fallback={null}>
         <LazyGodsDialog>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -156,7 +159,7 @@ export const HeaderNavigation = (props: HeaderNavigationProps) => {
             <TooltipContent>{m["ui.nav.gods"]()}</TooltipContent>
           </Tooltip>
         </LazyGodsDialog>
-      </Suspense>
+      </React.Suspense>
     </nav>
   );
 };

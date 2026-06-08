@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { IS_DEV } from "@/lib/envs";
 
 export const GamePanel = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
@@ -6,10 +7,10 @@ export const GamePanel = (props: React.ComponentProps<"div">) => {
   return (
     <div
       className={cn(
+        { "select-none": !IS_DEV },
         "relative flex w-full flex-col",
-        "max-sm:min-h-0 max-sm:w-full max-sm:flex-1 max-sm:overflow-hidden",
-        "max-sm:rounded-none max-sm:border-x-0",
-        "sm:h-auto sm:overflow-visible",
+        "min-h-0 w-full flex-1 overflow-hidden rounded-none border-x-0",
+        "sm:h-auto sm:flex-none",
         "bg-secondary/32 sm:bg-secondary/80",
         "border-primary/60 sm:inset-shadow-xs sm:rounded-xl sm:border-2",
         className

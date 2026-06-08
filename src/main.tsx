@@ -8,8 +8,7 @@ import { resolveInitialLocale } from "@/store/atoms/settings";
 
 syncParaglideLocale(resolveInitialLocale());
 
-// biome-ignore lint/style/noNonNullAssertion: always exists
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <HomePage />
   </React.StrictMode>

@@ -1,19 +1,20 @@
-import type React from "react";
-import { Suspense } from "react";
-import { LazyAboutDialog } from "@/components/dialog/lazy";
+import React from "react";
+
+const LazyAboutDialog = React.lazy(
+  () => import("@/components/dialog/about/about")
+);
+
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
-interface FooterProps extends React.ComponentProps<"footer"> {}
-
-export const Footer = (props: FooterProps) => {
+export const Footer = (props: React.ComponentProps<"footer">) => {
   const { className, ...rest } = props;
 
   return (
     <footer
       className={cn(
-        "shrink-0 px-4 py-3 text-foreground/80 max-md:hidden",
+        "hidden shrink-0 px-4 py-3 text-foreground/80 md:block",
         "md:absolute md:inset-x-0 md:bottom-0",
         className
       )}
@@ -21,13 +22,13 @@ export const Footer = (props: FooterProps) => {
     >
       <div className="flex justify-center gap-5 font-medium text-sm md:justify-end">
         <div>
-          <Suspense fallback={null}>
+          <React.Suspense fallback={null}>
             <LazyAboutDialog>
               <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
                 {m["ui.nav.about"]()}
               </ResponsiveDialogTrigger>
             </LazyAboutDialog>
-          </Suspense>
+          </React.Suspense>
         </div>
 
         <a

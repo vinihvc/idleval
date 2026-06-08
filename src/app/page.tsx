@@ -1,7 +1,6 @@
-import { Suspense } from "react";
-import { LazyDebugTools } from "@/components/debug/lazy";
+import React from "react";
+import { DebugTools } from "@/components/debug/debug-tools";
 import { MediaQuery } from "@/components/debug/media-query";
-import { LazyWelcomeDialog } from "@/components/dialog/lazy";
 import { Background } from "@/components/layout/background";
 import { FactoryGrid } from "@/components/layout/factory-grid";
 import { Footer } from "@/components/layout/footer";
@@ -11,20 +10,22 @@ import { Header } from "@/components/layout/header";
 import { Navigation } from "@/components/layout/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDisableContextMenu } from "@/hooks/use-context-menu";
-import { cn } from "@/lib/cn";
-import { IS_DEV } from "@/lib/envs";
 import { Providers } from "./providers";
+
+const LazyWelcomeDialog = React.lazy(
+  () => import("@/components/dialog/welcome/welcome")
+);
 
 export const HomePage = () => {
   useDisableContextMenu();
 
   return (
     <Providers>
-      <div className="flex w-full flex-col max-sm:min-h-0 max-sm:flex-1 max-sm:overflow-hidden sm:h-auto">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden sm:h-auto sm:flex-none sm:overflow-visible">
         <Background />
 
-        <GameShell className="max-sm:min-h-0 max-sm:flex-1 sm:h-auto sm:flex-none">
-          <GamePanel className={cn({ "select-none": !IS_DEV })}>
+        <GameShell>
+          <GamePanel>
             <Header />
 
             <ScrollArea className="min-h-0 flex-1 sm:h-auto sm:flex-none sm:overflow-visible sm:**:data-[slot=scroll-area-viewport]:h-auto sm:**:data-[slot=scroll-area-viewport]:max-h-none">
@@ -38,15 +39,11 @@ export const HomePage = () => {
         <Footer />
       </div>
 
-      <Suspense fallback={null}>
+      <React.Suspense fallback={null}>
         <LazyWelcomeDialog />
-      </Suspense>
+      </React.Suspense>
 
-      {IS_DEV ? (
-        <Suspense fallback={null}>
-          <LazyDebugTools />
-        </Suspense>
-      ) : null}
+      <DebugTools />
 
       <MediaQuery />
     </Providers>

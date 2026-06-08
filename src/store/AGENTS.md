@@ -38,7 +38,8 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 | `storage.ts` | `persistedAtom`, in-memory fallback for SSR/test |
 | `reset.ts` | `resetGame()` — full wipe |
 | `reset-run-progress.ts` | Run reset (partial prestige) |
-| `offline.ts` | `applyOfflineEarnings`, `offlineSummaryAtom` |
+| `offline.ts` | `applyOfflineEarnings`, `offlineSummaryAtom`, `offlineCycleProgressAtom` |
+| `atoms/session.ts` | Persisted `lastSeenAt`, `touchLastSeen*` helpers |
 | `test-utils.ts` | `seedGold`, `seedFactory`, `setupStoreTest` |
 | `atoms/factories.actions.ts` | Purchases, production, upgrades |
 | `atoms/wallet.ts` | Gold balance |
@@ -51,4 +52,5 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 
 ## Evolution
 
+- 2026-06-08 — Offline state consolidated in `offline.ts`; `session.ts` is lastSeenAt only
 - 2026-06-07 — Initial docs: persistedAtom, actions/selectors, resetGame

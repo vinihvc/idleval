@@ -1,8 +1,11 @@
 import { store } from "@/providers/store";
 import { godsAtom } from "@/store/atoms/gods";
-import { offlineCycleProgressAtom, sessionAtom } from "@/store/atoms/session";
+import { sessionAtom } from "@/store/atoms/session";
 import { initialStatistics, statisticsAtom } from "@/store/atoms/statistics";
-import { offlineSummaryAtom } from "@/store/offline";
+import {
+  offlineCycleProgressAtom,
+  offlineSummaryAtom,
+} from "@/store/offline";
 import { resetRunProgress } from "@/store/reset-run-progress";
 import { D, serializeDecimal } from "@/utils/decimal";
 
