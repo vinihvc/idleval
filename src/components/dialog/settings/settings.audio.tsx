@@ -9,8 +9,6 @@ import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Slider } from "@/components/ui/slider";
 import { m } from "@/i18n/messages";
 
-const SLIDER_STEP = 0.05;
-
 const clampVolume = (value: number) => Math.min(1, Math.max(0, value));
 
 const getVolumeIcon = (value: number) => {
@@ -115,7 +113,7 @@ const VolumeControl = (props: VolumeControlProps) => {
             isDraggingRef.current = false;
             commitValue(details.value[0] ?? 0);
           }}
-          step={SLIDER_STEP}
+          step={0.05}
           value={[localValue]}
         />
       </div>

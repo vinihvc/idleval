@@ -152,10 +152,10 @@ const drawerContentVariants = tv({
     "group/drawer",
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
-    "max-h-[98svh] w-full",
-    "max-sm:h-auto max-sm:max-h-[calc(100svh-env(safe-area-inset-top,0)-var(--drawer-image-overflow))] max-sm:shrink-0",
+    "max-h-[92svh] w-full",
+    "max-sm:h-auto max-sm:max-h-[calc(92svh-env(safe-area-inset-top,0)-var(--drawer-image-overflow))] max-sm:shrink-0",
     "max-sm:has-data-[slot=drawer-media]:overflow-visible",
-    "has-data-[slot=dialog-image]:max-h-[min(100svh,calc(100svh-var(--drawer-image-overflow)-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]",
+    "has-data-[slot=dialog-image]:max-h-[min(92svh,calc(92svh-var(--drawer-image-overflow)-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]",
     "-mb-(--bleed) pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
     "max-sm:mb-0 max-sm:pb-(--bottom-nav-height)",
     "border-4 border-primary bg-popover",
@@ -360,7 +360,7 @@ export const DrawerHeader = (props: DrawerHeaderProps) => {
     <ark.div
       className={cn(
         "flex shrink-0 flex-col gap-1 text-center",
-        "mt-4 p-(--space) pt-0 sm:mt-8",
+        "mt-2 p-(--space) pt-0",
         "in-[[data-slot=drawer-content]:has([data-slot=drawer-body])]:pb-3",
         className
       )}
@@ -420,7 +420,7 @@ interface DrawerBodyProps extends React.ComponentProps<typeof ark.div> {
 }
 
 export const DrawerBody = (props: DrawerBodyProps) => {
-  const { scrollFade = false, className, ...rest } = props;
+  const { scrollFade = true, className, ...rest } = props;
 
   return (
     <ScrollArea className="min-h-0 flex-1" scrollFade={scrollFade}>

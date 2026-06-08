@@ -32,7 +32,7 @@ const scrollAreaVariants = tv({
     },
   },
   defaultVariants: {
-    scrollFade: true,
+    scrollFade: false,
   },
 });
 
