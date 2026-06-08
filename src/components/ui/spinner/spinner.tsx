@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader } from "pixelarticons/react";
+import { Loader } from "pixelarticons/react/Loader";
 import { cn } from "@/lib/cn";
 
 export const Spinner = (props: React.ComponentProps<"svg">) => {

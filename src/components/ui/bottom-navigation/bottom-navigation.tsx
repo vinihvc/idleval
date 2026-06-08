@@ -28,7 +28,7 @@ export const BottomNavigationList = (
     <ArkTabs.List
       className={cn(
         "flex w-full shrink-0 items-center justify-around",
-        "min-h-14",
+        "min-h-(--bottom-nav-height)",
         "border-t-2 bg-background/60 backdrop-blur-sm",
         "pb-[calc(env(safe-area-inset-bottom,0px)+var(--spacing)*2)]",
         className

@@ -83,10 +83,10 @@
     3 +
     env(safe-area-inset-top, 0px)
   );
-  --bottom-nav-height: calc(
-    var(--spacing) *
-    16 +
-    env(safe-area-inset-bottom, 0px)
+  /* Matches BottomNavigationList: item (p-2 + icon) + bottom padding + safe area */
+  --bottom-nav-height: max(
+    calc(var(--spacing) * 14),
+    calc(var(--spacing) * 12 + env(safe-area-inset-bottom, 0px))
   );
 
   --background: oklch(0.18 0.02 55);

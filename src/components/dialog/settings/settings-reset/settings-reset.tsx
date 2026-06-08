@@ -1,4 +1,4 @@
-import { Reload } from "pixelarticons/react";
+import { Reload } from "pixelarticons/react/Reload";
 import { HoldButton } from "@/components/ui/hold-button";
 import { m } from "@/i18n/messages";
 import { resetGame } from "@/store/reset";

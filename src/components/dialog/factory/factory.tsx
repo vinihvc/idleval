@@ -1,4 +1,7 @@
-import { CalendarRange, Clock, Hand, Heart } from "pixelarticons/react";
+import { CalendarRange } from "pixelarticons/react/CalendarRange";
+import { Clock } from "pixelarticons/react/Clock";
+import { Hand } from "pixelarticons/react/Hand";
+import { Heart } from "pixelarticons/react/Heart";
 import React from "react";
 import { FormattedNumber } from "@/components/ui/formatted-number";
 import {

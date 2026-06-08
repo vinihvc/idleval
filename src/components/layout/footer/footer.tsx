@@ -1,5 +1,6 @@
 import type React from "react";
-import { AboutDialog } from "@/components/dialog/about";
+import { Suspense } from "react";
+import { LazyAboutDialog } from "@/components/dialog/lazy";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
@@ -20,11 +21,13 @@ export const Footer = (props: FooterProps) => {
     >
       <div className="flex justify-center gap-5 font-medium text-sm md:justify-end">
         <div>
-          <AboutDialog>
-            <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
-              {m["ui.nav.about"]()}
-            </ResponsiveDialogTrigger>
-          </AboutDialog>
+          <Suspense fallback={null}>
+            <LazyAboutDialog>
+              <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
+                {m["ui.nav.about"]()}
+              </ResponsiveDialogTrigger>
+            </LazyAboutDialog>
+          </Suspense>
         </div>
 
         <a

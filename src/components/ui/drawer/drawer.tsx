@@ -3,7 +3,7 @@
 import { Drawer as ArkDrawer, useDrawerContext } from "@ark-ui/react/drawer";
 import { ark } from "@ark-ui/react/factory";
 import { Portal } from "@ark-ui/react/portal";
-import { Close } from "pixelarticons/react";
+import { Close } from "pixelarticons/react/Close";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { WaxSeal } from "@/components/icons/wax-seal";
@@ -122,7 +122,7 @@ const drawerPositionerVariants = tv({
   variants: {
     variant: {
       default: "",
-      inset: "max-sm:p-0 sm:p-2",
+      inset: "p-2",
     },
   },
   defaultVariants: {
@@ -426,7 +426,7 @@ export const DrawerBody = (props: DrawerBodyProps) => {
     <ScrollArea className="min-h-0 flex-1" scrollFade={scrollFade}>
       <ark.div
         className={cn(
-          "px-(--space) pt-(--space) max-sm:pb-2 sm:p-(--space)",
+          "px-(--space) pt-(--space) max-sm:pb-0 sm:p-(--space)",
           "text-lg max-sm:text-center",
           "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
           className
@@ -459,7 +459,7 @@ export const DrawerFooter = (props: React.ComponentProps<typeof ark.div>) => {
         "**:data-[slot=drawer-content-inner]:flex-col-reverse **:data-[slot=drawer-content-inner]:gap-2",
         "flex flex-col-reverse gap-2",
         "sm:rounded-none",
-        "px-(--space) pt-4",
+        "px-(--space) pt-4 pb-(--space)",
         className
       )}
       data-slot="drawer-footer"

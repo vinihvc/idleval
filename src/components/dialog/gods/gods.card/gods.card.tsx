@@ -1,4 +1,4 @@
-import { CheckboxOn } from "pixelarticons/react";
+import { CheckboxOn } from "pixelarticons/react/CheckboxOn";
 import { Badge } from "@/components/ui/badge";
 import { HoldButton } from "@/components/ui/hold-button";
 import { NumberText } from "@/components/ui/number-text";

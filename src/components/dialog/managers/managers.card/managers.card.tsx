@@ -1,5 +1,5 @@
 import { Image } from "@unpic/react";
-import { CheckboxOn } from "pixelarticons/react";
+import { CheckboxOn } from "pixelarticons/react/CheckboxOn";
 import { Badge } from "@/components/ui/badge";
 import { NumberText } from "@/components/ui/number-text";
 import {

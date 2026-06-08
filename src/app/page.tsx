@@ -1,6 +1,7 @@
-import { DebugTools } from "@/components/debug/debug-tools";
+import { Suspense } from "react";
+import { LazyDebugTools } from "@/components/debug/lazy";
 import { MediaQuery } from "@/components/debug/media-query";
-import { WelcomeDialog } from "@/components/dialog/welcome";
+import { LazyWelcomeDialog } from "@/components/dialog/lazy";
 import { Background } from "@/components/layout/background";
 import { FactoryGrid } from "@/components/layout/factory-grid";
 import { Footer } from "@/components/layout/footer";
@@ -37,9 +38,15 @@ export const HomePage = () => {
         <Footer />
       </div>
 
-      <WelcomeDialog />
+      <Suspense fallback={null}>
+        <LazyWelcomeDialog />
+      </Suspense>
 
-      <DebugTools />
+      {IS_DEV ? (
+        <Suspense fallback={null}>
+          <LazyDebugTools />
+        </Suspense>
+      ) : null}
 
       <MediaQuery />
     </Providers>

@@ -1,10 +1,8 @@
-import {
-  AudioWaveform,
-  Music,
-  Volume1,
-  Volume2,
-  Volume3,
-} from "pixelarticons/react";
+import { AudioWaveform } from "pixelarticons/react/AudioWaveform";
+import { Music } from "pixelarticons/react/Music";
+import { Volume1 } from "pixelarticons/react/Volume1";
+import { Volume2 } from "pixelarticons/react/Volume2";
+import { Volume3 } from "pixelarticons/react/Volume3";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
@@ -39,26 +37,40 @@ const VolumeControl = (props: VolumeControlProps) => {
   const { icon, label, muteAriaLabel, onChange, value } = props;
 
   const labelId = React.useId();
+  const isDraggingRef = React.useRef(false);
   const lastVolumeRef = React.useRef(value > 0 ? value : 0.8);
+  const [localValue, setLocalValue] = React.useState(value);
 
   React.useEffect(() => {
-    if (value > 0) {
-      lastVolumeRef.current = value;
+    if (!isDraggingRef.current) {
+      setLocalValue(value);
     }
   }, [value]);
 
+  React.useEffect(() => {
+    if (localValue > 0) {
+      lastVolumeRef.current = localValue;
+    }
+  }, [localValue]);
+
+  const commitValue = (next: number) => {
+    const clamped = clampVolume(next);
+    setLocalValue(clamped);
+    onChange(clamped);
+  };
+
   const toggleMute = () => {
-    if (value === 0) {
-      onChange(lastVolumeRef.current);
+    if (localValue === 0) {
+      commitValue(lastVolumeRef.current);
       return;
     }
 
-    lastVolumeRef.current = value;
-    onChange(0);
+    lastVolumeRef.current = localValue;
+    commitValue(0);
   };
 
-  const VolumeIcon = getVolumeIcon(value);
-  const isMuted = value === 0;
+  const VolumeIcon = getVolumeIcon(localValue);
+  const isMuted = localValue === 0;
 
   return (
     <div className="grid w-full min-w-0 grid-cols-1 items-center gap-3 md:grid-cols-2">
@@ -96,10 +108,15 @@ const VolumeControl = (props: VolumeControlProps) => {
           max={1}
           min={0}
           onValueChange={(details) => {
-            onChange(clampVolume(details.value[0] ?? 0));
+            isDraggingRef.current = true;
+            setLocalValue(clampVolume(details.value[0] ?? 0));
+          }}
+          onValueChangeEnd={(details) => {
+            isDraggingRef.current = false;
+            commitValue(details.value[0] ?? 0);
           }}
           step={SLIDER_STEP}
-          value={[value]}
+          value={[localValue]}
         />
       </div>
     </div>

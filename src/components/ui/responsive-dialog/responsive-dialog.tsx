@@ -1,5 +1,5 @@
 import { useMediaQuery } from "@uidotdev/usehooks";
-import { InfoBox } from "pixelarticons/react";
+import { InfoBox } from "pixelarticons/react/InfoBox";
 import React from "react";
 import {
   Dialog,

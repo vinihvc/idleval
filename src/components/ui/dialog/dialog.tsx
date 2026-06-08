@@ -4,7 +4,7 @@ import { Dialog as ArkDialog, useDialogContext } from "@ark-ui/react/dialog";
 import { ark } from "@ark-ui/react/factory";
 import { Portal } from "@ark-ui/react/portal";
 import { Image, type ImageProps } from "@unpic/react";
-import { Close } from "pixelarticons/react";
+import { Close } from "pixelarticons/react/Close";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { WaxSeal } from "@/components/icons/wax-seal";

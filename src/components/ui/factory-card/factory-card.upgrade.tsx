@@ -1,6 +1,6 @@
-import { InfoBox } from "pixelarticons/react";
-import React from "react";
-import { FactoryDialog } from "@/components/dialog/factory";
+import { InfoBox } from "pixelarticons/react/InfoBox";
+import React, { Suspense } from "react";
+import { LazyFactoryDialog } from "@/components/dialog/lazy";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
@@ -150,20 +150,22 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         )}
       </Button>
 
-      <FactoryDialog factoryType={factoryType}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ResponsiveDialogTrigger asChild>
-              <Button className="size-9 shrink-0" size="icon-lg" variant="blue">
-                <span className="sr-only">{ledgerLabel}</span>
-                <InfoBox className="size-4" />
-              </Button>
-            </ResponsiveDialogTrigger>
-          </TooltipTrigger>
+      <Suspense fallback={null}>
+        <LazyFactoryDialog factoryType={factoryType}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ResponsiveDialogTrigger asChild>
+                <Button className="size-9 shrink-0" size="icon-lg" variant="blue">
+                  <span className="sr-only">{ledgerLabel}</span>
+                  <InfoBox className="size-4" />
+                </Button>
+              </ResponsiveDialogTrigger>
+            </TooltipTrigger>
 
-          <TooltipContent>{ledgerLabel}</TooltipContent>
-        </Tooltip>
-      </FactoryDialog>
+            <TooltipContent>{ledgerLabel}</TooltipContent>
+          </Tooltip>
+        </LazyFactoryDialog>
+      </Suspense>
     </div>
   );
 };

@@ -14,7 +14,8 @@ All game UI — primitives, overlays, shell, and debug tools.
 - Mutations via imported actions (`upgradeFactory`, `invokeGod`, `resetGame`)
 - Dialogs with `ResponsiveDialog` (Dialog ≥768px, Drawer below)
 - Ark UI primitives + `tailwind-variants` (`tv`) + `cn()`
-- Images with `@unpic/react` `Image`; icons with `pixelarticons/react`
+- Images with `@unpic/react` `Image`; icons with `pixelarticons/react/IconName` (per-icon imports, not the root barrel)
+- Lazy-load domain dialogs via `@/components/dialog/lazy` + `<Suspense fallback={null}>` at call sites; tests import dialog modules directly
 
 ## Don't
 
@@ -49,7 +50,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 | File | Role |
 |------|------|
 | `ui/responsive-dialog/` | Adaptive Dialog/Drawer (768px breakpoint) |
-| `dialog/settings/` | Settings section orchestrator |
+| `dialog/lazy.tsx` | `React.lazy` wrappers for domain dialogs |
 | `layout/factory-grid/` | Main factory grid |
 | `layout/navigation/` | Mobile + desktop nav |
 
@@ -60,6 +61,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 
 ## Evolution
 
+- 2026-06-07 — Tree-shaking: pixelarticons per-icon imports + lazy dialog wrappers
 - 2026-06-07 — Component folder layout + `*.test.tsx` browser tests (replacing `*.browser.tsx`)
 - 2026-06-07 — Browser component tests via vitest-browser-react
 - 2026-06-07 — Initial docs: ui/dialog/layout + i18n + ResponsiveDialog

@@ -26,6 +26,11 @@ export default defineConfig({
     target: "es2022",
     minify: "oxc",
     rolldownOptions: {
+      treeshake: {
+        annotations: true,
+        manualPureFunctions: ["clsx", "cn", "tv"],
+        moduleSideEffects: [{ test: /\.css$/, sideEffects: true }],
+      },
       output: {
         codeSplitting: {
           groups: [

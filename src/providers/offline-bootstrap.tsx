@@ -1,6 +1,6 @@
 import { useSetAtom } from "jotai";
-import React from "react";
-import { OfflineEarningsDialog } from "@/components/dialog/offline-earnings";
+import React, { Suspense } from "react";
+import { LazyOfflineEarningsDialog } from "@/components/dialog/lazy";
 import { useSessionSync } from "@/hooks/use-session-sync";
 import {
   applyOfflineEarnings,
@@ -16,7 +16,11 @@ export const OfflineBootstrap = ({ children }: React.PropsWithChildren) => {
   return (
     <>
       {children}
-      {summary ? <OfflineEarningsDialog summary={summary} /> : null}
+      {summary ? (
+        <Suspense fallback={null}>
+          <LazyOfflineEarningsDialog summary={summary} />
+        </Suspense>
+      ) : null}
     </>
   );
 };

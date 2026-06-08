@@ -1,11 +1,9 @@
-import {
-  ArrowUpBox,
-  Briefcase,
-  Coins,
-  Crown,
-  Lock,
-  Reload,
-} from "pixelarticons/react";
+import { ArrowUpBox } from "pixelarticons/react/ArrowUpBox";
+import { Briefcase } from "pixelarticons/react/Briefcase";
+import { Coins } from "pixelarticons/react/Coins";
+import { Crown } from "pixelarticons/react/Crown";
+import { Lock } from "pixelarticons/react/Lock";
+import { Reload } from "pixelarticons/react/Reload";
 import {
   ActionBar,
   ActionBarBody,

@@ -1,4 +1,4 @@
-import { Menu } from "pixelarticons/react";
+import { Menu } from "pixelarticons/react/Menu";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
