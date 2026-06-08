@@ -24,26 +24,29 @@ After generating a pixel-art sprite (AI or otherwise), always run this pipeline 
 ### 1. Generate with chroma key
 
 - Use a **solid magenta** (`#FF00FF`) or **green** (`#00FF00`) background — never fake transparency (checkerboard baked into pixels).
+- **Magenta** for most sprites. **Green** when the subject has **purple/violet** (capes, robes, amethyst) — magenta key treats purple like background and removes or washes it out.
+- **Red gems** on magenta (crowns, hearts) are safe with the default pipeline; if edges look dull, re-run with `--no-despill`.
 - No scene, pedestal, or extra props unless requested.
 - Chunky pixel art: thick black outlines, limited palette, readable at small sizes.
 
 ### 2. Remove background
 
 ```bash
-# Dialog / MSC assets (400×400)
-pnpm remove-bg input.png public/images/msc/example.webp --size 400
+# Game sprites (400×400) — auto-picks green when purple is detected
+pnpm remove-bg input.png public/images/msc/example.webp --size 400 --auto-key
+pnpm remove-bg input.png public/images/gods/example.webp --size 400 --auto-key
 
-# God sprites (800×800)
-pnpm remove-bg input.png public/images/gods/example.webp --size 800
-
-# Green-screen source
+# Explicit green-screen source (purple cape, violet robes)
 pnpm remove-bg input.png output.webp --key green --size 400
 
+# Red-heavy subject on magenta — skip despill if rubies look black
+pnpm remove-bg input.png output.webp --size 400 --no-despill
+
 # Batch
-pnpm remove-bg -- --batch ./raw ./out --size 400
+pnpm remove-bg -- --batch ./raw ./out --size 400 --auto-key
 ```
 
-Defaults: `--key magenta`, nearest-neighbor centering, lossless WebP. Do **not** use ML tools (rembg, remove.bg) for pixel art — they blur edges and eat black outlines.
+Defaults: `--key magenta`, subject-color protection + despill, nearest-neighbor centering, lossless WebP. With `--auto-key`, green is chosen when purple subject pixels are detected. Do **not** use ML tools (rembg, remove.bg) for pixel art — they blur edges and eat black outlines.
 
 ### 3. Compress for production
 
@@ -57,7 +60,7 @@ Defaults: **400×400**, WebP **quality 70%**, nearest-neighbor resize.
 ### Full pipeline example
 
 ```bash
-pnpm remove-bg sprite.png public/images/msc/about.webp --size 400
+pnpm remove-bg sprite.png public/images/msc/about.webp --size 400 --auto-key
 pnpm compress-image public/images/msc/about.webp --in-place
 ```
 

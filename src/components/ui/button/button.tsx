@@ -2,9 +2,9 @@ import { ark } from "@ark-ui/react/factory";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Spinner } from "@/components/ui/spinner";
+import { borderedText } from "@/components/ui/text-border";
 import { cn } from "@/lib/cn";
 import { type SoundsType, sound as soundFunction } from "@/providers/sound";
-import { borderedText } from "@/components/ui/text-border";
 
 export const buttonVariants = tv({
   base: [

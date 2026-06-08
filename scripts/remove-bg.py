@@ -4,10 +4,21 @@
 Implements a chromacut-style pipeline (color key + despill + optional erosion)
 optimized for AI-generated game sprites. No ML — deterministic output.
 
+Chroma key choice:
+  - magenta (#FF00FF): default for most sprites
+  - green (#00FF00): subjects with purple/violet (capes, robes) — magenta key
+    treats purple like background and removes or washes it out
+  - --auto-key: pick green when purple subject pixels are detected
+
+Despill crushes saturated reds on magenta edges (e.g. ruby gems). Subject-color
+protection is on by default; use --no-despill to disable fringe despill entirely.
+
 Usage:
   remove-bg.py input.png output.webp
   remove-bg.py input.png output.webp --size 400 --key magenta
-  remove-bg.py --batch ./raw ./out --size 800 --key green
+  remove-bg.py input.png output.webp --size 400 --key green
+  remove-bg.py input.png output.webp --auto-key --size 400
+  remove-bg.py --batch ./raw ./out --size 400 --key green
 """
 
 from __future__ import annotations
@@ -20,7 +31,7 @@ import numpy as np
 from PIL import Image
 
 KEYS = ("magenta", "green")
-DEFAULT_SIZE = 800
+DEFAULT_SIZE = 400
 DEFAULT_PADDING = 0.92
 
 
@@ -32,6 +43,64 @@ def chroma_excess(r: np.ndarray, g: np.ndarray, b: np.ndarray, key: str) -> np.n
     return np.minimum(r, b).astype(np.int16) - g.astype(np.int16)
 
 
+def subject_color_mask(
+    r: np.ndarray,
+    g: np.ndarray,
+    b: np.ndarray,
+) -> np.ndarray:
+    """Saturated subject hues that must not be keyed away or despilled."""
+    rf = r.astype(np.float32)
+    gf = g.astype(np.float32)
+    bf = b.astype(np.float32)
+
+    # Rubies, hearts, red accents — magenta despill sets r = min(r, g).
+    red = (r >= 80) & (rf > gf * 1.55) & (rf > bf * 1.15)
+
+    # Purple/violet robes, capes — chromatically similar to magenta key.
+    # Exclude pure key magenta (r≈b≈255); keep dark/mid purple subject pixels.
+    purple = (
+        (r >= 45)
+        & (b >= 45)
+        & (g <= np.minimum(r, b) * 0.58)
+        & (np.maximum(r, b) < 248)
+    )
+
+    return red | purple
+
+
+def detect_recommended_key(img: Image.Image) -> tuple[str, str | None]:
+    """Suggest green when subject contains purple; magenta otherwise."""
+    arr = np.array(img.convert("RGBA"))
+    r, g, b, a = (arr[:, :, i] for i in range(4))
+
+    visible = a > 200
+    rf = r.astype(np.float32)
+    gf = g.astype(np.float32)
+    bf = b.astype(np.float32)
+
+    # Ignore likely background: corners + high-chroma key colors.
+    bg_magenta = visible & (r >= 230) & (b >= 230) & (g <= 25)
+    bg_green = visible & (g >= 230) & (r <= 25) & (b <= 25)
+    subject = visible & ~bg_magenta & ~bg_green
+
+    if not np.any(subject):
+        return "magenta", None
+
+    purple = subject & subject_color_mask(r, g, b)
+    purple_count = int(np.sum(purple))
+    subject_count = int(np.sum(subject))
+    purple_ratio = purple_count / subject_count
+
+    if purple_count >= 40 and purple_ratio >= 0.004:
+        return (
+            "green",
+            f"detected {purple_count} purple subject pixels "
+            f"({purple_ratio * 100:.1f}% of sprite) — magenta key would wash them out",
+        )
+
+    return "magenta", None
+
+
 def apply_chroma_key(
     img: Image.Image,
     *,
@@ -39,12 +108,14 @@ def apply_chroma_key(
     tolerance: int,
     softness: int,
     pixel_art: bool,
+    despill: bool,
 ) -> Image.Image:
-    """Color-key + despill + alpha ramp (+ optional 1px halo erosion)."""
+    """Color-key + optional despill + alpha ramp (+ optional 1px halo erosion)."""
     arr = np.array(img.convert("RGBA"))
     r, g, b, a = (arr[:, :, i].astype(np.int16) for i in range(4))
 
     excess = chroma_excess(r, g, b, key)
+    protected = subject_color_mask(r, g, b)
     tol = max(softness + 1, tolerance)
     soft = max(0, softness)
 
@@ -52,17 +123,23 @@ def apply_chroma_key(
     alpha = a.astype(np.float32)
     if tol > soft:
         ramp = (tol - excess.astype(np.float32)) / (tol - soft)
-        alpha = np.minimum(alpha, np.clip(ramp, 0.0, 1.0) * 255.0)
+        keyed_alpha = np.clip(ramp, 0.0, 1.0) * 255.0
+        alpha = np.where(protected, alpha, np.minimum(alpha, keyed_alpha))
     else:
-        alpha = np.where(excess >= tol, 0.0, alpha.astype(np.float32))
+        alpha = np.where(
+            protected,
+            alpha.astype(np.float32),
+            np.where(excess >= tol, 0.0, alpha.astype(np.float32)),
+        )
 
-    # Despill fringe pixels (partial key, still visible)
-    fringe = (excess > 0) & (alpha > 0)
-    if key == "green":
-        g = np.where(fringe, np.minimum(g, np.maximum(r, b)), g)
-    else:
-        r = np.where(fringe, np.minimum(r, g), r)
-        b = np.where(fringe, np.minimum(b, g), b)
+    # Despill fringe pixels (partial key contamination on edges).
+    if despill:
+        fringe = (excess > 0) & (alpha > 0) & ~protected
+        if key == "green":
+            g = np.where(fringe, np.minimum(g, np.maximum(r, b)), g)
+        else:
+            r = np.where(fringe, np.minimum(r, g), r)
+            b = np.where(fringe, np.minimum(b, g), b)
 
     out = np.stack(
         [
@@ -169,24 +246,48 @@ def center_on_canvas(
     return canvas
 
 
+def resolve_key(img: Image.Image, key: str, auto_key: bool) -> tuple[str, list[str]]:
+    """Return effective key and any warnings to print."""
+    warnings: list[str] = []
+    if auto_key:
+        recommended, reason = detect_recommended_key(img)
+        if reason:
+            warnings.append(f"auto-key: {reason}; using --key {recommended}")
+        return recommended, warnings
+
+    if key == "magenta":
+        recommended, reason = detect_recommended_key(img)
+        if recommended == "green" and reason:
+            warnings.append(f"warning: {reason}; prefer --key green or --auto-key")
+
+    return key, warnings
+
+
 def process_file(
     src: Path,
     dst: Path,
     *,
     key: str,
+    auto_key: bool,
     size: int,
     tolerance: int,
     softness: int,
     pixel_art: bool,
     padding: float,
+    despill: bool,
 ) -> None:
     img = Image.open(src)
+    effective_key, warnings = resolve_key(img, key, auto_key)
+    for message in warnings:
+        print(f"{src.name}: {message}", file=sys.stderr)
+
     cleaned = apply_chroma_key(
         img,
-        key=key,
+        key=effective_key,
         tolerance=tolerance,
         softness=softness,
         pixel_art=pixel_art,
+        despill=despill,
     )
     centered = center_on_canvas(cleaned, size=size, padding=padding)
     dst.parent.mkdir(parents=True, exist_ok=True)
@@ -216,7 +317,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--key",
         choices=KEYS,
         default="magenta",
-        help="Chroma key color (default: magenta)",
+        help="Chroma key color (default: magenta). Use green for purple subjects.",
+    )
+    parser.add_argument(
+        "--auto-key",
+        action="store_true",
+        help="Pick green when purple subject pixels are detected, else magenta",
+    )
+    parser.add_argument(
+        "--no-despill",
+        action="store_true",
+        help="Skip fringe despill (red gems on magenta edges stay vivid)",
     )
     parser.add_argument(
         "--size",
@@ -262,11 +373,13 @@ def main(argv: list[str] | None = None) -> int:
 
     opts = {
         "key": args.key,
+        "auto_key": args.auto_key,
         "size": args.size,
         "tolerance": args.tolerance,
         "softness": args.softness,
         "pixel_art": args.pixel_art,
         "padding": args.padding,
+        "despill": not args.no_despill,
     }
 
     if args.batch:

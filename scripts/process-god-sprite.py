@@ -16,7 +16,15 @@ def main() -> None:
 
     script = Path(__file__).with_name("remove-bg.py")
     result = subprocess.run(
-        [sys.executable, str(script), sys.argv[1], sys.argv[2], "--size", "800"],
+        [
+            sys.executable,
+            str(script),
+            sys.argv[1],
+            sys.argv[2],
+            "--size",
+            "400",
+            "--auto-key",
+        ],
         check=False,
     )
     raise SystemExit(result.returncode)

@@ -49,16 +49,19 @@ function printHelp() {
   pnpm remove-bg -- --batch <input-dir> <output-dir> [options]
 
 Options (forwarded to remove-bg.py):
-  --key magenta|green     Chroma key (default: magenta)
-  --size <px>             Canvas size (default: 800)
+  --key magenta|green     Chroma key (default: magenta; green for purple subjects)
+  --auto-key              Pick green when purple subject pixels are detected
+  --no-despill            Skip fringe despill (keeps red gems vivid on magenta)
+  --size <px>             Canvas size (default: 400)
   --tolerance <n>         Key tolerance (default: 80)
   --softness <n>          Edge softness (default: 25)
   --padding <0-1>         Content scale on canvas (default: 0.92)
   --no-pixel-art          Disable halo erosion
 
 Examples:
-  pnpm remove-bg sprite.png public/images/msc/about.webp --size 400
-  pnpm remove-bg -- --batch ./raw ./out --key green --size 800
+  pnpm remove-bg sprite.png public/images/msc/about.webp --size 400 --auto-key
+  pnpm remove-bg sprite.png public/images/msc/statistic.webp --size 400 --key green
+  pnpm remove-bg -- --batch ./raw ./out --auto-key --size 400
 `);
 }
 

@@ -30,7 +30,7 @@ export const BottomNavigationList = (
         "flex w-full shrink-0 items-center justify-around",
         "min-h-(--bottom-nav-height)",
         "border-t-2 bg-background/60 backdrop-blur-sm",
-        "pb-[calc(env(safe-area-inset-bottom,0px)+var(--spacing)*2)]",
+        "pb-[calc(env(safe-area-inset-bottom,0)+var(--spacing)*2)]",
         className
       )}
       data-slot="bottom-navigation-list"
