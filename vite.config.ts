@@ -1,17 +1,18 @@
 import path from "node:path";
-import { lingui, linguiTransformerBabelPreset } from "@lingui/vite-plugin";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { paraglidePluginOptions } from "./src/i18n/paraglide.vite";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    lingui(),
+    paraglideVitePlugin(paraglidePluginOptions),
     babel({
-      presets: [linguiTransformerBabelPreset(), reactCompilerPreset()],
+      presets: [reactCompilerPreset()],
     }),
     tailwindcss(),
   ],

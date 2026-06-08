@@ -1,4 +1,3 @@
-import { Trans, useLingui } from "@lingui/react/macro";
 import { InfoBox } from "pixelarticons/react";
 import React from "react";
 import { FactoryDialog } from "@/components/dialog/factory";
@@ -11,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import {
   setAmountBySelectedAmount,
@@ -31,7 +31,6 @@ interface FactoryCardUpgradeProps extends React.ComponentProps<"div"> {}
 
 export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
   const { className, ...rest } = props;
-  const { t } = useLingui();
 
   const {
     factoryType,
@@ -52,6 +51,7 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
 
   const totalGreaterThan0 = totalCanBuy > 0;
   const buyPrice = totalGreaterThan0 ? totalToPay : nextUnitCost;
+  const ledgerLabel = m["ui.factoryCard.ledger"]({ name });
 
   const handleBuy = () => {
     if (isUnlocked) {
@@ -103,11 +103,10 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
             <span className="flex items-center gap-1">
-              <Trans>Buy</Trans>{" "}
+              {m["ui.factoryCard.buy"]()}
               <NumberText variant="green">
                 {amountFormatter(totalCanBuy)}
-              </NumberText>{" "}
-              <span className="max-sm:hidden md:max-lg:hidden">{name}</span>
+              </NumberText>
             </span>
 
             <NumberText variant="green">
@@ -118,7 +117,7 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
 
         {!isUnlocked && canUnlock && (
           <>
-            <Trans>Unlock</Trans>
+            {m["ui.factoryCard.unlock"]()}
             <NumberText variant="default">
               {amountFormatterWithDolarSign(unlockPrice)}
             </NumberText>
@@ -127,14 +126,14 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
 
         {isUnlocked && !canBuyAmount && (
           <>
-            <Trans>Empty coffers</Trans>
+            {m["ui.factoryCard.emptyCoffers"]()}
             <NumberText>{amountFormatterWithDolarSign(buyPrice)}</NumberText>
           </>
         )}
 
         {isUnlocked && canBuyAmount && !totalGreaterThan0 && (
           <>
-            <Trans>Empty coffers</Trans>
+            {m["ui.factoryCard.emptyCoffers"]()}
             <NumberText>{amountFormatterWithDolarSign(buyPrice)}</NumberText>
           </>
         )}
@@ -142,7 +141,7 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
         {isLocked && (
           <>
             <span className="[-webkit-text-stroke-width:0]">
-              <Trans>Under seal</Trans>
+              {m["ui.factoryCard.underSeal"]()}
             </span>
             <NumberText className="[-webkit-text-stroke-width:0]">
               {amountFormatterWithDolarSign(unlockPrice)}
@@ -156,13 +155,13 @@ export const FactoryCardUpgrade = (props: FactoryCardUpgradeProps) => {
           <TooltipTrigger asChild>
             <ResponsiveDialogTrigger asChild>
               <Button className="size-9 shrink-0" size="icon-lg" variant="blue">
-                <span className="sr-only">{t`${name} ledger`}</span>
+                <span className="sr-only">{ledgerLabel}</span>
                 <InfoBox className="size-4" />
               </Button>
             </ResponsiveDialogTrigger>
           </TooltipTrigger>
 
-          <TooltipContent>{t`${name} ledger`}</TooltipContent>
+          <TooltipContent>{ledgerLabel}</TooltipContent>
         </Tooltip>
       </FactoryDialog>
     </div>

@@ -1,4 +1,4 @@
-import { FACTORIES, type FactoryType } from "@/content/factories";
+import { FACTORY_DATA, type FactoryType } from "@/content/factories";
 import type { FactoryTickState } from "@/store/atoms/production-ticks.atom";
 
 export interface FactoryTickSyncResult {
@@ -13,7 +13,7 @@ export const syncActiveFactoryTick = (
   offlineProgress: Partial<Record<FactoryType, number>>,
   consumedOffline: Set<FactoryType>
 ): FactoryTickSyncResult => {
-  const { productionTime } = FACTORIES[factory];
+  const { productionTime } = FACTORY_DATA[factory];
   const fromOffline = offlineProgress[factory];
 
   if (fromOffline != null && !consumedOffline.has(factory)) {

@@ -25,8 +25,7 @@ interface FactoryCardContextValue {
 
 const FactoryCardContext = React.createContext({} as FactoryCardContextValue);
 
-interface FactoryCardProviderProps {
-  children: React.ReactNode;
+interface FactoryCardProviderProps extends React.PropsWithChildren {
   factoryType: FactoryType;
 }
 

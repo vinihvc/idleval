@@ -1,4 +1,4 @@
-import { GOD_COUNT, GODS } from "@/content/gods";
+import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
 import { applyDifficultyCost } from "@/game/difficulty";
 import { getDifficultyLevel } from "@/store/atoms/settings";
 import { D, type GameValue } from "@/utils/decimal";
@@ -11,21 +11,23 @@ import { D, type GameValue } from "@/utils/decimal";
  * getGodGoldRequired(1).toString() // "1e18"
  */
 export const getGodGoldRequired = (index: number): GameValue =>
-  applyDifficultyCost(D(GODS[index].goldRequired), getDifficultyLevel());
+  applyDifficultyCost(D(GOD_DATA[index].goldRequired), getDifficultyLevel());
 
 /**
  * Returns the cumulative production multiplier from all invoked gods.
  *
  * @example
- * getTotalProductionMultiplier(0).toNumber() // 1
- * getTotalProductionMultiplier(1).toNumber() // 2
- * getTotalProductionMultiplier(2).toNumber() // 6
+ * getTotalProductionMultiplier([]).toNumber() // 1
+ * getTotalProductionMultiplier(["huangdi"]).toNumber() // 2
+ * getTotalProductionMultiplier(["huangdi", "dagda"]).toNumber() // 6
  */
-export const getTotalProductionMultiplier = (level: number): GameValue => {
+export const getTotalProductionMultiplier = (invoked: GodId[]): GameValue => {
   let total = D(1);
 
-  for (let index = 0; index < level && index < GOD_COUNT; index++) {
-    total = total.times(GODS[index].productionMultiplier);
+  for (const god of GOD_DATA) {
+    if (invoked.includes(god.id)) {
+      total = total.times(god.productionMultiplier);
+    }
   }
 
   return total;
@@ -35,70 +37,65 @@ export const getTotalProductionMultiplier = (level: number): GameValue => {
  * Returns the production multiplier after invoking the god at the given index.
  *
  * @example
- * getMultiplierAfterInvocation(0).toNumber() // 2
- * getMultiplierAfterInvocation(1).toNumber() // 6
+ * getMultiplierAfterInvocation(0, []).toNumber() // 2
+ * getMultiplierAfterInvocation(1, ["huangdi"]).toNumber() // 6
  */
-export const getMultiplierAfterInvocation = (godIndex: number): GameValue =>
-  getTotalProductionMultiplier(godIndex + 1);
+export const getMultiplierAfterInvocation = (
+  godIndex: number,
+  invoked: GodId[]
+): GameValue =>
+  getTotalProductionMultiplier([...invoked, GOD_DATA[godIndex].id]);
 
-export type GodCardStatus = "completed" | "available" | "locked" | "future";
+export type GodCardStatus = "completed" | "available";
 
 /**
  * Whether all gods have already been invoked.
  *
  * @example
- * isGodInvocationComplete(GOD_COUNT) // true
- * isGodInvocationComplete(GOD_COUNT - 1) // false
+ * isGodInvocationComplete(GOD_DATA.map((god) => god.id)) // true
+ * isGodInvocationComplete([]) // false
  */
-export const isGodInvocationComplete = (godsLevel: number): boolean =>
-  godsLevel >= GOD_COUNT;
+export const isGodInvocationComplete = (invoked: GodId[]): boolean =>
+  invoked.length >= GOD_COUNT;
+
+/**
+ * Whether the god at the given index has already been invoked.
+ */
+export const isGodInvoked = (godIndex: number, invoked: GodId[]): boolean =>
+  invoked.includes(GOD_DATA[godIndex].id);
 
 /**
  * UI-facing progression status for a god card.
  *
  * @example
- * getGodCardStatus(0, 1) // "completed"
- * getGodCardStatus(1, 1) // "available"
- * getGodCardStatus(2, 1) // "locked"
- * getGodCardStatus(3, 1) // "future"
+ * getGodCardStatus(0, ["huangdi"]) // "completed"
+ * getGodCardStatus(1, ["huangdi"]) // "available"
+ * getGodCardStatus(2, ["huangdi"]) // "available"
  */
 export const getGodCardStatus = (
   godIndex: number,
-  godsLevel: number
-): GodCardStatus => {
-  if (godIndex < godsLevel) {
-    return "completed";
-  }
-
-  if (godIndex === godsLevel) {
-    return "available";
-  }
-
-  if (godIndex === godsLevel + 1) {
-    return "locked";
-  }
-
-  return "future";
-};
+  invoked: GodId[]
+): GodCardStatus =>
+  isGodInvoked(godIndex, invoked) ? "completed" : "available";
 
 /**
  * Whether the player can invoke the god at the given index.
  *
  * @example
- * canInvokeGodAtIndex(0, 0, D("1e12")) // true
- * canInvokeGodAtIndex(1, 0, D("1e12")) // false
- * canInvokeGodAtIndex(0, 0, D(1)) // false
+ * canInvokeGodAtIndex(0, [], D("1e12")) // true
+ * canInvokeGodAtIndex(1, [], D("1e18")) // true
+ * canInvokeGodAtIndex(0, [], D(1)) // false
  */
 export const canInvokeGodAtIndex = (
   godIndex: number,
-  godsLevel: number,
+  invoked: GodId[],
   gold: GameValue
 ): boolean => {
-  if (isGodInvocationComplete(godsLevel)) {
+  if (isGodInvocationComplete(invoked)) {
     return false;
   }
 
-  if (godIndex !== godsLevel) {
+  if (isGodInvoked(godIndex, invoked)) {
     return false;
   }
 

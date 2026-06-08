@@ -2,6 +2,11 @@
 
 This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
 
+## Per-folder context
+
+Domain-specific conventions live in [`src/AGENTS.md`](src/AGENTS.md) and each `src/{folder}/AGENTS.md`.
+Read the folder's AGENTS.md before editing files in it.
+
 ## Quick Reference
 
 - **Format code**: `pnpm dlx ultracite fix`
@@ -9,6 +14,54 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 - **Diagnose setup**: `pnpm dlx ultracite doctor`
 
 Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+---
+
+## Game asset images
+
+After generating a pixel-art sprite (AI or otherwise), always run this pipeline before committing to `public/images/`.
+
+### 1. Generate with chroma key
+
+- Use a **solid magenta** (`#FF00FF`) or **green** (`#00FF00`) background — never fake transparency (checkerboard baked into pixels).
+- No scene, pedestal, or extra props unless requested.
+- Chunky pixel art: thick black outlines, limited palette, readable at small sizes.
+
+### 2. Remove background
+
+```bash
+# Dialog / MSC assets (400×400)
+pnpm remove-bg input.png public/images/msc/example.webp --size 400
+
+# God sprites (800×800)
+pnpm remove-bg input.png public/images/gods/example.webp --size 800
+
+# Green-screen source
+pnpm remove-bg input.png output.webp --key green --size 400
+
+# Batch
+pnpm remove-bg -- --batch ./raw ./out --size 400
+```
+
+Defaults: `--key magenta`, nearest-neighbor centering, lossless WebP. Do **not** use ML tools (rembg, remove.bg) for pixel art — they blur edges and eat black outlines.
+
+### 3. Compress for production
+
+```bash
+pnpm compress-image public/images/msc/example.webp --in-place
+pnpm compress-image -- --batch public/images/msc public/images/msc --in-place
+```
+
+Defaults: **400×400**, WebP **quality 70%**, nearest-neighbor resize.
+
+### Full pipeline example
+
+```bash
+pnpm remove-bg sprite.png public/images/msc/about.webp --size 400
+pnpm compress-image public/images/msc/about.webp --in-place
+```
+
+Inspect the result visually. Complex interiors (e.g. harp strings, thin gaps) may need manual pixel cleanup after the automated pass.
 
 ---
 

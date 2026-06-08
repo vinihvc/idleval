@@ -15,31 +15,43 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-border: var(--border);
-  --color-ring: var(--ring);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+
   --color-tertiary: var(--tertiary);
   --color-tertiary-foreground: var(--tertiary-foreground);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-input: var(--input);
+
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+
   --color-warning-foreground: var(--warning-foreground);
   --color-warning: var(--warning);
+
   --color-success-foreground: var(--success-foreground);
   --color-success: var(--success);
+
   --color-info-foreground: var(--info-foreground);
   --color-info: var(--info);
+
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
 
   --animate-indeterminate: indeterminate 1.5s ease-in-out infinite;
   --animate-progress-fill: progress-fill 1s linear 1 forwards;
@@ -64,6 +76,19 @@
 }
 
 :root {
+  --header-height: calc(
+    var(--spacing) *
+    16 +
+    var(--spacing) *
+    3 +
+    env(safe-area-inset-top, 0px)
+  );
+  --bottom-nav-height: calc(
+    var(--spacing) *
+    16 +
+    env(safe-area-inset-bottom, 0px)
+  );
+
   --background: oklch(0.18 0.02 55);
   --foreground: oklch(0.9 0.05 85);
 
@@ -102,13 +127,6 @@
   --border: oklch(0.42 0.08 70);
   --input: oklch(0.38 0.06 60);
   --ring: oklch(0.62 0.1 75);
-
-  --header-height: calc(var(--spacing) * 16);
-  --bottom-nav-height: calc(
-    var(--spacing) *
-    14 +
-    env(safe-area-inset-bottom, 0px)
-  );
 }
 
 @layer base {
@@ -123,19 +141,26 @@
   html {
     scrollbar-gutter: stable;
     color-scheme: dark;
-    @apply antialiased h-svh overflow-hidden overscroll-none;
+    @apply antialiased overscroll-none;
+    @apply max-sm:h-svh max-sm:overflow-hidden;
+    @apply sm:min-h-svh sm:h-auto;
   }
 
   body {
-    @apply bg-background fixed inset-0 flex h-svh w-full touch-manipulation flex-col overflow-hidden overscroll-none font-sans text-foreground;
+    touch-action: manipulation;
+    @apply bg-background flex w-full flex-col overscroll-none font-sans text-foreground;
+    @apply max-sm:fixed max-sm:inset-0 max-sm:h-svh max-sm:overflow-hidden;
+    @apply sm:relative sm:min-h-svh sm:h-auto;
+  }
+
+  #root {
+    @apply relative flex flex-col overscroll-none;
+    @apply max-sm:h-full max-sm:min-h-0 max-sm:flex-1 max-sm:w-full max-sm:overflow-hidden;
+    @apply sm:min-h-svh sm:h-auto sm:items-center sm:justify-center sm:px-3 sm:py-6;
   }
 
   main {
     @apply flex-1 flex flex-col;
-  }
-
-  #root {
-    @apply relative flex h-full min-h-0 flex-1 flex-col overflow-hidden overscroll-none max-sm:w-full sm:items-center sm:justify-center sm:px-3;
   }
 
   button:not(:disabled),

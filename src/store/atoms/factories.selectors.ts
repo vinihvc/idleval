@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
-import { FACTORY_DATA } from "@/content/factories.data";
-import type { FactoryType } from "@/content/factories.types";
+import { FACTORY_DATA, type FactoryType } from "@/content/factories";
 import { applyDifficultyCost } from "@/game/difficulty";
 import { managerCost, unitCost, upgradeCost } from "@/game/economy";
 import {
@@ -9,7 +8,7 @@ import {
   getFactoryProductionValue,
 } from "@/game/factories";
 import type { FactoryPersistedState } from "@/game/types";
-import { useLocalizedFactory } from "@/hooks/use-localized-factory";
+import { useLocalizedFactory } from "@/i18n/hooks/use-localized-factory";
 import { store } from "@/providers/store";
 import { getDifficultyLevel } from "@/store/atoms/settings";
 import type { GameValue } from "@/utils/decimal";

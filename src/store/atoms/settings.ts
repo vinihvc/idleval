@@ -6,7 +6,6 @@ import {
 } from "@/game/difficulty";
 import {
   type AppLocale,
-  DEFAULT_LOCALE,
   detectBrowserLocale,
   normalizeLocale,
 } from "@/i18n/locale";
@@ -88,5 +87,3 @@ export const setSfxVolume = (value: number) =>
     ...prev,
     sfxVolume: clampVolume(value),
   }));
-
-export { DEFAULT_LOCALE };

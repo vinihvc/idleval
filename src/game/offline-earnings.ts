@@ -1,5 +1,5 @@
 import {
-  FACTORIES,
+  FACTORY_DATA,
   FACTORY_TYPES,
   type FactoryType,
 } from "@/content/factories";
@@ -48,7 +48,7 @@ const getEarnPerCycle = (
   state: FactoryPersistedState,
   godsProductionMultiplier: GameValue
 ): GameValue => {
-  const config = FACTORIES[factory];
+  const config = FACTORY_DATA[factory];
 
   return getFactoryEarnPerCycle({
     amount: state.amount,
@@ -102,7 +102,7 @@ export const computeOfflineEarnings = (
       continue;
     }
 
-    const { productionTime } = FACTORIES[factory];
+    const { productionTime } = FACTORY_DATA[factory];
     const cycles = Math.floor(elapsedSec / productionTime);
     const earnPerCycle = getEarnPerCycle(
       factory,

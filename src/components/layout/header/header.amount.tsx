@@ -1,5 +1,3 @@
-import { Trans } from "@lingui/react/macro";
-import type React from "react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import { borderedText } from "@/components/ui/text-border";
@@ -8,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import {
   toggleAmountToBuy,
@@ -16,34 +15,20 @@ import {
 
 const getPurchaseLabel = (
   value: ReturnType<typeof usePurchaseMode>["value"]
-): React.ReactNode => {
+): string => {
   if (value === 1) {
-    return (
-      <Trans id="purchase.mode.1">Purchase 1 unit in one stroke</Trans>
-    );
+    return m["purchase.mode.1"]();
   }
 
   if (value === 10) {
-    return (
-      <Trans id="purchase.mode.10pct">
-        Purchase 10% of your gold in one stroke
-      </Trans>
-    );
+    return m["purchase.mode.10pct"]();
   }
 
   if (value === 50) {
-    return (
-      <Trans id="purchase.mode.50pct">
-        Purchase 50% of your gold in one stroke
-      </Trans>
-    );
+    return m["purchase.mode.50pct"]();
   }
 
-  return (
-    <Trans id="purchase.mode.max">
-      Purchase all you can afford in one stroke
-    </Trans>
-  );
+  return m["purchase.mode.max"]();
 };
 
 export const AmountToBuy = () => {

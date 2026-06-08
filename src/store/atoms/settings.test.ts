@@ -40,20 +40,20 @@ describe("settings", () => {
   });
 
   it("setLocale persists normalized locale", () => {
-    setLocale("pt-BR");
+    setLocale("pt");
 
-    expect(getLocale()).toBe("pt-BR");
-    expect(getSettings().locale).toBe("pt-BR");
+    expect(getLocale()).toBe("pt");
+    expect(getSettings().locale).toBe("pt");
   });
 
   it("resolveInitialLocale detects browser locale when unset", () => {
     vi.stubGlobal("navigator", {
-      language: "es-MX",
-      languages: ["es-MX", "en"],
+      language: "es",
+      languages: ["es", "en"],
     });
 
-    expect(resolveInitialLocale()).toBe("es-MX");
-    expect(getLocale()).toBe("es-MX");
+    expect(resolveInitialLocale()).toBe("es");
+    expect(getLocale()).toBe("es");
 
     vi.unstubAllGlobals();
   });

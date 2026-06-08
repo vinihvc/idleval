@@ -4,7 +4,6 @@ export {
   completeProductionCycle,
   setAmountBySelectedAmount,
   startProducing,
-  stopProducing,
   unlockFactory,
   upgradeFactory,
 } from "./factories.actions";

@@ -10,13 +10,6 @@ import {
   settingsAtom,
 } from "@/store/atoms/settings";
 
-interface LegacySettings {
-  music?: boolean;
-  musicVolume?: number;
-  sfx?: boolean;
-  sfxVolume?: number;
-}
-
 interface SoundContextType {
   musicVolume: number;
   pauseMusic: () => void;
@@ -33,29 +26,10 @@ const SoundContext = React.createContext<SoundContextType | null>(null);
 
 export type { SfxId as SoundsType } from "@/audio/types";
 
-const migrateLegacySettings = () => {
-  const raw = store.get(settingsAtom) as LegacySettings & {
-    difficulty?: string;
-  };
-
-  if (!("music" in raw || "sfx" in raw)) {
-    return;
-  }
-
-  store.set(settingsAtom, (prev) => ({
-    ...prev,
-    musicVolume:
-      raw.music === false ? 0 : (raw.musicVolume ?? prev.musicVolume),
-    sfxVolume: raw.sfx === false ? 0 : (raw.sfxVolume ?? prev.sfxVolume),
-  }));
-};
-
 export const SoundProvider = ({ children }: React.PropsWithChildren) => {
   const { musicVolume, sfxVolume } = useAtomValue(settingsAtom);
 
   React.useEffect(() => {
-    migrateLegacySettings();
-
     soundEngine.init(getSettings, (callback) =>
       store.sub(settingsAtom, callback)
     );

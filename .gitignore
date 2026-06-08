@@ -9,12 +9,15 @@ node_modules
 # testing
 coverage
 .playwright-mcp
+**/__screenshots__
 
 # next.js
 .next/
 out/
 build
 dist
+src/i18n/paraglide
+src/paraglide
 
 # misc
 .DS_Store

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FACTORIES, type FactoryType } from "@/content/factories";
+import { FACTORY_DATA, type FactoryType } from "@/content/factories";
 import {
   syncActiveFactoryTick,
   syncInactiveFactoryTick,
@@ -9,7 +9,7 @@ describe("production-scheduler-sync", () => {
   const baseTick = {
     cycleKey: 1,
     isRunning: false,
-    seconds: FACTORIES.grain.productionTime,
+    seconds: FACTORY_DATA.grain.productionTime,
   };
 
   it("syncActiveFactoryTick starts a stopped factory with production time", () => {
@@ -18,7 +18,7 @@ describe("production-scheduler-sync", () => {
 
     expect(result.changed).toBe(true);
     expect(result.tick.isRunning).toBe(true);
-    expect(result.tick.seconds).toBe(FACTORIES.grain.productionTime);
+    expect(result.tick.seconds).toBe(FACTORY_DATA.grain.productionTime);
     expect(result.tick.cycleKey).toBe(2);
   });
 

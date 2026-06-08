@@ -1,6 +1,6 @@
 import { useVisibilityChange } from "@uidotdev/usehooks";
 import React from "react";
-import { touchLastSeen } from "@/store/atoms/session";
+import { touchLastSeen, touchLastSeenIfVisible } from "@/store/atoms/session";
 
 const HEARTBEAT_MS = 60_000;
 
@@ -8,6 +8,9 @@ export const shouldApplyOfflineOnVisibilityChange = (
   prevVisible: boolean | null,
   nextVisible: boolean
 ): boolean => prevVisible === false && nextVisible === true;
+
+export const shouldHeartbeatTouchLastSeen = (isVisible: boolean): boolean =>
+  isVisible;
 
 export const useSessionSync = (onVisible?: () => void) => {
   const isVisible = useVisibilityChange();
@@ -47,7 +50,7 @@ export const useSessionSync = (onVisible?: () => void) => {
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     const heartbeat = window.setInterval(() => {
-      touchLastSeen();
+      touchLastSeenIfVisible();
     }, HEARTBEAT_MS);
 
     return () => {

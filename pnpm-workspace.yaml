@@ -2,6 +2,6 @@ packages:
   - '.'
 
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
   pngquant-bin: true
   sharp: true

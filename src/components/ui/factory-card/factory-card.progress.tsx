@@ -1,7 +1,7 @@
-import { useLingui } from "@lingui/react/macro";
 import type React from "react";
 import { Progress, ProgressTrack } from "@/components/ui/progress";
 import { borderedText } from "@/components/ui/text-border";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { useTotalToEarnAfterProduce } from "@/store/atoms/factories";
 import {
@@ -15,7 +15,6 @@ interface FactoryCardProgressProps
 
 export const FactoryCardProgress = (props: FactoryCardProgressProps) => {
   const { className, ...rest } = props;
-  const { t } = useLingui();
 
   const {
     factoryType,
@@ -31,21 +30,29 @@ export const FactoryCardProgress = (props: FactoryCardProgressProps) => {
   const isAnimating = isUnlocked && isRunning;
   const elapsed = productionTime - seconds;
   const animationDuration = `${productionTime}s`;
+  const ariaValueText = m["ui.factoryCard.remainingEarns"]({
+    "0": timeFormatter(elapsed),
+    "1": amountFormatterWithDolarSign(totalEarn),
+  });
 
   return (
     <Progress
-      aria-valuetext={t`${timeFormatter(elapsed)} remaining, earns ${amountFormatterWithDolarSign(totalEarn)}`}
+      aria-valuetext={ariaValueText}
       className={cn(
         "group relative inset-shadow-xs h-7 w-full gap-0 overflow-hidden rounded-md border-3 border-primary/40 bg-muted",
         className
       )}
       data-auto={isAutomated}
+      data-slot="factory-card-progress"
       max={productionTime}
       min={0}
       value={elapsed}
       {...rest}
     >
-      <ProgressTrack className="absolute inset-0 min-h-0 overflow-hidden bg-transparent">
+      <ProgressTrack
+        className="absolute inset-0 min-h-0 overflow-hidden bg-transparent"
+        data-slot="factory-card-progress-track"
+      >
         <div
           aria-hidden
           className={cn(
@@ -59,7 +66,10 @@ export const FactoryCardProgress = (props: FactoryCardProgressProps) => {
 
       <div
         className={cn(
-          "pointer-events-none absolute inset-0 flex items-center justify-between px-2 font-semibold text-foreground text-lg tracking-wide",
+          "pointer-events-none absolute inset-0",
+          "flex items-center justify-between",
+          "px-2",
+          "font-semibold text-foreground text-lg tracking-wide",
           borderedText({ variant: "cream" })
         )}
       >

@@ -58,9 +58,6 @@ export const usePurchaseMode = () => {
   return found;
 };
 
-/** @deprecated Use `usePurchaseMode` */
-export const useMsc = usePurchaseMode;
-
 const getNextAmountToBuy = (
   current: PurchaseModeState["amountToBuy"] | unknown
 ): PurchaseModeState["amountToBuy"] => {

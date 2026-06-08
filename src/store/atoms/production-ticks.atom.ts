@@ -1,7 +1,7 @@
 import { atom, useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
 import {
-  FACTORIES,
+  FACTORY_DATA,
   FACTORY_TYPES,
   type FactoryType,
 } from "@/content/factories";
@@ -12,20 +12,23 @@ export interface FactoryTickState {
   seconds: number;
 }
 
-const createInitialTicks = (): Record<FactoryType, FactoryTickState> =>
+export const createInitialProductionTicks = (): Record<
+  FactoryType,
+  FactoryTickState
+> =>
   Object.fromEntries(
     FACTORY_TYPES.map((factory) => [
       factory,
       {
         cycleKey: 0,
         isRunning: false,
-        seconds: FACTORIES[factory].productionTime,
+        seconds: FACTORY_DATA[factory].productionTime,
       },
     ])
   ) as Record<FactoryType, FactoryTickState>;
 
 export const productionTicksAtom = atom<Record<FactoryType, FactoryTickState>>(
-  createInitialTicks()
+  createInitialProductionTicks()
 );
 
 const factoryTickAtoms = new Map<

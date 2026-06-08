@@ -22,7 +22,8 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lingui:check
-      - run: pnpm lingui:compile
+      - run: pnpm exec playwright install chromium --with-deps
+      - run: pnpm i18n:check
+      - run: pnpm agents:check
       - run: pnpm test
       - run: pnpm build

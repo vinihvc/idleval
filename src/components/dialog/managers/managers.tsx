@@ -1,4 +1,3 @@
-import { Trans, useLingui } from "@lingui/react/macro";
 import type React from "react";
 import {
   ResponsiveDialog,
@@ -10,12 +9,12 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORY_TYPES } from "@/content/factories.types";
+import { FACTORY_TYPES } from "@/content/factories";
+import { m } from "@/i18n/messages";
 import { ManagersCard } from "./managers.card";
 
 export const ManagersDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
-  const { t } = useLingui();
 
   return (
     <ResponsiveDialog>
@@ -24,26 +23,23 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={t`Manager`}
+            alt={m["ui.managers.singular"]()}
             src="/images/managers/manager.webp"
           />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
-            <Trans>Managers</Trans>
+            {m["ui.managers.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
-            <Trans>
-              Name legendary managers to keep each pillar running while you ride
-              afar.
-            </Trans>
+          <ResponsiveDialogDescription hideDescription>
+            {m["ui.managers.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {FACTORY_TYPES.map((factoryType) => (
               <ManagersCard factoryType={factoryType} key={factoryType} />
             ))}

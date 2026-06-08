@@ -1,6 +1,77 @@
-// Backward-compatible alias for numeric-only access in game logic and tests.
-export {
-  FACTORY_DATA,
-  FACTORY_DATA as FACTORIES,
-} from "@/content/factories.data";
-export { FACTORY_TYPES, type FactoryType } from "@/content/factories.types";
+import { localizeLore, translate } from "@/i18n/localize";
+
+export interface FactoryData {
+  baseBuyCost: number;
+  productionTime: number;
+  productionValue: number;
+  unlockPrice: number;
+}
+
+export const FACTORY_DATA = {
+  grain: {
+    productionTime: 2,
+    productionValue: 20,
+    baseBuyCost: 75,
+    unlockPrice: 0,
+  },
+  mill: {
+    productionTime: 5,
+    productionValue: 160,
+    baseBuyCost: 1125,
+    unlockPrice: 55_000,
+  },
+  iron: {
+    productionTime: 10,
+    productionValue: 1280,
+    baseBuyCost: 16_875,
+    unlockPrice: 825_000,
+  },
+  crossbow: {
+    productionTime: 20,
+    productionValue: 10_240,
+    baseBuyCost: 253_125,
+    unlockPrice: 12_500_000,
+  },
+  longship: {
+    productionTime: 40,
+    productionValue: 81_920,
+    baseBuyCost: 3_796_875,
+    unlockPrice: 187_500_000,
+  },
+  reliquary: {
+    productionTime: 80,
+    productionValue: 655_360,
+    baseBuyCost: 56_953_125,
+    unlockPrice: 2_812_500_000,
+  },
+} as const;
+
+export type FactoryType = keyof typeof FACTORY_DATA;
+
+export const FACTORY_TYPES = Object.keys(FACTORY_DATA) as FactoryType[];
+
+export const FACTORY_COUNT = FACTORY_TYPES.length;
+
+const createLocalizedFactory = (factory: FactoryType) => {
+  const prefix = `factory.${factory}`;
+
+  return {
+    name: translate(`${prefix}.name`),
+    description: translate(`${prefix}.description`),
+    upgrade: localizeLore(`${prefix}.upgrade`),
+    manager: localizeLore(`${prefix}.manager`),
+  };
+};
+
+const localizedFactories = Object.fromEntries(
+  FACTORY_TYPES.map((factory) => [
+    factory,
+    () => createLocalizedFactory(factory),
+  ])
+) as Record<FactoryType, () => ReturnType<typeof createLocalizedFactory>>;
+
+export const getLocalizedFactory = (factory: FactoryType) =>
+  localizedFactories[factory]();
+
+export type LocalizedLore = ReturnType<typeof localizeLore>;
+export type LocalizedFactory = ReturnType<typeof createLocalizedFactory>;

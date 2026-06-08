@@ -1,50 +1,148 @@
 import { useAtomValue } from "jotai";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
 import { canInvokeGodAtIndex, getTotalProductionMultiplier } from "@/game/gods";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
-import { resetRunProgress } from "@/store/reset";
-import { persistedAtom } from "@/store/storage";
+import { resetRunProgress } from "@/store/reset-run-progress";
+import { getStorage, getStorageInitOptions } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold } from "./wallet";
 
 export interface GodsState {
+  invoked: GodId[];
+}
+
+interface LegacyGodsState {
   count: number;
 }
 
-export const godsAtom = persistedAtom<GodsState>("gods", { count: 0 });
+const isGodsState = (value: unknown): value is GodsState =>
+  typeof value === "object" &&
+  value !== null &&
+  "invoked" in value &&
+  Array.isArray(value.invoked);
 
-export const useGods = () => useAtomValue(godsAtom);
+const isLegacyGodsState = (value: unknown): value is LegacyGodsState =>
+  typeof value === "object" &&
+  value !== null &&
+  "count" in value &&
+  typeof value.count === "number";
 
-export const getGodsLevel = (): number => store.get(godsAtom).count;
+export const normalizeGodsState = (value: unknown): GodsState => {
+  if (isGodsState(value)) {
+    return value;
+  }
+
+  if (isLegacyGodsState(value)) {
+    return {
+      invoked: GOD_DATA.slice(0, value.count).map((god) => god.id),
+    };
+  }
+
+  return { invoked: [] };
+};
+
+const godsJsonStorage = createJSONStorage<GodsState>(() => {
+  const storage = getStorage();
+
+  return {
+    getItem: (key) => {
+      const value = storage.getItem(key);
+
+      if (!value) {
+        return null;
+      }
+
+      try {
+        return JSON.stringify(normalizeGodsState(JSON.parse(value)));
+      } catch {
+        return null;
+      }
+    },
+    setItem: (key, value) => {
+      storage.setItem(key, value);
+    },
+    removeItem: (key) => {
+      storage.removeItem(key);
+    },
+  };
+});
+
+export const godsAtom = atomWithStorage<GodsState>(
+  "gods",
+  { invoked: [] },
+  godsJsonStorage,
+  getStorageInitOptions()
+);
+
+export const useGods = () => {
+  const state = useAtomValue(godsAtom);
+  const { invoked } = normalizeGodsState(state);
+
+  return {
+    invoked,
+    count: invoked.length,
+  };
+};
+
+let invokeInProgress = false;
+
+export const getInvokedGods = (): GodId[] =>
+  normalizeGodsState(store.get(godsAtom)).invoked;
 
 export const getGodsProductionMultiplier = (): GameValue =>
-  getTotalProductionMultiplier(getGodsLevel());
+  getTotalProductionMultiplier(getInvokedGods());
 
 export const useGodsProductionMultiplier = (): GameValue => {
-  const { count } = useGods();
+  const { invoked } = useGods();
 
-  return getTotalProductionMultiplier(count);
+  return getTotalProductionMultiplier(invoked);
 };
 
 export const canInvokeGod = (): boolean => {
-  const level = getGodsLevel();
+  const invoked = getInvokedGods();
+  const gold = getGold();
 
-  return canInvokeGodAtIndex(level, level, getGold());
+  for (let index = 0; index < GOD_COUNT; index++) {
+    if (canInvokeGodAtIndex(index, invoked, gold)) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
-export const invokeGod = (): boolean => {
-  const level = getGodsLevel();
-
-  if (!canInvokeGodAtIndex(level, level, getGold())) {
+export const invokeGod = (godIndex: number): boolean => {
+  if (invokeInProgress) {
     return false;
   }
 
-  store.set(godsAtom, (prev) => ({
-    count: prev.count + 1,
-  }));
+  invokeInProgress = true;
 
-  resetRunProgress();
-  sound.play("upgrade");
+  try {
+    const invoked = getInvokedGods();
 
-  return true;
+    if (!canInvokeGodAtIndex(godIndex, invoked, getGold())) {
+      return false;
+    }
+
+    store.set(godsAtom, (previous) => {
+      const { invoked: invokedBefore } = normalizeGodsState(previous);
+      const godId = GOD_DATA[godIndex].id;
+
+      if (invokedBefore.includes(godId)) {
+        return { invoked: invokedBefore };
+      }
+
+      return { invoked: [...invokedBefore, godId] };
+    });
+
+    resetRunProgress();
+    sound.play("upgrade");
+
+    return true;
+  } finally {
+    invokeInProgress = false;
+  }
 };

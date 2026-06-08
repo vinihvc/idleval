@@ -1,4 +1,4 @@
-import { Trans, useLingui } from "@lingui/react/macro";
+import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,12 +9,12 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORY_TYPES } from "@/content/factories.types";
+import { FACTORY_TYPES } from "@/content/factories";
+import { m } from "@/i18n/messages";
 import { UpgradesCard } from "./upgrades.card";
 
 export const UpgradesDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
-  const { t } = useLingui();
 
   return (
     <ResponsiveDialog>
@@ -23,26 +23,23 @@ export const UpgradesDialog = (props: React.PropsWithChildren) => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={t`Upgrades`}
+            alt={m["ui.upgrades.title"]()}
             src="/images/upgrades/upgrade.webp"
           />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
-            <Trans>Upgrades</Trans>
+            {m["ui.upgrades.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
-            <Trans>
-              Build what makes the realm endure and double the crown&apos;s
-              takings from each pillar.
-            </Trans>
+          <ResponsiveDialogDescription hideDescription>
+            {m["ui.upgrades.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {FACTORY_TYPES.map((factoryType) => (
               <UpgradesCard factoryType={factoryType} key={factoryType} />
             ))}

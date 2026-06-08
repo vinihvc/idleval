@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { shouldApplyOfflineOnVisibilityChange } from "@/hooks/use-session-sync";
+import {
+  shouldApplyOfflineOnVisibilityChange,
+  shouldHeartbeatTouchLastSeen,
+} from "@/hooks/use-session-sync";
 
 describe("shouldApplyOfflineOnVisibilityChange", () => {
   it("returns false on first render (null → true)", () => {
@@ -16,5 +19,15 @@ describe("shouldApplyOfflineOnVisibilityChange", () => {
 
   it("returns false when visibility stays visible (true → true)", () => {
     expect(shouldApplyOfflineOnVisibilityChange(true, true)).toBe(false);
+  });
+});
+
+describe("shouldHeartbeatTouchLastSeen", () => {
+  it("returns true when tab is visible", () => {
+    expect(shouldHeartbeatTouchLastSeen(true)).toBe(true);
+  });
+
+  it("returns false when tab is hidden", () => {
+    expect(shouldHeartbeatTouchLastSeen(false)).toBe(false);
   });
 });

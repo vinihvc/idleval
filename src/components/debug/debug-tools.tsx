@@ -61,7 +61,7 @@ export const DebugTools = () => {
             variant="brown"
           >
             <Lock />
-            <span className="max-md:sr-only">All factories</span>
+            <span className="max-md:sr-only">Factories</span>
           </Button>
           <Button
             aria-label="Enable all upgrades"
@@ -69,7 +69,7 @@ export const DebugTools = () => {
             variant="default"
           >
             <ArrowUpBox />
-            <span className="max-md:sr-only">All upgrades</span>
+            <span className="max-md:sr-only">Upgrades</span>
           </Button>
           <Button
             aria-label="Enable all managers"
@@ -77,7 +77,7 @@ export const DebugTools = () => {
             variant="blue"
           >
             <Briefcase />
-            <span className="max-md:sr-only">All managers</span>
+            <span className="max-md:sr-only">Managers</span>
           </Button>
           <Button
             aria-label="Enable god mode"

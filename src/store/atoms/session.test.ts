@@ -1,7 +1,13 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { store } from "@/providers/store";
 import { resetGame } from "@/store/reset";
-import { getLastSeenAt, sessionAtom, touchLastSeen } from "./session";
+import {
+  getLastSeenAt,
+  isDocumentVisible,
+  sessionAtom,
+  touchLastSeen,
+  touchLastSeenIfVisible,
+} from "./session";
 
 describe("session", () => {
   beforeEach(() => {
@@ -24,5 +30,53 @@ describe("session", () => {
     touchLastSeen(1_234_567);
 
     expect(getLastSeenAt()).toBe(1_234_567);
+  });
+
+  describe("touchLastSeenIfVisible", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("does not update lastSeenAt when document is hidden", () => {
+      touchLastSeen(1_000);
+      vi.stubGlobal("document", {
+        visibilityState: "hidden",
+      });
+
+      touchLastSeenIfVisible(9_999);
+
+      expect(getLastSeenAt()).toBe(1_000);
+    });
+
+    it("updates lastSeenAt when document is visible", () => {
+      touchLastSeen(1_000);
+      vi.stubGlobal("document", {
+        visibilityState: "visible",
+      });
+
+      touchLastSeenIfVisible(9_999);
+
+      expect(getLastSeenAt()).toBe(9_999);
+    });
+  });
+
+  describe("isDocumentVisible", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("returns true when document is undefined", () => {
+      vi.stubGlobal("document", undefined);
+
+      expect(isDocumentVisible()).toBe(true);
+    });
+
+    it("returns false when visibilityState is hidden", () => {
+      vi.stubGlobal("document", {
+        visibilityState: "hidden",
+      });
+
+      expect(isDocumentVisible()).toBe(false);
+    });
   });
 });

@@ -37,7 +37,7 @@ describe("reset", () => {
 
   it("resetGame clears run progress, gods, statistics, session, and offline state", () => {
     seedGold(5000);
-    store.set(godsAtom, { count: 2 });
+    store.set(godsAtom, { invoked: ["huangdi", "dagda"] });
     store.set(statisticsAtom, (previous) => ({
       ...previous,
       goldEarned: "999",
@@ -52,7 +52,7 @@ describe("reset", () => {
     resetGame();
 
     expect(deserializeDecimal(store.get(walletAtom).gold).toNumber()).toBe(0);
-    expect(store.get(godsAtom).count).toBe(0);
+    expect(store.get(godsAtom).invoked).toEqual([]);
     expect(store.get(statisticsAtom).goldEarned).toBe("0");
     expect(store.get(offlineCycleProgressAtom)).toEqual({});
     expect(store.get(offlineSummaryAtom)).toBeNull();

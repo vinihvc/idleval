@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FACTORIES, FACTORY_TYPES } from "@/content/factories";
+import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
 import {
   computeOfflineEarnings,
   MIN_OFFLINE_MS,
@@ -47,7 +47,7 @@ describe("offline-earnings", () => {
       amount: 2,
     };
 
-    const productionTime = FACTORIES.grain.productionTime;
+    const productionTime = FACTORY_DATA.grain.productionTime;
     const cycles = 3;
     const elapsedMs = productionTime * cycles * 1000;
     const lastSeenAt = 0;
@@ -117,7 +117,7 @@ describe("offline-earnings", () => {
       amount: 1,
     };
 
-    const productionTime = FACTORIES.grain.productionTime;
+    const productionTime = FACTORY_DATA.grain.productionTime;
     const partialElapsedMs = (productionTime + 1) * 1000;
     const partial = computeOfflineEarnings(
       partialElapsedMs,
@@ -157,7 +157,7 @@ describe("offline-earnings", () => {
       amount: 1,
     };
 
-    const elapsedMs = FACTORIES.grain.productionTime * 1000;
+    const elapsedMs = FACTORY_DATA.grain.productionTime * 1000;
     const base = computeOfflineEarnings(elapsedMs, 0, factories, D(1));
     const boosted = computeOfflineEarnings(elapsedMs, 0, factories, D(3));
 

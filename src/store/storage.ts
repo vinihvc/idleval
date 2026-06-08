@@ -34,15 +34,17 @@ const fallbackStorage: Storage = {
   },
 };
 
-const getStorage = () =>
+export const getStorage = () =>
   canUseLocalStorage() ? localStorage : fallbackStorage;
+
+export const getStorageInitOptions = () => ({
+  getOnInit: canUseLocalStorage(),
+});
 
 export const persistedAtom = <Value>(key: string, initialValue: Value) =>
   atomWithStorage<Value>(
     key,
     initialValue,
     createJSONStorage<Value>(getStorage),
-    {
-      getOnInit: canUseLocalStorage(),
-    }
+    getStorageInitOptions()
   );

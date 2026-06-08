@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { FACTORY_DATA } from "@/content/factories.data";
-import { FACTORY_TYPES } from "@/content/factories.types";
-import { GOD_COUNT, GODS } from "@/content/gods";
+import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
+import { GOD_COUNT, GOD_DATA } from "@/content/gods";
+import { hasMessageKey } from "@/i18n/localize";
 import { D } from "@/utils/decimal";
 
 describe("content invariants", () => {
@@ -31,12 +31,34 @@ describe("content invariants", () => {
     }
   });
 
+  it("every factory has localized message keys", () => {
+    for (const factory of FACTORY_TYPES) {
+      const prefix = `factory.${factory}`;
+
+      expect(hasMessageKey(`${prefix}.name`)).toBe(true);
+      expect(hasMessageKey(`${prefix}.description`)).toBe(true);
+      expect(hasMessageKey(`${prefix}.upgrade.name`)).toBe(true);
+      expect(hasMessageKey(`${prefix}.upgrade.description`)).toBe(true);
+      expect(hasMessageKey(`${prefix}.manager.name`)).toBe(true);
+      expect(hasMessageKey(`${prefix}.manager.description`)).toBe(true);
+    }
+  });
+
+  it("every god has localized message keys", () => {
+    for (const god of GOD_DATA) {
+      const prefix = `god.${god.id}`;
+
+      expect(hasMessageKey(`${prefix}.name`)).toBe(true);
+      expect(hasMessageKey(`${prefix}.description`)).toBe(true);
+    }
+  });
+
   it("god definitions have valid progression values", () => {
-    expect(GOD_COUNT).toBe(GODS.length);
+    expect(GOD_COUNT).toBe(GOD_DATA.length);
 
     let previousGold = D(0);
 
-    for (const god of GODS) {
+    for (const god of GOD_DATA) {
       expect(god.productionMultiplier).toBeGreaterThanOrEqual(1);
 
       const goldRequired = D(god.goldRequired);

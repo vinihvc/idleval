@@ -1,10 +1,12 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { store } from "@/providers/store";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
 import {
   getLastSeenAt,
   offlineCycleProgressAtom,
   sessionAtom,
+  touchLastSeen,
+  touchLastSeenIfVisible,
 } from "@/store/atoms/session";
 import { getGold } from "@/store/atoms/wallet";
 import { applyOfflineEarnings, offlineSummaryAtom } from "@/store/offline";
@@ -12,6 +14,10 @@ import { resetGame } from "@/store/reset";
 import { seedFactory } from "@/store/test-utils";
 
 describe("applyOfflineEarnings", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   beforeEach(() => {
     resetGame();
   });
@@ -68,6 +74,39 @@ describe("applyOfflineEarnings", () => {
 
     expect(summary).toBeNull();
     expect(store.get(offlineSummaryAtom)).toBeNull();
+  });
+
+  it("preserves lastSeenAt when heartbeat fires while tab is hidden", () => {
+    const hiddenAt = 1_000_000;
+
+    touchLastSeen(hiddenAt);
+    vi.stubGlobal("document", { visibilityState: "hidden" });
+
+    touchLastSeenIfVisible(hiddenAt + 60_000);
+    touchLastSeenIfVisible(hiddenAt + 120_000);
+
+    expect(getLastSeenAt()).toBe(hiddenAt);
+  });
+
+  it("credits production when away for hours with an untouched lastSeenAt", () => {
+    const threeHoursMs = 3 * 60 * 60 * 1_000;
+    const now = 10_000_000;
+    const lastSeenAt = now - threeHoursMs;
+
+    store.set(sessionAtom, { lastSeenAt });
+    seedFactory("grain", {
+      isAutomated: true,
+      isUnlocked: true,
+      amount: 2,
+    });
+
+    const summary = applyOfflineEarnings(now);
+
+    expect(summary).not.toBeNull();
+    expect(summary?.elapsedMs).toBe(threeHoursMs);
+    expect(summary?.totalGold.gt(0)).toBe(true);
+    expect(getGold().gt(0)).toBe(true);
+    expect(getLastSeenAt()).toBe(now);
   });
 
   it("filters zero-cycle results from summary", () => {

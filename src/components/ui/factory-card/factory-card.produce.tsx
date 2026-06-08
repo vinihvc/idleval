@@ -1,4 +1,3 @@
-import { Trans, useLingui } from "@lingui/react/macro";
 import { Image } from "@unpic/react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
@@ -12,6 +11,7 @@ import {
   canStartManualProduction,
   getUpgradeMultiplierLabel,
 } from "@/game/factories";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { startProducing } from "@/store/atoms/factories";
 import { useFactoryCard } from "./factory-card.context";
@@ -20,7 +20,6 @@ interface FactoryCardProduceProps extends React.ComponentProps<typeof Button> {}
 
 export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
   const { className, ...rest } = props;
-  const { t } = useLingui();
 
   const {
     factoryType,
@@ -31,6 +30,8 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
     isAutomated,
     isUpgraded,
   } = useFactoryCard();
+
+  const produceLabel = m["ui.factoryCard.produce"]({ name });
 
   return (
     <Tooltip>
@@ -69,7 +70,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
           >
             <div className="size-16 overflow-hidden rounded-full bg-card p-2 ring-4 ring-offset-4 ring-offset-secondary">
               <Image
-                alt={t`Produce ${name}`}
+                alt={produceLabel}
                 className={cn(
                   "",
                   "object-contain",
@@ -93,9 +94,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
             )}
           </div>
 
-          <span className="sr-only">
-            <Trans>Produce {name}</Trans>
-          </span>
+          <span className="sr-only">{produceLabel}</span>
 
           {isUnlocked && (
             <div className="absolute -bottom-2">
@@ -118,9 +117,7 @@ export const FactoryCardProduce = (props: FactoryCardProduceProps) => {
         </Button>
       </TooltipTrigger>
 
-      <TooltipContent>
-        <Trans>Produce {name}</Trans>
-      </TooltipContent>
+      <TooltipContent>{produceLabel}</TooltipContent>
     </Tooltip>
   );
 };

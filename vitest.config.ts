@@ -1,15 +1,17 @@
 import path from "node:path";
-import { linguiTransformerBabelPreset } from "@lingui/vite-plugin";
-import babel from "@rolldown/plugin-babel";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import react from "@vitejs/plugin-react";
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
+import { paraglidePluginOptions } from "./src/i18n/paraglide.vite";
 
 export default defineConfig({
+  optimizeDeps: {
+    include: ["@inlang/paraglide-js-react"],
+  },
   plugins: [
     react(),
-    babel({
-      presets: [linguiTransformerBabelPreset()],
-    }),
+    paraglideVitePlugin(paraglidePluginOptions),
   ],
   resolve: {
     alias: {
@@ -17,8 +19,34 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "node",
-    include: ["src/**/*.test.ts"],
-    setupFiles: ["src/test/i18n-setup.ts"],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          environment: "node",
+          include: ["src/**/*.test.ts"],
+          setupFiles: ["src/test/paraglide-test-setup.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "browser",
+          include: ["src/**/*.test.tsx"],
+          setupFiles: [
+            "src/test/paraglide-test-setup.ts",
+            "src/test/browser-setup.ts",
+          ],
+          browser: {
+            enabled: true,
+            headless: true,
+            screenshotFailures: false,
+            provider: playwright(),
+            instances: [{ browser: "chromium" }],
+          },
+        },
+      },
+    ],
   },
 });

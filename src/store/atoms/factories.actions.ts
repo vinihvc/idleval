@@ -17,7 +17,7 @@ import {
   totalCanBuyByAmount,
   totalToPayByAmount,
 } from "./purchase-mode";
-import { touchLastSeen } from "./session";
+import { touchLastSeenIfVisible } from "./session";
 import { recordGoldSpent, recordQuantity } from "./statistics";
 import { decreaseGold, getGold, increaseGoldByAmount } from "./wallet";
 
@@ -93,12 +93,9 @@ export const completeProductionCycle = (factory: FactoryType) => {
   }
 
   if (isAutomated) {
-    touchLastSeen();
+    touchLastSeenIfVisible();
   }
 };
-
-/** @deprecated Use `completeProductionCycle` */
-export const stopProducing = completeProductionCycle;
 
 export const autoFactory = (factory: FactoryType) => {
   const { isAutomated, isUnlocked, managerCost: cost } = getFactory(factory);

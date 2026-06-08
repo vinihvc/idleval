@@ -1,4 +1,4 @@
-export const SUPPORTED_LOCALES = ["en", "es-MX", "pt-BR"] as const;
+export const SUPPORTED_LOCALES = ["en", "es", "pt"] as const;
 
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -6,8 +6,8 @@ export const DEFAULT_LOCALE: AppLocale = "en";
 
 export const LOCALE_LABELS: Record<AppLocale, string> = {
   en: "English",
-  "es-MX": "Español (México)",
-  "pt-BR": "Português (Brasil)",
+  es: "Español",
+  pt: "Português",
 };
 
 const isAppLocale = (value: string): value is AppLocale =>
@@ -25,11 +25,11 @@ export const normalizeLocale = (value: unknown): AppLocale => {
   const lower = value.toLowerCase();
 
   if (lower.startsWith("pt")) {
-    return "pt-BR";
+    return "pt";
   }
 
   if (lower.startsWith("es")) {
-    return "es-MX";
+    return "es";
   }
 
   if (lower.startsWith("en")) {

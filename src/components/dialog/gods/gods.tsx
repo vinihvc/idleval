@@ -1,4 +1,3 @@
-import { Trans, useLingui } from "@lingui/react/macro";
 import React from "react";
 import {
   ResponsiveDialog,
@@ -10,12 +9,12 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { GODS } from "@/content/gods";
+import { GOD_DATA } from "@/content/gods";
+import { m } from "@/i18n/messages";
 import { GodsCard } from "./gods.card";
 
 export const GodsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
-  const { t } = useLingui();
 
   const [open, setOpen] = React.useState(false);
 
@@ -25,25 +24,23 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
 
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
-          <ResponsiveDialogImage alt={t`Gods`} src="/images/gods/gods.webp" />
+          <ResponsiveDialogImage
+            alt={m["ui.gods.title"]()}
+            src="/images/gods/gods.webp"
+          />
         </ResponsiveDialogMedia>
 
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>
-            <Trans>Gods</Trans>
-          </ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>{m["ui.gods.title"]()}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
-            <Trans>
-              Surrender everything you have now, and the gods will return even
-              greater abundance in the future.
-            </Trans>
+          <ResponsiveDialogDescription hideDescription>
+            {m["ui.gods.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-3 gap-4">
-            {GODS.map((god) => (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {GOD_DATA.map((god) => (
               <GodsCard
                 god={god}
                 key={god.id}

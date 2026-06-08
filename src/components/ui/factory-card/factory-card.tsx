@@ -1,10 +1,32 @@
 import React from "react";
+import { tv } from "tailwind-variants";
 import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
 import { FactoryCardProvider, useFactoryCard } from "./factory-card.context";
 import { FactoryCardProduce } from "./factory-card.produce";
 import { FactoryCardProgress } from "./factory-card.progress";
 import { FactoryCardUpgrade } from "./factory-card.upgrade";
+
+export const factoryCardPanelVariants = tv({
+  base: [
+    "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
+    "border-primary bg-popover/90 text-muted",
+  ],
+  variants: {
+    locked: {
+      true: "border-popover-foreground/25 border-dashed",
+      false: "",
+    },
+    producing: {
+      true: "border-info shadow-[inset_0_0_12px_oklch(0.65_0.12_240/0.12)]",
+      false: "",
+    },
+    idle: {
+      true: "shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]",
+      false: "",
+    },
+  },
+});
 
 interface FactoryCardProps extends React.ComponentProps<"article"> {
   /**
@@ -36,23 +58,19 @@ const FactoryCardContent = (props: Omit<FactoryCardProps, "type">) => {
         data-automated={isAutomated}
         data-locked={isLocked}
         data-producing={isProducing}
+        data-slot="factory-card"
         data-unlocked={isUnlocked}
         {...rest}
       >
         <FactoryCardProduce className="absolute top-1/2 left-0 z-10 -translate-y-1/2" />
 
         <div
-          className={cn(
-            "inset-shadow-xs grid h-22 w-full min-w-0 gap-1 overflow-hidden rounded-r-xl border-3 py-2 pr-3 pl-16",
-            "border-primary bg-popover/90 text-muted",
-            isLocked && "border-popover-foreground/25 border-dashed opacity-80",
-            isProducing &&
-              "border-info shadow-[inset_0_0_12px_oklch(0.65_0.12_240/0.12)]",
-            isUnlocked &&
-              !isLocked &&
-              !isProducing &&
-              "shadow-[inset_0_0_12px_oklch(0.78_0.12_85/0.08)]"
-          )}
+          className={factoryCardPanelVariants({
+            locked: isLocked,
+            producing: isProducing,
+            idle: isUnlocked && !isLocked && !isProducing,
+          })}
+          data-slot="factory-card-panel"
         >
           <FactoryCardProgress />
 

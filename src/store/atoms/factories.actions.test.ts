@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FACTORIES } from "@/content/factories";
+import { FACTORY_DATA } from "@/content/factories";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import {
@@ -90,8 +90,8 @@ describe("factories.actions", () => {
   });
 
   it("unlockFactory unlocks sealed factory and sets amount to 1", () => {
-    seedGold(FACTORIES.mill.unlockPrice);
-    const unlockPrice = FACTORIES.mill.unlockPrice;
+    seedGold(FACTORY_DATA.mill.unlockPrice);
+    const unlockPrice = FACTORY_DATA.mill.unlockPrice;
 
     unlockFactory("mill");
 

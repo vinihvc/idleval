@@ -1,30 +1,66 @@
-import { execSync } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const messagesDir = path.join(root, "src/i18n/messages");
+const locales = ["en", "es", "pt"];
 
-const output = execSync("./node_modules/.bin/lingui extract", {
-  cwd: root,
-  encoding: "utf8",
-  stdio: ["pipe", "pipe", "pipe"],
-});
+const loadKeys = (locale) => {
+  const filePath = path.join(messagesDir, `${locale}.json`);
 
-console.log(output);
-
-const missingPattern = /│\s+(pt-BR|es-MX)\s+│\s+\d+\s+│\s+(\d+)\s+│/g;
-let match = missingPattern.exec(output);
-
-while (match !== null) {
-  const locale = match[1];
-  const missing = Number.parseInt(match[2], 10);
-
-  if (missing > 0) {
-    console.error(`\n[i18n] ${locale} has ${missing} missing translation(s).`);
+  if (!fs.existsSync(filePath)) {
+    console.error(`[i18n] Missing message file: ${filePath}`);
     process.exit(1);
   }
 
-  match = missingPattern.exec(output);
+  const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    console.error(`[i18n] ${filePath} must be a flat JSON object.`);
+    process.exit(1);
+  }
+
+  return Object.keys(data).sort();
+};
+
+const keySets = Object.fromEntries(
+  locales.map((locale) => [locale, loadKeys(locale)])
+);
+const referenceLocale = "en";
+const referenceKeys = new Set(keySets[referenceLocale]);
+let failed = false;
+
+for (const locale of locales) {
+  if (locale === referenceLocale) {
+    continue;
+  }
+
+  const keys = new Set(keySets[locale]);
+  const missing = [...referenceKeys].filter((key) => !keys.has(key));
+  const extra = [...keys].filter((key) => !referenceKeys.has(key));
+
+  if (missing.length > 0) {
+    failed = true;
+    console.error(`\n[i18n] ${locale} is missing ${missing.length} key(s):`);
+    for (const key of missing) {
+      console.error(`  - ${key}`);
+    }
+  }
+
+  if (extra.length > 0) {
+    failed = true;
+    console.error(`\n[i18n] ${locale} has ${extra.length} extra key(s):`);
+    for (const key of extra) {
+      console.error(`  - ${key}`);
+    }
+  }
 }
 
-console.log("\n[i18n] All locales fully translated.");
+if (failed) {
+  process.exit(1);
+}
+
+console.log(
+  `[i18n] ${referenceKeys.size} keys × ${locales.length} locales OK (${locales.join(", ")}).`
+);
