@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import {
-  ResponsiveTooltip,
-  ResponsiveTooltipContent,
-  ResponsiveTooltipTrigger,
-} from "@/components/ui/responsive-tooltip";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
@@ -156,21 +156,18 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
       <React.Suspense fallback={null}>
         <LazyFactoryDialog factoryType={factoryType}>
-          <ResponsiveTooltip>
-            <ResponsiveTooltipTrigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <ResponsiveDialogTrigger asChild>
-                <Button
-                  size="icon-lg"
-                  variant="blue"
-                >
+                <Button size="icon-lg" variant="blue">
                   <span className="sr-only">{ledgerLabel}</span>
                   <InfoBox className="size-4" />
                 </Button>
               </ResponsiveDialogTrigger>
-            </ResponsiveTooltipTrigger>
+            </TooltipTrigger>
 
-            <ResponsiveTooltipContent>{ledgerLabel}</ResponsiveTooltipContent>
-          </ResponsiveTooltip>
+            <TooltipContent>{ledgerLabel}</TooltipContent>
+          </Tooltip>
         </LazyFactoryDialog>
       </React.Suspense>
     </div>
