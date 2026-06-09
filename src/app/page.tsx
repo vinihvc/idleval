@@ -1,12 +1,12 @@
 import React from "react";
 import { ActionTools } from "@/components/debug/action-tools";
 import { MediaQuery } from "@/components/debug/media-query";
+import { FactoryGrid } from "@/components/game/factory-grid";
+import { GamePanel } from "@/components/game/panel";
+import { GameShell } from "@/components/game/shell";
+import { GameStage } from "@/components/game/stage/stage";
 import { Background } from "@/components/layout/background";
-import { FactoryGrid } from "@/components/layout/factory-grid";
 import { Footer } from "@/components/layout/footer";
-import { GamePanel } from "@/components/layout/game-panel";
-import { GameShell } from "@/components/layout/game-shell";
-import { GameStage } from "@/components/layout/game-stage/game-stage";
 import { Header } from "@/components/layout/header";
 import { Navigation } from "@/components/layout/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -40,7 +40,7 @@ export const HomePage = () => {
             <GameStage />
 
             <main className="min-h-0 flex-1" id="main-content">
-              <ScrollArea className="min-h-0 flex-1 sm:h-auto sm:flex-none sm:overflow-visible sm:**:data-[slot=scroll-area-viewport]:h-auto sm:**:data-[slot=scroll-area-viewport]:max-h-none">
+              <ScrollArea>
                 <FactoryGrid />
               </ScrollArea>
             </main>

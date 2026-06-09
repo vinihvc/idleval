@@ -1,6 +1,4 @@
 import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
-import { applyDifficultyCost } from "@/game/difficulty";
-import { getDifficultyLevel } from "@/store/atoms/settings";
 import { D, type GameValue } from "@/utils/decimal";
 
 /**
@@ -11,7 +9,7 @@ import { D, type GameValue } from "@/utils/decimal";
  * getGodGoldRequired(1).toString() // "1e18"
  */
 export const getGodGoldRequired = (index: number): GameValue =>
-  applyDifficultyCost(D(GOD_DATA[index].goldRequired), getDifficultyLevel());
+  D(GOD_DATA[index].goldRequired);
 
 /**
  * Returns the cumulative production multiplier from all invoked gods.

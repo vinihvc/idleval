@@ -26,6 +26,7 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 - Add barrel files at the store root
 - Import components or i18n strings
 - Import `useAtomValue` outside store atom accessor hooks (providers/components use `useSettings`, `useWallet`, etc.)
+- Use `useEffect` or other React lifecycle in `store/atoms/*` — move sync to `hooks/` + `providers/`
 - Change storage keys without a version suffix when schema changes (e.g. `wallet-v4`); update `LOCAL_STORAGE_KEYS` in config
 
 ## Patterns
@@ -48,9 +49,9 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 | `test-utils.ts` | `seedGold`, `seedFactory`, `setupStoreTest` |
 | `atoms/factories.actions.ts` | Purchases, production, upgrades |
 | `atoms/wallet.ts` | Gold balance |
-| `atoms/inventory.ts` | Power-up counts, daily streak, active buff (`inventory-v2`) |
+| `atoms/inventory.ts` | Power-up slots, daily streak, active buff (`inventory-v4`) |
 | `atoms/power-ups.actions.ts` | Claim daily reward, activate power-ups |
-| `atoms/settings.ts` | Difficulty, locale, volumes |
+| `atoms/settings.ts` | Locale, volumes |
 | `atoms/notifications.ts` | Dialog badge visibility, dismiss-on-visit |
 
 ## Neighbors
@@ -60,8 +61,8 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 
 ## Evolution
 
+- 2026-06-08 — Removed legacy save migrations; bumped inventory/gods/factories/statistics keys
+- 2026-06-08 — Notification dismissal sync moved to `use-notification-sync`; no `useEffect` in store atoms
 - 2026-06-08 — `useAtomValue` restricted to atom accessor hooks; derived hooks compose accessors
 - 2026-06-08 — `notifications-v1` atom: dismiss-on-visit badges for nav dialogs
 - 2026-06-08 — Centralized keys in `config/local-storage-keys.ts`; `persistedAtomWithNormalize` for migrated atoms
-- 2026-06-08 — Mystical power-ups: `inventory-v2`, daily streak, `power-ups.actions.ts`
-- 2026-06-07 — Initial docs: persistedAtom, actions/selectors, resetGame

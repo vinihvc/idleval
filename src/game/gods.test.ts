@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
 import {
   canInvokeGodAtIndex,
@@ -8,14 +8,9 @@ import {
   getTotalProductionMultiplier,
   isGodInvocationComplete,
 } from "@/game/gods";
-import { setDifficulty } from "@/store/atoms/settings";
 import { D } from "@/utils/decimal";
 
 describe("gods rules", () => {
-  beforeEach(() => {
-    setDifficulty("medium");
-  });
-
   it("getGodCardStatus returns completed or available", () => {
     expect(getGodCardStatus(0, ["huangdi"])).toBe("completed");
     expect(getGodCardStatus(1, ["huangdi"])).toBe("available");
@@ -78,18 +73,6 @@ describe("gods rules", () => {
   it("getGodGoldRequired returns configured threshold", () => {
     expect(getGodGoldRequired(0).eq(D(GOD_DATA[0].goldRequired))).toBe(true);
     expect(getGodGoldRequired(1).eq(D(GOD_DATA[1].goldRequired))).toBe(true);
-  });
-
-  it("getGodGoldRequired scales with difficulty cost multiplier", () => {
-    setDifficulty("easy");
-    expect(
-      getGodGoldRequired(0).eq(D(GOD_DATA[0].goldRequired).times(0.6))
-    ).toBe(true);
-
-    setDifficulty("veryHard");
-    expect(
-      getGodGoldRequired(0).eq(D(GOD_DATA[0].goldRequired).times(2.5))
-    ).toBe(true);
   });
 
   it("canInvokeGodAtIndex succeeds at exact gold threshold", () => {

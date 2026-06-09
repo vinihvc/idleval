@@ -24,7 +24,7 @@ Application source for Idleval — a Viking idle game with separated layers (con
 | [styles/](styles/AGENTS.md) | Global CSS, Tailwind v4 tokens |
 | [utils/](utils/AGENTS.md) | Decimals and formatters |
 
-**No AGENTS.md:** `test/` (empty/legacy).
+**No AGENTS.md:** `test/` (shared Vitest helpers: `render-with-providers`, `browser-setup`).
 
 ## Layer rules
 

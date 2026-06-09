@@ -24,7 +24,7 @@ export const BottomNavigationList = (props: React.ComponentProps<"ul">) => {
       aria-label={ariaLabel}
       className={cn(
         "flex w-full shrink-0 items-center justify-around",
-        "min-h-(--bottom-nav-height)",
+        "min-h-14",
         "border-t-2 bg-background/60 backdrop-blur-sm",
         "pb-[calc(env(safe-area-inset-bottom,0)+var(--spacing)*2)]",
         className

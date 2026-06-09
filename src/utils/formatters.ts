@@ -109,10 +109,28 @@ export const capitalize = (str: string) =>
  * timeFormatter(120) // "2:00"
  */
 export const timeFormatter = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
+  const totalSeconds = Math.max(0, Math.ceil(seconds));
+  const minutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = totalSeconds % 60;
 
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
+
+/**
+ * Format milliseconds as hours, minutes, and seconds (H:MM:SS).
+ *
+ * @example
+ * countdownFormatter(45_000) // "0:00:45"
+ * countdownFormatter(125_000) // "0:02:05"
+ * countdownFormatter(3_600_000) // "1:00:00"
+ */
+export const countdownFormatter = (ms: number) => {
+  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };
 
 /**

@@ -1,7 +1,14 @@
+import React from "react";
 import { NumberText } from "@/components/ui/number-text";
 import {
+  getSealedState,
   getUpgradeCardCostStyle,
   UpgradeCard,
+  UpgradeCardArt,
+  UpgradeCardHeader,
+  UpgradeCardHoldFeedback,
+  UpgradeCardPanel,
+  UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
 import { type GodType, getGod } from "@/content/gods";
 import {
@@ -9,8 +16,10 @@ import {
   getGodCardStatus,
   getGodGoldRequired,
 } from "@/game/gods";
+import { useHoldPress } from "@/hooks/use-hold-press";
 import { useLocalizedGod } from "@/i18n/hooks/use-localized-god";
 import { m } from "@/i18n/messages";
+import { cn } from "@/lib/cn";
 import { invokeGod, useGods } from "@/store/atoms/gods";
 import { useWallet } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
@@ -34,9 +43,23 @@ export const GodsCard = (props: GodsCardProps) => {
 
   const complete = status === "completed";
   const affordable = !complete && canAfford;
+  const sealed = getSealedState({ complete, locked: false, affordable });
+  const descriptionId = React.useId();
+
   const costStyle = getUpgradeCardCostStyle({
     affordable,
     locked: false,
+  });
+
+  const { isHolding, holdHandlers } = useHoldPress({
+    disabled: complete || !canAfford,
+    onHoldComplete: affordable
+      ? () => {
+          if (invokeGod(godIndex)) {
+            onInvoke?.(localizedGod.name);
+          }
+        }
+      : undefined,
   });
 
   const getAriaLabel = () => {
@@ -55,37 +78,67 @@ export const GodsCard = (props: GodsCardProps) => {
     return localizedGod.name;
   };
 
+  const costNode = complete ? undefined : (
+    <NumberText
+      className={costStyle.className}
+      size="md"
+      variant={costStyle.variant}
+    >
+      {amountFormatter(goldRequired)}
+    </NumberText>
+  );
+
+  const isHoldCard = affordable && !complete;
+
   return (
     <UpgradeCard
-      affordable={affordable}
+      {...(isHoldCard ? holdHandlers : {})}
+      aria-busy={isHolding || undefined}
+      aria-describedby={localizedGod.description ? descriptionId : undefined}
+      aria-disabled={complete || !canAfford || undefined}
       aria-label={getAriaLabel()}
-      complete={complete}
-      cost={
-        complete ? undefined : (
-          <NumberText
-            className={costStyle.className}
-            size="md"
-            variant={costStyle.variant}
-          >
-            {amountFormatter(goldRequired)}
-          </NumberText>
-        )
-      }
-      description={localizedGod.description}
-      disabled={complete || !canAfford}
-      holdLabel={m["ui.common.hold"]()}
-      icon={god.icon}
-      image={god.image}
-      onHoldComplete={
-        affordable
-          ? () => {
-              if (invokeGod(godIndex)) {
-                onInvoke?.(localizedGod.name);
-              }
-            }
-          : undefined
-      }
-      title={localizedGod.name}
-    />
+      className={cn(
+        isHoldCard &&
+          "touch-manipulation select-none [-webkit-touch-callout:none]"
+      )}
+      data-affordable={affordable}
+      data-complete={complete}
+      data-masked={sealed !== null}
+      data-sealed={sealed ?? undefined}
+      greenFrame={sealed === "open" || complete}
+      interactive={affordable}
+      onClick={isHoldCard ? holdHandlers.onClick : undefined}
+    >
+      <UpgradeCardPanel
+        charter={sealed === "charter"}
+        complete={complete}
+        open={sealed === "open"}
+      >
+        {complete && (
+          <UpgradeCardHeader icon={god.icon} title={localizedGod.name} />
+        )}
+        <UpgradeCardArt
+          complete={complete}
+          open={sealed === "open"}
+          showImage={complete || sealed === "charter"}
+          src={god.image}
+        >
+          {sealed && (
+            <UpgradeCardSeal
+              cost={costNode}
+              icon={god.icon}
+              open={sealed === "open"}
+              sealed={sealed}
+            />
+          )}
+          {isHoldCard && (
+            <UpgradeCardHoldFeedback
+              active={isHolding}
+              label={m["ui.common.hold"]()}
+            />
+          )}
+        </UpgradeCardArt>
+      </UpgradeCardPanel>
+    </UpgradeCard>
   );
 };

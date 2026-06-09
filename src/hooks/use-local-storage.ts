@@ -1,12 +1,6 @@
 import { useLocalStorage as useUsehooksLocalStorage } from "@uidotdev/usehooks";
 
-export const useLocalStorage = <T>(key: string, initialValue: T) => {
-  ensureJsonStoredValue(key);
-
-  return useUsehooksLocalStorage<T>(key, initialValue);
-};
-
-export const ensureJsonStoredValue = (
+const ensureJsonStoredValue = (
   key: string,
   storage: Pick<Storage, "getItem" | "setItem"> = localStorage
 ) => {
@@ -21,4 +15,10 @@ export const ensureJsonStoredValue = (
   } catch {
     storage.setItem(key, JSON.stringify(raw));
   }
+};
+
+export const useLocalStorage = <T>(key: string, initialValue: T) => {
+  ensureJsonStoredValue(key);
+
+  return useUsehooksLocalStorage<T>(key, initialValue);
 };

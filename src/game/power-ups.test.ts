@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyPowerUpCounts } from "@/content/power-ups";
 import {
+  addInventorySlot,
   canActivatePowerUp,
+  consumeInventorySlot,
   getActivePowerUpDisplayState,
   getActivePowerUpProgress,
   getActivePowerUpRemainingMs,
@@ -26,14 +27,61 @@ describe("power-ups", () => {
   });
 
   it("detects activatable inventory power-ups", () => {
-    expect(hasActivatablePowerUp(null, createEmptyPowerUpCounts())).toBe(false);
+    expect(hasActivatablePowerUp(null, [])).toBe(false);
 
     expect(
-      hasActivatablePowerUp(null, {
-        ...createEmptyPowerUpCounts(),
-        auroraDust: 1,
-      })
+      hasActivatablePowerUp(null, [
+        { powerUpId: "auroraDust", count: 1, tier: "common" },
+      ])
     ).toBe(true);
+  });
+
+  it("stacks duplicate relics in the same slot", () => {
+    const slots = addInventorySlot([], {
+      powerUpId: "auroraDust",
+      tier: "common",
+    });
+
+    expect(
+      addInventorySlot(slots, { powerUpId: "auroraDust", tier: "common" })
+    ).toEqual([{ powerUpId: "auroraDust", count: 2, tier: "common" }]);
+  });
+
+  it("appends new relic types until the altar is full", () => {
+    let slots = addInventorySlot([], {
+      powerUpId: "auroraDust",
+      tier: "common",
+    });
+    slots = addInventorySlot(slots, {
+      powerUpId: "ghostCandle",
+      tier: "common",
+    });
+
+    expect(slots).toEqual([
+      { powerUpId: "auroraDust", count: 1, tier: "common" },
+      { powerUpId: "ghostCandle", count: 1, tier: "common" },
+    ]);
+  });
+
+  it("decrements stacked relics without shifting slots", () => {
+    expect(
+      consumeInventorySlot(
+        [{ powerUpId: "auroraDust", count: 2, tier: "common" }],
+        0
+      )
+    ).toEqual([{ powerUpId: "auroraDust", count: 1, tier: "common" }]);
+  });
+
+  it("removes empty stacks and shifts following relics left", () => {
+    expect(
+      consumeInventorySlot(
+        [
+          { powerUpId: "auroraDust", count: 1, tier: "common" },
+          { powerUpId: "ghostCandle", count: 1, tier: "common" },
+        ],
+        0
+      )
+    ).toEqual([{ powerUpId: "ghostCandle", count: 1, tier: "common" }]);
   });
 
   it("maps streak days to the fixed reward calendar", () => {

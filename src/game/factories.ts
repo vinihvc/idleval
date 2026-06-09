@@ -1,6 +1,4 @@
-import { getDifficultyLevel } from "@/store/atoms/settings";
 import { D, type GameValue } from "@/utils/decimal";
-import { applyDifficultyIncome } from "./difficulty";
 import { canAfford, ECONOMY } from "./economy";
 
 interface FactoryProductionValueInput {
@@ -30,12 +28,9 @@ export const getFactoryProductionValue = ({
   isUpgraded,
   productionValue,
 }: FactoryProductionValueInput): GameValue =>
-  applyDifficultyIncome(
-    D(productionValue)
-      .times(isUpgraded ? ECONOMY.upgradeProductionMultiplier : 1)
-      .times(godsProductionMultiplier),
-    getDifficultyLevel()
-  );
+  D(productionValue)
+    .times(isUpgraded ? ECONOMY.upgradeProductionMultiplier : 1)
+    .times(godsProductionMultiplier);
 
 /**
  * Calculates how much gold a factory earns when one production cycle finishes.

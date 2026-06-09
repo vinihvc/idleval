@@ -7,7 +7,9 @@ import type { PowerUpId, PowerUpTier } from "@/content/power-ups";
 import { isFactoryProductionActive } from "@/game/factories";
 import {
   type ActivePowerUp,
+  addInventorySlot,
   canActivatePowerUp,
+  consumeInventorySlot,
   getDailyRewardOffer,
   getLocalDateString,
   getPowerUpDurationMs,
@@ -22,11 +24,7 @@ import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { completeProductionCycle } from "@/store/atoms/factories";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
-import {
-  getInventoryState,
-  inventoryAtom,
-  normalizeInventoryState,
-} from "@/store/atoms/inventory";
+import { getInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { getEffectiveProductionTimeForActivePowerUp } from "@/store/atoms/power-ups.selectors";
 import {
   type FactoryTickState,
@@ -38,9 +36,7 @@ const setInventory = (
     state: ReturnType<typeof getInventoryState>
   ) => ReturnType<typeof getInventoryState>
 ) => {
-  store.set(inventoryAtom, (previous) =>
-    updater(normalizeInventoryState(previous))
-  );
+  store.set(inventoryAtom, (previous) => updater(previous));
 };
 
 export const refreshDailyStreakState = () => {
@@ -70,10 +66,10 @@ export const claimDailyReward = (): boolean => {
 
   setInventory((current) => ({
     ...current,
-    counts: {
-      ...current.counts,
-      [offer.powerUpId]: current.counts[offer.powerUpId] + 1,
-    },
+    slots: addInventorySlot(current.slots, {
+      powerUpId: offer.powerUpId,
+      tier: offer.tier,
+    }),
     dailyStreak: current.dailyStreak + 1,
     lastClaimLocalDate: today,
   }));
@@ -194,35 +190,38 @@ const startGhostCandleProduction = (factory: FactoryType) => {
   }));
 };
 
-export const activatePowerUp = (powerUpId: PowerUpId): boolean => {
+export const activatePowerUpAtSlot = (slotIndex: number): boolean => {
   refreshExpiredPowerUps();
 
   const state = getInventoryState();
-  const count = state.counts[powerUpId] ?? 0;
+  const slot = state.slots[slotIndex];
 
-  if (!canActivatePowerUp(state.activePowerUp, count)) {
+  if (!slot) {
     return false;
   }
 
-  const tier: PowerUpTier = "common";
+  if (!canActivatePowerUp(state.activePowerUp, slot.count)) {
+    return false;
+  }
+
+  const { powerUpId, tier } = slot;
   const now = Date.now();
 
   if (isInstantPowerUp(powerUpId)) {
-    setInventory((current) => ({
-      ...current,
-      counts: {
-        ...current.counts,
-        [powerUpId]: current.counts[powerUpId] - 1,
-      },
-    }));
-
     const activated = activateInstantPowerUp(powerUpId, tier);
 
-    if (activated) {
-      sound.play("upgrade");
+    if (!activated) {
+      return false;
     }
 
-    return activated;
+    setInventory((current) => ({
+      ...current,
+      slots: consumeInventorySlot(current.slots, slotIndex),
+    }));
+
+    sound.play("upgrade");
+
+    return true;
   }
 
   const factories = store.get(factoriesAtom);
@@ -238,10 +237,7 @@ export const activatePowerUp = (powerUpId: PowerUpId): boolean => {
 
   setInventory((current) => ({
     ...current,
-    counts: {
-      ...current.counts,
-      [powerUpId]: current.counts[powerUpId] - 1,
-    },
+    slots: consumeInventorySlot(current.slots, slotIndex),
     activePowerUp: createTimedActivePowerUp(
       powerUpId,
       tier,

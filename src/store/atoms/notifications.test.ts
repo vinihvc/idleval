@@ -3,9 +3,11 @@ import { store } from "@/providers/store";
 import {
   clearDismissed,
   dismissNotification,
+  getActiveNotificationsByKey,
   initialNotificationsState,
   isNotificationVisible,
   notificationsAtom,
+  syncNotificationDismissals,
 } from "@/store/atoms/notifications";
 import { claimDailyReward } from "@/store/atoms/power-ups.actions";
 import { resetGame } from "@/store/reset";
@@ -40,6 +42,31 @@ describe("notifications", () => {
 
     expect(isNotificationVisible("daily")).toBe(true);
     expect(store.get(notificationsAtom).dismissed.daily).toBeUndefined();
+  });
+
+  it("syncNotificationDismissals clears dismissed when notification becomes inactive", () => {
+    seedGold(100_000);
+
+    dismissNotification("upgrades");
+
+    expect(store.get(notificationsAtom).dismissed.upgrades).toBe(true);
+
+    syncNotificationDismissals({
+      ...getActiveNotificationsByKey(),
+      upgrades: false,
+    });
+
+    expect(store.get(notificationsAtom).dismissed.upgrades).toBeUndefined();
+  });
+
+  it("syncNotificationDismissals keeps dismissed while notification stays active", () => {
+    seedGold(100_000);
+
+    dismissNotification("upgrades");
+
+    syncNotificationDismissals(getActiveNotificationsByKey());
+
+    expect(store.get(notificationsAtom).dismissed.upgrades).toBe(true);
   });
 
   it("hides notification when condition becomes inactive", () => {

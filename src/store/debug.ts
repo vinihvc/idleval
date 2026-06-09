@@ -1,10 +1,12 @@
 import { FACTORY_TYPES } from "@/content/factories";
 import { POWER_UP_TYPES } from "@/content/power-ups";
+import { addInventorySlot } from "@/game/power-ups";
 import { store } from "@/providers/store";
+import { offlineSummaryAtom } from "@/store/offline-earning";
 import { resetGame } from "@/store/reset";
 import { D, deserializeDecimal, serializeDecimal } from "@/utils/decimal";
 import { factoriesAtom } from "./atoms/factories";
-import { inventoryAtom, normalizeInventoryState } from "./atoms/inventory";
+import { inventoryAtom } from "./atoms/inventory";
 import { walletAtom } from "./atoms/wallet";
 
 export const DEBUG_GOLD_AMOUNT = D(100_000_000_000);
@@ -24,16 +26,20 @@ export const addDebugGold = () => {
 
 export const addDebugPowerUps = () => {
   store.set(inventoryAtom, (previous) => {
-    const state = normalizeInventoryState(previous);
-    const counts = { ...state.counts };
+    let slots = previous.slots;
 
     for (const powerUpId of POWER_UP_TYPES) {
-      counts[powerUpId] += DEBUG_POWER_UP_AMOUNT;
+      for (let amount = 0; amount < DEBUG_POWER_UP_AMOUNT; amount++) {
+        slots = addInventorySlot(slots, {
+          powerUpId,
+          tier: "common",
+        });
+      }
     }
 
     return {
-      ...state,
-      counts,
+      ...previous,
+      slots,
     };
   });
 };
@@ -84,4 +90,12 @@ export const enableGodMode = () => {
   enableAllUpgrades();
   enableAllManagers();
   store.set(walletAtom, { gold: serializeDecimal(GOD_MODE_GOLD_AMOUNT) });
+};
+
+export const openDebugOfflineEarning = () => {
+  store.set(offlineSummaryAtom, {
+    elapsedMs: 3_600_000,
+    totalGold: D(12_345),
+    results: [],
+  });
 };

@@ -50,8 +50,6 @@ export type FactoryType = keyof typeof FACTORY_DATA;
 
 export const FACTORY_TYPES = Object.keys(FACTORY_DATA) as FactoryType[];
 
-export const FACTORY_COUNT = FACTORY_TYPES.length;
-
 const createLocalizedFactory = (factory: FactoryType) => {
   const prefix = `factory.${factory}`;
 

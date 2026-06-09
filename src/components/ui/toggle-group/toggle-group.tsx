@@ -54,10 +54,9 @@ export const ToggleGroup = (props: ToggleGroupProps) => {
   );
 };
 
-interface ToggleGroupItemProps
-  extends React.ComponentProps<typeof ArkToggleGroup.Item> {}
-
-export const ToggleGroupItem = (props: ToggleGroupItemProps) => {
+export const ToggleGroupItem = (
+  props: React.ComponentProps<typeof ArkToggleGroup.Item>
+) => {
   const { value, className, ...rest } = props;
 
   const { size } = useToggleGroupContext();

@@ -312,7 +312,7 @@ export const ActionBarValue = (props: ActionBarValueProps) => {
   return (
     <Badge
       className={cn(
-        "shrink-0 font-medium font-number text-sm tabular-nums",
+        "shrink-0 font-number tabular-nums",
         className
       )}
       data-slot="action-bar-value"

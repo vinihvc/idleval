@@ -1,12 +1,12 @@
 import { Image } from "@unpic/react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
-import {
-  ResponsiveTooltip,
-  ResponsiveTooltipContent,
-  ResponsiveTooltipTrigger,
-} from "@/components/ui/responsive-tooltip";
 import { borderedText } from "@/components/ui/text-border";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   canStartManualProduction,
   getUpgradeMultiplierLabel,
@@ -34,19 +34,15 @@ export const FactoryCardProduce = (
   const produceLabel = m["ui.factoryCard.produce"]({ name });
 
   return (
-    <ResponsiveTooltip>
-      <ResponsiveTooltipTrigger asChild>
+    <Tooltip>
+      <TooltipTrigger asChild>
         <Button
           className={cn(
-            "group relative",
-            "size-24",
-            "bg-card",
-            "text-foreground",
-            "shrink-0",
-            "rounded-full border-3 border-primary/70",
-            "transition-all hover:border-primary/80",
-            "data-[producing=true]:focus-visible:border-info data-[producing=true]:focus-visible:ring-info/50",
-            "data-[producing=true]:border-info",
+            "group",
+            "absolute top-1/2 left-0 z-10 -translate-y-1/2",
+            "size-24 border-0 bg-transparent p-0 shadow-none",
+            "hover:bg-transparent",
+            "focus-visible:ring-0",
             className
           )}
           data-auto={isAutomated}
@@ -56,68 +52,76 @@ export const FactoryCardProduce = (
             !canStartManualProduction({ isProducing, isUnlocked, isAutomated })
           }
           onClick={() => startProducing(factoryType)}
-          size="icon-md"
+          variant="ghost"
           {...rest}
         >
           <div
             className={cn(
-              "relative",
-              "p-2",
-              "bg-secondary",
-              "rounded-full border-3 border-primary/40",
-              "group-data-[producing=true]:border-info"
+              "relative inline-flex items-center justify-center",
+              "size-24",
+              "p-1",
+              "bg-card",
+              "rounded-full border-8 border-secondary ring-4 ring-primary drop-shadow-md/5 sm:border-6",
+              "group-data-[producing=true]:border-info group-data-[producing=true]:ring-info/50"
             )}
+            data-slot="dialog-media"
           >
-            <div className="size-16 overflow-hidden rounded-full bg-card p-2 ring-4 ring-offset-4 ring-offset-secondary">
+            <div
+              className={cn(
+                "relative",
+                "group-data-[producing=true]:border-info",
+                "group-data-[unlocked=false]:grayscale"
+              )}
+            >
               <Image
                 alt={produceLabel}
+                aria-hidden
                 className={cn(
-                  "",
-                  "object-contain",
-                  "pixel-crisp",
-                  "pointer-events-none",
-                  "group-data-[unlocked=false]:grayscale"
+                  "pixel-crisp object-cover",
+                  "aspect-square size-13",
+                  "pointer-events-none"
                 )}
-                height={64}
+                data-slot="dialog-image"
+                height={112}
                 layout="constrained"
                 src={`/images/factories/${factoryType}.webp`}
-                width={64}
+                width={112}
               />
             </div>
 
             {isUpgraded && (
-              <div className="absolute -top-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full border-2 border-secondary bg-primary">
-                <NumberText className="text-xs" variant="cream">
+              <div className="absolute -top-1 -right-1 flex size-6.5 items-center justify-center rounded-full border-2 border-secondary bg-primary p-1">
+                <NumberText className="text-base" variant="cream">
                   {getUpgradeMultiplierLabel()}
                 </NumberText>
+              </div>
+            )}
+
+            {isUnlocked && (
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+                <span
+                  className={cn(
+                    "h-6 w-18",
+                    "flex items-center justify-center",
+                    "bg-accent text-accent-foreground",
+                    "font-number text-sm",
+                    "rounded-lg border-3 border-primary/40",
+                    "fade-in-50 slide-in-from-bottom-1 animate-in",
+                    "group-data-[producing=true]:border-info-foreground/40 group-data-[producing=true]:bg-info group-data-[producing=true]:text-white",
+                    borderedText({ variant: isProducing ? "blue" : "cream" })
+                  )}
+                >
+                  <NumberText variant="cream">{amount}</NumberText>
+                </span>
               </div>
             )}
           </div>
 
           <span className="sr-only">{produceLabel}</span>
-
-          {isUnlocked && (
-            <div className="absolute -bottom-2">
-              <span
-                className={cn(
-                  "h-6 w-18",
-                  "flex items-center justify-center",
-                  "bg-accent text-accent-foreground",
-                  "font-number text-sm",
-                  "rounded-lg border-3 border-primary/40",
-                  "fade-in-50 slide-in-from-bottom-1 animate-in",
-                  "group-data-[producing=true]:border-info-foreground/40 group-data-[producing=true]:bg-info group-data-[producing=true]:text-white",
-                  borderedText({ variant: isProducing ? "blue" : "cream" })
-                )}
-              >
-                <NumberText variant="cream">{amount}</NumberText>
-              </span>
-            </div>
-          )}
         </Button>
-      </ResponsiveTooltipTrigger>
+      </TooltipTrigger>
 
-      <ResponsiveTooltipContent>{produceLabel}</ResponsiveTooltipContent>
-    </ResponsiveTooltip>
+      <TooltipContent>{produceLabel}</TooltipContent>
+    </Tooltip>
   );
 };

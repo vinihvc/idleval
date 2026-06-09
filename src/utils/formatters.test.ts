@@ -4,6 +4,7 @@ import {
   amountFormatter,
   amountFormatterWithDolarSign,
   capitalize,
+  countdownFormatter,
   formatElapsedDuration,
   suffixAmountFormatter,
   timeFormatter,
@@ -43,6 +44,14 @@ describe("formatters", () => {
   it("timeFormatter formats minutes and seconds", () => {
     expect(timeFormatter(120)).toBe("2:00");
     expect(timeFormatter(65)).toBe("1:05");
+    expect(timeFormatter(66.381)).toBe("1:07");
+  });
+
+  it("countdownFormatter formats hours, minutes, and seconds", () => {
+    expect(countdownFormatter(45_000)).toBe("0:00:45");
+    expect(countdownFormatter(125_000)).toBe("0:02:05");
+    expect(countdownFormatter(3_600_000)).toBe("1:00:00");
+    expect(countdownFormatter(66_381)).toBe("0:01:07");
   });
 
   it("formatElapsedDuration formats seconds, minutes, hours, and days", () => {

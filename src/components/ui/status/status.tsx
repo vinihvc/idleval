@@ -40,7 +40,7 @@ interface StatusProps
     VariantProps<typeof statusVariants> {}
 
 export const Status = (props: StatusProps) => {
-  const { variant = "default", size = "md", className, ...rest } = props;
+  const { variant = "default", size = "sm", className, ...rest } = props;
 
   return (
     <ark.span

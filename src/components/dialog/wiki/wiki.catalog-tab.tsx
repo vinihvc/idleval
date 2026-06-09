@@ -1,7 +1,11 @@
 import { ChevronLeft } from "pixelarticons/react/ChevronLeft";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { UpgradeCard } from "@/components/ui/upgrade-card";
+import {
+  UpgradeCard,
+  UpgradeCardArt,
+  UpgradeCardPanel,
+} from "@/components/ui/upgrade-card";
 import { m } from "@/i18n/messages";
 import { WikiEntry } from "./wiki.entry";
 
@@ -13,7 +17,6 @@ export interface WikiCatalogItem {
   lore: string;
   mechanics: string;
   title: string;
-  unlocked: boolean;
 }
 
 interface WikiCatalogTabProps {
@@ -26,11 +29,11 @@ export const WikiCatalogTab = (props: WikiCatalogTabProps) => {
 
   const selectedItem = items.find((item) => item.id === selectedId);
 
-  if (selectedItem?.unlocked) {
+  if (selectedItem) {
     return (
       <div className="grid gap-3">
         <Button
-          className="w-fit justify-center gap-1.5"
+          className="w-fit gap-1.5"
           onClick={() => setSelectedId(null)}
           variant="brown"
         >
@@ -54,19 +57,16 @@ export const WikiCatalogTab = (props: WikiCatalogTabProps) => {
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
       {items.map((item) => (
         <UpgradeCard
-          aria-label={
-            item.unlocked
-              ? item.title
-              : m["ui.wiki.lockedEntry"]({ 0: item.title })
-          }
-          disabled={!item.unlocked}
-          icon={item.icon}
-          image={item.image}
+          aria-label={item.title}
+          greenFrame={false}
+          interactive
           key={item.id}
-          locked={!item.unlocked}
-          onClick={item.unlocked ? () => setSelectedId(item.id) : undefined}
-          title={item.title}
-        />
+          onClick={() => setSelectedId(item.id)}
+        >
+          <UpgradeCardPanel>
+            <UpgradeCardArt showImage src={item.image} />
+          </UpgradeCardPanel>
+        </UpgradeCard>
       ))}
     </div>
   );

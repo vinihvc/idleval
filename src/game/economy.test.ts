@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   bulkBuyCost,
   canAfford,
@@ -7,13 +7,9 @@ import {
   unitCost,
   upgradeCost,
 } from "@/game/economy";
-import { setDifficulty } from "@/store/atoms/settings";
 import { D } from "@/utils/decimal";
 
 describe("economy", () => {
-  beforeEach(() => {
-    setDifficulty("medium");
-  });
   it("unitCost scales with owned units", () => {
     const base = 10;
     const first = unitCost(base, 0);
@@ -94,13 +90,5 @@ describe("economy", () => {
     expect(upgradeCost(base, 0).toNumber()).toBe(base * 1000);
     expect(managerCost(base, 10).eq(managerCost(base, 0))).toBe(true);
     expect(upgradeCost(base, 10).eq(upgradeCost(base, 0))).toBe(true);
-  });
-
-  it("unitCost scales with difficulty cost multiplier", () => {
-    setDifficulty("easy");
-    expect(unitCost(100, 0).toNumber()).toBe(60);
-
-    setDifficulty("veryHard");
-    expect(unitCost(100, 0).toNumber()).toBe(250);
   });
 });

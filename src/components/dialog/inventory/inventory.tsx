@@ -10,57 +10,24 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { getLocalizedPowerUp, POWER_UP_GRID_LAYOUT } from "@/content/power-ups";
+import {
+  getLocalizedPowerUp,
+  INVENTORY_GRID_SIZE,
+  RELIC_SLOT_COUNT,
+} from "@/content/power-ups";
 import { canActivatePowerUp } from "@/game/power-ups";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
 import { useInventory } from "@/store/atoms/inventory";
 import { useNotificationDialogHandler } from "@/store/atoms/notifications";
-import { activatePowerUp } from "@/store/atoms/power-ups.actions";
-
-const InventoryDialogBody = () => {
-  const { counts, activePowerUp } = useInventory();
-  const { announce, message } = useLiveAnnouncer();
-
-  return (
-    <ResponsiveDialogBody className="gap-4">
-      <LiveAnnouncer message={message} />
-      <div className="grid grid-cols-5 gap-3">
-        {POWER_UP_GRID_LAYOUT.map((powerUpId, index) => (
-          <InventoryCard
-            count={powerUpId ? counts[powerUpId] : 0}
-            disabled={
-              powerUpId
-                ? !canActivatePowerUp(activePowerUp, counts[powerUpId] ?? 0)
-                : true
-            }
-            imageClassName="size-[68%]"
-            index={index}
-            key={powerUpId ?? `ritual-${index}`}
-            onUse={
-              powerUpId
-                ? () => {
-                    if (activatePowerUp(powerUpId)) {
-                      announce(
-                        m["ui.a11y.activated"]({
-                          name: getLocalizedPowerUp(powerUpId).name,
-                        })
-                      );
-                    }
-                  }
-                : undefined
-            }
-            powerUpId={powerUpId}
-          />
-        ))}
-      </div>
-    </ResponsiveDialogBody>
-  );
-};
+import { activatePowerUpAtSlot } from "@/store/atoms/power-ups.actions";
 
 export const InventoryDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+
   const onOpenChange = useNotificationDialogHandler("inventory");
+  const { slots, activePowerUp } = useInventory();
+  const { announce, message } = useLiveAnnouncer();
 
   return (
     <ResponsiveDialog onOpenChange={onOpenChange}>
@@ -79,12 +46,55 @@ export const InventoryDialog = (props: React.PropsWithChildren) => {
             {m["ui.inventory.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
+          <ResponsiveDialogDescription hideDescription>
             {m["ui.inventory.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <InventoryDialogBody />
+        <ResponsiveDialogBody>
+          <LiveAnnouncer message={message} />
+          <div className="grid grid-cols-4 gap-3 md:grid-cols-5">
+            {Array.from({ length: INVENTORY_GRID_SIZE }, (_, index) => {
+              const isRitualSlot = index >= RELIC_SLOT_COUNT;
+              const slot = isRitualSlot ? null : slots[index];
+              let slotKey = `empty-${index}`;
+
+              if (isRitualSlot) {
+                slotKey = `ritual-${index}`;
+              } else if (slot) {
+                slotKey = `relic-${slot.powerUpId}-${index}`;
+              }
+
+              return (
+                <InventoryCard
+                  count={slot?.count ?? 0}
+                  disabled={
+                    slot ? !canActivatePowerUp(activePowerUp, slot.count) : true
+                  }
+                  imageClassName="size-[68%]"
+                  index={index}
+                  isRitualSlot={isRitualSlot}
+                  key={slotKey}
+                  onUse={
+                    slot
+                      ? () => {
+                          if (activatePowerUpAtSlot(index)) {
+                            announce(
+                              m["ui.a11y.activated"]({
+                                name: getLocalizedPowerUp(slot.powerUpId).name,
+                              })
+                            );
+                          }
+                        }
+                      : undefined
+                  }
+                  powerUpId={slot?.powerUpId ?? null}
+                  tier={slot?.tier}
+                />
+              );
+            })}
+          </div>
+        </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

@@ -69,11 +69,39 @@ export const buttonVariants = tv({
         "hover:brightness-105 focus-visible:ring-info/50",
       ],
       purple: [
-        "bg-tertiary",
+        "bg-purple",
         "text-white",
         "active:brightness-95",
-        "border-tertiary-foreground/40",
-        "hover:brightness-105 focus-visible:ring-tertiary/50",
+        "border-purple-foreground/40",
+        "hover:brightness-105 focus-visible:ring-purple/50",
+      ],
+      teal: [
+        "bg-teal",
+        "text-white",
+        "active:brightness-95",
+        "border-teal-foreground/40",
+        "hover:brightness-105 focus-visible:ring-teal/50",
+      ],
+      olive: [
+        "bg-olive",
+        "text-white",
+        "active:brightness-95",
+        "border-olive-foreground/40",
+        "hover:brightness-105 focus-visible:ring-olive/50",
+      ],
+      wine: [
+        "bg-wine",
+        "text-white",
+        "active:brightness-95",
+        "border-wine-foreground/40",
+        "hover:brightness-105 focus-visible:ring-wine/50",
+      ],
+      ember: [
+        "bg-ember",
+        "text-ember-foreground",
+        "active:brightness-95",
+        "border-ember-foreground/40",
+        "hover:brightness-105 focus-visible:ring-ember/50",
       ],
       destructive: [
         "bg-destructive",
@@ -105,7 +133,6 @@ export const buttonVariants = tv({
     },
     clickEffect: {
       true: "active:scale-[0.99]",
-      false: "",
     },
   },
   defaultVariants: {
@@ -207,6 +234,10 @@ export const BUTTON_TEXT_BORDER = {
   green: "green",
   blue: "blue",
   purple: "purple",
+  teal: "teal",
+  olive: "olive",
+  wine: "wine",
+  ember: "ember",
   destructive: "red",
   ghost: "cream",
 } as const;

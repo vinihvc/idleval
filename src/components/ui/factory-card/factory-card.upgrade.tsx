@@ -69,6 +69,10 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
   });
   const canUnlock = canUnlockFactory(gold, unlockPrice);
 
+  const canShowBuy = isUnlocked && canBuyAmount && totalGreaterThan0;
+  const showEmptyCoffers = isUnlocked && !canShowBuy;
+  const isMutedUpgrade = isLocked || showEmptyCoffers;
+
   const buttonVariant = () => {
     if (!totalGreaterThan0) {
       return "stone";
@@ -82,6 +86,9 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
     return "stone";
   };
 
+  const mutedUpgradeClass =
+    "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-muted/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10 active:scale-100";
+
   return (
     <div
       className={cn("flex min-w-0 items-stretch gap-1", className)}
@@ -89,9 +96,8 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
     >
       <Button
         className={cn(
-          "h-9 min-h-9 min-w-0 flex-1 justify-between gap-1 px-2 font-bold font-number",
-          isLocked &&
-            "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-muted/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10 active:scale-100"
+          "min-w-0 flex-1 justify-between gap-1 px-2 font-bold font-number",
+          isMutedUpgrade && mutedUpgradeClass
         )}
         data-locked={isLocked}
         disabled={
@@ -125,17 +131,14 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
           </>
         )}
 
-        {isUnlocked && !canBuyAmount && (
+        {showEmptyCoffers && (
           <>
-            {m["ui.factoryCard.emptyCoffers"]()}
-            <NumberText>{amountFormatterWithDolarSign(buyPrice)}</NumberText>
-          </>
-        )}
-
-        {isUnlocked && canBuyAmount && !totalGreaterThan0 && (
-          <>
-            {m["ui.factoryCard.emptyCoffers"]()}
-            <NumberText>{amountFormatterWithDolarSign(buyPrice)}</NumberText>
+            <span className="[-webkit-text-stroke-width:0]">
+              {m["ui.factoryCard.emptyCoffers"]()}
+            </span>
+            <NumberText className="[-webkit-text-stroke-width:0]">
+              {amountFormatterWithDolarSign(buyPrice)}
+            </NumberText>
           </>
         )}
 
@@ -157,7 +160,6 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
             <ResponsiveTooltipTrigger asChild>
               <ResponsiveDialogTrigger asChild>
                 <Button
-                  className="size-9 shrink-0"
                   size="icon-lg"
                   variant="blue"
                 >

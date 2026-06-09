@@ -2,7 +2,7 @@ import { CalendarRange } from "pixelarticons/react/CalendarRange";
 import { Clock } from "pixelarticons/react/Clock";
 import { Hand } from "pixelarticons/react/Hand";
 import { Heart } from "pixelarticons/react/Heart";
-import React from "react";
+import type React from "react";
 import { FormattedNumber } from "@/components/ui/formatted-number";
 import {
   ResponsiveDialog,
@@ -28,12 +28,8 @@ interface FactoryDialogProps extends React.PropsWithChildren {
   factoryType: FactoryType;
 }
 
-interface FactoryDialogBodyProps {
-  factoryType: FactoryType;
-}
-
-const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
-  const { factoryType } = props;
+export const FactoryDialog = (props: FactoryDialogProps) => {
+  const { factoryType, children } = props;
 
   const factory = useFactory(factoryType);
   const yieldPerTap = useProductionValue(factoryType);
@@ -44,58 +40,47 @@ const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
   const lifetimeYield = useGoldEarnedByFactory(factoryType);
 
   return (
-    <>
-      <ResponsiveDialogMedia>
-        <ResponsiveDialogImage
-          alt={m["ui.factory.title"]({ "0": factory.name })}
-          src={`/images/factories/${factoryType}.webp`}
-        />
-      </ResponsiveDialogMedia>
-
-      <ResponsiveDialogHeader>
-        <ResponsiveDialogTitle>{factory.name}</ResponsiveDialogTitle>
-
-        <ResponsiveDialogDescription>
-          {factory.description}
-        </ResponsiveDialogDescription>
-      </ResponsiveDialogHeader>
-
-      <ResponsiveDialogBody>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <StatTile icon={<Clock />} label={m["ui.factory.craftPace"]()}>
-            <FormattedNumber value={factory.productionTime} />s
-          </StatTile>
-
-          <StatTile icon={<Hand />} label={m["ui.factory.yieldPerTap"]()}>
-            <FormattedNumber value={yieldPerTap} />
-          </StatTile>
-
-          <StatTile
-            icon={<CalendarRange />}
-            label={m["ui.factory.yieldPerHour"]()}
-          >
-            <FormattedNumber value={yieldPerHour} />
-          </StatTile>
-
-          <StatTile icon={<Heart />} label={m["ui.factory.lifetimeYield"]()}>
-            <FormattedNumber value={lifetimeYield} />
-          </StatTile>
-        </div>
-      </ResponsiveDialogBody>
-    </>
-  );
-};
-
-export const FactoryDialog = (props: FactoryDialogProps) => {
-  const { factoryType, children } = props;
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <ResponsiveDialog onOpenChange={setOpen} open={open}>
+    <ResponsiveDialog>
       {children}
 
       <ResponsiveDialogContent>
-        {open ? <FactoryDialogBody factoryType={factoryType} /> : null}
+        <ResponsiveDialogMedia>
+          <ResponsiveDialogImage
+            alt={m["ui.factory.title"]({ "0": factory.name })}
+            src={`/images/factories/${factoryType}.webp`}
+          />
+        </ResponsiveDialogMedia>
+
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{factory.name}</ResponsiveDialogTitle>
+
+          <ResponsiveDialogDescription>
+            {factory.description}
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+
+        <ResponsiveDialogBody>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <StatTile icon={<Clock />} label={m["ui.factory.craftPace"]()}>
+              <FormattedNumber value={factory.productionTime} />s
+            </StatTile>
+
+            <StatTile icon={<Hand />} label={m["ui.factory.yieldPerTap"]()}>
+              <FormattedNumber value={yieldPerTap} />
+            </StatTile>
+
+            <StatTile
+              icon={<CalendarRange />}
+              label={m["ui.factory.yieldPerHour"]()}
+            >
+              <FormattedNumber value={yieldPerHour} />
+            </StatTile>
+
+            <StatTile icon={<Heart />} label={m["ui.factory.lifetimeYield"]()}>
+              <FormattedNumber value={lifetimeYield} />
+            </StatTile>
+          </div>
+        </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

@@ -33,6 +33,7 @@ React hooks that connect browser lifecycle to the store and game logic.
 | `use-production-scheduler.ts` | Per-factory production tick |
 | `production-scheduler-sync.ts` | Pure tick sync + offline progress |
 | `use-offline-earning.ts` | Session heartbeat, tab visibility, offline apply + summary |
+| `use-notification-sync.ts` | Clears dismissed badges when notification conditions go inactive |
 | `use-context-menu.ts` | Disable context menu in production |
 | `use-countdown.ts`, `use-interval.ts` | Timing utilities |
 
@@ -43,5 +44,6 @@ React hooks that connect browser lifecycle to the store and game logic.
 
 ## Evolution
 
+- 2026-06-08 — `use-notification-sync` clears notification dismissals when conditions go inactive
 - 2026-06-08 — Renamed offline modules to singular `use-offline-earning`
 - 2026-06-07 — Initial docs: scheduler + session sync + pure modules

@@ -7,7 +7,7 @@ import {
   inventoryAtom,
 } from "@/store/atoms/inventory";
 import {
-  activatePowerUp,
+  activatePowerUpAtSlot,
   claimDailyReward,
   refreshDailyStreakState,
 } from "@/store/atoms/power-ups.actions";
@@ -24,37 +24,66 @@ describe("power-ups.actions", () => {
 
   it("claims the fixed day-one reward and stacks duplicates", () => {
     expect(claimDailyReward()).toBe(true);
-    expect(getInventoryState().counts.auroraDust).toBe(1);
+    expect(getInventoryState().slots).toEqual([
+      { powerUpId: "auroraDust", count: 1, tier: "common" },
+    ]);
     expect(getInventoryState().dailyStreak).toBe(1);
     expect(getInventoryState().lastClaimLocalDate).toBe(getLocalDateString());
 
     store.set(inventoryAtom, {
       ...initialInventoryState,
-      counts: {
-        ...initialInventoryState.counts,
-        auroraDust: 2,
-      },
+      slots: [{ powerUpId: "auroraDust", count: 2, tier: "common" }],
       dailyStreak: 0,
       lastClaimLocalDate: null,
     });
 
     expect(claimDailyReward()).toBe(true);
-    expect(getInventoryState().counts.auroraDust).toBe(3);
+    expect(getInventoryState().slots).toEqual([
+      { powerUpId: "auroraDust", count: 3, tier: "common" },
+    ]);
   });
 
   it("blocks using a second power-up while one is active", () => {
     store.set(inventoryAtom, {
       ...initialInventoryState,
-      counts: {
-        ...initialInventoryState.counts,
-        auroraDust: 1,
-        lightningShard: 1,
-      },
+      slots: [
+        { powerUpId: "auroraDust", count: 1, tier: "common" },
+        { powerUpId: "lightningShard", count: 1, tier: "common" },
+      ],
     });
 
-    expect(activatePowerUp("auroraDust")).toBe(true);
-    expect(activatePowerUp("lightningShard")).toBe(false);
-    expect(getInventoryState().counts.lightningShard).toBe(1);
+    expect(activatePowerUpAtSlot(0)).toBe(true);
+    expect(activatePowerUpAtSlot(1)).toBe(false);
+    expect(getInventoryState().slots).toEqual([
+      { powerUpId: "lightningShard", count: 1, tier: "common" },
+    ]);
+  });
+
+  it("shifts relics left when the last unit in a stack is used", () => {
+    store.set(inventoryAtom, {
+      ...initialInventoryState,
+      slots: [
+        { powerUpId: "auroraDust", count: 1, tier: "common" },
+        { powerUpId: "ghostCandle", count: 1, tier: "common" },
+      ],
+    });
+
+    expect(activatePowerUpAtSlot(0)).toBe(true);
+    expect(getInventoryState().slots).toEqual([
+      { powerUpId: "ghostCandle", count: 1, tier: "common" },
+    ]);
+  });
+
+  it("decrements stacked relics without shifting other slots", () => {
+    store.set(inventoryAtom, {
+      ...initialInventoryState,
+      slots: [{ powerUpId: "auroraDust", count: 2, tier: "common" }],
+    });
+
+    expect(activatePowerUpAtSlot(0)).toBe(true);
+    expect(getInventoryState().slots).toEqual([
+      { powerUpId: "auroraDust", count: 1, tier: "common" },
+    ]);
   });
 
   it("resets streak after missing a local day", () => {

@@ -17,6 +17,7 @@ import { ManagersCard } from "./managers.card";
 
 export const ManagersDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+
   const { announce, message } = useLiveAnnouncer();
   const onOpenChange = useNotificationDialogHandler("managers");
 
@@ -37,7 +38,7 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
             {m["ui.managers.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
+          <ResponsiveDialogDescription hideDescription>
             {m["ui.managers.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>

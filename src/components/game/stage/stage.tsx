@@ -15,7 +15,7 @@ export const GameStage = (props: GameStageProps) => {
         "flex shrink-0 items-center justify-end gap-2",
         "px-2 sm:gap-3 sm:px-3",
         "bg-secondary/95",
-        "border-primary/40 border-b",
+        "border-primary border-b",
         className
       )}
       data-slot="game-stage"

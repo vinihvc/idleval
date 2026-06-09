@@ -15,7 +15,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 - Dialogs with `ResponsiveDialog` (Dialog ≥768px, Drawer below)
 - Tooltips with `ResponsiveTooltip` (Tooltip ≥768px, ToggleTooltip below)
 - Ark UI primitives + `tailwind-variants` (`tv`) + `cn()`
-- Box elevation via `boxBorder()` from `@/components/ui/box-border` (same variant names as `borderedText`)
+- Box elevation via `boxBorder()` from `ui/box-border/`
 - Images with `@unpic/react` `Image`; icons with `pixelarticons/react/IconName` (per-icon imports, not the root barrel)
 - Lazy-load domain dialogs via colocated `lazy.ts` + `<Suspense fallback={null}>` at call sites; tests import dialog modules directly
 
@@ -31,7 +31,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 
 For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](../providers/variant-tools.tsx) + [`debug/variant-tools.tsx`](debug/variant-tools.tsx) (fixed top-right, hotkeys 1–4 in dev). Define `Record<VariantTools, …>` presets in the target component and pick with `usePickVariantTools`.
 
-**UpgradeCard** uses a single fixed green preset (former variant D) — do not wire it to variant-tools.
+**UpgradeCard** is a stateless compound primitive (`UpgradeCard`, `UpgradeCardPanel`, `UpgradeCardArt`, `UpgradeCardSeal`, …) with a fixed green preset — domain cards own `getSealedState` / `useHoldPress`; do not wire to variant-tools.
 
 ## Patterns
 
@@ -46,10 +46,11 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 
 | Subfolder | Role |
 |-----------|------|
-| `ui/` | Design-system primitives (`box-border`, `text-border`, button, dialog, drawer, …) |
+| `ui/` | Design-system primitives (`text-border`, button, dialog, drawer, …) |
 | `ui/factory-card/`, `ui/upgrade-card/` | Composites with provider + dot-notation subfiles |
 | `dialog/` | Domain overlays (`settings/`, `wiki/`, `upgrades/`, `managers/`, `gods/`, `inventory/`, `offline-earning/`) |
-| `layout/` | Shell: `game-shell`, `game-panel`, `game-stage`, `factory-grid`, `header/`, `navigation`, `footer` |
+| `game/` | Game shell: `shell/`, `panel/`, `stage/`, `factory-grid/` |
+| `layout/` | Chrome: `header/`, `navigation/`, `footer/`, `background/` |
 | `icons/` | Custom SVGs (`coin`, `logo`, `wax-seal`) |
 | `debug/` | Dev-only (`variant-tools` fixed top-right, `action-tools` bottom bar, `media-query`) |
 
@@ -59,8 +60,8 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 |------|------|
 | `ui/responsive-dialog/` | Adaptive Dialog/Drawer (768px breakpoint) |
 | `ui/responsive-tooltip/` | Adaptive Tooltip/ToggleTooltip (768px breakpoint) |
-| `layout/game-stage/` | Persistent stage strip (messages, sprites, power-up status) |
-| `layout/factory-grid/` | Main factory grid |
+| `game/stage/` | Persistent stage strip (messages, sprites, power-up status) |
+| `game/factory-grid/` | Main factory grid |
 | `layout/navigation/` | Mobile + desktop nav |
 
 ## Neighbors
@@ -70,8 +71,9 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 
 ## Evolution
 
-- 2026-06-08 — `layout/game-stage/` replaces `active-power-up` (GameStage orchestrator + power-up slice)
-- 2026-06-08 — `ui/box-border/` elevation utility (renamed from `bottom-shadow`); UpgradeCard fixed to preset D (no variant-tools)
+- 2026-06-08 — Game shell moved from `layout/` to `game/` (`shell`, `panel`, `stage`, `factory-grid`)
+- 2026-06-08 — `ui/menu` (Shark) + debug dialog menu in ActionTools
+- 2026-06-08 — UpgradeCard refactored to stateless compound API in single file; domain cards compose named subparts
+- 2026-06-08 — Restored `ui/box-border/`; elevation via `boxBorder()` instead of `globals.css` utilities
 - 2026-06-08 — `variant-tools` fixed top-right; `action-tools` bottom ActionBar
 - 2026-06-08 — ResponsiveTooltip (Tooltip ≥768px, ToggleTooltip below)
-- 2026-06-08 — Royal Codex wiki dialog opened from Settings (gods, figures, upgrades, tips)

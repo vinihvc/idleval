@@ -1,7 +1,6 @@
 import "vitest-browser-react";
 
 import { beforeEach, vi } from "vitest";
-import { DEFAULT_DIFFICULTY } from "@/game/difficulty";
 import { store } from "@/providers/store";
 import { settingsAtom } from "@/store/atoms/settings";
 import { resetGame } from "@/store/reset";
@@ -25,7 +24,6 @@ beforeEach(() => {
   localStorage.clear();
   resetGame();
   store.set(settingsAtom, {
-    difficulty: DEFAULT_DIFFICULTY,
     musicVolume: 0.8,
     sfxVolume: 0.8,
   });

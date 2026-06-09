@@ -20,6 +20,7 @@ const boxBorderVariants = tv({
       cream: [
         "[--box-border-edge-color:oklch(0.72_0.14_85)]",
         "[--box-border-soft-color:oklch(0.45_0.12_85/0.45)]",
+        "[--box-border-ring-color:oklch(0.72_0.14_85/0.45)]",
       ],
       brown: [
         "[--box-border-edge-color:oklch(0.55_0.12_75)]",
@@ -81,18 +82,27 @@ const boxBorderVariants = tv({
         "hover:shadow-[0_var(--box-border-edge-hover)_0_var(--box-border-edge-color-hover),0_var(--box-border-soft-y-hover)_var(--box-border-soft-blur-hover)_var(--box-border-soft-color-hover)]",
         "active:shadow-[0_var(--box-border-edge-active)_0_var(--box-border-edge-color-active),0_var(--box-border-soft-y-active)_var(--box-border-soft-blur-active)_var(--box-border-soft-color-active)]",
       ],
-      false: "",
     },
     interactiveOnly: {
       true: [
         "hover:shadow-[0_var(--box-border-edge-hover)_0_var(--box-border-edge-color-hover),0_var(--box-border-soft-y-hover)_var(--box-border-soft-blur-hover)_var(--box-border-soft-color-hover)]",
         "active:shadow-[0_var(--box-border-edge-active)_0_var(--box-border-edge-color-active),0_var(--box-border-soft-y-active)_var(--box-border-soft-blur-active)_var(--box-border-soft-color-active)]",
       ],
-      false: "",
     },
     intensity: {
       default: "",
       subtle: "[--box-border-edge-color:oklch(0.65_0.12_75/0.55)]",
+    },
+    inset: {
+      none: "",
+      sm: "shadow-[inset_0_1px_3px_var(--box-border-soft-color)]",
+      md: "shadow-[inset_0_2px_5px_var(--box-border-soft-color)]",
+      lg: "shadow-[inset_0_3px_8px_var(--box-border-soft-color)]",
+      well: "shadow-[inset_0_2px_8px_var(--box-border-soft-color)]",
+      highlight: "shadow-[inset_0_1px_0_oklch(1_0_0/0.06)]",
+    },
+    ring: {
+      true: "shadow-[0_0_0_2px_var(--box-border-ring-color,var(--box-border-edge-color))]",
     },
   },
   defaultVariants: {
@@ -102,6 +112,8 @@ const boxBorderVariants = tv({
     interactive: false,
     interactiveOnly: false,
     intensity: "default",
+    inset: "none",
+    ring: false,
   },
 });
 

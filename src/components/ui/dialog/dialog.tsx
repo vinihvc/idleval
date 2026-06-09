@@ -8,30 +8,21 @@ import { Close } from "pixelarticons/react/Close";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { WaxSeal } from "@/components/icons/wax-seal";
-import { Button } from "@/components/ui/button";
 import { boxBorder } from "@/components/ui/box-border";
+import { Button } from "@/components/ui/button";
 import { FantasyCorner } from "@/components/ui/fantasy-corner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
-import { IS_DEV } from "@/lib/envs";
 
 export const useDialog = useDialogContext;
 
 export const Dialog = (props: React.ComponentProps<typeof ArkDialog.Root>) => {
-  const {
-    closeOnInteractOutside,
-    modal,
-    lazyMount = true,
-    unmountOnExit = true,
-    ...rest
-  } = props;
+  const { lazyMount = true, unmountOnExit = true, ...rest } = props;
 
   return (
     <ArkDialog.Root
-      closeOnInteractOutside={IS_DEV ? true : closeOnInteractOutside}
       lazyMount={lazyMount}
-      modal={IS_DEV ? true : modal}
       unmountOnExit={unmountOnExit}
       {...rest}
     />
@@ -213,7 +204,7 @@ export const DialogBody = (props: DialogBodyProps) => {
       <ark.div
         className={cn(
           "p-(--space)",
-          "text-center text-lg sm:text-left",
+          "text-center text-xl sm:text-left",
           "overflow-auto",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-header])]:pt-1",
           "in-[[data-slot=dialog-content]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1",

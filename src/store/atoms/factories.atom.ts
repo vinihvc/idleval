@@ -5,7 +5,6 @@ import type { FactoryPersistedState } from "@/game/types";
 import { persistedAtomWithNormalize } from "@/store/storage";
 
 const INITIAL_FACTORY: FactoryType = "grain";
-const LEGACY_MILL_KEY = "mill";
 
 export const initialData = Object.fromEntries(
   FACTORY_TYPES.map((factory) => [
@@ -28,7 +27,7 @@ const isFactoryPersistedState = (
   "amount" in value &&
   typeof value.amount === "number";
 
-export const normalizeFactoriesState = (
+const normalizeFactoriesState = (
   value: unknown
 ): Record<FactoryType, FactoryPersistedState> => {
   if (typeof value !== "object" || value === null) {
@@ -39,8 +38,7 @@ export const normalizeFactoriesState = (
   const next = structuredClone(initialData);
 
   for (const factory of FACTORY_TYPES) {
-    const saved =
-      raw[factory] ?? (factory === "wine" ? raw[LEGACY_MILL_KEY] : undefined);
+    const saved = raw[factory];
 
     if (isFactoryPersistedState(saved)) {
       next[factory] = { ...next[factory], ...saved };

@@ -12,7 +12,6 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 - Colocate tests `*.test.ts` with Vitest (`environment: node`)
 - Add `@example` JSDoc on public exports
 - Use `D` / `GameValue` from `@/utils/decimal` for large numbers
-- Use `beforeEach(() => setDifficulty("medium"))` when difficulty affects the test
 
 ## Don't
 
@@ -23,9 +22,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Patterns
 
-- Modules by domain: `economy.ts`, `factories.ts`, `gods.ts`, `purchases.ts`, `offline-earning.ts`, `difficulty.ts`
+- Modules by domain: `economy.ts`, `factories.ts`, `gods.ts`, `purchases.ts`, `offline-earning.ts`
 - Persisted state shapes in `types.ts`
-- Only store exception: `getDifficultyLevel` / `setDifficulty` from `store/atoms/settings`
 
 ## Key files
 
@@ -40,9 +38,10 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Neighbors
 
-- Reads from: `content/`, `utils/decimal`, `store/atoms/settings` (difficulty)
+- Reads from: `content/`, `utils/decimal`
 - Consumed by: `store/` (actions), `components/` (can* checks)
 
 ## Evolution
 
+- 2026-06-08 — Removed difficulty system; game layer no longer imports store
 - 2026-06-07 — Initial docs: pure logic + colocated tests

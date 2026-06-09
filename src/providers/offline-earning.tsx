@@ -1,5 +1,6 @@
 import React from "react";
 
+import { useNotificationSync } from "@/hooks/use-notification-sync";
 import { useOfflineEarning } from "@/hooks/use-offline-earning";
 import { usePowerUpBootstrap } from "@/hooks/use-power-up-bootstrap";
 import { useProductionScheduler } from "@/hooks/use-production-scheduler";
@@ -10,6 +11,7 @@ const LazyOfflineEarningDialog = React.lazy(
 
 export const OfflineEarning = ({ children }: React.PropsWithChildren) => {
   usePowerUpBootstrap();
+  useNotificationSync();
   const summary = useOfflineEarning();
   useProductionScheduler();
 

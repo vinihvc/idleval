@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { FactoryGrid } from "@/components/layout/factory-grid";
+import { FactoryGrid } from "@/components/game/factory-grid";
 import { FACTORY_TYPES } from "@/content/factories";
 import { renderWithProviders } from "@/test/render-with-providers";
 

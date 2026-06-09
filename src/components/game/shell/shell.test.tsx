@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { GameShell } from "@/components/layout/game-shell";
+import { GameShell } from "@/components/game/shell";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("GameShell", () => {

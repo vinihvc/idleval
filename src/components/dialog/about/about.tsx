@@ -12,39 +12,6 @@ import {
 } from "@/components/ui/responsive-dialog";
 import { m } from "@/i18n/messages";
 
-const aboutLinkClass =
-  "font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4";
-
-interface AboutLinkItemProps {
-  href: string;
-  message: (typeof m)["ui.about.react"];
-}
-
-const AboutLinkItem = (props: AboutLinkItemProps) => {
-  const { href, message } = props;
-
-  return (
-    <li>
-      <ParaglideMessage
-        inputs={{}}
-        markup={{
-          link: ({ children }) => (
-            <a
-              className={aboutLinkClass}
-              href={href}
-              rel="noopener noreferrer nofollow"
-              target="_blank"
-            >
-              {children}
-            </a>
-          ),
-        }}
-        message={message}
-      />
-    </li>
-  );
-};
-
 export const AboutDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
@@ -104,6 +71,36 @@ export const AboutDialog = (props: React.PropsWithChildren) => {
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
+  );
+};
+
+interface AboutLinkItemProps {
+  href: string;
+  message: (typeof m)["ui.about.react"];
+}
+
+const AboutLinkItem = (props: AboutLinkItemProps) => {
+  const { href, message } = props;
+
+  return (
+    <li>
+      <ParaglideMessage
+        inputs={{}}
+        markup={{
+          link: ({ children }) => (
+            <a
+              className="font-semibold text-muted underline decoration-2 decoration-primary underline-offset-4"
+              href={href}
+              rel="noopener noreferrer nofollow"
+              target="_blank"
+            >
+              {children}
+            </a>
+          ),
+        }}
+        message={message}
+      />
+    </li>
   );
 };
 

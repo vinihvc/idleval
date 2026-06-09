@@ -124,7 +124,7 @@ const drawerPositionerVariants = tv({
   variants: {
     variant: {
       default: "",
-      inset: "p-2",
+      inset: "px-2",
     },
   },
   defaultVariants: {
@@ -155,12 +155,12 @@ const drawerContentVariants = tv({
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
     "w-full",
-    "h-auto max-h-[calc(92svh-env(safe-area-inset-top,0)-var(--drawer-image-overflow))] shrink-0",
+    "h-auto max-h-svh shrink-0",
     "has-data-[slot=drawer-media]:overflow-visible",
-    "mb-0 pb-(--bottom-nav-height)",
-    "sm:-mb-(--bleed) sm:max-h-[92svh] sm:shrink sm:pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
+    "mb-0 pb-14",
+    "sm:-mb-(--bleed) sm:max-h-svh sm:shrink sm:pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
     "sm:has-data-[slot=drawer-media]:overflow-hidden",
-    "has-data-[slot=dialog-image]:max-h-[min(92svh,calc(92svh-var(--drawer-image-overflow)-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]",
+    "has-data-[slot=dialog-image]:max-h-[min(svh,calc(svh-var(--drawer-image-overflow)-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]",
     "border-4 border-primary bg-popover",
     "text-muted",
     "inset-shadow-xs",
@@ -429,9 +429,9 @@ export const DrawerBody = (props: DrawerBodyProps) => {
     <ScrollArea className="min-h-0 flex-1" scrollFade={scrollFade}>
       <ark.div
         className={cn(
-          "px-(--space) pt-(--space) pb-0 text-center",
-          "text-lg sm:p-(--space) sm:text-left",
-          "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-1",
+          "px-(--space) py-(--space) pb-4 text-center",
+          "text-xl sm:p-(--space) sm:text-left",
+          "in-[[data-slot=drawer-content]:has([data-slot=drawer-footer]:not(.border-t))]:pb-4",
           className
         )}
         data-slot="drawer-body"

@@ -18,49 +18,15 @@ import { useNotificationDialogHandler } from "@/store/atoms/notifications";
 import { claimDailyReward } from "@/store/atoms/power-ups.actions";
 import { DailyRewardCalendar } from "./daily-reward.calendar";
 
-const DailyRewardDialogBody = () => {
-  const { isPending, offer } = useDailyReward();
-  const { announce, message } = useLiveAnnouncer();
-
-  return (
-    <>
-      <LiveAnnouncer message={message} />
-      <ResponsiveDialogBody className="gap-4">
-        <DailyRewardCalendar
-          dayInCycle={offer.dayInCycle}
-          isPending={isPending}
-        />
-      </ResponsiveDialogBody>
-
-      <ResponsiveDialogFooter>
-        <Button
-          className="w-full"
-          disabled={!isPending}
-          onClick={
-            isPending
-              ? () => {
-                  if (claimDailyReward()) {
-                    announce(m["ui.a11y.claimed"]());
-                  }
-                }
-              : undefined
-          }
-          variant={isPending ? "default" : "green"}
-        >
-          {isPending ? m["ui.daily.claim"]() : m["ui.daily.claimed"]()}
-        </Button>
-      </ResponsiveDialogFooter>
-    </>
-  );
-};
-
 export const DailyRewardDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
   const onOpenChange = useNotificationDialogHandler("daily");
+  const { isPending, offer } = useDailyReward();
+  const { announce, message } = useLiveAnnouncer();
 
   return (
-    <ResponsiveDialog onOpenChange={onOpenChange}>
+    <ResponsiveDialog onOpenChange={onOpenChange} role="alertdialog">
       {children}
 
       <ResponsiveDialogContent>
@@ -79,7 +45,32 @@ export const DailyRewardDialog = (props: React.PropsWithChildren) => {
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <DailyRewardDialogBody />
+        <LiveAnnouncer message={message} />
+        <ResponsiveDialogBody>
+          <DailyRewardCalendar
+            dayInCycle={offer.dayInCycle}
+            isPending={isPending}
+          />
+        </ResponsiveDialogBody>
+
+        <ResponsiveDialogFooter>
+          <Button
+            className="w-full"
+            disabled={!isPending}
+            onClick={
+              isPending
+                ? () => {
+                    if (claimDailyReward()) {
+                      announce(m["ui.a11y.claimed"]());
+                    }
+                  }
+                : undefined
+            }
+            variant={isPending ? "default" : "green"}
+          >
+            {isPending ? m["ui.daily.claim"]() : m["ui.daily.claimed"]()}
+          </Button>
+        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   canPurchaseManager,
   canPurchaseUpgrade,
@@ -9,13 +9,9 @@ import {
   getUpgradeMultiplierLabel,
   isFactoryProductionActive,
 } from "@/game/factories";
-import { setDifficulty } from "@/store/atoms/settings";
 import { D } from "@/utils/decimal";
 
 describe("factories rules", () => {
-  beforeEach(() => {
-    setDifficulty("medium");
-  });
   it("getFactoryYieldPerHour scales by cycle duration", () => {
     const yieldPerCycle = D(10);
     const yieldPerHour = getFactoryYieldPerHour(yieldPerCycle, 10);
@@ -39,28 +35,6 @@ describe("factories rules", () => {
     expect(
       getFactoryProductionValue({ ...base, isUpgraded: true }).toNumber()
     ).toBe(120);
-  });
-
-  it("getFactoryProductionValue scales with difficulty income multiplier", () => {
-    setDifficulty("easy");
-
-    expect(
-      getFactoryProductionValue({
-        productionValue: 100,
-        isUpgraded: false,
-        godsProductionMultiplier: D(1),
-      }).toNumber()
-    ).toBe(140);
-
-    setDifficulty("hard");
-
-    expect(
-      getFactoryProductionValue({
-        productionValue: 100,
-        isUpgraded: false,
-        godsProductionMultiplier: D(1),
-      }).toNumber()
-    ).toBe(75);
   });
 
   it("getFactoryEarnPerCycle scales by owned amount", () => {

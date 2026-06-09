@@ -1,20 +1,21 @@
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import React from "react";
+import { VariantTools } from "@/components/debug/variant-tools";
 import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { IS_DEV } from "@/lib/envs";
 
 export const VARIANT_TOOLS = ["a", "b", "c", "d"] as const;
 
-export type VariantTools = (typeof VARIANT_TOOLS)[number];
+export type VariantToolsType = (typeof VARIANT_TOOLS)[number];
 
-const DEFAULT_VARIANT: VariantTools = "d";
+const DEFAULT_VARIANT: VariantToolsType = "d";
 
-const isVariantTools = (value: string): value is VariantTools =>
+const isVariantTools = (value: string): value is VariantToolsType =>
   (VARIANT_TOOLS as readonly string[]).includes(value);
 
 interface VariantToolsContextValue {
-  setVariant: (variant: VariantTools) => void;
-  variant: VariantTools;
+  setVariant: (variant: VariantToolsType) => void;
+  variant: VariantToolsType;
 }
 
 const VariantToolsContext =
@@ -22,7 +23,7 @@ const VariantToolsContext =
 
 export const VariantToolsProvider = ({ children }: React.PropsWithChildren) => {
   const [storedVariant, setStoredVariant] = useLocalStorage<string>(
-    LOCAL_STORAGE_KEYS.openCardVariant,
+    LOCAL_STORAGE_KEYS.inventoryCardVariant,
     DEFAULT_VARIANT
   );
   const variant = isVariantTools(storedVariant)
@@ -30,7 +31,7 @@ export const VariantToolsProvider = ({ children }: React.PropsWithChildren) => {
     : DEFAULT_VARIANT;
 
   const setVariant = React.useCallback(
-    (next: VariantTools) => {
+    (next: VariantToolsType) => {
       setStoredVariant(next);
     },
     [setStoredVariant]
@@ -68,6 +69,8 @@ export const VariantToolsProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <VariantToolsContext.Provider value={value}>
       {children}
+
+      <VariantTools />
     </VariantToolsContext.Provider>
   );
 };
@@ -82,8 +85,8 @@ export const useVariantTools = () => {
   return context;
 };
 
-export const useIsVariantTools = (target: VariantTools) =>
+export const useIsVariantTools = (target: VariantToolsType) =>
   useVariantTools().variant === target;
 
-export const usePickVariantTools = <T,>(options: Record<VariantTools, T>) =>
+export const usePickVariantTools = <T,>(options: Record<VariantToolsType, T>) =>
   options[useVariantTools().variant];

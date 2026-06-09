@@ -18,9 +18,10 @@ import { GodsCard } from "./gods.card";
 export const GodsDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
 
-  const [open, setOpen] = React.useState(false);
   const { announce, message } = useLiveAnnouncer();
   const dismissNotification = useNotificationDialogHandler("gods");
+
+  const [open, setOpen] = React.useState(false);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
@@ -42,7 +43,7 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{m["ui.gods.title"]()}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
+          <ResponsiveDialogDescription hideDescription>
             {m["ui.gods.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>

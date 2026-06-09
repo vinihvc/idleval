@@ -10,8 +10,6 @@ export {
 export { factoriesAtom, initialData, useFactories } from "./factories.atom";
 export {
   getFactory,
-  getProductionValue,
-  totalToEarnAfterProduce,
   useFactory,
   useProductionValue,
   useTotalToEarnAfterProduce,

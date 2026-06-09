@@ -40,8 +40,6 @@ export const createInitialStatistics = (): Record<
 
 export const initialStatistics = createInitialStatistics();
 
-const LEGACY_MILL_KEY = "mill";
-
 const isFactoryStatistics = (value: unknown): value is FactoryStatistics =>
   typeof value === "object" &&
   value !== null &&
@@ -52,7 +50,7 @@ const isFactoryStatistics = (value: unknown): value is FactoryStatistics =>
   "goldSpent" in value &&
   typeof value.goldSpent === "string";
 
-export const normalizeStatisticsState = (value: unknown): StatisticsState => {
+const normalizeStatisticsState = (value: unknown): StatisticsState => {
   const empty: StatisticsState = {
     goldEarned: serializeDecimal(D(0)),
     goldSpent: serializeDecimal(D(0)),
@@ -72,9 +70,7 @@ export const normalizeStatisticsState = (value: unknown): StatisticsState => {
 
   if (rawFactories && typeof rawFactories === "object") {
     for (const factory of FACTORY_TYPES) {
-      const saved =
-        rawFactories[factory] ??
-        (factory === "wine" ? rawFactories[LEGACY_MILL_KEY] : undefined);
+      const saved = rawFactories[factory];
 
       if (isFactoryStatistics(saved)) {
         factories[factory] = { ...saved };

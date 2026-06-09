@@ -6,7 +6,7 @@ import { canInvokeGodAtIndex, getTotalProductionMultiplier } from "@/game/gods";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { resetRunProgress } from "@/store/reset-run-progress";
-import { persistedAtomWithNormalize } from "@/store/storage";
+import { persistedAtom } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold, useWallet } from "./wallet";
 
@@ -14,47 +14,14 @@ export interface GodsState {
   invoked: GodId[];
 }
 
-interface LegacyGodsState {
-  count: number;
-}
-
-const isGodsState = (value: unknown): value is GodsState =>
-  typeof value === "object" &&
-  value !== null &&
-  "invoked" in value &&
-  Array.isArray(value.invoked);
-
-const isLegacyGodsState = (value: unknown): value is LegacyGodsState =>
-  typeof value === "object" &&
-  value !== null &&
-  "count" in value &&
-  typeof value.count === "number";
-
-export const normalizeGodsState = (value: unknown): GodsState => {
-  if (isGodsState(value)) {
-    return value;
-  }
-
-  if (isLegacyGodsState(value)) {
-    return {
-      invoked: GOD_DATA.slice(0, value.count).map((god) => god.id),
-    };
-  }
-
-  return { invoked: [] };
-};
-
-export const godsAtom = persistedAtomWithNormalize<GodsState>(
-  LOCAL_STORAGE_KEYS.gods,
-  { invoked: [] },
-  normalizeGodsState
-);
+export const godsAtom = persistedAtom<GodsState>(LOCAL_STORAGE_KEYS.gods, {
+  invoked: [],
+});
 
 export const useGodsState = () => useAtomValue(godsAtom);
 
 export const useGods = () => {
-  const state = useGodsState();
-  const { invoked } = normalizeGodsState(state);
+  const { invoked } = useGodsState();
 
   return {
     invoked,
@@ -64,8 +31,7 @@ export const useGods = () => {
 
 let invokeInProgress = false;
 
-export const getInvokedGods = (): GodId[] =>
-  normalizeGodsState(store.get(godsAtom)).invoked;
+export const getInvokedGods = (): GodId[] => store.get(godsAtom).invoked;
 
 export const getGodsProductionMultiplier = (): GameValue =>
   getTotalProductionMultiplier(getInvokedGods());
@@ -119,14 +85,13 @@ export const invokeGod = (godIndex: number): boolean => {
     }
 
     store.set(godsAtom, (previous) => {
-      const { invoked: invokedBefore } = normalizeGodsState(previous);
       const godId = GOD_DATA[godIndex].id;
 
-      if (invokedBefore.includes(godId)) {
-        return { invoked: invokedBefore };
+      if (previous.invoked.includes(godId)) {
+        return previous;
       }
 
-      return { invoked: [...invokedBefore, godId] };
+      return { invoked: [...previous.invoked, godId] };
     });
 
     resetRunProgress();

@@ -38,7 +38,7 @@ export const FactoryCardProgress = (
     <Progress
       aria-valuetext={ariaValueText}
       className={cn(
-        "group relative inset-shadow-xs h-7 w-full gap-0 overflow-hidden rounded-md border-3 border-primary/40 bg-muted",
+        "group inset-shadow-xs h-7 gap-0 overflow-hidden rounded-md border-3 border-primary/40 bg-muted",
         className
       )}
       data-auto={isAutomated}
@@ -65,10 +65,12 @@ export const FactoryCardProgress = (
 
       <div
         className={cn(
-          "pointer-events-none absolute inset-0",
+          "absolute inset-0",
           "flex items-center justify-between",
           "px-2",
           "font-semibold text-foreground text-lg tracking-wide",
+          "pointer-events-none",
+          "text-nowrap",
           borderedText({ variant: "cream" })
         )}
       >

@@ -20,7 +20,7 @@ export const Footer = (props: React.ComponentProps<"footer">) => {
       )}
       {...rest}
     >
-      <div className="flex justify-center gap-5 font-medium text-sm md:justify-end">
+      <div className="flex justify-center gap-5 font-medium text-base md:justify-end">
         <div>
           <React.Suspense fallback={null}>
             <LazyAboutDialog>

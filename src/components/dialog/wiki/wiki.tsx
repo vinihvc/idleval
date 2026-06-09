@@ -12,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { m } from "@/i18n/messages";
 import { WikiFiguresTab } from "./wiki.figures-tab";
 import { WikiGodsTab } from "./wiki.gods-tab";
-import { WikiTipsTab } from "./wiki.tips-tab";
 import { WikiUpgradesTab } from "./wiki.upgrades-tab";
 
 export const WikiDialog = (
@@ -34,7 +33,7 @@ export const WikiDialog = (
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{m["ui.wiki.title"]()}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
+          <ResponsiveDialogDescription hideDescription>
             {m["ui.wiki.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
@@ -49,23 +48,18 @@ export const WikiDialog = (
               <TabsTrigger value="upgrades">
                 {m["ui.wiki.tab.upgrades"]()}
               </TabsTrigger>
-              <TabsTrigger value="tips">{m["ui.wiki.tab.tips"]()}</TabsTrigger>
             </TabsList>
 
-            <TabsContent className="mt-2 p-2" value="gods">
+            <TabsContent className="mt-2" value="gods">
               <WikiGodsTab />
             </TabsContent>
 
-            <TabsContent className="mt-2 p-2" value="figures">
+            <TabsContent className="mt-2" value="figures">
               <WikiFiguresTab />
             </TabsContent>
 
-            <TabsContent className="mt-2 p-2" value="upgrades">
+            <TabsContent className="mt-2" value="upgrades">
               <WikiUpgradesTab />
-            </TabsContent>
-
-            <TabsContent className="mt-2 p-2" value="tips">
-              <WikiTipsTab />
             </TabsContent>
           </Tabs>
         </ResponsiveDialogBody>

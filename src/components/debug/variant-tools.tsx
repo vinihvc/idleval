@@ -12,7 +12,7 @@ export const VariantTools = () => {
 
   return (
     <div
-      className="fixed top-[calc(env(safe-area-inset-top,0)+var(--spacing)*3)] right-2 z-50"
+      className="fixed top-[calc(env(safe-area-inset-top,0)+var(--spacing)*3)] right-2 z-50 hidden md:block"
       data-slot="variant-tools"
     >
       <fieldset className="flex items-center gap-1">

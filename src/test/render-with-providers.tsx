@@ -2,6 +2,7 @@ import type React from "react";
 import { render } from "vitest-browser-react";
 import type { AppLocale } from "@/i18n/locale";
 import { I18nProvider } from "@/i18n/provider";
+import { OfflineEarning } from "@/providers/offline-earning";
 import { SoundProvider } from "@/providers/sound";
 import { StoreProvider } from "@/providers/store";
 import { VariantToolsProvider } from "@/providers/variant-tools";
@@ -23,7 +24,9 @@ export const renderWithProviders = async (
     <StoreProvider>
       <VariantToolsProvider>
         <SoundProvider>
-          <I18nProvider>{ui}</I18nProvider>
+          <OfflineEarning>
+            <I18nProvider>{ui}</I18nProvider>
+          </OfflineEarning>
         </SoundProvider>
       </VariantToolsProvider>
     </StoreProvider>

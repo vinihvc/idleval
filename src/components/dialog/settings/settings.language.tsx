@@ -48,7 +48,7 @@ export const SettingsLanguage = (
           >
             {SUPPORTED_LOCALES.map((option) => (
               <ToggleGroupItem
-                className="min-w-0 flex-1 justify-center px-1.5 sm:px-2"
+                className="min-w-0 flex-1 px-1.5 sm:px-2"
                 key={option}
                 value={option}
               >

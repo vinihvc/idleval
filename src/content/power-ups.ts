@@ -26,21 +26,10 @@ export const POWER_UP_DATA: Record<PowerUpId, PowerUpData> = {
   yggdrasilTear: { image: "/images/power-ups/yggdrasil-tear.webp" },
 };
 
-/** Fixed altar layout: six relics + four empty ritual circles (2×5 grid). */
-export const POWER_UP_GRID_LAYOUT: (PowerUpId | null)[] = [
-  "auroraDust",
-  "ghostCandle",
-  "cauldronDrop",
-  "hasteRune",
-  "lightningShard",
-  "yggdrasilTear",
-  null,
-  null,
-  null,
-  null,
-];
-
-export const INVENTORY_GRID_SIZE = POWER_UP_GRID_LAYOUT.length;
+/** Relic altar slots (compact array) + ritual circles (2×5 grid). */
+export const RELIC_SLOT_COUNT = 6;
+export const RITUAL_SLOT_COUNT = 4;
+export const INVENTORY_GRID_SIZE = RELIC_SLOT_COUNT + RITUAL_SLOT_COUNT;
 
 export const DAILY_REWARD_CYCLE_DAYS = 6;
 
@@ -68,9 +57,3 @@ export const POWER_UP_EFFECTS = {
 
 export const getLocalizedPowerUp = (powerUpId: PowerUpId) =>
   localizeLore(`powerup.${powerUpId}`);
-
-export const createEmptyPowerUpCounts = (): Record<PowerUpId, number> =>
-  Object.fromEntries(POWER_UP_TYPES.map((id) => [id, 0])) as Record<
-    PowerUpId,
-    number
-  >;

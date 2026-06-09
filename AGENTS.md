@@ -72,6 +72,68 @@ Inspect the result visually. Complex interiors (e.g. harp strings, thin gaps) ma
 
 ---
 
+## Accessibility
+
+Idleval targets WCAG-minded patterns: semantic HTML, keyboard support, screen-reader labels, and i18n-backed strings. UI details live in [`src/components/AGENTS.md`](src/components/AGENTS.md); this section is the project-wide contract.
+
+### Landmarks and page shell
+
+- **Skip link** on `HomePage` → `#main-content` (`ui.a11y.skipToContent`)
+- **`<main id="main-content">`** wraps the factory grid (not a generic `<div>`)
+- **`<header>`**, **`<footer>`**, **`<nav>`** with distinct `aria-label` when multiple nav regions exist (`ui.nav.gameSections`, `ui.nav.actions`, `ui.nav.label`)
+- **`<section aria-label>`** for grouped content (e.g. factory grid via `ui.factoryGrid.label`)
+- **`index.html` viewport** must allow zoom — do not set `user-scalable=no` or `maximum-scale=1`
+
+### Strings and i18n
+
+All user-facing and assistive strings go through Paraglide (`m["ui.*"]()`). Add keys to **en, es, and pt** before use.
+
+| Key prefix | Use |
+|------------|-----|
+| `ui.a11y.*` | Skip link, live-region announcements (`claimed`, `purchased`, `invoked`, `activated`) |
+| `ui.common.close` | Dialog, drawer, and action-bar dismiss buttons |
+| `ui.common.completed`, `ui.common.insufficientGold` | Disabled card states |
+| `ui.inventory.slot.empty` | Empty relic slots (not the relic name alone) |
+
+Never hardcode English on `aria-label`, `aria-labelledby`, or close buttons.
+
+### Dialogs and overlays
+
+- Use **`ResponsiveDialog`** (Dialog ≥768px, modal **Drawer** below). Mobile drawers must stay **`modal={true}`** so focus stays trapped.
+- **`DialogTitle`** + **`ResponsiveDialogDescription`** always visible on mobile — do not hide descriptions behind an unlabeled icon (`hideDescription` is removed).
+- Blocking flows use **`role="alertdialog"`** (welcome, offline earning).
+- Close controls use **`ui.common.close`** and keep a visible **focus ring** (do not use `focus-visible:ring-0`).
+
+### Controls and navigation
+
+- **Real `<button>`** elements for actions — no `div` + `onClick`
+- **Icon-only triggers**: `sr-only` text inside the button or `aria-label` from i18n
+- **Mobile bottom nav**: `<nav>` + `<ul>` + `<button>` — not tab semantics without tab panels
+- **Hold actions**: keyboard via `use-hold-press` (Space/Enter); expose **`aria-busy`** during hold
+- **Disabled informational cards** (`UpgradeCard`): prefer **`aria-disabled`** (still focusable) over native `disabled` so screen readers hear why; wire **`aria-describedby`** to the `description` prop
+- **Sliders**: associate labels with **`aria-labelledby`**; do not hide essential mute toggles on mobile without an equivalent
+
+### Images and live feedback
+
+- **Decorative** sprites inside labeled controls: `alt=""` + `aria-hidden`
+- **Dialog hero images** duplicate the title — keep `aria-hidden` on `DialogImage`; meaningful `alt` is optional for maintainers only
+- **Action feedback** (claim, purchase, invoke, activate): `useLiveAnnouncer` + `<LiveAnnouncer message={…} />` with `ui.a11y.*` keys
+- **`Alert`**: use `live="polite"` or `live="assertive"` when content should be announced on mount/update
+
+### Motion, focus, and formatting
+
+- Respect **`prefers-reduced-motion`** (`motion-reduce:*` on animated UI)
+- **Focus-visible rings** on interactive primitives (buttons, tabs, slider thumbs, dialog close)
+- **`timeFormatter`** ceils fractional seconds before display — scheduler ticks can pass floats (e.g. `66.381` → `1:07`, never `1:6.381`)
+
+### Tests
+
+- Prefer **`getByRole`** with accessible names in component tests
+- Assert i18n close labels, button (not tab) roles in mobile nav, and `live` semantics on `Alert` where relevant
+- Run **`pnpm i18n:check`** when adding or changing `ui.a11y.*` / `ui.common.*` keys
+
+---
+
 ## Core Principles
 
 Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.

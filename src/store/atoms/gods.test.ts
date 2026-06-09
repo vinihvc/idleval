@@ -8,7 +8,6 @@ import {
   getGodsProductionMultiplier,
   godsAtom,
   invokeGod,
-  normalizeGodsState,
 } from "@/store/atoms/gods";
 import { statisticsAtom } from "@/store/atoms/statistics";
 import { walletAtom } from "@/store/atoms/wallet";
@@ -24,21 +23,6 @@ describe("gods store", () => {
   beforeEach(() => {
     resetGame();
     vi.mocked(sound.play).mockClear();
-  });
-
-  it("normalizeGodsState migrates legacy count saves", () => {
-    expect(normalizeGodsState({ count: 2 })).toEqual({
-      invoked: ["huangdi", "dagda"],
-    });
-  });
-
-  it("invokeGod migrates legacy gods state before invoking", () => {
-    store.set(godsAtom, { count: 1 } as never);
-    seedGold(GOD_DATA[1].goldRequired);
-
-    expect(invokeGod(1)).toBe(true);
-
-    expect(store.get(godsAtom).invoked).toEqual(["huangdi", "dagda"]);
   });
 
   it("getGodsProductionMultiplier returns 1 with no invoked gods", () => {

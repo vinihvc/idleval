@@ -7,7 +7,7 @@ import { m } from "@/i18n/messages";
 export const SettingsWiki = () => (
   <WikiDialog>
     <ResponsiveDialogTrigger asChild>
-      <Button className="w-full justify-center gap-2" size="lg" variant="brown">
+      <Button className="w-full" size="lg" variant="brown">
         <BookOpen />
         {m["ui.wiki.open"]()}
       </Button>

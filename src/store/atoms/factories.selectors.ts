@@ -6,7 +6,6 @@ import {
   FACTORY_TYPES,
   type FactoryType,
 } from "@/content/factories";
-import { applyDifficultyCost } from "@/game/difficulty";
 import { managerCost, unitCost, upgradeCost } from "@/game/economy";
 import {
   canPurchaseManager,
@@ -21,13 +20,9 @@ import {
   getCauldronDropMultiplierForEarn,
   getPowerUpIncomeMultiplierForEarn,
 } from "@/store/atoms/power-ups.selectors";
-import { getDifficultyLevel } from "@/store/atoms/settings";
-import type { GameValue } from "@/utils/decimal";
+import { D, type GameValue } from "@/utils/decimal";
 import { factoriesAtom, useFactories } from "./factories.atom";
-import {
-  getGodsProductionMultiplier,
-  useGodsProductionMultiplier,
-} from "./gods";
+import { useGodsProductionMultiplier } from "./gods";
 import { getGold, useWallet } from "./wallet";
 
 const factoryStateAtoms = new Map<
@@ -63,9 +58,6 @@ const getFactoryConfig = (factory: FactoryType) => {
   };
 };
 
-const getScaledUnlockPrice = (unlockPrice: number): GameValue =>
-  applyDifficultyCost(unlockPrice, getDifficultyLevel());
-
 export const useFactoryState = (factory: FactoryType) =>
   useAtomValue(getFactoryStateAtom(factory));
 
@@ -78,7 +70,7 @@ export const useFactory = (factory: FactoryType) => {
     ...state,
     ...config,
     ...localized,
-    unlockPrice: getScaledUnlockPrice(config.unlockPrice),
+    unlockPrice: D(config.unlockPrice),
     managerCost: managerCost(config.baseBuyCost, state.amount),
     upgradeCost: upgradeCost(config.baseBuyCost, state.amount),
     nextUnitCost: unitCost(config.baseBuyCost, state.amount),
@@ -90,34 +82,11 @@ export const getFactory = (factory: FactoryType) => {
 
   return {
     ...config,
-    unlockPrice: getScaledUnlockPrice(FACTORY_DATA[factory].unlockPrice),
+    unlockPrice: D(FACTORY_DATA[factory].unlockPrice),
     managerCost: managerCost(config.baseBuyCost, config.amount),
     upgradeCost: upgradeCost(config.baseBuyCost, config.amount),
     nextUnitCost: unitCost(config.baseBuyCost, config.amount),
   };
-};
-
-export const getProductionValue = (factory: FactoryType): GameValue => {
-  const { productionValue, isUpgraded } = getFactory(factory);
-
-  return getFactoryProductionValue({
-    godsProductionMultiplier: getGodsProductionMultiplier(),
-    isUpgraded,
-    productionValue,
-  });
-};
-
-export const totalToEarnAfterProduce = (factory: FactoryType): GameValue => {
-  const { amount, isUpgraded, productionValue } = getFactory(factory);
-
-  return getFactoryEarnPerCycle({
-    amount,
-    godsProductionMultiplier: getGodsProductionMultiplier(),
-    isUpgraded,
-    productionValue,
-  })
-    .times(getPowerUpIncomeMultiplierForEarn())
-    .times(getCauldronDropMultiplierForEarn());
 };
 
 export const useProductionValue = (factory: FactoryType): GameValue => {

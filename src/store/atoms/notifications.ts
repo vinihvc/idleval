@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
 import { store } from "@/providers/store";
 import {
@@ -45,20 +45,27 @@ export const notificationsAtom = persistedAtom<NotificationsState>(
   initialNotificationsState()
 );
 
-const getNotificationActive = (key: NotificationKey): boolean => {
-  switch (key) {
-    case "upgrades":
-      return canPurchaseAnyUpgrade();
-    case "managers":
-      return canPurchaseAnyManager();
-    case "gods":
-      return canInvokeGod();
-    case "inventory":
-      return getHasActivatablePowerUp();
-    case "daily":
-      return getHasPendingDailyReward();
-    default:
-      return false;
+export const getActiveNotificationsByKey = (): Record<
+  NotificationKey,
+  boolean
+> => ({
+  upgrades: canPurchaseAnyUpgrade(),
+  managers: canPurchaseAnyManager(),
+  gods: canInvokeGod(),
+  inventory: getHasActivatablePowerUp(),
+  daily: getHasPendingDailyReward(),
+});
+
+const getNotificationActive = (key: NotificationKey): boolean =>
+  getActiveNotificationsByKey()[key];
+
+export const syncNotificationDismissals = (
+  activeByKey: Record<NotificationKey, boolean>
+) => {
+  for (const key of NOTIFICATION_KEYS) {
+    if (!activeByKey[key]) {
+      clearDismissed(key);
+    }
   }
 };
 
@@ -109,14 +116,6 @@ export const useNotifications = (): Record<NotificationKey, boolean> => {
       }) satisfies Record<NotificationKey, boolean>,
     [upgradesActive, managersActive, godsActive, inventoryActive, dailyActive]
   );
-
-  useEffect(() => {
-    for (const key of NOTIFICATION_KEYS) {
-      if (!activeByKey[key]) {
-        clearDismissed(key);
-      }
-    }
-  }, [activeByKey]);
 
   return useMemo(
     () =>

@@ -1,15 +1,14 @@
+import { Image } from "@unpic/react";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
+import { POWER_UP_DATA } from "@/content/power-ups";
 import { useActivePowerUpDisplay } from "@/hooks/use-active-power-up-display";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
-import { formatElapsedDuration } from "@/utils/formatters";
-import { PowerUpCountdown } from "./power-up.countdown";
-import { PowerUpIcon } from "./power-up.icon";
+import { countdownFormatter, formatElapsedDuration } from "@/utils/formatters";
+import { borderedText } from "../text-border";
 
-interface GameStagePowerUpProps extends React.ComponentProps<"div"> {}
-
-export const GameStagePowerUp = (props: GameStagePowerUpProps) => {
+export const GameStagePowerUp = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
 
   const display = useActivePowerUpDisplay();
@@ -19,26 +18,43 @@ export const GameStagePowerUp = (props: GameStagePowerUpProps) => {
   }
 
   return (
-    <Badge
-      aria-label={
-        display.kind === "pending-harvest"
-          ? m["ui.powerUp.cauldronPending"]()
-          : m["ui.powerUp.remaining"]({
-              duration: formatElapsedDuration(display.remainingMs ?? 0),
-            })
-      }
-      className={cn(
-        "min-w-0",
-        "flex items-center justify-end gap-2",
-        className
-      )}
-      data-active
-      data-slot="power-up"
-      role="status"
+    <div
+      className={cn("flex items-center gap-2", className)}
       {...rest}
+      data-slot="power-up"
     >
-      <PowerUpCountdown display={display} />
-      <PowerUpIcon powerUpId={display.powerUpId} />
-    </Badge>
+      <span
+        className={cn(
+          "font-number text-base text-muted tabular-nums",
+          borderedText({ variant: "default" })
+        )}
+        data-slot="power-up-countdown"
+      >
+        {countdownFormatter(display?.remainingMs ?? 0)}
+      </span>
+
+      <Badge
+        aria-label={
+          display.kind === "pending-harvest"
+            ? m["ui.powerUp.cauldronPending"]()
+            : m["ui.powerUp.remaining"]({
+                duration: formatElapsedDuration(display.remainingMs ?? 0),
+              })
+        }
+        data-slot="power-up-badge"
+        role="status"
+        size="lg"
+      >
+        <Image
+          alt=""
+          aria-hidden
+          className="size-4 object-contain"
+          data-slot="power-up-icon"
+          height={400}
+          src={POWER_UP_DATA[display.powerUpId]?.image}
+          width={400}
+        />
+      </Badge>
+    </div>
   );
 };

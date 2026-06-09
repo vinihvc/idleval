@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { useHoldPress } from "@/hooks/use-hold-press";
 import { cn } from "@/lib/cn";
@@ -94,24 +94,48 @@ export const HoldButton = (props: HoldButtonProps) => {
   );
 };
 
-interface HoldProgressProps {
+export interface HoldProgressProps {
   active: boolean;
+  className?: string;
   durationMs: number;
+  fillClassName?: string;
 }
 
-const HoldProgress = (props: HoldProgressProps) => {
-  const { active, durationMs } = props;
+export const HoldProgress = (props: HoldProgressProps) => {
+  const {
+    active,
+    className,
+    durationMs,
+    fillClassName = "bg-white/25",
+  } = props;
+  const [fill, setFill] = React.useState(false);
+
+  React.useLayoutEffect(() => {
+    if (!active) {
+      setFill(false);
+      return;
+    }
+
+    setFill(false);
+    const raf1 = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setFill(true));
+    });
+
+    return () => cancelAnimationFrame(raf1);
+  }, [active]);
 
   return (
     <span
       aria-hidden
       className={cn(
-        "pointer-events-none absolute inset-y-0 left-0 w-full origin-left bg-white/25",
-        active
+        "pointer-events-none absolute inset-y-0 left-0 w-full origin-left",
+        fillClassName,
+        fill
           ? "scale-x-100 transition-transform ease-linear"
-          : "scale-x-0 transition-none"
+          : "scale-x-0 transition-none",
+        className
       )}
-      style={active ? { transitionDuration: `${durationMs}ms` } : undefined}
+      style={fill ? { transitionDuration: `${durationMs}ms` } : undefined}
     />
   );
 };

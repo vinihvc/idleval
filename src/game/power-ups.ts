@@ -7,6 +7,7 @@ import {
   POWER_UP_TYPES,
   type PowerUpId,
   type PowerUpTier,
+  RELIC_SLOT_COUNT,
 } from "@/content/power-ups";
 import { D, type GameValue } from "@/utils/decimal";
 
@@ -19,6 +20,12 @@ export interface ActivePowerUp {
 
 export interface DailyRewardOffer {
   dayInCycle: number;
+  powerUpId: PowerUpId;
+  tier: PowerUpTier;
+}
+
+export interface InventorySlot {
+  count: number;
   powerUpId: PowerUpId;
   tier: PowerUpTier;
 }
@@ -119,21 +126,62 @@ export const canActivatePowerUp = (
 };
 
 /**
+ * Adds a relic to the compact altar array (stacks duplicates, appends new types).
+ */
+export const addInventorySlot = (
+  slots: InventorySlot[],
+  item: { powerUpId: PowerUpId; tier: PowerUpTier }
+): InventorySlot[] => {
+  const existingIndex = slots.findIndex(
+    (slot) => slot.powerUpId === item.powerUpId
+  );
+
+  if (existingIndex >= 0) {
+    return slots.map((slot, index) =>
+      index === existingIndex ? { ...slot, count: slot.count + 1 } : slot
+    );
+  }
+
+  if (slots.length >= RELIC_SLOT_COUNT) {
+    return slots;
+  }
+
+  return [...slots, { powerUpId: item.powerUpId, count: 1, tier: item.tier }];
+};
+
+/**
+ * Consumes one relic at the given index (decrements stack or removes slot).
+ */
+export const consumeInventorySlot = (
+  slots: InventorySlot[],
+  index: number
+): InventorySlot[] => {
+  const slot = slots[index];
+
+  if (!slot || slot.count <= 0) {
+    return slots;
+  }
+
+  if (slot.count > 1) {
+    return slots.map((current, currentIndex) =>
+      currentIndex === index
+        ? { ...current, count: current.count - 1 }
+        : current
+    );
+  }
+
+  return [...slots.slice(0, index), ...slots.slice(index + 1)];
+};
+
+/**
  * Whether the player has at least one power-up ready to activate.
  */
 export const hasActivatablePowerUp = (
   activePowerUp: ActivePowerUp | null,
-  counts: Record<PowerUpId, number>,
+  slots: InventorySlot[],
   now = Date.now()
-): boolean => {
-  for (const powerUpId of POWER_UP_TYPES) {
-    if (canActivatePowerUp(activePowerUp, counts[powerUpId] ?? 0, now)) {
-      return true;
-    }
-  }
-
-  return false;
-};
+): boolean =>
+  slots.some((slot) => canActivatePowerUp(activePowerUp, slot.count, now));
 
 export const isTimedPowerUpActive = (
   activePowerUp: ActivePowerUp | null,

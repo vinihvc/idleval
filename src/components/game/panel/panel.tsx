@@ -8,11 +8,10 @@ export const GamePanel = (props: React.ComponentProps<"div">) => {
     <div
       className={cn(
         { "select-none": !IS_DEV },
-        "relative flex w-full flex-col",
-        "min-h-0 w-full flex-1 overflow-hidden rounded-none border-x-0",
+        "relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-none border-x-0",
         "sm:h-auto sm:flex-none",
         "bg-secondary/32 sm:bg-secondary/80",
-        "border-primary/60 sm:inset-shadow-xs sm:rounded-xl sm:border-2",
+        "border-primary sm:inset-shadow-xs sm:rounded-xl sm:border-2",
         className
       )}
       data-slot="game-panel"

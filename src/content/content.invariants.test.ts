@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
-import { POWER_UP_GRID_LAYOUT, POWER_UP_TYPES } from "@/content/power-ups";
-import { WIKI_TIP_IDS } from "@/content/wiki-tips";
+import {
+  INVENTORY_GRID_SIZE,
+  POWER_UP_TYPES,
+  RELIC_SLOT_COUNT,
+  RITUAL_SLOT_COUNT,
+} from "@/content/power-ups";
 import { hasMessageKey } from "@/i18n/localize";
 import { D } from "@/utils/decimal";
 
@@ -55,8 +59,10 @@ describe("content invariants", () => {
     }
   });
 
-  it("altar grid keeps four ritual circles", () => {
-    expect(POWER_UP_GRID_LAYOUT.filter((slot) => slot == null).length).toBe(4);
+  it("altar grid keeps six relic slots and four ritual circles", () => {
+    expect(RELIC_SLOT_COUNT).toBe(6);
+    expect(RITUAL_SLOT_COUNT).toBe(4);
+    expect(INVENTORY_GRID_SIZE).toBe(RELIC_SLOT_COUNT + RITUAL_SLOT_COUNT);
   });
 
   it("every god has localized message keys", () => {
@@ -86,15 +92,6 @@ describe("content invariants", () => {
       expect(hasMessageKey(`${managerPrefix}.mechanics`)).toBe(true);
       expect(hasMessageKey(`${upgradePrefix}.lore`)).toBe(true);
       expect(hasMessageKey(`${upgradePrefix}.mechanics`)).toBe(true);
-    }
-  });
-
-  it("every wiki tip has localized message keys", () => {
-    for (const tipId of WIKI_TIP_IDS) {
-      const prefix = `wiki.tip.${tipId}`;
-
-      expect(hasMessageKey(`${prefix}.title`)).toBe(true);
-      expect(hasMessageKey(`${prefix}.body`)).toBe(true);
     }
   });
 

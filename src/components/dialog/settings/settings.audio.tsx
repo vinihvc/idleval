@@ -92,7 +92,6 @@ const VolumeControl = (props: VolumeControlProps) => {
         <Button
           aria-label={muteAriaLabel}
           aria-pressed={isMuted}
-          className="shrink-0"
           onClick={toggleMute}
           size="icon-sm"
           sound={false}

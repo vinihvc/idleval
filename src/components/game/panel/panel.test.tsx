@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { GamePanel } from "@/components/layout/game-panel";
+import { GamePanel } from "@/components/game/panel";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("GamePanel", () => {

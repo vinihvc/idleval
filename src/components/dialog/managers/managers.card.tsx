@@ -1,11 +1,18 @@
+import React from "react";
 import { NumberText } from "@/components/ui/number-text";
 import {
+  getSealedState,
   getUpgradeCardCostStyle,
   UpgradeCard,
+  UpgradeCardArt,
+  UpgradeCardHeader,
+  UpgradeCardPanel,
+  UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
 import type { FactoryType } from "@/content/factories";
 import { canPurchaseManager } from "@/game/factories";
 import { m } from "@/i18n/messages";
+import { sound } from "@/providers/sound";
 import { autoFactory, useFactory } from "@/store/atoms/factories";
 import { useWallet } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
@@ -31,6 +38,8 @@ export const ManagersCard = (props: ManagersCardProps) => {
   });
   const affordable = !complete && canBuy;
   const locked = !isUnlocked;
+  const sealed = getSealedState({ complete, locked, affordable });
+  const descriptionId = React.useId();
 
   const getAriaLabel = () => {
     if (complete) {
@@ -50,37 +59,65 @@ export const ManagersCard = (props: ManagersCardProps) => {
 
   const costStyle = getUpgradeCardCostStyle({ affordable, locked });
 
+  const costNode = complete ? undefined : (
+    <NumberText
+      className={costStyle.className}
+      size="md"
+      variant={costStyle.variant}
+    >
+      {amountFormatter(managerCost)}
+    </NumberText>
+  );
+
   return (
     <UpgradeCard
-      affordable={affordable}
+      aria-describedby={manager.description ? descriptionId : undefined}
+      aria-disabled={complete || !canBuy || undefined}
       aria-label={getAriaLabel()}
-      complete={complete}
-      cost={
-        complete ? undefined : (
-          <NumberText
-            className={costStyle.className}
-            size="md"
-            variant={costStyle.variant}
-          >
-            {amountFormatter(managerCost)}
-          </NumberText>
-        )
-      }
-      description={manager.description}
-      disabled={complete || !canBuy}
-      icon={`/images/factories/${factoryType}.webp`}
-      image={`/images/managers/${factoryType}.webp`}
-      locked={locked}
+      data-affordable={affordable}
+      data-complete={complete}
+      data-locked={locked}
+      data-masked={sealed !== null}
+      data-sealed={sealed ?? undefined}
+      greenFrame={sealed === "open" || complete}
+      interactive={canBuy && isUnlocked && !complete}
       onClick={
         canBuy && isUnlocked
           ? () => {
+              sound.play("upgrade");
               autoFactory(factoryType);
               onPurchase?.(manager.name);
             }
           : undefined
       }
-      sound="upgrade"
-      title={manager.name}
-    />
+    >
+      <UpgradeCardPanel
+        charter={sealed === "charter"}
+        complete={complete}
+        open={sealed === "open"}
+      >
+        {complete && (
+          <UpgradeCardHeader
+            icon={`/images/factories/${factoryType}.webp`}
+            title={manager.name}
+          />
+        )}
+        <UpgradeCardArt
+          complete={complete}
+          open={sealed === "open"}
+          showImage={complete || sealed === "charter"}
+          src={`/images/managers/${factoryType}.webp`}
+        >
+          {sealed && (
+            <UpgradeCardSeal
+              cost={costNode}
+              icon={`/images/factories/${factoryType}.webp`}
+              open={sealed === "open"}
+              sealed={sealed}
+            />
+          )}
+        </UpgradeCardArt>
+      </UpgradeCardPanel>
+    </UpgradeCard>
   );
 };
