@@ -3,6 +3,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("Tabs", () => {
+  test("renders codex-styled tab list by default", async () => {
+    const screen = await renderWithProviders(
+      <Tabs defaultValue="a">
+        <TabsList>
+          <TabsTrigger value="a">Tab A</TabsTrigger>
+        </TabsList>
+        <TabsContent value="a">Panel A</TabsContent>
+      </Tabs>
+    );
+
+    await expect
+      .element(screen.getByRole("tablist"))
+      .toHaveAttribute("data-variant", "default");
+  });
+
   test("renders tabs and switches panel", async () => {
     const screen = await renderWithProviders(
       <Tabs defaultValue="a">

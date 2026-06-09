@@ -11,7 +11,7 @@ React context providers and Jotai singleton — global application wiring.
 - Export `StoreProvider` + singleton `store` from `store.tsx`
 - Keep nesting order in `app/providers.tsx`
 - `SoundProvider`: bridge between `audio/engine` and `settingsAtom`
-- `ProductionScheduler` / `OfflineBootstrap`: global game side effects
+- `OfflineEarning`: global game side effects (offline apply, production loop, power-ups)
 - Use `React.createContext` + `useXxx` hook that throws outside the provider
 
 ## Don't
@@ -20,6 +20,23 @@ React context providers and Jotai singleton — global application wiring.
 - Define new atoms here — put them in `store/atoms/`
 - Use conditional providers that break the tree in production
 - Import UI components
+
+## Variant tools (`variant-tools.tsx`)
+
+Use this for **future** A/B/C/D comparisons of new UI (not UpgradeCard — fixed preset D).
+
+| Export | Use |
+|--------|-----|
+| `VARIANT_TOOLS` | Const array `["a", "b", "c", "d"]` — shared with debug UI |
+| `VariantTools` | Type `"a" \| "b" \| "c" \| "d"` — defined here, not in upgrade-card |
+| `VariantToolsProvider` | Already in `app/providers.tsx` — do not duplicate |
+| `useVariantTools()` | Context: `variant`, `setVariant` |
+| `usePickVariantTools(presets)` | `presets[activeVariant]` from a `Record<VariantTools, T>` |
+| `useIsVariantTools("a")` | Boolean guard for one variant |
+
+**Dev switching:** UI `components/debug/variant-tools.tsx` (top-right) + keys **1** → a, **2** → b, **3** → c, **4** → d (`keydown` in provider, `IS_DEV` only). Choice persists via `useLocalStorage` (`LOCAL_STORAGE_KEYS.openCardVariant`).
+
+**Agent rule:** Implement variations as keyed presets + these hooks — never one-off toggles or four duplicate components.
 
 ## Patterns
 
@@ -33,8 +50,8 @@ React context providers and Jotai singleton — global application wiring.
 |------|------|
 | `store.tsx` | `createStore()`, `StoreProvider`, export `store` |
 | `sound.tsx` | `SoundProvider`, `useSound()`, volumes + play API |
-| `production-scheduler.tsx` | Global production loop |
-| `offline-bootstrap.tsx` | Thin shell: `useOfflineBootstrap` + lazy welcome-back dialog |
+| `offline-earning.tsx` | `useOfflineEarning` + `useProductionScheduler` + lazy welcome-back dialog |
+| `variant-tools.tsx` | Open-card variant store, context, dev hotkeys (1–4) |
 
 ## Neighbors
 
@@ -43,5 +60,8 @@ React context providers and Jotai singleton — global application wiring.
 
 ## Evolution
 
-- 2026-06-08 — Offline bootstrap is a thin provider; lifecycle lives in `use-offline-bootstrap`
-- 2026-06-07 — Initial docs: store singleton + sound + scheduler + offline
+- 2026-06-08 — Variant tools persist via `useLocalStorage` + `LOCAL_STORAGE_KEYS`
+- 2026-06-08 — `variant-tools`: `useState` + native keydown; export `VARIANT_TOOLS`
+- 2026-06-08 — `VariantTools` type + hooks replace `OpenVisualVariant` naming
+- 2026-06-08 — `OpenVisualVariant` moved here; UpgradeCard decoupled from variant-tools
+- 2026-06-08 — Inlined `useProductionScheduler` into `offline-earning.tsx`

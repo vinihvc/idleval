@@ -19,7 +19,12 @@ describe("GodsDialog", () => {
       .element(screen.getByRole("heading", { name: m["ui.gods.title"]() }))
       .toBeInTheDocument();
 
-    const cards = screen.getByRole("article").elements();
-    expect(cards.length).toBe(GOD_DATA.length);
+    const cards = screen
+      .getByRole("heading", { name: m["ui.gods.title"]() })
+      .element()
+      .closest("[data-slot='dialog-content'], [data-slot='drawer-content']")
+      ?.querySelectorAll("[data-slot='upgrade-card']");
+
+    expect(cards?.length).toBe(GOD_DATA.length);
   });
 });

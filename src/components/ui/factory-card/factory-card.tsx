@@ -1,5 +1,6 @@
 import React from "react";
 import { tv } from "tailwind-variants";
+import { boxBorder } from "@/components/ui/box-border";
 import type { FactoryType } from "@/content/factories";
 import { cn } from "@/lib/cn";
 import { FactoryCardProvider, useFactoryCard } from "./factory-card.context";
@@ -15,6 +16,7 @@ export const factoryCardPanelVariants = tv({
     "bg-popover/90",
     "text-muted",
     "inset-shadow-xs rounded-r-xl border-3 border-primary",
+    boxBorder({ variant: "brown", size: "md" }),
     "overflow-hidden",
   ],
   variants: {

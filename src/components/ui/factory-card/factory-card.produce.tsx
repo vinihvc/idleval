@@ -1,12 +1,12 @@
 import { Image } from "@unpic/react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
-import { borderedText } from "@/components/ui/text-border";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  ResponsiveTooltip,
+  ResponsiveTooltipContent,
+  ResponsiveTooltipTrigger,
+} from "@/components/ui/responsive-tooltip";
+import { borderedText } from "@/components/ui/text-border";
 import {
   canStartManualProduction,
   getUpgradeMultiplierLabel,
@@ -34,8 +34,8 @@ export const FactoryCardProduce = (
   const produceLabel = m["ui.factoryCard.produce"]({ name });
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <ResponsiveTooltip>
+      <ResponsiveTooltipTrigger asChild>
         <Button
           className={cn(
             "group relative",
@@ -115,9 +115,9 @@ export const FactoryCardProduce = (
             </div>
           )}
         </Button>
-      </TooltipTrigger>
+      </ResponsiveTooltipTrigger>
 
-      <TooltipContent>{produceLabel}</TooltipContent>
-    </Tooltip>
+      <ResponsiveTooltipContent>{produceLabel}</ResponsiveTooltipContent>
+    </ResponsiveTooltip>
   );
 };

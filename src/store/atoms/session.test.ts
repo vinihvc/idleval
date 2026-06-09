@@ -38,25 +38,25 @@ describe("session", () => {
     });
 
     it("does not update lastSeenAt when document is hidden", () => {
-      touchLastSeen(1_000);
+      touchLastSeen(1000);
       vi.stubGlobal("document", {
         visibilityState: "hidden",
       });
 
-      touchLastSeenIfVisible(9_999);
+      touchLastSeenIfVisible(9999);
 
-      expect(getLastSeenAt()).toBe(1_000);
+      expect(getLastSeenAt()).toBe(1000);
     });
 
     it("updates lastSeenAt when document is visible", () => {
-      touchLastSeen(1_000);
+      touchLastSeen(1000);
       vi.stubGlobal("document", {
         visibilityState: "visible",
       });
 
-      touchLastSeenIfVisible(9_999);
+      touchLastSeenIfVisible(9999);
 
-      expect(getLastSeenAt()).toBe(9_999);
+      expect(getLastSeenAt()).toBe(9999);
     });
   });
 

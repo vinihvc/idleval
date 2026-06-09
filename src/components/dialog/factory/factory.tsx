@@ -61,7 +61,7 @@ const FactoryDialogBody = (props: FactoryDialogBodyProps) => {
       </ResponsiveDialogHeader>
 
       <ResponsiveDialogBody>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <StatTile icon={<Clock />} label={m["ui.factory.craftPace"]()}>
             <FormattedNumber value={factory.productionTime} />s
           </StatTile>

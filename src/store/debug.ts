@@ -1,11 +1,14 @@
 import { FACTORY_TYPES } from "@/content/factories";
+import { POWER_UP_TYPES } from "@/content/power-ups";
 import { store } from "@/providers/store";
 import { resetGame } from "@/store/reset";
 import { D, deserializeDecimal, serializeDecimal } from "@/utils/decimal";
 import { factoriesAtom } from "./atoms/factories";
+import { inventoryAtom, normalizeInventoryState } from "./atoms/inventory";
 import { walletAtom } from "./atoms/wallet";
 
 export const DEBUG_GOLD_AMOUNT = D(100_000_000_000);
+export const DEBUG_POWER_UP_AMOUNT = 1;
 export const GOD_MODE_GOLD_AMOUNT = D("1e100");
 
 export const resetGameState = resetGame;
@@ -17,6 +20,22 @@ export const addDebugGold = () => {
       deserializeDecimal(prev.gold).plus(DEBUG_GOLD_AMOUNT)
     ),
   }));
+};
+
+export const addDebugPowerUps = () => {
+  store.set(inventoryAtom, (previous) => {
+    const state = normalizeInventoryState(previous);
+    const counts = { ...state.counts };
+
+    for (const powerUpId of POWER_UP_TYPES) {
+      counts[powerUpId] += DEBUG_POWER_UP_AMOUNT;
+    }
+
+    return {
+      ...state,
+      counts,
+    };
+  });
 };
 
 const setAllFactoriesFlag = (

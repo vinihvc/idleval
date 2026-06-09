@@ -1,9 +1,11 @@
 import { useAtomValue } from "jotai";
+import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import type { FactoryPersistedState } from "@/game/types";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 
 const INITIAL_FACTORY: FactoryType = "grain";
+const LEGACY_MILL_KEY = "mill";
 
 export const initialData = Object.fromEntries(
   FACTORY_TYPES.map((factory) => [
@@ -18,6 +20,38 @@ export const initialData = Object.fromEntries(
   ])
 ) as Record<FactoryType, FactoryPersistedState>;
 
-export const factoriesAtom = persistedAtom("factories", initialData);
+const isFactoryPersistedState = (
+  value: unknown
+): value is FactoryPersistedState =>
+  typeof value === "object" &&
+  value !== null &&
+  "amount" in value &&
+  typeof value.amount === "number";
+
+export const normalizeFactoriesState = (
+  value: unknown
+): Record<FactoryType, FactoryPersistedState> => {
+  if (typeof value !== "object" || value === null) {
+    return structuredClone(initialData);
+  }
+
+  const raw = value as Record<string, unknown>;
+  const next = structuredClone(initialData);
+
+  for (const factory of FACTORY_TYPES) {
+    const saved =
+      raw[factory] ?? (factory === "wine" ? raw[LEGACY_MILL_KEY] : undefined);
+
+    if (isFactoryPersistedState(saved)) {
+      next[factory] = { ...next[factory], ...saved };
+    }
+  }
+
+  return next;
+};
+
+export const factoriesAtom = persistedAtomWithNormalize<
+  Record<FactoryType, FactoryPersistedState>
+>(LOCAL_STORAGE_KEYS.factories, initialData, normalizeFactoriesState);
 
 export const useFactories = () => useAtomValue(factoriesAtom);

@@ -9,15 +9,19 @@ import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { WaxSeal } from "@/components/icons/wax-seal";
 import { Button } from "@/components/ui/button";
+import { boxBorder } from "@/components/ui/box-border";
 import { FantasyCorner } from "@/components/ui/fantasy-corner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
+import { IS_DEV } from "@/lib/envs";
 
 export const useDialog = useDialogContext;
 
 export const Dialog = (props: React.ComponentProps<typeof ArkDialog.Root>) => {
   const {
-    modal = true,
+    closeOnInteractOutside,
+    modal,
     lazyMount = true,
     unmountOnExit = true,
     ...rest
@@ -25,9 +29,9 @@ export const Dialog = (props: React.ComponentProps<typeof ArkDialog.Root>) => {
 
   return (
     <ArkDialog.Root
-      closeOnInteractOutside
+      closeOnInteractOutside={IS_DEV ? true : closeOnInteractOutside}
       lazyMount={lazyMount}
-      modal={modal}
+      modal={IS_DEV ? true : modal}
       unmountOnExit={unmountOnExit}
       {...rest}
     />
@@ -41,7 +45,7 @@ export const DialogTrigger = (
 export const dialogOverlayVariants = tv({
   base: [
     "fixed inset-0 z-50",
-    "bg-stone-950/70 backdrop-blur-sm",
+    "bg-stone-950/70",
     "duration-200",
     "peer peer-data-[slot=dialog-overlay]:hidden",
     "data-[state=open]:fade-in-0 data-[state=open]:animate-in",
@@ -74,7 +78,6 @@ export const DialogPositioner = (
       className={cn(
         "fixed inset-0 z-50",
         "h-svh w-screen overflow-y-auto",
-        // Center dialog vertically; min top row reserves space for DialogMedia (-top-12 / sm:-top-18)
         "grid min-h-svh grid-rows-[minmax(3rem,1fr)_auto_minmax(0,1fr)] justify-items-center",
         "p-4 sm:grid-rows-[minmax(4.5rem,1fr)_auto_minmax(0,1fr)]",
         className
@@ -96,6 +99,7 @@ export const dialogContentVariants = tv({
     "bg-popover",
     "text-muted",
     "rounded-xl border-4 border-primary ring-2 ring-secondary",
+    boxBorder({ variant: "brown", size: "md" }),
     "inset-shadow-xs",
     "outline-none",
     "translate-y-[calc(-1.25rem*var(--nested-layer-count))]",
@@ -165,14 +169,14 @@ export const DialogContent = (props: DialogContentProps) => {
           {!!showCloseButton && (
             <DialogClose asChild>
               <Button
-                aria-label="Close"
+                aria-label={m["ui.common.close"]()}
                 className={cn(
                   "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2",
                   "size-14",
                   "inset-shadow-none rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                   "bg-transparent",
                   "hover:bg-transparent hover:brightness-110",
-                  "focus-visible:ring-0 focus-visible:brightness-110",
+                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:brightness-110",
                   "active:scale-95 active:brightness-95"
                 )}
                 size="icon-xl"

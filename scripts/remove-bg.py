@@ -8,7 +8,8 @@ Chroma key choice:
   - magenta (#FF00FF): default for most sprites
   - green (#00FF00): subjects with purple/violet (capes, robes) — magenta key
     treats purple like background and removes or washes it out
-  - --auto-key: pick green when purple subject pixels are detected
+  - cyan (#00FFFF): subjects with both purple/violet AND green (grapes, foliage)
+  - --auto-key: pick green/cyan when purple (and green) subject pixels are detected
 
 Despill crushes saturated reds on magenta edges (e.g. ruby gems). Subject-color
 protection is on by default; use --no-despill to disable fringe despill entirely.
@@ -17,8 +18,9 @@ Usage:
   remove-bg.py input.png output.webp
   remove-bg.py input.png output.webp --size 400 --key magenta
   remove-bg.py input.png output.webp --size 400 --key green
+  remove-bg.py input.png output.webp --size 400 --key cyan
   remove-bg.py input.png output.webp --auto-key --size 400
-  remove-bg.py --batch ./raw ./out --size 400 --key green
+  remove-bg.py --batch ./raw ./out --size 400 --key cyan
 """
 
 from __future__ import annotations
@@ -27,10 +29,18 @@ import argparse
 import sys
 from pathlib import Path
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from deps import ensure_imports
+
+ensure_imports("numpy", "PIL")
+
 import numpy as np
 from PIL import Image
 
-KEYS = ("magenta", "green")
+KEYS = ("magenta", "green", "cyan")
 DEFAULT_SIZE = 400
 DEFAULT_PADDING = 0.92
 
@@ -39,6 +49,8 @@ def chroma_excess(r: np.ndarray, g: np.ndarray, b: np.ndarray, key: str) -> np.n
     """Per-pixel chroma excess vs neutral (higher = more background)."""
     if key == "green":
         return g.astype(np.int16) - np.maximum(r, b).astype(np.int16)
+    if key == "cyan":
+        return np.minimum(g, b).astype(np.int16) - r.astype(np.int16)
     # magenta: high R+B, low G
     return np.minimum(r, b).astype(np.int16) - g.astype(np.int16)
 
@@ -47,6 +59,8 @@ def subject_color_mask(
     r: np.ndarray,
     g: np.ndarray,
     b: np.ndarray,
+    *,
+    key: str = "magenta",
 ) -> np.ndarray:
     """Saturated subject hues that must not be keyed away or despilled."""
     rf = r.astype(np.float32)
@@ -65,11 +79,18 @@ def subject_color_mask(
         & (np.maximum(r, b) < 248)
     )
 
+    # Foliage — chromatically similar to green key (grape stems, leaves).
+    green = (g >= 55) & (gf > rf * 1.18) & (gf > bf * 1.08) & (r < 248)
+
+    if key == "cyan":
+        return red | purple | green
+    if key == "green":
+        return red | purple
     return red | purple
 
 
 def detect_recommended_key(img: Image.Image) -> tuple[str, str | None]:
-    """Suggest green when subject contains purple; magenta otherwise."""
+    """Suggest cyan/green when subject needs it; magenta otherwise."""
     arr = np.array(img.convert("RGBA"))
     r, g, b, a = (arr[:, :, i] for i in range(4))
 
@@ -81,17 +102,35 @@ def detect_recommended_key(img: Image.Image) -> tuple[str, str | None]:
     # Ignore likely background: corners + high-chroma key colors.
     bg_magenta = visible & (r >= 230) & (b >= 230) & (g <= 25)
     bg_green = visible & (g >= 230) & (r <= 25) & (b <= 25)
-    subject = visible & ~bg_magenta & ~bg_green
+    bg_cyan = visible & (g >= 230) & (b >= 230) & (r <= 25)
+    subject = visible & ~bg_magenta & ~bg_green & ~bg_cyan
 
     if not np.any(subject):
         return "magenta", None
 
-    purple = subject & subject_color_mask(r, g, b)
+    mask = subject_color_mask(r, g, b, key="cyan")
+    purple = subject & mask & (
+        (r >= 45)
+        & (b >= 45)
+        & (g <= np.minimum(r, b) * 0.58)
+        & (np.maximum(r, b) < 248)
+    )
+    green = subject & mask & (
+        (g >= 55) & (gf > rf * 1.18) & (gf > bf * 1.08) & (r < 248)
+    )
     purple_count = int(np.sum(purple))
+    green_count = int(np.sum(green))
     subject_count = int(np.sum(subject))
     purple_ratio = purple_count / subject_count
+    green_ratio = green_count / subject_count
 
     if purple_count >= 40 and purple_ratio >= 0.004:
+        if green_count >= 25 and green_ratio >= 0.002:
+            return (
+                "cyan",
+                f"detected {purple_count} purple + {green_count} green subject pixels "
+                f"— use cyan key to preserve both",
+            )
         return (
             "green",
             f"detected {purple_count} purple subject pixels "
@@ -115,7 +154,7 @@ def apply_chroma_key(
     r, g, b, a = (arr[:, :, i].astype(np.int16) for i in range(4))
 
     excess = chroma_excess(r, g, b, key)
-    protected = subject_color_mask(r, g, b)
+    protected = subject_color_mask(r, g, b, key=key)
     tol = max(softness + 1, tolerance)
     soft = max(0, softness)
 
@@ -137,6 +176,8 @@ def apply_chroma_key(
         fringe = (excess > 0) & (alpha > 0) & ~protected
         if key == "green":
             g = np.where(fringe, np.minimum(g, np.maximum(r, b)), g)
+        elif key == "cyan":
+            r = np.where(fringe, np.minimum(r, np.minimum(g, b)), r)
         else:
             r = np.where(fringe, np.minimum(r, g), r)
             b = np.where(fringe, np.minimum(b, g), b)
@@ -187,6 +228,10 @@ def _is_magenta(r: int, g: int, b: int, tol: int = 80) -> bool:
     return r >= 255 - tol and g <= tol and b >= 255 - tol
 
 
+def _is_cyan(r: int, g: int, b: int, tol: int = 80) -> bool:
+    return g >= 255 - tol and b >= 255 - tol and r <= tol
+
+
 def _is_dark_outline(r: int, g: int, b: int) -> bool:
     return max(r, g, b) < 88
 
@@ -208,9 +253,12 @@ def _remove_checkerboard_flood(arr: np.ndarray, key: str) -> np.ndarray:
             if _is_dark_outline(r, g, b):
                 continue
             mx, mn = max(r, g, b), min(r, g, b)
-            is_key = _is_magenta(r, g, b, tol=100) if key == "magenta" else (
-                g >= 255 - 100 and r <= 100 and b <= 100
-            )
+            if key == "magenta":
+                is_key = _is_magenta(r, g, b, tol=100)
+            elif key == "cyan":
+                is_key = _is_cyan(r, g, b, tol=100)
+            else:
+                is_key = g >= 255 - 100 and r <= 100 and b <= 100
             is_checker = mx - mn <= 55 and mn >= 175
             if is_key or is_checker:
                 remove[ny, nx] = True
@@ -257,8 +305,8 @@ def resolve_key(img: Image.Image, key: str, auto_key: bool) -> tuple[str, list[s
 
     if key == "magenta":
         recommended, reason = detect_recommended_key(img)
-        if recommended == "green" and reason:
-            warnings.append(f"warning: {reason}; prefer --key green or --auto-key")
+        if recommended in ("green", "cyan") and reason:
+            warnings.append(f"warning: {reason}; prefer --key {recommended} or --auto-key")
 
     return key, warnings
 
@@ -317,12 +365,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--key",
         choices=KEYS,
         default="magenta",
-        help="Chroma key color (default: magenta). Use green for purple subjects.",
+        help="Chroma key color (default: magenta). Green/cyan for purple/green subjects.",
     )
     parser.add_argument(
         "--auto-key",
         action="store_true",
-        help="Pick green when purple subject pixels are detected, else magenta",
+        help="Pick cyan/green when purple (and green) subject pixels are detected",
     )
     parser.add_argument(
         "--no-despill",

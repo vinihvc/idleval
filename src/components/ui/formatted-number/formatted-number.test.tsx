@@ -6,7 +6,7 @@ describe("FormattedNumber", () => {
   test("formats plain number", async () => {
     const screen = await renderWithProviders(<FormattedNumber value={1500} />);
 
-    await expect.element(screen.getByText("1.5K")).toBeInTheDocument();
+    await expect.element(screen.getByText("1.5 K")).toBeInTheDocument();
   });
 
   test("formats with dollar sign", async () => {

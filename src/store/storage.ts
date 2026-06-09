@@ -48,3 +48,44 @@ export const persistedAtom = <Value>(key: string, initialValue: Value) =>
     createJSONStorage<Value>(getStorage),
     getStorageInitOptions()
   );
+
+export const createNormalizedJsonStorage = <T>(
+  normalize: (value: unknown) => T
+) =>
+  createJSONStorage<T>(() => {
+    const storage = getStorage();
+
+    return {
+      getItem: (key) => {
+        const value = storage.getItem(key);
+
+        if (!value) {
+          return null;
+        }
+
+        try {
+          return JSON.stringify(normalize(JSON.parse(value)));
+        } catch {
+          return null;
+        }
+      },
+      setItem: (key, value) => {
+        storage.setItem(key, value);
+      },
+      removeItem: (key) => {
+        storage.removeItem(key);
+      },
+    };
+  });
+
+export const persistedAtomWithNormalize = <T>(
+  key: string,
+  initialValue: T,
+  normalize: (value: unknown) => T
+) =>
+  atomWithStorage<T>(
+    key,
+    initialValue,
+    createNormalizedJsonStorage(normalize),
+    getStorageInitOptions()
+  );

@@ -4,7 +4,16 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from deps import ensure_imports
+
+ensure_imports("numpy", "pyloudnorm", "soundfile")
 
 import numpy as np
 import pyloudnorm as pyln

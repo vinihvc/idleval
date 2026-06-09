@@ -27,10 +27,10 @@ export const FactoryCardProgress = (
 
   const totalEarn = useTotalToEarnAfterProduce(factoryType);
   const isAnimating = isUnlocked && isRunning;
-  const elapsed = productionTime - seconds;
+  const remainingTime = isAnimating ? seconds : productionTime;
   const animationDuration = `${productionTime}s`;
   const ariaValueText = m["ui.factoryCard.remainingEarns"]({
-    "0": timeFormatter(elapsed),
+    "0": timeFormatter(remainingTime),
     "1": amountFormatterWithDolarSign(totalEarn),
   });
 
@@ -45,7 +45,7 @@ export const FactoryCardProgress = (
       data-slot="factory-card-progress"
       max={productionTime}
       min={0}
-      value={elapsed}
+      value={productionTime - seconds}
       {...rest}
     >
       <ProgressTrack
@@ -73,7 +73,7 @@ export const FactoryCardProgress = (
         )}
       >
         <span className="w-40 font-number tabular-nums">
-          {timeFormatter(productionTime)}
+          {timeFormatter(remainingTime)}
         </span>
         <span className="font-number tabular-nums">
           {amountFormatterWithDolarSign(totalEarn)}

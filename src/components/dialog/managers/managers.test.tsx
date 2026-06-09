@@ -19,7 +19,12 @@ describe("ManagersDialog", () => {
       .element(screen.getByRole("heading", { name: m["ui.managers.title"]() }))
       .toBeInTheDocument();
 
-    const cards = screen.getByRole("article").elements();
-    expect(cards.length).toBe(FACTORY_TYPES.length);
+    const cards = screen
+      .getByRole("heading", { name: m["ui.managers.title"]() })
+      .element()
+      .closest("[data-slot='dialog-content'], [data-slot='drawer-content']")
+      ?.querySelectorAll("[data-slot='upgrade-card']");
+
+    expect(cards?.length).toBe(FACTORY_TYPES.length);
   });
 });

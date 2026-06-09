@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { HeaderNavigation, Navigation } from "@/components/layout/navigation";
+import { HeaderNavigation } from "@/components/layout/header/header.navigation";
+import { Navigation } from "@/components/layout/navigation";
 import { m } from "@/i18n/messages";
 import { renderWithProviders } from "@/test/render-with-providers";
 
@@ -8,13 +9,13 @@ describe("Navigation", () => {
     const screen = await renderWithProviders(<Navigation />);
 
     await expect
-      .element(screen.getByRole("tab", { name: m["ui.nav.upgrades"]() }))
+      .element(screen.getByRole("button", { name: m["ui.nav.upgrades"]() }))
       .toBeInTheDocument();
     await expect
-      .element(screen.getByRole("tab", { name: m["ui.nav.managers"]() }))
+      .element(screen.getByRole("button", { name: m["ui.nav.managers"]() }))
       .toBeInTheDocument();
     await expect
-      .element(screen.getByRole("tab", { name: m["ui.nav.gods"]() }))
+      .element(screen.getByRole("button", { name: m["ui.nav.gods"]() }))
       .toBeInTheDocument();
   });
 
@@ -31,7 +32,7 @@ describe("Navigation", () => {
   test("opens upgrades dialog from nav", async () => {
     const screen = await renderWithProviders(<Navigation />);
 
-    await screen.getByRole("tab", { name: m["ui.nav.upgrades"]() }).click();
+    await screen.getByRole("button", { name: m["ui.nav.upgrades"]() }).click();
 
     await expect
       .element(screen.getByRole("heading", { name: m["ui.upgrades.title"]() }))

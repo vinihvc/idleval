@@ -1,5 +1,4 @@
 import { useMediaQuery } from "@uidotdev/usehooks";
-import { InfoBox } from "pixelarticons/react/InfoBox";
 import React from "react";
 import {
   Dialog,
@@ -27,13 +26,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { cn } from "@/lib/cn";
-import { Button } from "../button";
-import {
-  ToggleTooltip,
-  ToggleTooltipContent,
-  ToggleTooltipTrigger,
-} from "../toggle-tooltip";
 
 interface RootResponsiveDialogProps extends React.PropsWithChildren {
   onOpenChange?: (open: boolean) => void;
@@ -84,6 +76,7 @@ export const ResponsiveDialog = (props: RootResponsiveDialogProps) => {
     <ResponsiveDialogContext.Provider value={{ isDesktop }}>
       <Component
         closeOnInteractOutside={role === "dialog"}
+        modal={isDesktop ? undefined : true}
         onOpenChange={handleOpenChange}
         role={role}
         {...rest}
@@ -151,15 +144,7 @@ export const ResponsiveDialogHeader = (props: ResponsiveDialogProps) => {
     return <DialogHeader className={className} {...rest} />;
   }
 
-  return (
-    <DrawerHeader
-      className={cn(
-        "has-data-[slot=drawer-tooltip]:flex-row has-data-[slot=drawer-tooltip]:items-center has-data-[slot=drawer-tooltip]:justify-center has-data-[slot=drawer-tooltip]:gap-2",
-        className
-      )}
-      {...rest}
-    />
-  );
+  return <DrawerHeader className={className} {...rest} />;
 };
 
 export const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
@@ -170,43 +155,14 @@ export const ResponsiveDialogTitle = (props: ResponsiveDialogProps) => {
   return <Component {...props} />;
 };
 
-interface ResponsiveDialogDescriptionProps
-  extends React.ComponentProps<typeof DialogDescription> {
-  /**
-   * Whether to hide the description on mobile
-   *
-   * @default false
-   */
-  hideDescription?: boolean;
-}
-
 export const ResponsiveDialogDescription = (
-  props: ResponsiveDialogDescriptionProps
+  props: React.ComponentProps<typeof DialogDescription>
 ) => {
-  const { hideDescription = false, ...rest } = props;
-
   const { isDesktop } = useResponsiveDialog();
 
-  if (isDesktop) {
-    return <DialogDescription {...rest} />;
-  }
+  const Component = isDesktop ? DialogDescription : DrawerDescription;
 
-  if (hideDescription) {
-    return (
-      <ToggleTooltip>
-        <ToggleTooltipTrigger asChild data-slot="drawer-tooltip">
-          <Button size="icon-xs" sound={false} variant="blue">
-            <InfoBox />
-          </Button>
-        </ToggleTooltipTrigger>
-        <ToggleTooltipContent>
-          <DrawerDescription {...rest}>{rest.children}</DrawerDescription>
-        </ToggleTooltipContent>
-      </ToggleTooltip>
-    );
-  }
-
-  return <DrawerDescription {...rest} />;
+  return <Component {...props} />;
 };
 
 export const ResponsiveDialogBody = (props: ResponsiveDialogProps) => {

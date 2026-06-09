@@ -5,10 +5,11 @@ export const borderedText = tv({
   variants: {
     variant: {
       default: ["[-webkit-text-stroke-color:oklch(0.92_0.07_84)]"],
+      muted: ["[-webkit-text-stroke-color:oklch(0.18_0.03_55)]"],
       cream: ["[-webkit-text-stroke-color:oklch(0.35_0.05_70)]"],
       brown: ["[-webkit-text-stroke-color:oklch(0.2_0.03_55)]"],
       green: ["[-webkit-text-stroke-color:oklch(0.35_0.1_155)]"],
-      stone: ["[-webkit-text-stroke-color:oklch(0.25_0.03_60)]"],
+      stone: ["[-webkit-text-stroke-color:oklch(0.38_0.02_260)]"],
       blue: ["[-webkit-text-stroke-color:oklch(0.35_0.1_250)]"],
       purple: ["[-webkit-text-stroke-color:oklch(0.35_0.1_298)]"],
       red: ["[-webkit-text-stroke-color:oklch(0.35_0.12_27)]"],

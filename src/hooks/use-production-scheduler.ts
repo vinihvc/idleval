@@ -1,7 +1,6 @@
 import { useSetAtom } from "jotai";
 import React from "react";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
-import { isFactoryProductionActive } from "@/game/factories";
 import {
   syncActiveFactoryTick,
   syncInactiveFactoryTick,
@@ -11,19 +10,31 @@ import { store } from "@/providers/store";
 import { completeProductionCycle, useFactories } from "@/store/atoms/factories";
 import { getFactory } from "@/store/atoms/factories.selectors";
 import {
+  isFactoryDrivenByScheduler,
+  isGhostCandleFactoryActive,
+  refreshExpiredPowerUps,
+} from "@/store/atoms/power-ups.actions";
+import { getEffectiveProductionTimeForActivePowerUp } from "@/store/atoms/power-ups.selectors";
+import {
   type FactoryTickState,
   productionTicksAtom,
 } from "@/store/atoms/production-ticks.atom";
 import {
   offlineCycleProgressAtom,
   useOfflineCycleProgress,
-} from "@/store/offline";
+} from "@/store/offline-earning";
 
 const tickRunningFactory = (
   factory: FactoryType,
   currentTick: FactoryTickState
 ): { changed: boolean; tick: FactoryTickState } => {
-  const { isAutomated, isUnlocked, productionTime } = getFactory(factory);
+  const factoryState = getFactory(factory);
+  const { isAutomated, isUnlocked } = factoryState;
+  const productionTime = getEffectiveProductionTimeForActivePowerUp(
+    factoryState.productionTime
+  );
+  const keepsRunning =
+    isUnlocked && (isAutomated || isGhostCandleFactoryActive(factory));
 
   if (currentTick.seconds <= 1) {
     completeProductionCycle(factory);
@@ -32,7 +43,7 @@ const tickRunningFactory = (
       changed: true,
       tick: {
         cycleKey: currentTick.cycleKey + 1,
-        isRunning: isUnlocked && isAutomated,
+        isRunning: keepsRunning,
         seconds: productionTime,
       },
     };
@@ -59,7 +70,7 @@ export const useProductionScheduler = () => {
   const hasRunningFactory = React.useMemo(
     () =>
       FACTORY_TYPES.some((factory) =>
-        isFactoryProductionActive(factories[factory])
+        isFactoryDrivenByScheduler(factory, factories[factory])
       ),
     [factories]
   );
@@ -71,14 +82,17 @@ export const useProductionScheduler = () => {
 
       for (const factory of FACTORY_TYPES) {
         const state = factories[factory];
-        const isActive = isFactoryProductionActive(state);
+        const isActive = isFactoryDrivenByScheduler(factory, state);
         const currentTick = previousTicks[factory];
         const syncResult = isActive
           ? syncActiveFactoryTick(
               factory,
               currentTick,
               offlineProgress,
-              consumedOfflineRef.current
+              consumedOfflineRef.current,
+              getEffectiveProductionTimeForActivePowerUp(
+                getFactory(factory).productionTime
+              )
             )
           : syncInactiveFactoryTick(
               factory,
@@ -106,6 +120,8 @@ export const useProductionScheduler = () => {
 
   useInterval(
     () => {
+      refreshExpiredPowerUps();
+
       setTicks((previousTicks) => {
         let changed = false;
         const nextTicks = { ...previousTicks };

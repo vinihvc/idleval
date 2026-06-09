@@ -16,11 +16,11 @@ describe("formatters", () => {
   });
 
   it("formats thousands with K suffix", () => {
-    expect(amountFormatter(1500)).toBe("1.5K");
+    expect(amountFormatter(1500)).toBe("1.5 K");
   });
 
   it("formats millions with M suffix", () => {
-    expect(amountFormatter(D("2500000"))).toBe("2.5M");
+    expect(amountFormatter(D("2500000"))).toBe("2.5 M");
   });
 
   it("returns infinity symbol above threshold", () => {
@@ -28,7 +28,7 @@ describe("formatters", () => {
   });
 
   it("amountFormatterWithDolarSign prefixes dollar sign", () => {
-    expect(amountFormatterWithDolarSign(1500)).toBe("$1.5K");
+    expect(amountFormatterWithDolarSign(1500)).toBe("$1.5 K");
   });
 
   it("suffixAmountFormatter returns suffix only", () => {

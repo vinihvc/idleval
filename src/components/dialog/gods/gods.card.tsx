@@ -1,13 +1,8 @@
-import { CheckboxOn } from "pixelarticons/react/CheckboxOn";
-import { Badge } from "@/components/ui/badge";
-import { HoldButton } from "@/components/ui/hold-button";
 import { NumberText } from "@/components/ui/number-text";
 import {
+  getUpgradeCardCostStyle,
   UpgradeCard,
-  UpgradeCardTrigger,
-  upgradeCardFooterVariants,
 } from "@/components/ui/upgrade-card";
-import { cn } from "@/lib/cn";
 import { type GodType, getGod } from "@/content/gods";
 import {
   canInvokeGodAtIndex,
@@ -22,7 +17,7 @@ import { amountFormatter } from "@/utils/formatters";
 
 interface GodsCardProps {
   god: GodType;
-  onInvoke?: () => void;
+  onInvoke?: (name: string) => void;
 }
 
 export const GodsCard = (props: GodsCardProps) => {
@@ -39,56 +34,58 @@ export const GodsCard = (props: GodsCardProps) => {
 
   const complete = status === "completed";
   const affordable = !complete && canAfford;
-  const actionable = complete || affordable;
+  const costStyle = getUpgradeCardCostStyle({
+    affordable,
+    locked: false,
+  });
 
-  const getButtonLabel = () => {
+  const getAriaLabel = () => {
     if (complete) {
-      return <CheckboxOn />;
+      return m["ui.common.completed"]({ 0: localizedGod.name });
     }
 
-    return (
-      <>
-        <span>{m["ui.gods.invoke"]()}</span>
-        <Badge className="font-number" variant="default">
-          <NumberText variant="default">
-            {amountFormatter(goldRequired)}
-          </NumberText>
-        </Badge>
-      </>
-    );
+    if (!canAfford) {
+      return m["ui.common.insufficientGold"]({ 0: localizedGod.name });
+    }
+
+    if (affordable) {
+      return m["ui.gods.holdToInvoke"]({ 0: localizedGod.name });
+    }
+
+    return localizedGod.name;
   };
 
   return (
     <UpgradeCard
       affordable={affordable}
+      aria-label={getAriaLabel()}
       complete={complete}
+      cost={
+        complete ? undefined : (
+          <NumberText
+            className={costStyle.className}
+            size="md"
+            variant={costStyle.variant}
+          >
+            {amountFormatter(goldRequired)}
+          </NumberText>
+        )
+      }
       description={localizedGod.description}
+      disabled={complete || !canAfford}
+      holdLabel={m["ui.common.hold"]()}
+      icon={god.icon}
       image={god.image}
-      title={localizedGod.name}
-    >
-      {affordable ? (
-        <HoldButton
-          aria-label={m["ui.gods.holdToInvoke"]({ 0: localizedGod.name })}
-          className={cn(upgradeCardFooterVariants({ variant: "green" }), "border-success-foreground/30 bg-success text-white")}
-          holdLabel={m["ui.common.hold"]()}
-          onHoldComplete={() => {
-            if (invokeGod(godIndex)) {
-              onInvoke?.();
+      onHoldComplete={
+        affordable
+          ? () => {
+              if (invokeGod(godIndex)) {
+                onInvoke?.(localizedGod.name);
+              }
             }
-          }}
-          variant="green"
-        >
-          {getButtonLabel()}
-        </HoldButton>
-      ) : (
-        <UpgradeCardTrigger
-          disabled={!actionable}
-          sound="click"
-          variant={actionable ? "green" : "brown"}
-        >
-          {getButtonLabel()}
-        </UpgradeCardTrigger>
-      )}
-    </UpgradeCard>
+          : undefined
+      }
+      title={localizedGod.name}
+    />
   );
 };

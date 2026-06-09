@@ -1,6 +1,4 @@
-import { Menu } from "pixelarticons/react/Menu";
-import React from "react";
-import { Button } from "@/components/ui/button";
+import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -10,39 +8,25 @@ import {
   ResponsiveDialogImage,
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
-  ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { m } from "@/i18n/messages";
 import { useSound } from "@/providers/sound";
 import { SettingsAudio } from "./settings.audio";
 import { SettingsLanguage } from "./settings.language";
+import { SettingsWiki } from "./settings.wiki";
 import { SettingsReset } from "./settings-reset";
 
-export const SettingsDialog = () => {
+export const SettingsDialog = (
+  props: React.ComponentProps<typeof ResponsiveDialog>
+) => {
+  const { children, ...rest } = props;
+
   const { musicVolume, setMusicVolume, setSfxVolume, sfxVolume } = useSound();
 
-  const [open, setOpen] = React.useState(false);
-
   return (
-    <ResponsiveDialog onOpenChange={setOpen} open={open}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ResponsiveDialogTrigger asChild>
-            <Button size="icon-md" variant="cream">
-              <span className="sr-only">{m["ui.settings.open"]()}</span>
-              <Menu />
-            </Button>
-          </ResponsiveDialogTrigger>
-        </TooltipTrigger>
-
-        <TooltipContent>{m["ui.settings.title"]()}</TooltipContent>
-      </Tooltip>
+    <ResponsiveDialog {...rest}>
+      {children}
 
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
@@ -76,7 +60,11 @@ export const SettingsDialog = () => {
 
           <Separator />
 
-          <SettingsReset onResetComplete={() => setOpen(false)} />
+          <SettingsWiki />
+
+          <Separator />
+
+          <SettingsReset />
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

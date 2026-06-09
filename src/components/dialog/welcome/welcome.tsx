@@ -1,3 +1,4 @@
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Image } from "@unpic/react";
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -11,28 +12,22 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
+import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
-const WELCOME_DIALOG_STORAGE_KEY = "idleval:welcome-dialog-seen:v1";
-
 export const WelcomeDialog = () => {
-  const [open, setOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    const hasSeenWelcome =
-      window.localStorage.getItem(WELCOME_DIALOG_STORAGE_KEY) === "true";
-
-    if (!hasSeenWelcome) {
-      setOpen(true);
-    }
-  }, []);
+  const [hasSeenWelcome, setHasSeenWelcome] = useLocalStorage(
+    LOCAL_STORAGE_KEYS.welcomeDialogSeen,
+    false
+  );
+  const [open, setOpen] = React.useState(() => !hasSeenWelcome);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
 
     if (!nextOpen) {
-      window.localStorage.setItem(WELCOME_DIALOG_STORAGE_KEY, "true");
+      setHasSeenWelcome(true);
     }
   };
 

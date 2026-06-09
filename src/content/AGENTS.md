@@ -24,7 +24,7 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 ## Patterns
 
 - i18n keys: `{entity}.{id}.{field}` (e.g. `factory.grain.name`)
-- Files: `factories.ts`, `gods.ts`
+- Files: `factories.ts`, `gods.ts`, `power-ups.ts`
 - Tests: `content.invariants.test.ts` (structure + `hasMessageKey`)
 
 ## Key files
@@ -42,4 +42,5 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 
 ## Evolution
 
+- 2026-06-08 — `power-ups.ts` catalog with fixed daily calendar and altar grid
 - 2026-06-07 — Initial docs: catalog + localize bridge + invariants

@@ -48,11 +48,11 @@ export const buttonVariants = tv({
         "focus-visible:ring-primary/50",
       ],
       stone: [
-        "bg-muted",
-        "text-foreground",
+        "bg-stone",
+        "text-white",
         "active:brightness-95",
-        "border-primary/30",
-        "hover:brightness-105 focus-visible:ring-primary/20",
+        "border-stone-foreground/40",
+        "hover:brightness-105 focus-visible:ring-stone/50",
       ],
       green: [
         "bg-success",

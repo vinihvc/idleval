@@ -1,22 +1,34 @@
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
-import { FACTORY_DATA, type FactoryType } from "@/content/factories";
+import { useMemo } from "react";
+import {
+  FACTORY_DATA,
+  FACTORY_TYPES,
+  type FactoryType,
+} from "@/content/factories";
 import { applyDifficultyCost } from "@/game/difficulty";
 import { managerCost, unitCost, upgradeCost } from "@/game/economy";
 import {
+  canPurchaseManager,
+  canPurchaseUpgrade,
   getFactoryEarnPerCycle,
   getFactoryProductionValue,
 } from "@/game/factories";
 import type { FactoryPersistedState } from "@/game/types";
 import { useLocalizedFactory } from "@/i18n/hooks/use-localized-factory";
 import { store } from "@/providers/store";
+import {
+  getCauldronDropMultiplierForEarn,
+  getPowerUpIncomeMultiplierForEarn,
+} from "@/store/atoms/power-ups.selectors";
 import { getDifficultyLevel } from "@/store/atoms/settings";
 import type { GameValue } from "@/utils/decimal";
-import { factoriesAtom } from "./factories.atom";
+import { factoriesAtom, useFactories } from "./factories.atom";
 import {
   getGodsProductionMultiplier,
   useGodsProductionMultiplier,
 } from "./gods";
+import { getGold, useWallet } from "./wallet";
 
 const factoryStateAtoms = new Map<
   FactoryType,
@@ -54,8 +66,11 @@ const getFactoryConfig = (factory: FactoryType) => {
 const getScaledUnlockPrice = (unlockPrice: number): GameValue =>
   applyDifficultyCost(unlockPrice, getDifficultyLevel());
 
+export const useFactoryState = (factory: FactoryType) =>
+  useAtomValue(getFactoryStateAtom(factory));
+
 export const useFactory = (factory: FactoryType) => {
-  const state = useAtomValue(getFactoryStateAtom(factory));
+  const state = useFactoryState(factory);
   const config = FACTORY_DATA[factory];
   const localized = useLocalizedFactory(factory);
 
@@ -100,7 +115,9 @@ export const totalToEarnAfterProduce = (factory: FactoryType): GameValue => {
     godsProductionMultiplier: getGodsProductionMultiplier(),
     isUpgraded,
     productionValue,
-  });
+  })
+    .times(getPowerUpIncomeMultiplierForEarn())
+    .times(getCauldronDropMultiplierForEarn());
 };
 
 export const useProductionValue = (factory: FactoryType): GameValue => {
@@ -123,5 +140,81 @@ export const useTotalToEarnAfterProduce = (factory: FactoryType): GameValue => {
     godsProductionMultiplier,
     isUpgraded,
     productionValue,
-  });
+  })
+    .times(getPowerUpIncomeMultiplierForEarn())
+    .times(getCauldronDropMultiplierForEarn());
+};
+
+const canPurchaseAnyFactoryUpgrade = (
+  factories: Record<FactoryType, FactoryPersistedState>,
+  gold: GameValue
+): boolean => {
+  for (const factory of FACTORY_TYPES) {
+    const state = factories[factory];
+    const config = FACTORY_DATA[factory];
+    const cost = upgradeCost(config.baseBuyCost, state.amount);
+
+    if (
+      canPurchaseUpgrade({
+        cost,
+        gold,
+        isUnlocked: state.isUnlocked,
+        isUpgraded: state.isUpgraded,
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const canPurchaseAnyFactoryManager = (
+  factories: Record<FactoryType, FactoryPersistedState>,
+  gold: GameValue
+): boolean => {
+  for (const factory of FACTORY_TYPES) {
+    const state = factories[factory];
+    const config = FACTORY_DATA[factory];
+    const cost = managerCost(config.baseBuyCost, state.amount);
+
+    if (
+      canPurchaseManager({
+        cost,
+        gold,
+        isAutomated: state.isAutomated,
+        isUnlocked: state.isUnlocked,
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const canPurchaseAnyUpgrade = (): boolean =>
+  canPurchaseAnyFactoryUpgrade(store.get(factoriesAtom), getGold());
+
+export const canPurchaseAnyManager = (): boolean =>
+  canPurchaseAnyFactoryManager(store.get(factoriesAtom), getGold());
+
+export const useCanPurchaseAnyUpgrade = (): boolean => {
+  const { gold } = useWallet();
+  const factories = useFactories();
+
+  return useMemo(
+    () => canPurchaseAnyFactoryUpgrade(factories, gold),
+    [factories, gold]
+  );
+};
+
+export const useCanPurchaseAnyManager = (): boolean => {
+  const { gold } = useWallet();
+  const factories = useFactories();
+
+  return useMemo(
+    () => canPurchaseAnyFactoryManager(factories, gold),
+    [factories, gold]
+  );
 };

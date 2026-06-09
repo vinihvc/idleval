@@ -17,7 +17,7 @@ describe("statistics", () => {
   it("setStatistics increments global and per-factory gold earned", () => {
     setStatistics("grain", D(100));
     setStatistics("grain", D(50));
-    setStatistics("mill", D(25));
+    setStatistics("wine", D(25));
 
     const stats = store.get(statisticsAtom);
 
@@ -25,7 +25,7 @@ describe("statistics", () => {
     expect(
       deserializeDecimal(stats.factories.grain.goldEarned).toNumber()
     ).toBe(150);
-    expect(deserializeDecimal(stats.factories.mill.goldEarned).toNumber()).toBe(
+    expect(deserializeDecimal(stats.factories.wine.goldEarned).toNumber()).toBe(
       25
     );
   });

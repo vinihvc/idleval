@@ -1,17 +1,14 @@
 "use client";
 
 import { ark } from "@ark-ui/react/factory";
-import { Tabs as ArkTabs } from "@ark-ui/react/tabs";
 import type React from "react";
 import { cn } from "@/lib/cn";
 
-export const BottomNavigation = (
-  props: React.ComponentProps<typeof ArkTabs.Root>
-) => {
+export const BottomNavigation = (props: React.ComponentProps<"nav">) => {
   const { className, ...rest } = props;
 
   return (
-    <ArkTabs.Root
+    <nav
       className={cn("w-full shrink-0 sm:hidden", className)}
       data-slot="bottom-navigation"
       {...rest}
@@ -19,13 +16,12 @@ export const BottomNavigation = (
   );
 };
 
-export const BottomNavigationList = (
-  props: React.ComponentProps<typeof ArkTabs.List>
-) => {
+export const BottomNavigationList = (props: React.ComponentProps<"ul">) => {
   const { "aria-label": ariaLabel, className, ...rest } = props;
 
   return (
-    <ArkTabs.List
+    <ul
+      aria-label={ariaLabel}
       className={cn(
         "flex w-full shrink-0 items-center justify-around",
         "min-h-(--bottom-nav-height)",
@@ -39,13 +35,23 @@ export const BottomNavigationList = (
   );
 };
 
-export const BottomNavigationItem = (
-  props: React.ComponentProps<typeof ArkTabs.Trigger>
-) => {
+export const BottomNavigationListItem = (props: React.ComponentProps<"li">) => {
   const { className, ...rest } = props;
 
   return (
-    <ArkTabs.Trigger
+    <li
+      className={cn("flex min-w-0 flex-1", className)}
+      data-slot="bottom-navigation-list-item"
+      {...rest}
+    />
+  );
+};
+
+export const BottomNavigationItem = (props: React.ComponentProps<"button">) => {
+  const { className, type = "button", ...rest } = props;
+
+  return (
+    <button
       className={cn(
         "relative",
         "min-w-0",
@@ -55,9 +61,9 @@ export const BottomNavigationItem = (
         "cursor-pointer",
         "transition-colors",
         "hover:text-foreground",
-        "aria-selected:text-primary",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "data-disabled:pointer-events-none data-disabled:opacity-64",
+        "disabled:pointer-events-none disabled:opacity-64",
+        "aria-disabled:pointer-events-none aria-disabled:opacity-64",
         "[&_svg:not([class*='size-'])]:size-6 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "has-[data-slot=bottom-navigation-item-label]:size-4",
         "pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
@@ -65,6 +71,7 @@ export const BottomNavigationItem = (
         className
       )}
       data-slot="bottom-navigation-item"
+      type={type}
       {...rest}
     />
   );

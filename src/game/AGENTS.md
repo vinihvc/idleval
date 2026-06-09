@@ -23,7 +23,7 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Patterns
 
-- Modules by domain: `economy.ts`, `factories.ts`, `gods.ts`, `purchases.ts`, `offline-earnings.ts`, `difficulty.ts`
+- Modules by domain: `economy.ts`, `factories.ts`, `gods.ts`, `purchases.ts`, `offline-earning.ts`, `difficulty.ts`
 - Persisted state shapes in `types.ts`
 - Only store exception: `getDifficultyLevel` / `setDifficulty` from `store/atoms/settings`
 
@@ -35,7 +35,7 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 | `factories.ts` | Yield, upgrade/unlock eligibility |
 | `gods.ts` | Multipliers, invocation rules |
 | `purchases.ts` | Buy modes (1, 10%, 50%, max) |
-| `offline-earnings.ts` | Offline earnings simulation |
+| `offline-earning.ts` | Offline earnings simulation |
 | `types.ts` | Persisted state shapes |
 
 ## Neighbors

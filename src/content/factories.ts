@@ -14,7 +14,7 @@ export const FACTORY_DATA = {
     baseBuyCost: 75,
     unlockPrice: 0,
   },
-  mill: {
+  wine: {
     productionTime: 5,
     productionValue: 160,
     baseBuyCost: 1125,

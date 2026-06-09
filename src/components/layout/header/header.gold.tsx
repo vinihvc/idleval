@@ -1,9 +1,5 @@
 import React from "react";
 
-const LazyStatisticsDialog = React.lazy(
-  () => import("@/components/dialog/statistics/statistics")
-);
-
 import { Coin } from "@/components/icons/coin";
 import { FormattedNumber } from "@/components/ui/formatted-number";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
@@ -17,6 +13,10 @@ import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { useWallet } from "@/store/atoms/wallet";
 
+const LazyStatisticsDialog = React.lazy(
+  () => import("@/components/dialog/statistics/statistics")
+);
+
 export const HeaderGold = () => {
   const { gold } = useWallet();
 
@@ -27,12 +27,12 @@ export const HeaderGold = () => {
           <TooltipTrigger asChild>
             <ResponsiveDialogTrigger asChild>
               <button
-                className="relative inset-shadow-xs flex h-7 min-w-32 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border-3 border-primary bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:h-8"
+                className="relative inset-shadow-xs flex h-8 min-w-32 translate-x-2 items-center justify-end whitespace-nowrap rounded-md border-3 border-primary bg-popover pr-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 type="button"
               >
                 <Coin
                   aria-hidden
-                  className="absolute top-0 -left-2 size-8 shrink-0 -translate-y-1.5 drop-shadow-md sm:size-10"
+                  className="absolute top-0 -left-2.5 size-10 shrink-0 -translate-y-2 drop-shadow-md"
                 />
 
                 <span

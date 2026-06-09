@@ -11,10 +11,7 @@ interface TestLocator {
 
 export const openDialog = async (
   screen: {
-    getByRole: (
-      role: string,
-      options?: { name?: string }
-    ) => TestLocator;
+    getByRole: (role: string, options?: { name?: string }) => TestLocator;
   },
   triggerLabel: string
 ) => {

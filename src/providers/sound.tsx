@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 import React from "react";
 import { soundEngine } from "@/audio/engine";
 import type { PlayOptions, SfxId } from "@/audio/types";
@@ -8,6 +7,7 @@ import {
   setMusicVolume,
   setSfxVolume,
   settingsAtom,
+  useSettings,
 } from "@/store/atoms/settings";
 
 interface SoundContextType {
@@ -27,7 +27,7 @@ const SoundContext = React.createContext<SoundContextType | null>(null);
 export type { SfxId as SoundsType } from "@/audio/types";
 
 export const SoundProvider = ({ children }: React.PropsWithChildren) => {
-  const { musicVolume, sfxVolume } = useAtomValue(settingsAtom);
+  const { musicVolume, sfxVolume } = useSettings();
 
   React.useEffect(() => {
     soundEngine.init(getSettings, (callback) =>

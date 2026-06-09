@@ -19,11 +19,15 @@ Biome (the underlying engine) provides robust linting and formatting. Most issue
 
 ## Game asset images
 
+**Mandatory for every AI-generated sprite without a scene:** generate on a **solid magenta** (`#FF00FF`) background first, then run `pnpm remove-bg` — never commit checkerboard “fake PNG” transparency or ask the model for a transparent background directly.
+
 After generating a pixel-art sprite (AI or otherwise), always run this pipeline before committing to `public/images/`.
 
 ### 1. Generate with chroma key
 
-- Use a **solid magenta** (`#FF00FF`) or **green** (`#00FF00`) background — never fake transparency (checkerboard baked into pixels).
+- Prompt must include: **solid flat magenta background `#FF00FF`**, not checkerboard, not transparent.
+- Use **green** (`#00FF00`) only when the subject is mostly purple/violet and magenta key would eat the sprite (see step 2).
+- Never fake transparency (checkerboard baked into pixels).
 - **Magenta** for most sprites. **Green** when the subject has **purple/violet** (capes, robes, amethyst) — magenta key treats purple like background and removes or washes it out.
 - **Red gems** on magenta (crowns, hearts) are safe with the default pipeline; if edges look dull, re-run with `--no-despill`.
 - No scene, pedestal, or extra props unless requested.

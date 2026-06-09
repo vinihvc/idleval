@@ -1,4 +1,5 @@
 import { useAtomValue } from "jotai";
+import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
 import {
   DEFAULT_DIFFICULTY,
   type DifficultyLevel,
@@ -21,11 +22,14 @@ export interface Settings {
   sfxVolume: number;
 }
 
-export const settingsAtom = persistedAtom<Settings>("settings", {
-  difficulty: DEFAULT_DIFFICULTY,
-  musicVolume: 0.8,
-  sfxVolume: 0.8,
-});
+export const settingsAtom = persistedAtom<Settings>(
+  LOCAL_STORAGE_KEYS.settings,
+  {
+    difficulty: DEFAULT_DIFFICULTY,
+    musicVolume: 0.8,
+    sfxVolume: 0.8,
+  }
+);
 
 export const getSettings = (): Settings => {
   const settings = store.get(settingsAtom);

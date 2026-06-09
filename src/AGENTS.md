@@ -10,6 +10,7 @@ Application source for Idleval — a Viking idle game with separated layers (con
 
 | Folder | AGENTS.md | Role |
 |--------|-----------|------|
+| [config/](config/local-storage-keys.ts) | Central `LOCAL_STORAGE_KEYS` for all persistence |
 | [app/](app/AGENTS.md) | Entry, providers, page composition |
 | [audio/](audio/AGENTS.md) | Sound engine, SFX registry |
 | [components/](components/AGENTS.md) | UI, dialogs, layout, debug |
@@ -43,6 +44,14 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
                          i18n (strings)      hooks/providers (effects)
 ```
 
+## Component visual variants
+
+If the user asks for **variations / multiple looks / 4 options** of new UI, use [`providers/variant-tools.tsx`](providers/variant-tools.tsx): `VariantTools` type + `usePickVariantTools`. See [components/AGENTS.md](components/AGENTS.md) § Visual variants. UpgradeCard is excluded (fixed preset).
+
+## Game asset images
+
+Sprites under `public/images/` are produced with a **magenta chroma-key pipeline** — see [Game asset images](../AGENTS.md#game-asset-images) in the root `AGENTS.md`. Always generate on solid `#FF00FF` magenta, then `pnpm remove-bg` → optional `pnpm compress-image`.
+
 ## Before editing
 
 1. Read the target folder's `AGENTS.md`.
@@ -51,4 +60,7 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 
 ## Evolution
 
+- 2026-06-08 — `config/local-storage-keys.ts` centralizes all localStorage key strings
+- 2026-06-08 — Link to root AGENTS.md magenta chroma-key pipeline for `public/images/` sprites
+- 2026-06-08 — `VariantTools` type + hooks replace `OpenVisualVariant` naming
 - 2026-06-07 — Initial hierarchical docs (12 folders + index)

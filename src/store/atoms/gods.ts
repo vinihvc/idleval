@@ -1,13 +1,14 @@
 import { useAtomValue } from "jotai";
-import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { useMemo } from "react";
+import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
 import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
 import { canInvokeGodAtIndex, getTotalProductionMultiplier } from "@/game/gods";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { resetRunProgress } from "@/store/reset-run-progress";
-import { getStorage, getStorageInitOptions } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
-import { getGold } from "./wallet";
+import { getGold, useWallet } from "./wallet";
 
 export interface GodsState {
   invoked: GodId[];
@@ -43,41 +44,16 @@ export const normalizeGodsState = (value: unknown): GodsState => {
   return { invoked: [] };
 };
 
-const godsJsonStorage = createJSONStorage<GodsState>(() => {
-  const storage = getStorage();
-
-  return {
-    getItem: (key) => {
-      const value = storage.getItem(key);
-
-      if (!value) {
-        return null;
-      }
-
-      try {
-        return JSON.stringify(normalizeGodsState(JSON.parse(value)));
-      } catch {
-        return null;
-      }
-    },
-    setItem: (key, value) => {
-      storage.setItem(key, value);
-    },
-    removeItem: (key) => {
-      storage.removeItem(key);
-    },
-  };
-});
-
-export const godsAtom = atomWithStorage<GodsState>(
-  "gods",
+export const godsAtom = persistedAtomWithNormalize<GodsState>(
+  LOCAL_STORAGE_KEYS.gods,
   { invoked: [] },
-  godsJsonStorage,
-  getStorageInitOptions()
+  normalizeGodsState
 );
 
+export const useGodsState = () => useAtomValue(godsAtom);
+
 export const useGods = () => {
-  const state = useAtomValue(godsAtom);
+  const state = useGodsState();
   const { invoked } = normalizeGodsState(state);
 
   return {
@@ -111,6 +87,21 @@ export const canInvokeGod = (): boolean => {
   }
 
   return false;
+};
+
+export const useCanInvokeGod = (): boolean => {
+  const { gold } = useWallet();
+  const { invoked } = useGods();
+
+  return useMemo(() => {
+    for (let index = 0; index < GOD_COUNT; index++) {
+      if (canInvokeGodAtIndex(index, invoked, gold)) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [gold, invoked]);
 };
 
 export const invokeGod = (godIndex: number): boolean => {

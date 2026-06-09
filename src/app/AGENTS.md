@@ -9,7 +9,7 @@ SPA entry point — game shell composition and provider tree.
 ## Do
 
 - Keep `page.tsx` as a thin orchestrator (layout + imports from `components/`)
-- Chain providers in `providers.tsx` in order: Store → Sound → Scheduler → Offline → I18n (innermost, so locale remounts UI only)
+- Chain providers in `providers.tsx` in order: Store → Sound → Offline → I18n (innermost, so locale remounts UI only)
 - Use `IS_DEV` from `@/lib/envs` for debug flags
 - Delegate game logic to `store/`, `hooks/`, and `providers/`
 

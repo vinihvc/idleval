@@ -90,16 +90,16 @@ describe("factories.actions", () => {
   });
 
   it("unlockFactory unlocks sealed factory and sets amount to 1", () => {
-    seedGold(FACTORY_DATA.mill.unlockPrice);
-    const unlockPrice = FACTORY_DATA.mill.unlockPrice;
+    seedGold(FACTORY_DATA.wine.unlockPrice);
+    const unlockPrice = FACTORY_DATA.wine.unlockPrice;
 
-    unlockFactory("mill");
+    unlockFactory("wine");
 
-    expect(store.get(factoriesAtom).mill.isUnlocked).toBe(true);
-    expect(store.get(factoriesAtom).mill.amount).toBe(1);
+    expect(store.get(factoriesAtom).wine.isUnlocked).toBe(true);
+    expect(store.get(factoriesAtom).wine.amount).toBe(1);
     expect(getGold().toNumber()).toBe(0);
     expect(
-      deserializeDecimal(store.get(statisticsAtom).factories.mill.goldSpent).eq(
+      deserializeDecimal(store.get(statisticsAtom).factories.wine.goldSpent).eq(
         D(unlockPrice)
       )
     ).toBe(true);

@@ -9,7 +9,7 @@ import { walletAtom } from "@/store/atoms/wallet";
 import {
   offlineCycleProgressAtom,
   offlineSummaryAtom,
-} from "@/store/offline";
+} from "@/store/offline-earning";
 import { resetGame, resetRunProgress } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { D, deserializeDecimal } from "@/utils/decimal";

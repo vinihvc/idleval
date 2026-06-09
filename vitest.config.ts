@@ -9,10 +9,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ["@inlang/paraglide-js-react"],
   },
-  plugins: [
-    react(),
-    paraglideVitePlugin(paraglidePluginOptions),
-  ],
+  plugins: [react(), paraglideVitePlugin(paraglidePluginOptions)],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),

@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { m } from "@/i18n/messages";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("Dialog", () => {
@@ -34,5 +35,21 @@ describe("Dialog", () => {
 
     await expect.element(screen.getByText("Test Dialog")).toBeInTheDocument();
     await expect.element(screen.getByText("Body content")).toBeInTheDocument();
+  });
+
+  test("localizes the close button label", async () => {
+    const screen = await renderWithProviders(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Test Dialog</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+
+    await expect
+      .element(screen.getByRole("button", { name: m["ui.common.close"]() }))
+      .toBeInTheDocument();
   });
 });

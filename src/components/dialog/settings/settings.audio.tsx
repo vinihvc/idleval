@@ -92,7 +92,7 @@ const VolumeControl = (props: VolumeControlProps) => {
         <Button
           aria-label={muteAriaLabel}
           aria-pressed={isMuted}
-          className="hidden shrink-0 md:inline-flex"
+          className="shrink-0"
           onClick={toggleMute}
           size="icon-sm"
           sound={false}
@@ -102,6 +102,7 @@ const VolumeControl = (props: VolumeControlProps) => {
         </Button>
 
         <Slider
+          aria-labelledby={[labelId]}
           className="w-full min-w-0 md:flex-1"
           max={1}
           min={0}

@@ -11,9 +11,9 @@ export const syncActiveFactoryTick = (
   factory: FactoryType,
   currentTick: FactoryTickState,
   offlineProgress: Partial<Record<FactoryType, number>>,
-  consumedOffline: Set<FactoryType>
+  consumedOffline: Set<FactoryType>,
+  productionTime: number = FACTORY_DATA[factory].productionTime
 ): FactoryTickSyncResult => {
-  const { productionTime } = FACTORY_DATA[factory];
   const fromOffline = offlineProgress[factory];
 
   if (fromOffline != null && !consumedOffline.has(factory)) {

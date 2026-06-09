@@ -8,6 +8,11 @@ import {
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
+import { consumePendingCauldronDrop } from "@/store/atoms/power-ups.actions";
+import {
+  getCauldronDropMultiplierForEarn,
+  getPowerUpIncomeMultiplierForEarn,
+} from "@/store/atoms/power-ups.selectors";
 import { D } from "@/utils/decimal";
 import { factoriesAtom } from "./factories.atom";
 import { getFactory } from "./factories.selectors";
@@ -84,7 +89,11 @@ export const completeProductionCycle = (factory: FactoryType) => {
     godsProductionMultiplier: getGodsProductionMultiplier(),
     isUpgraded,
     productionValue,
-  });
+  })
+    .times(getPowerUpIncomeMultiplierForEarn())
+    .times(getCauldronDropMultiplierForEarn());
+
+  consumePendingCauldronDrop();
 
   increaseGoldByAmount(factory, goldEarned);
 

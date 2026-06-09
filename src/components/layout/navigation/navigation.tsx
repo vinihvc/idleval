@@ -1,4 +1,5 @@
 import { ArrowUpBox } from "pixelarticons/react/ArrowUpBox";
+import { Backpack } from "pixelarticons/react/Backpack";
 import { Briefcase } from "pixelarticons/react/Briefcase";
 import { Crown } from "pixelarticons/react/Crown";
 import React from "react";
@@ -7,14 +8,9 @@ import {
   BottomNavigationItem,
   BottomNavigationItemIcon,
   BottomNavigationList,
+  BottomNavigationListItem,
 } from "@/components/ui/bottom-navigation";
-import { Button } from "@/components/ui/button";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
@@ -28,6 +24,10 @@ const LazyManagersDialog = React.lazy(
 
 const LazyGodsDialog = React.lazy(
   () => import("@/components/dialog/gods/gods")
+);
+
+const LazyInventoryDialog = React.lazy(
+  () => import("@/components/dialog/inventory/inventory")
 );
 
 export const Navigation = (
@@ -44,122 +44,69 @@ export const Navigation = (
         aria-label={m["ui.nav.label"]()}
         className={cn(
           "z-60",
-          "border-primary bg-secondary/95 backdrop-blur-lg",
-          "**:data-[slot=bottom-navigation-item]:border-transparent **:data-[slot=bottom-navigation-item]:bg-transparent **:data-[slot=bottom-navigation-item]:text-foreground/70 **:data-[slot=bottom-navigation-item]:shadow-none",
-          "**:data-[slot=bottom-navigation-item]:aria-selected:text-primary **:data-[slot=bottom-navigation-item]:hover:text-primary"
+          "border-primary bg-secondary/95 backdrop-blur-lg"
         )}
       >
         <React.Suspense fallback={null}>
           <LazyUpgradesDialog>
-            <BottomNavigationItem asChild value="upgrades">
+            <BottomNavigationListItem>
               <ResponsiveDialogTrigger asChild>
-                <button
-                  className="flex size-full flex-col items-center justify-center"
-                  type="button"
-                >
+                <BottomNavigationItem>
                   <BottomNavigationItemIcon>
                     <ArrowUpBox />
                   </BottomNavigationItemIcon>
                   <span className="sr-only">{m["ui.nav.upgrades"]()}</span>
-                </button>
+                </BottomNavigationItem>
               </ResponsiveDialogTrigger>
-            </BottomNavigationItem>
+            </BottomNavigationListItem>
           </LazyUpgradesDialog>
         </React.Suspense>
 
         <React.Suspense fallback={null}>
           <LazyManagersDialog>
-            <BottomNavigationItem asChild value="managers">
+            <BottomNavigationListItem>
               <ResponsiveDialogTrigger asChild>
-                <button
-                  className="flex size-full flex-col items-center justify-center"
-                  type="button"
-                >
+                <BottomNavigationItem>
                   <BottomNavigationItemIcon>
                     <Briefcase />
                   </BottomNavigationItemIcon>
                   <span className="sr-only">{m["ui.nav.managers"]()}</span>
-                </button>
+                </BottomNavigationItem>
               </ResponsiveDialogTrigger>
-            </BottomNavigationItem>
+            </BottomNavigationListItem>
           </LazyManagersDialog>
         </React.Suspense>
 
         <React.Suspense fallback={null}>
           <LazyGodsDialog>
-            <BottomNavigationItem asChild value="gods">
+            <BottomNavigationListItem>
               <ResponsiveDialogTrigger asChild>
-                <button
-                  className="flex size-full flex-col items-center justify-center"
-                  type="button"
-                >
+                <BottomNavigationItem>
                   <BottomNavigationItemIcon>
                     <Crown />
                   </BottomNavigationItemIcon>
                   <span className="sr-only">{m["ui.nav.gods"]()}</span>
-                </button>
+                </BottomNavigationItem>
               </ResponsiveDialogTrigger>
-            </BottomNavigationItem>
+            </BottomNavigationListItem>
           </LazyGodsDialog>
+        </React.Suspense>
+
+        <React.Suspense fallback={null}>
+          <LazyInventoryDialog>
+            <BottomNavigationListItem>
+              <ResponsiveDialogTrigger asChild>
+                <BottomNavigationItem>
+                  <BottomNavigationItemIcon>
+                    <Backpack />
+                  </BottomNavigationItemIcon>
+                  <span className="sr-only">{m["ui.nav.inventory"]()}</span>
+                </BottomNavigationItem>
+              </ResponsiveDialogTrigger>
+            </BottomNavigationListItem>
+          </LazyInventoryDialog>
         </React.Suspense>
       </BottomNavigationList>
     </BottomNavigation>
-  );
-};
-
-export const HeaderNavigation = (props: React.ComponentProps<"nav">) => {
-  const { className, ...rest } = props;
-
-  return (
-    <nav
-      className={cn("hidden items-center gap-2 sm:flex", className)}
-      {...rest}
-    >
-      <React.Suspense fallback={null}>
-        <LazyUpgradesDialog>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ResponsiveDialogTrigger asChild>
-                <Button size="icon-md" variant="cream">
-                  <span className="sr-only">{m["ui.nav.upgrades"]()}</span>
-                  <ArrowUpBox />
-                </Button>
-              </ResponsiveDialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{m["ui.nav.upgrades"]()}</TooltipContent>
-          </Tooltip>
-        </LazyUpgradesDialog>
-      </React.Suspense>
-      <React.Suspense fallback={null}>
-        <LazyManagersDialog>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ResponsiveDialogTrigger asChild>
-                <Button size="icon-md" variant="cream">
-                  <span className="sr-only">{m["ui.nav.managers"]()}</span>
-                  <Briefcase />
-                </Button>
-              </ResponsiveDialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{m["ui.nav.managers"]()}</TooltipContent>
-          </Tooltip>
-        </LazyManagersDialog>
-      </React.Suspense>
-      <React.Suspense fallback={null}>
-        <LazyGodsDialog>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ResponsiveDialogTrigger asChild>
-                <Button size="icon-md" variant="cream">
-                  <span className="sr-only">{m["ui.nav.gods"]()}</span>
-                  <Crown />
-                </Button>
-              </ResponsiveDialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{m["ui.nav.gods"]()}</TooltipContent>
-          </Tooltip>
-        </LazyGodsDialog>
-      </React.Suspense>
-    </nav>
   );
 };

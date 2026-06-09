@@ -41,5 +41,6 @@ Global CSS — theme tokens, fonts, and Tailwind v4 variables.
 
 ## Evolution
 
+- 2026-06-08 — Lock mobile zoom via viewport meta + `touch-action: manipulation` on `html`
 - 2026-06-08 — Mobile-first breakpoints (`sm:`/`md:`) instead of `max-sm:`/`max-md:`
 - 2026-06-07 — Initial docs: globals.css + Tailwind v4 tokens

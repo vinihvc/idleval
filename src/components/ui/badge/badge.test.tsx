@@ -11,11 +11,11 @@ describe("Badge", () => {
 
   test("sets variant data attribute", async () => {
     const screen = await renderWithProviders(
-      <Badge variant="success">Active</Badge>
+      <Badge variant="green">Active</Badge>
     );
 
     const badge = screen.getByText("Active");
     await expect.element(badge).toHaveAttribute("data-slot", "badge");
-    await expect.element(badge).toHaveAttribute("data-variant", "success");
+    await expect.element(badge).toHaveAttribute("data-variant", "green");
   });
 });

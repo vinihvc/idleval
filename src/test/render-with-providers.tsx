@@ -4,6 +4,7 @@ import type { AppLocale } from "@/i18n/locale";
 import { I18nProvider } from "@/i18n/provider";
 import { SoundProvider } from "@/providers/sound";
 import { StoreProvider } from "@/providers/store";
+import { VariantToolsProvider } from "@/providers/variant-tools";
 import { setLocale } from "@/store/atoms/settings";
 
 interface RenderWithProvidersOptions {
@@ -20,9 +21,11 @@ export const renderWithProviders = async (
 
   return await render(
     <StoreProvider>
-      <SoundProvider>
-        <I18nProvider>{ui}</I18nProvider>
-      </SoundProvider>
+      <VariantToolsProvider>
+        <SoundProvider>
+          <I18nProvider>{ui}</I18nProvider>
+        </SoundProvider>
+      </VariantToolsProvider>
     </StoreProvider>
   );
 };

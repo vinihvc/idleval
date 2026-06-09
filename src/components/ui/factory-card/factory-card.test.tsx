@@ -14,7 +14,7 @@ describe("FactoryCard", () => {
   });
 
   test("renders locked factory", async () => {
-    const screen = await renderWithProviders(<FactoryCard type="mill" />);
+    const screen = await renderWithProviders(<FactoryCard type="wine" />);
 
     await expect
       .element(screen.getByRole("article"))

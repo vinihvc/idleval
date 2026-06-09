@@ -1,0 +1,94 @@
+import { ArrowUpBox } from "pixelarticons/react/ArrowUpBox";
+import { Briefcase } from "pixelarticons/react/Briefcase";
+import { Coins } from "pixelarticons/react/Coins";
+import { Crown } from "pixelarticons/react/Crown";
+import { Lock } from "pixelarticons/react/Lock";
+import { Potion } from "pixelarticons/react/Potion";
+import { Reload } from "pixelarticons/react/Reload";
+import {
+  ActionBar,
+  ActionBarBody,
+  ActionBarContent,
+} from "@/components/ui/action-bar";
+import { Button } from "@/components/ui/button";
+import { IS_DEV } from "@/lib/envs";
+import {
+  addDebugGold,
+  addDebugPowerUps,
+  enableAllManagers,
+  enableAllUpgrades,
+  enableGodMode,
+  resetGameState,
+  unlockAllFactories,
+} from "@/store/debug";
+
+export const ActionTools = () => {
+  if (!IS_DEV) {
+    return null;
+  }
+
+  return (
+    <ActionBar open>
+      <ActionBarContent aria-label="Debug tools" className="hidden sm:flex">
+        <ActionBarBody>
+          <Button
+            aria-label="Reset game state"
+            onClick={resetGameState}
+            variant="destructive"
+          >
+            <Reload />
+            <span className="hidden md:inline">Reset </span>
+          </Button>
+          <Button
+            aria-label="Add debug gold"
+            onClick={addDebugGold}
+            variant="default"
+          >
+            <Coins />
+            <span className="hidden md:inline">Gold </span>
+          </Button>
+          <Button
+            aria-label="Unlock all factories"
+            onClick={unlockAllFactories}
+            variant="brown"
+          >
+            <Lock />
+            <span className="hidden md:inline">Factories</span>
+          </Button>
+          <Button
+            aria-label="Enable all upgrades"
+            onClick={enableAllUpgrades}
+            variant="green"
+          >
+            <ArrowUpBox />
+            <span className="hidden md:inline">Upgrades</span>
+          </Button>
+          <Button
+            aria-label="Enable all managers"
+            onClick={enableAllManagers}
+            variant="blue"
+          >
+            <Briefcase />
+            <span className="hidden md:inline">Managers</span>
+          </Button>
+          <Button
+            aria-label="Add debug power-ups"
+            onClick={addDebugPowerUps}
+            variant="stone"
+          >
+            <Potion />
+            <span className="hidden md:inline">Relics</span>
+          </Button>
+          <Button
+            aria-label="Enable god mode"
+            onClick={enableGodMode}
+            variant="purple"
+          >
+            <Crown />
+            <span className="hidden md:inline">God mode</span>
+          </Button>
+        </ActionBarBody>
+      </ActionBarContent>
+    </ActionBar>
+  );
+};

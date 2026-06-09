@@ -10,14 +10,18 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { FACTORY_TYPES } from "@/content/factories";
+import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
+import { useNotificationDialogHandler } from "@/store/atoms/notifications";
 import { UpgradesCard } from "./upgrades.card";
 
 export const UpgradesDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
+  const { announce, message } = useLiveAnnouncer();
+  const onOpenChange = useNotificationDialogHandler("upgrades");
 
   return (
-    <ResponsiveDialog>
+    <ResponsiveDialog onOpenChange={onOpenChange}>
       {children}
 
       <ResponsiveDialogContent>
@@ -33,15 +37,22 @@ export const UpgradesDialog = (props: React.PropsWithChildren) => {
             {m["ui.upgrades.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription hideDescription>
+          <ResponsiveDialogDescription>
             {m["ui.upgrades.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
+          <LiveAnnouncer message={message} />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {FACTORY_TYPES.map((factoryType) => (
-              <UpgradesCard factoryType={factoryType} key={factoryType} />
+              <UpgradesCard
+                factoryType={factoryType}
+                key={factoryType}
+                onPurchase={(name) =>
+                  announce(m["ui.a11y.purchased"]({ name }))
+                }
+              />
             ))}
           </div>
         </ResponsiveDialogBody>

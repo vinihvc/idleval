@@ -1,11 +1,7 @@
-import { Image } from "@unpic/react";
-import { CheckboxOn } from "pixelarticons/react/CheckboxOn";
-import { Badge } from "@/components/ui/badge";
 import { NumberText } from "@/components/ui/number-text";
 import {
+  getUpgradeCardCostStyle,
   UpgradeCard,
-  UpgradeCardBadge,
-  UpgradeCardTrigger,
 } from "@/components/ui/upgrade-card";
 import type { FactoryType } from "@/content/factories";
 import { canPurchaseUpgrade } from "@/game/factories";
@@ -16,12 +12,13 @@ import { amountFormatter } from "@/utils/formatters";
 
 interface UpgradesCardProps {
   factoryType: FactoryType;
+  onPurchase?: (name: string) => void;
 }
 
 export const UpgradesCard = (props: UpgradesCardProps) => {
-  const { factoryType } = props;
+  const { factoryType, onPurchase } = props;
 
-  const { isUpgraded, isUnlocked, upgradeCost, upgrade, name } =
+  const { isUpgraded, isUnlocked, upgradeCost, upgrade } =
     useFactory(factoryType);
   const { gold } = useWallet();
 
@@ -33,59 +30,57 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
     cost: upgradeCost,
   });
   const affordable = !complete && canBuy;
-  const actionable = complete || affordable;
-  const isDisabled = complete || !canBuy;
+  const locked = !isUnlocked;
 
-  const getTriggerContent = () => {
-    if (!isUnlocked) {
-      return m["ui.common.charterRequired"]();
-    }
+  const getAriaLabel = () => {
     if (complete) {
-      return <CheckboxOn />;
+      return m["ui.common.completed"]({ 0: upgrade.name });
     }
-    return (
-      <>
-        <span>{m["ui.upgrades.improve"]()}</span>
-        <Badge variant="default">
-          <NumberText variant="default">
-            {amountFormatter(upgradeCost)}
-          </NumberText>
-        </Badge>
-      </>
-    );
+
+    if (locked) {
+      return `${upgrade.name}. ${m["ui.common.charterRequired"]()}`;
+    }
+
+    if (!canBuy) {
+      return m["ui.common.insufficientGold"]({ 0: upgrade.name });
+    }
+
+    return `${m["ui.upgrades.improve"]()} ${upgrade.name}`;
   };
+
+  const costStyle = getUpgradeCardCostStyle({ affordable, locked });
 
   return (
     <UpgradeCard
       affordable={affordable}
+      aria-label={getAriaLabel()}
       complete={complete}
+      cost={
+        complete ? undefined : (
+          <NumberText
+            className={costStyle.className}
+            size="md"
+            variant={costStyle.variant}
+          >
+            {amountFormatter(upgradeCost)}
+          </NumberText>
+        )
+      }
       description={upgrade.description}
+      disabled={complete || !canBuy}
+      icon={`/images/factories/${factoryType}.webp`}
       image={`/images/upgrades/${factoryType}.webp`}
+      locked={locked}
+      onClick={
+        canBuy && isUnlocked
+          ? () => {
+              upgradeFactory(factoryType);
+              onPurchase?.(upgrade.name);
+            }
+          : undefined
+      }
+      sound="upgrade"
       title={upgrade.name}
-    >
-      <UpgradeCardBadge
-        icon={
-          <Image
-            alt=""
-            aria-hidden
-            className="pixel-crisp pointer-events-none size-full rounded-md object-contain"
-            height={28}
-            layout="constrained"
-            src={`/images/factories/${factoryType}.webp`}
-            width={28}
-          />
-        }
-      >
-        {name}
-      </UpgradeCardBadge>
-      <UpgradeCardTrigger
-        disabled={isDisabled}
-        onClick={() => upgradeFactory(factoryType)}
-        sound="upgrade"
-        variant={actionable ? "green" : "brown"}
-      >
-        {getTriggerContent()}
-      </UpgradeCardTrigger>
-    </UpgradeCard>
+    />
   );
 };

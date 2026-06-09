@@ -40,8 +40,8 @@ const formatScaledValue = (amount: Decimal, rangeValue: Decimal) => {
  *
  * @example
  * amountFormatter(999) // "999"
- * amountFormatter(1500) // "1.5K"
- * amountFormatter(D("2500000")) // "2.5M"
+ * amountFormatter(1500) // "1.5 K"
+ * amountFormatter(D("2500000")) // "2.5 M"
  * amountFormatter(D("1e200")) // "∞"
  */
 export const amountFormatter = (amount: number | Decimal) => {
@@ -58,7 +58,9 @@ export const amountFormatter = (amount: number | Decimal) => {
   const item = findRange(value);
 
   if (item) {
-    return `${formatScaledValue(value, item.value)}${item.symbol}`;
+    const scaled = formatScaledValue(value, item.value);
+
+    return item.symbol ? `${scaled} ${item.symbol}` : scaled;
   }
 
   return "0";
@@ -68,7 +70,7 @@ export const amountFormatter = (amount: number | Decimal) => {
  * Same as amountFormatter, prefixed with a dollar sign.
  *
  * @example
- * amountFormatterWithDolarSign(1500) // "$1.5K"
+ * amountFormatterWithDolarSign(1500) // "$1.5 K"
  */
 export const amountFormatterWithDolarSign = (amount: number | Decimal) =>
   `$${amountFormatter(amount)}`;

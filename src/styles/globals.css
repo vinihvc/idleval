@@ -49,6 +49,9 @@
   --color-info-foreground: var(--info-foreground);
   --color-info: var(--info);
 
+  --color-stone-foreground: var(--stone-foreground);
+  --color-stone: var(--stone);
+
   --color-border: var(--border);
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -121,6 +124,9 @@
   --success: oklch(0.55 0.14 155);
   --success-foreground: oklch(0.75 0.1 155);
 
+  --stone: oklch(0.5 0.012 260);
+  --stone-foreground: oklch(0.72 0.018 260);
+
   --warning: oklch(0.72 0.14 75);
   --warning-foreground: oklch(0.25 0.05 70);
 
@@ -140,6 +146,7 @@
 
   html {
     scrollbar-gutter: stable;
+    touch-action: manipulation;
     color-scheme: dark;
     @apply antialiased overscroll-none;
     @apply h-svh overflow-hidden;

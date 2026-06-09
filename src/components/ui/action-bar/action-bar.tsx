@@ -7,6 +7,7 @@ import React from "react";
 import { tv } from "tailwind-variants";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
 interface ActionBarPositioning {
@@ -174,7 +175,6 @@ export const ActionBarTrigger = (
       data-slot="action-bar-trigger"
       data-state={isOpen ? "open" : "closed"}
       onClick={handleClick}
-      type="button"
       {...rest}
     />
   );
@@ -278,7 +278,7 @@ export const ActionBarClose = (
 
   return (
     <ark.button
-      aria-label="Close"
+      aria-label={m["ui.common.close"]()}
       className={cn(
         "opacity-64 transition-opacity",
         "hover:opacity-100",
@@ -316,7 +316,7 @@ export const ActionBarValue = (props: ActionBarValueProps) => {
         className
       )}
       data-slot="action-bar-value"
-      variant="secondary"
+      variant="brown"
       {...rest}
     >
       {children ?? label ?? count}

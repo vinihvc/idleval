@@ -1,8 +1,10 @@
 import React from "react";
 import type { FactoryType } from "@/content/factories";
+import { getEffectiveProductionTime } from "@/game/power-ups";
 import { isFactorySealed } from "@/game/purchases";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useFactory } from "@/store/atoms/factories";
+import { useInventory } from "@/store/atoms/inventory";
 import { useWallet } from "@/store/atoms/wallet";
 
 interface FactoryCardContextValue {
@@ -33,6 +35,7 @@ export const FactoryCardProvider = (props: FactoryCardProviderProps) => {
   const { factoryType, children } = props;
 
   const factory = useFactory(factoryType);
+  const { activePowerUp } = useInventory();
   const { gold } = useWallet();
   const { seconds, isRunning, cycleKey } = useCountdown(factoryType);
 
@@ -50,8 +53,20 @@ export const FactoryCardProvider = (props: FactoryCardProviderProps) => {
       seconds,
       isLocked,
       ...factory,
+      productionTime: getEffectiveProductionTime(
+        factory.productionTime,
+        activePowerUp
+      ),
     }),
-    [factoryType, cycleKey, isRunning, seconds, isLocked, factory]
+    [
+      factoryType,
+      cycleKey,
+      isRunning,
+      seconds,
+      isLocked,
+      factory,
+      activePowerUp,
+    ]
   );
 
   return (

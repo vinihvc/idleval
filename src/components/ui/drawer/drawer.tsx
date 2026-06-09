@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { DialogImage, DialogMedia } from "@/components/ui/dialog";
 import { FantasyCorner } from "@/components/ui/fantasy-corner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
 export const useDrawer = useDrawerContext;
@@ -84,9 +85,9 @@ export const DrawerTrigger = (
 
 const drawerOverlayVariants = tv({
   base: [
-    "[--bg:rgb(20_15_10/calc(0.55*(1-var(--drawer-swipe-progress))))] [--blur:calc(6px*(1-var(--drawer-swipe-progress)))]",
+    "[--bg:rgb(20_15_10/calc(0.55*(1-var(--drawer-swipe-progress))))]",
     "fixed inset-0 z-50",
-    "bg-(--bg) backdrop-blur-(--blur)",
+    "bg-(--bg)",
     "data-[state=open]:fade-in-0 data-[state=open]:animate-in",
     "data-[state=closed]:fade-out-0 data-[state=closed]:animate-out",
     "motion-reduce:animate-none!",
@@ -266,14 +267,14 @@ export const DrawerContent = (props: DrawerContentProps) => {
               {!!showCloseButton && (
                 <DrawerClose asChild>
                   <Button
-                    aria-label="Close"
+                    aria-label={m["ui.common.close"]()}
                     className={cn(
                       "absolute top-2 right-2",
                       "size-12",
                       "inset-shadow-none rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                       "bg-transparent",
                       "hover:bg-transparent hover:brightness-110",
-                      "focus-visible:brightness-110",
+                      "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:brightness-110",
                       "active:brightness-95"
                     )}
                     size="icon-xl"

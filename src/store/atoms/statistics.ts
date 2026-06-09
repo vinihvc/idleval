@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
+import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 import {
   D,
   deserializeDecimal,
@@ -39,11 +40,68 @@ export const createInitialStatistics = (): Record<
 
 export const initialStatistics = createInitialStatistics();
 
-export const statisticsAtom = persistedAtom("statistics", {
+const LEGACY_MILL_KEY = "mill";
+
+const isFactoryStatistics = (value: unknown): value is FactoryStatistics =>
+  typeof value === "object" &&
+  value !== null &&
+  "quantity" in value &&
+  typeof value.quantity === "number" &&
+  "goldEarned" in value &&
+  typeof value.goldEarned === "string" &&
+  "goldSpent" in value &&
+  typeof value.goldSpent === "string";
+
+export const normalizeStatisticsState = (value: unknown): StatisticsState => {
+  const empty: StatisticsState = {
+    goldEarned: serializeDecimal(D(0)),
+    goldSpent: serializeDecimal(D(0)),
+    factories: createInitialStatistics(),
+  };
+
+  if (typeof value !== "object" || value === null) {
+    return empty;
+  }
+
+  const raw = value as Partial<StatisticsState> & {
+    factories?: Record<string, FactoryStatistics>;
+  };
+
+  const factories = createInitialStatistics();
+  const rawFactories = raw.factories;
+
+  if (rawFactories && typeof rawFactories === "object") {
+    for (const factory of FACTORY_TYPES) {
+      const saved =
+        rawFactories[factory] ??
+        (factory === "wine" ? rawFactories[LEGACY_MILL_KEY] : undefined);
+
+      if (isFactoryStatistics(saved)) {
+        factories[factory] = { ...saved };
+      }
+    }
+  }
+
+  return {
+    goldEarned:
+      typeof raw.goldEarned === "string" ? raw.goldEarned : empty.goldEarned,
+    goldSpent:
+      typeof raw.goldSpent === "string" ? raw.goldSpent : empty.goldSpent,
+    factories,
+  };
+};
+
+const initialStatisticsState: StatisticsState = {
   goldEarned: serializeDecimal(D(0)),
   goldSpent: serializeDecimal(D(0)),
   factories: initialStatistics,
-} satisfies StatisticsState);
+};
+
+export const statisticsAtom = persistedAtomWithNormalize<StatisticsState>(
+  LOCAL_STORAGE_KEYS.statistics,
+  initialStatisticsState,
+  normalizeStatisticsState
+);
 
 export const useStatistics = () => useAtomValue(statisticsAtom);
 
@@ -72,8 +130,11 @@ export const useTotalGoldEarned = (): GameValue => {
   return deserializeDecimal(goldEarned);
 };
 
+export const useFactoryGoldEarned = (factory: FactoryType) =>
+  useAtomValue(getFactoryGoldEarnedAtom(factory));
+
 export const useGoldEarnedByFactory = (factory: FactoryType): GameValue => {
-  const goldEarned = useAtomValue(getFactoryGoldEarnedAtom(factory));
+  const goldEarned = useFactoryGoldEarned(factory);
 
   return deserializeDecimal(goldEarned);
 };

@@ -34,7 +34,7 @@ describe("wallet", () => {
   it("bulkIncreaseGold aggregates entries and skips zero amounts", () => {
     bulkIncreaseGold([
       { factory: "grain", gold: D(50) },
-      { factory: "mill", gold: D(0) },
+      { factory: "wine", gold: D(0) },
       { factory: "iron", gold: D(25) },
     ]);
 
@@ -44,7 +44,7 @@ describe("wallet", () => {
   it("bulkIncreaseGold no-ops when all entries are zero", () => {
     bulkIncreaseGold([
       { factory: "grain", gold: D(0) },
-      { factory: "mill", gold: D(-1) },
+      { factory: "wine", gold: D(-1) },
     ]);
 
     expect(getGold().toNumber()).toBe(0);

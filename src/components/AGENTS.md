@@ -13,7 +13,9 @@ All game UI — primitives, overlays, shell, and debug tools.
 - State via store hooks (`useWallet`, `useFactory`, `useGods`)
 - Mutations via imported actions (`upgradeFactory`, `invokeGod`, `resetGame`)
 - Dialogs with `ResponsiveDialog` (Dialog ≥768px, Drawer below)
+- Tooltips with `ResponsiveTooltip` (Tooltip ≥768px, ToggleTooltip below)
 - Ark UI primitives + `tailwind-variants` (`tv`) + `cn()`
+- Box elevation via `boxBorder()` from `@/components/ui/box-border` (same variant names as `borderedText`)
 - Images with `@unpic/react` `Image`; icons with `pixelarticons/react/IconName` (per-icon imports, not the root barrel)
 - Lazy-load domain dialogs via colocated `lazy.ts` + `<Suspense fallback={null}>` at call sites; tests import dialog modules directly
 
@@ -24,6 +26,12 @@ All game UI — primitives, overlays, shell, and debug tools.
 - Inline purchase/economy logic — use `game/` + store actions
 - Create barrel files that re-export everything
 - Change `data-slot` without reason (used for styling)
+
+## Visual variants (dev tooling)
+
+For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](../providers/variant-tools.tsx) + [`debug/variant-tools.tsx`](debug/variant-tools.tsx) (fixed top-right, hotkeys 1–4 in dev). Define `Record<VariantTools, …>` presets in the target component and pick with `usePickVariantTools`.
+
+**UpgradeCard** uses a single fixed green preset (former variant D) — do not wire it to variant-tools.
 
 ## Patterns
 
@@ -38,30 +46,32 @@ All game UI — primitives, overlays, shell, and debug tools.
 
 | Subfolder | Role |
 |-----------|------|
-| `ui/` | Design-system primitives (button, dialog, drawer, field, slider, toggle, select) |
+| `ui/` | Design-system primitives (`box-border`, `text-border`, button, dialog, drawer, …) |
 | `ui/factory-card/`, `ui/upgrade-card/` | Composites with provider + dot-notation subfiles |
-| `dialog/` | Domain overlays (`settings/`, `upgrades/`, `managers/`, `gods/`, `offline-earnings/`) |
-| `layout/` | Shell: `game-shell`, `game-panel`, `factory-grid`, `header/`, `navigation`, `footer` |
+| `dialog/` | Domain overlays (`settings/`, `wiki/`, `upgrades/`, `managers/`, `gods/`, `inventory/`, `offline-earning/`) |
+| `layout/` | Shell: `game-shell`, `game-panel`, `game-stage`, `factory-grid`, `header/`, `navigation`, `footer` |
 | `icons/` | Custom SVGs (`coin`, `logo`, `wax-seal`) |
-| `debug/` | Dev-only (`debug-tools`, `media-query`) |
+| `debug/` | Dev-only (`variant-tools` fixed top-right, `action-tools` bottom bar, `media-query`) |
 
 ## Key files
 
 | File | Role |
 |------|------|
 | `ui/responsive-dialog/` | Adaptive Dialog/Drawer (768px breakpoint) |
+| `ui/responsive-tooltip/` | Adaptive Tooltip/ToggleTooltip (768px breakpoint) |
+| `layout/game-stage/` | Persistent stage strip (messages, sprites, power-up status) |
 | `layout/factory-grid/` | Main factory grid |
 | `layout/navigation/` | Mobile + desktop nav |
 
 ## Neighbors
 
-- Reads from: `store/`, `game/` (can*), `content/` (lists), `i18n/`, `providers/sound`
+- Reads from: `store/`, `game/` (can*), `content/` (lists), `i18n/`, `providers/sound`, `providers/variant-tools` (dev A–D for future components)
 - Consumed by: `app/page.tsx`
 
 ## Evolution
 
-- 2026-06-08 — Dialog lazy wrappers inlined at call sites (no `lazy.ts` barrels)
-- 2026-06-07 — Tree-shaking: pixelarticons per-icon imports + lazy dialog wrappers
-- 2026-06-07 — Component folder layout + `*.test.tsx` browser tests (replacing `*.browser.tsx`)
-- 2026-06-07 — Browser component tests via vitest-browser-react
-- 2026-06-07 — Initial docs: ui/dialog/layout + i18n + ResponsiveDialog
+- 2026-06-08 — `layout/game-stage/` replaces `active-power-up` (GameStage orchestrator + power-up slice)
+- 2026-06-08 — `ui/box-border/` elevation utility (renamed from `bottom-shadow`); UpgradeCard fixed to preset D (no variant-tools)
+- 2026-06-08 — `variant-tools` fixed top-right; `action-tools` bottom ActionBar
+- 2026-06-08 — ResponsiveTooltip (Tooltip ≥768px, ToggleTooltip below)
+- 2026-06-08 — Royal Codex wiki dialog opened from Settings (gods, figures, upgrades, tips)

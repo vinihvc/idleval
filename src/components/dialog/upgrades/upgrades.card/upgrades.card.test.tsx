@@ -1,21 +1,32 @@
 import { describe, expect, test } from "vitest";
 import { UpgradesCard } from "@/components/dialog/upgrades/upgrades.card";
-import { m } from "@/i18n/messages";
 import { seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("UpgradesCard", () => {
-  test("shows charter required for locked factory", async () => {
+  test("shows lock overlay and cost for locked factory", async () => {
     const screen = await renderWithProviders(
-      <UpgradesCard factoryType="mill" />
+      <UpgradesCard factoryType="wine" />
     );
 
     await expect
-      .element(screen.getByText(m["ui.common.charterRequired"]()))
-      .toBeInTheDocument();
+      .element(screen.getByRole("button"))
+      .toHaveAttribute("data-sealed", "charter");
+    await expect
+      .element(screen.getByRole("button"))
+      .toHaveAttribute("data-locked", "true");
+    await expect.element(screen.getByText("1.13 M")).toBeInTheDocument();
+    await expect
+      .poll(() =>
+        screen
+          .getByRole("button")
+          .element()
+          .querySelector('img[src*="factories/wine"]')
+      )
+      .not.toBeNull();
   });
 
-  test("shows improve action when affordable", async () => {
+  test("shows masked affordable card with cost overlay", async () => {
     seedGold(1_000_000);
 
     const screen = await renderWithProviders(
@@ -23,7 +34,22 @@ describe("UpgradesCard", () => {
     );
 
     await expect
-      .element(screen.getByText(m["ui.upgrades.improve"]()))
-      .toBeInTheDocument();
+      .element(screen.getByRole("button"))
+      .toHaveAttribute("data-sealed", "open");
+    await expect
+      .element(screen.getByRole("button"))
+      .toHaveAttribute("data-affordable", "true");
+    await expect
+      .element(screen.getByRole("button"))
+      .toHaveAttribute("data-masked", "true");
+    await expect.element(screen.getByText("75 K")).toBeInTheDocument();
+    await expect
+      .poll(() =>
+        screen
+          .getByRole("button")
+          .element()
+          .querySelector('img[src*="factories/grain"]')
+      )
+      .not.toBeNull();
   });
 });

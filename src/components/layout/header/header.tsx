@@ -1,8 +1,8 @@
 import type React from "react";
-import { HeaderNavigation } from "@/components/layout/navigation";
 import { cn } from "@/lib/cn";
 import { HeaderActions } from "./header.actions";
 import { HeaderGold } from "./header.gold";
+import { HeaderNavigation } from "./header.navigation";
 
 export const Header = (props: React.ComponentProps<"header">) => {
   const { className, ...rest } = props;
