@@ -42,3 +42,5 @@ yarn-error.log*
 .env
 .cursor
 .vitest-attachments
+.pnpm-store
+.tmp

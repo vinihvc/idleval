@@ -79,7 +79,6 @@ export const ManagersCard = (props: ManagersCardProps) => {
       data-locked={locked}
       data-masked={sealed !== null}
       data-sealed={sealed ?? undefined}
-      greenFrame={sealed === "open" || complete}
       interactive={canBuy && isUnlocked && !complete}
       onClick={
         canBuy && isUnlocked
@@ -90,6 +89,7 @@ export const ManagersCard = (props: ManagersCardProps) => {
             }
           : undefined
       }
+      variant={sealed === "open" || complete ? "green" : "brown"}
     >
       <UpgradeCardPanel
         charter={sealed === "charter"}

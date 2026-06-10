@@ -105,9 +105,9 @@ export const GodsCard = (props: GodsCardProps) => {
       data-complete={complete}
       data-masked={sealed !== null}
       data-sealed={sealed ?? undefined}
-      greenFrame={sealed === "open" || complete}
       interactive={affordable}
       onClick={isHoldCard ? holdHandlers.onClick : undefined}
+      variant={sealed === "open" || complete ? "green" : "brown"}
     >
       <UpgradeCardPanel
         charter={sealed === "charter"}

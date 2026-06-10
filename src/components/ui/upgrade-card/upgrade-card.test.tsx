@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import {
+  getUpgradeCardCostStyle,
   UpgradeCard,
   UpgradeCardArt,
   UpgradeCardHeader,
@@ -11,7 +12,7 @@ import { useHoldPress } from "@/hooks/use-hold-press";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 const OpenCard = () => (
-  <UpgradeCard data-affordable data-masked data-sealed="open" greenFrame>
+  <UpgradeCard data-affordable data-masked data-sealed="open" variant="green">
     <UpgradeCardPanel open>
       <UpgradeCardArt open showImage={false} src="/images/upgrades/grain.webp">
         <UpgradeCardSeal
@@ -26,7 +27,7 @@ const OpenCard = () => (
 );
 
 const CompleteCard = () => (
-  <UpgradeCard data-complete greenFrame>
+  <UpgradeCard data-complete variant="green">
     <UpgradeCardPanel complete>
       <UpgradeCardHeader title="Done" />
       <UpgradeCardArt complete showImage src="/images/upgrades/grain.webp" />
@@ -75,9 +76,9 @@ const HoldCard = () => {
       data-affordable
       data-masked
       data-sealed="open"
-      greenFrame
       interactive
       onClick={holdHandlers.onClick}
+      variant="green"
     >
       <UpgradeCardPanel open>
         <UpgradeCardArt
@@ -102,7 +103,7 @@ describe("UpgradeCard", () => {
   test("open state uses green outer frame and preset styling", async () => {
     const screen = await renderWithProviders(<OpenCard />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "75K" });
     const innerPanel = button.element().firstElementChild;
 
     await expect.element(button).toHaveAttribute("data-sealed", "open");
@@ -128,7 +129,7 @@ describe("UpgradeCard", () => {
   test("complete state uses green outer frame and preset inner panel", async () => {
     const screen = await renderWithProviders(<CompleteCard />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "Done" });
     const innerPanel = button.element().firstElementChild;
     const header = innerPanel?.firstElementChild;
 
@@ -150,7 +151,7 @@ describe("UpgradeCard", () => {
   test("saving sealed state shows factory and cost", async () => {
     const screen = await renderWithProviders(<SavingCard />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "75K" });
 
     await expect.element(button).toHaveAttribute("data-sealed", "saving");
     await expect.element(screen.getByText("75K")).toBeInTheDocument();
@@ -159,7 +160,7 @@ describe("UpgradeCard", () => {
   test("reveals title when complete", async () => {
     const screen = await renderWithProviders(<CompleteCard />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "Done" });
 
     await expect.element(button).toHaveAttribute("data-complete", "true");
     await expect.element(screen.getByText("Done")).toBeInTheDocument();
@@ -174,7 +175,7 @@ describe("UpgradeCard", () => {
   test("shows hold progress feedback while pressing", async () => {
     const screen = await renderWithProviders(<HoldCard />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "75K" });
 
     const findProgressBar = () =>
       button.element().querySelector("span[aria-hidden].origin-left");
@@ -197,7 +198,7 @@ describe("UpgradeCard", () => {
   test("charter sealed state shows factory and cost", async () => {
     const screen = await renderWithProviders(<CharterCard />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "1.13M" });
 
     await expect.element(button).toHaveAttribute("data-sealed", "charter");
     await expect.element(button).toHaveAttribute("data-locked", "true");
@@ -206,5 +207,11 @@ describe("UpgradeCard", () => {
     await expect
       .poll(() => button.element().querySelector('img[src*="factories/wine"]'))
       .not.toBeNull();
+  });
+
+  test("affordable cost uses a black text border for contrast", () => {
+    expect(
+      getUpgradeCardCostStyle({ affordable: true, locked: false }).variant
+    ).toBe("black");
   });
 });

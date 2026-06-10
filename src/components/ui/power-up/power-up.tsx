@@ -20,8 +20,8 @@ export const GameStagePowerUp = (props: React.ComponentProps<"div">) => {
   return (
     <div
       className={cn("flex items-center gap-2", className)}
-      {...rest}
       data-slot="power-up"
+      {...rest}
     >
       <span
         className={cn(

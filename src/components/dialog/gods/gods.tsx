@@ -50,7 +50,7 @@ export const GodsDialog = (props: React.PropsWithChildren) => {
 
         <ResponsiveDialogBody>
           <LiveAnnouncer message={message} />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {GOD_DATA.map((god) => (
               <GodsCard
                 god={god}

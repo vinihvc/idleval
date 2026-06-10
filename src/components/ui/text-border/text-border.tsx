@@ -5,6 +5,7 @@ export const borderedText = tv({
   variants: {
     variant: {
       default: ["[-webkit-text-stroke-color:oklch(0.92_0.07_84)]"],
+      black: ["[-webkit-text-stroke-color:oklch(0_0_0)]"],
       muted: ["[-webkit-text-stroke-color:oklch(0.18_0.03_55)]"],
       cream: ["[-webkit-text-stroke-color:oklch(0.35_0.05_70)]"],
       brown: ["[-webkit-text-stroke-color:oklch(0.2_0.03_55)]"],

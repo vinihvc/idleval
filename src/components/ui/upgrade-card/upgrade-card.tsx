@@ -5,31 +5,37 @@ import { HoldProgress } from "@/components/ui/hold-button";
 import { cn } from "@/lib/cn";
 
 export type SealedState = "charter" | "open" | "saving";
+export type UpgradeCardVariant = "brown" | "green";
 
 export const upgradeCardVariants = tv({
   base: [
-    "group relative flex aspect-square w-full flex-col text-left",
-    "rounded-md border-3 border-primary/90 bg-primary p-1",
-    "inset-shadow-xs transition-[filter,transform,box-shadow] duration-200",
+    "relative",
+    "group",
+    "aspect-square w-full",
+    "flex flex-col",
+    "bg-primary",
+    "inset-shadow-xs rounded-md border-2 border-primary/90 sm:border-4",
+    "transition-[filter,transform,box-shadow] duration-200",
     "focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50",
     "disabled:pointer-events-none disabled:cursor-default",
     "aria-disabled:pointer-events-none aria-disabled:cursor-default",
   ],
   variants: {
-    interactive: {
-      true: "cursor-pointer hover:brightness-105 active:scale-[0.99]",
-    },
-    greenFrame: {
-      true: [
+    variant: {
+      brown: boxBorder({ variant: "brown", size: "md" }),
+      green: [
         boxBorder({ variant: "green", size: "md" }),
         "border-success-foreground/35 bg-success focus-visible:ring-success/50",
       ],
     },
+    interactive: {
+      true: "cursor-pointer hover:brightness-105 active:scale-[0.99]",
+    },
   },
   compoundVariants: [
     {
-      greenFrame: false,
       interactive: true,
+      variant: "brown",
       class: boxBorder({
         interactiveOnly: true,
         variant: "brown",
@@ -37,8 +43,8 @@ export const upgradeCardVariants = tv({
       }),
     },
     {
-      greenFrame: true,
       interactive: true,
+      variant: "green",
       class: boxBorder({
         interactiveOnly: true,
         variant: "green",
@@ -47,15 +53,15 @@ export const upgradeCardVariants = tv({
     },
   ],
   defaultVariants: {
-    greenFrame: false,
     interactive: false,
+    variant: "brown",
   },
 });
 
 const upgradeCardInnerPanelVariants = tv({
   base: [
     "relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-sm",
-    "border-2 border-primary-foreground/25 bg-background",
+    "bg-background",
     "inset-shadow-xs",
     boxBorder({ inset: "md", variant: "muted", soft: "none" }),
   ],
@@ -66,43 +72,24 @@ const upgradeCardInnerPanelVariants = tv({
   },
 });
 
-const upgradeCardArtAreaVariants = tv({
-  base: [
-    "relative inset-shadow-xs size-full overflow-hidden rounded-sm border",
-    "border-primary-foreground/15 bg-muted",
-    boxBorder({ inset: "lg", variant: "muted", soft: "none" }),
-  ],
-});
-
-const upgradeCardFactoryBadgeVariants = tv({
-  base: [
-    "rounded-md border-2 border-primary bg-background p-0.5",
-    boxBorder({ variant: "muted", size: "sm" }),
-  ],
-});
-
 export interface UpgradeCardProps
   extends Omit<React.ComponentProps<"button">, "title"> {
-  greenFrame?: boolean;
   interactive?: boolean;
+  variant?: UpgradeCardVariant;
 }
 
 export const UpgradeCard = (props: UpgradeCardProps) => {
   const {
     type = "button",
-    greenFrame = false,
     interactive = false,
+    variant = "brown",
     className,
     ...rest
   } = props;
 
   return (
     <button
-      className={cn(
-        boxBorder({ variant: "brown", size: "md" }),
-        upgradeCardVariants({ greenFrame, interactive }),
-        className
-      )}
+      className={cn(upgradeCardVariants({ interactive, variant }), className)}
       data-slot="upgrade-card"
       type={type}
       {...rest}
@@ -201,7 +188,9 @@ export const UpgradeCardArt = (props: UpgradeCardArtProps) => {
     <div className="relative min-h-0 flex-1 overflow-hidden bg-background p-2">
       <div
         className={cn(
-          upgradeCardArtAreaVariants(),
+          "relative inset-shadow-xs size-full overflow-hidden rounded-sm border",
+          "border-primary-foreground/15 bg-muted",
+          boxBorder({ inset: "lg", variant: "muted", soft: "none" }),
           open && "inset-shadow-xs border-success/80 bg-success/25",
           complete && "inset-shadow-xs border-success/40 bg-success/20",
           className
@@ -248,14 +237,15 @@ export const UpgradeCardSeal = (props: UpgradeCardSealProps) => {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div
             className={cn(
-              upgradeCardFactoryBadgeVariants(),
+              "rounded-md border-2 border-primary bg-background p-0.5 sm:p-1",
+              boxBorder({ variant: "muted", size: "sm" }),
               open && "border-success-foreground/40 bg-success/35"
             )}
           >
             <Image
               alt=""
               aria-hidden
-              className="pixel-crisp size-7 object-contain"
+              className="pixel-crisp size-7 object-contain sm:size-7.5"
               height={28}
               layout="constrained"
               src={icon}
@@ -266,7 +256,14 @@ export const UpgradeCardSeal = (props: UpgradeCardSealProps) => {
       )}
 
       {cost && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center px-2 pb-0.5">
+        <div
+          className={cn(
+            "absolute inset-x-0 bottom-0",
+            "flex items-end justify-center",
+            "px-2 sm:px-2.5",
+            "pointer-events-none"
+          )}
+        >
           {cost}
         </div>
       )}
@@ -311,7 +308,7 @@ export const getUpgradeCardCostStyle = (props: {
   if (affordable && !locked) {
     return {
       className: "text-lg text-success",
-      variant: "green" as const,
+      variant: "black" as const,
     };
   }
 

@@ -150,7 +150,7 @@ export const DrawerPositioner = (props: DrawerPositionerProps) => {
 
 const drawerContentVariants = tv({
   base: [
-    "[--bleed:2rem] [--drawer-image-overflow:4.5rem] [--space:--spacing(4)]",
+    "[--bleed:2rem] [--drawer-image-overflow:4.5rem] [--space:--spacing(2)]",
     "group/drawer",
     "relative",
     "z-[calc(50+var(--layer-index,0))]",
@@ -363,8 +363,8 @@ export const DrawerHeader = (props: DrawerHeaderProps) => {
     <ark.div
       className={cn(
         "flex shrink-0 flex-col gap-1 text-center",
-        "mt-2 p-(--space) pt-0",
-        "in-[[data-slot=drawer-content]:has([data-slot=drawer-body])]:pb-3",
+        "mt-3 p-(--space)",
+        "in-[[data-slot=drawer-content]:has([data-slot=drawer-body])]:pb-1",
         className
       )}
       data-slot="drawer-header"

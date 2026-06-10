@@ -80,9 +80,9 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
       data-locked={locked}
       data-masked={sealed !== null}
       data-sealed={sealed ?? undefined}
-      greenFrame={sealed === "open" || complete}
       interactive={canBuy && !locked && !complete}
       onClick={canBuy && !locked ? onPurchase : undefined}
+      variant={sealed === "open" || complete ? "green" : "brown"}
     >
       <UpgradeCardPanel
         charter={sealed === "charter"}

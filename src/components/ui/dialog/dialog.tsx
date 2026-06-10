@@ -81,7 +81,7 @@ export const DialogPositioner = (
 
 export const dialogContentVariants = tv({
   base: [
-    "[--space:--spacing(3)] sm:[--space:--spacing(6)]",
+    "[--space:--spacing(2)] sm:[--space:--spacing(5)]",
     "z-[calc(50+var(--layer-index,0))]",
     "relative",
     "row-start-2",

@@ -54,11 +54,10 @@ export const WikiCatalogTab = (props: WikiCatalogTabProps) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-3 gap-2 sm:gap-3">
       {items.map((item) => (
         <UpgradeCard
           aria-label={item.title}
-          greenFrame={false}
           interactive
           key={item.id}
           onClick={() => setSelectedId(item.id)}
