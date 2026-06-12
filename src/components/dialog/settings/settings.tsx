@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { m } from "@/i18n/messages";
 import { useSound } from "@/providers/sound";
 import { SettingsAudio } from "./settings.audio";
+import { SettingsInstall } from "./settings.install";
 import { SettingsLanguage } from "./settings.language";
 import { SettingsWiki } from "./settings.wiki";
 import { SettingsReset } from "./settings-reset";
@@ -57,6 +58,8 @@ export const SettingsDialog = (
             onSfxVolumeChange={setSfxVolume}
             sfxVolume={sfxVolume}
           />
+
+          <SettingsInstall />
 
           <Separator />
 

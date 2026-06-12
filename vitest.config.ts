@@ -13,6 +13,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
+      "virtual:pwa-register": path.resolve(
+        import.meta.dirname,
+        "./src/test/pwa-register-mock.ts"
+      ),
     },
   },
   test: {

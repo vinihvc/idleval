@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getVisibleResumeAction,
   shouldHeartbeatTouchLastSeen,
   shouldRunOnTabVisible,
 } from "@/hooks/use-offline-earning";
@@ -29,5 +30,57 @@ describe("shouldHeartbeatTouchLastSeen", () => {
 
   it("returns false when tab is hidden", () => {
     expect(shouldHeartbeatTouchLastSeen(false)).toBe(false);
+  });
+});
+
+describe("getVisibleResumeAction", () => {
+  it("touches lastSeenAt for a normal visible heartbeat", () => {
+    expect(
+      getVisibleResumeAction({
+        isVisible: true,
+        lastSeenAt: 1000,
+        now: 61_000,
+      })
+    ).toBe("touch");
+  });
+
+  it("applies offline earning before touching lastSeenAt after a delayed heartbeat", () => {
+    expect(
+      getVisibleResumeAction({
+        isVisible: true,
+        lastSeenAt: 1000,
+        now: 120_000,
+      })
+    ).toBe("apply");
+  });
+
+  it("ignores hidden pages", () => {
+    expect(
+      getVisibleResumeAction({
+        isVisible: false,
+        lastSeenAt: 1000,
+        now: 120_000,
+      })
+    ).toBe("ignore");
+  });
+
+  it("does not apply offline earning when lastSeenAt is missing", () => {
+    expect(
+      getVisibleResumeAction({
+        isVisible: true,
+        lastSeenAt: null,
+        now: 120_000,
+      })
+    ).toBe("touch");
+  });
+
+  it("does not apply offline earning when lastSeenAt is in the future", () => {
+    expect(
+      getVisibleResumeAction({
+        isVisible: true,
+        lastSeenAt: 120_000,
+        now: 1000,
+      })
+    ).toBe("touch");
   });
 });

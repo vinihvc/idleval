@@ -1,7 +1,11 @@
 import { useVisibilityChange } from "@uidotdev/usehooks";
 import { useSetAtom } from "jotai";
 import React from "react";
-import { touchLastSeen, touchLastSeenIfVisible } from "@/store/atoms/session";
+import {
+  getLastSeenAt,
+  touchLastSeen,
+  touchLastSeenIfVisible,
+} from "@/store/atoms/session";
 import {
   applyOfflineEarning,
   type OfflineSummary,
@@ -10,6 +14,9 @@ import {
 } from "@/store/offline-earning";
 
 const HEARTBEAT_MS = 60_000;
+const RESUME_GAP_MS = HEARTBEAT_MS * 1.5;
+
+type VisibleResumeAction = "apply" | "ignore" | "touch";
 
 export const shouldRunOnTabVisible = (
   prevVisible: boolean | null,
@@ -19,13 +26,54 @@ export const shouldRunOnTabVisible = (
 export const shouldHeartbeatTouchLastSeen = (isVisible: boolean): boolean =>
   isVisible;
 
+export const getVisibleResumeAction = ({
+  isVisible,
+  lastSeenAt,
+  now,
+}: {
+  isVisible: boolean;
+  lastSeenAt: number | null;
+  now: number;
+}): VisibleResumeAction => {
+  if (!isVisible) {
+    return "ignore";
+  }
+
+  if (lastSeenAt === null || lastSeenAt > now) {
+    return "touch";
+  }
+
+  return now - lastSeenAt > RESUME_GAP_MS ? "apply" : "touch";
+};
+
 const applyAndShowSummary = (
-  setSummary: (summary: OfflineSummary | null) => void
+  setSummary: (summary: OfflineSummary | null) => void,
+  now = Date.now()
 ) => {
-  const summary = applyOfflineEarning();
+  const summary = applyOfflineEarning(now);
 
   if (summary) {
     setSummary(summary);
+  }
+};
+
+const handleVisibleResume = (
+  setSummary: (summary: OfflineSummary | null) => void,
+  now = Date.now()
+) => {
+  const action = getVisibleResumeAction({
+    isVisible: document.visibilityState === "visible",
+    lastSeenAt: getLastSeenAt(),
+    now,
+  });
+
+  if (action === "apply") {
+    applyAndShowSummary(setSummary, now);
+    return;
+  }
+
+  if (action === "touch") {
+    touchLastSeenIfVisible(now);
   }
 };
 
@@ -68,18 +116,25 @@ export const useOfflineEarning = (): OfflineSummary | null => {
     const handleBeforeUnload = () => {
       touchLastSeen();
     };
+    const handleBrowserResume = () => {
+      handleVisibleResume(setSummary);
+    };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("focus", handleBrowserResume);
+    window.addEventListener("pageshow", handleBrowserResume);
 
     const heartbeat = window.setInterval(() => {
-      touchLastSeenIfVisible();
+      handleVisibleResume(setSummary);
     }, HEARTBEAT_MS);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("focus", handleBrowserResume);
+      window.removeEventListener("pageshow", handleBrowserResume);
       window.clearInterval(heartbeat);
     };
-  }, []);
+  }, [setSummary]);
 
   return summary;
 };

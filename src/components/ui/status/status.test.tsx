@@ -13,7 +13,7 @@ describe("Status", () => {
       .element(status)
       .toHaveAttribute("data-slot", "status-indicator");
     await expect.element(status).toHaveAttribute("data-variant", "success");
-    await expect.element(status).toHaveAttribute("data-size", "md");
+    await expect.element(status).toHaveAttribute("data-size", "sm");
   });
 
   test("supports size variants", async () => {

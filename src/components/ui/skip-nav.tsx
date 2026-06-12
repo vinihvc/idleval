@@ -4,13 +4,13 @@ import { ark } from "@ark-ui/react/factory";
 import type React from "react";
 import { cn } from "@/lib/cn";
 
-const SKIP_NAV_ID = "skip-nav-content";
+const SKIP_NAV_ID = "main-content";
 
 export interface SkipNavLinkProps extends React.ComponentProps<typeof ark.a> {
   /**
    * The id of the element to skip to.
    *
-   * @default "skip-nav-content"
+   * @default "main-content"
    */
   id?: string;
 }
@@ -44,7 +44,7 @@ export interface SkipNavContentProps
   /**
    * The id that SkipNavLink links to.
    *
-   * @default "skip-nav-content"
+   * @default "main-content"
    */
   id?: string;
 }

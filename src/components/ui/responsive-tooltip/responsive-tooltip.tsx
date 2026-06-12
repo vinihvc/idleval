@@ -56,7 +56,11 @@ export const ResponsiveTooltip = (props: ResponsiveTooltipProps) => {
 
   return (
     <ResponsiveTooltipContext.Provider value={{ isDesktop }}>
-      <Component onOpenChange={handleOpenChange} {...rest} />
+      <Component
+        closeOnInteractOutside
+        onOpenChange={handleOpenChange}
+        {...rest}
+      />
     </ResponsiveTooltipContext.Provider>
   );
 };

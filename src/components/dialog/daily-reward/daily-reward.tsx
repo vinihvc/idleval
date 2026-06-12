@@ -11,12 +11,15 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
+import { DAILY_REWARD_CALENDAR } from "@/content/power-ups";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
+import { cn } from "@/lib/cn";
 import { useDailyReward } from "@/store/atoms/inventory";
 import { useNotificationDialogHandler } from "@/store/atoms/notifications";
 import { claimDailyReward } from "@/store/atoms/power-ups.actions";
-import { DailyRewardCalendar } from "./daily-reward.calendar";
+import { getDailyRewardDayStatus } from "./daily-reward.calendar";
+import { DailyRewardDaySlot } from "./daily-reward.day-slot";
 
 export const DailyRewardDialog = (props: React.PropsWithChildren) => {
   const { children } = props;
@@ -26,7 +29,7 @@ export const DailyRewardDialog = (props: React.PropsWithChildren) => {
   const { announce, message } = useLiveAnnouncer();
 
   return (
-    <ResponsiveDialog onOpenChange={onOpenChange} role="alertdialog">
+    <ResponsiveDialog onOpenChange={onOpenChange}>
       {children}
 
       <ResponsiveDialogContent>
@@ -40,22 +43,35 @@ export const DailyRewardDialog = (props: React.PropsWithChildren) => {
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{m["ui.daily.title"]()}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
+          <ResponsiveDialogDescription hideDescription>
             {m["ui.daily.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <LiveAnnouncer message={message} />
         <ResponsiveDialogBody>
-          <DailyRewardCalendar
-            dayInCycle={offer.dayInCycle}
-            isPending={isPending}
-          />
+          <div className="grid grid-cols-6 gap-2 pt-2">
+            {DAILY_REWARD_CALENDAR.map((entry) => (
+              <DailyRewardDaySlot
+                day={entry.day}
+                key={entry.day}
+                powerUpId={entry.powerUpId}
+                status={getDailyRewardDayStatus(
+                  entry.day,
+                  offer.dayInCycle,
+                  isPending
+                )}
+              />
+            ))}
+          </div>
         </ResponsiveDialogBody>
 
         <ResponsiveDialogFooter>
           <Button
-            className="w-full"
+            className={cn("w-full", {
+              "border-primary/25 border-dashed bg-primary/10! text-primary shadow-none hover:bg-primary/10":
+                !isPending,
+            })}
             disabled={!isPending}
             onClick={
               isPending
@@ -66,7 +82,7 @@ export const DailyRewardDialog = (props: React.PropsWithChildren) => {
                   }
                 : undefined
             }
-            variant={isPending ? "default" : "green"}
+            variant={isPending ? "green" : "brown"}
           >
             {isPending ? m["ui.daily.claim"]() : m["ui.daily.claimed"]()}
           </Button>

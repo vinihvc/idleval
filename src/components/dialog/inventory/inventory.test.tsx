@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { InventoryDialog } from "@/components/dialog/inventory/inventory";
 import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
-import { getLocalizedPowerUp, RELIC_SLOT_COUNT } from "@/content/power-ups";
+import { getLocalizedPowerUp, INVENTORY_GRID_SIZE } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import {
@@ -12,8 +12,10 @@ import {
 import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
 
-const HOLD_DURATION_MS = 3400;
 const localizedAuroraDust = getLocalizedPowerUp("auroraDust");
+const localizedUseAuroraDust = m["ui.inventory.useItem"]({
+  0: localizedAuroraDust.name,
+});
 
 const seedInventorySlot = () => {
   store.set(inventoryAtom, {
@@ -40,43 +42,27 @@ describe("InventoryDialog", () => {
     resetGame();
   });
 
-  test("renders altar grid with ritual circles and empty relic slots", async () => {
+  test("renders inventory grid", async () => {
     const screen = await openInventory();
 
     await expect
       .element(screen.getByRole("heading", { name: m["ui.inventory.title"]() }))
       .toBeInTheDocument();
 
-    for (let index = 0; index < 4; index++) {
-      await expect
-        .element(
-          screen.getByRole("button", {
-            name: m["ui.inventory.slot.ritual"]({ 0: index + 7 }),
-          })
-        )
-        .toBeInTheDocument();
-    }
-
-    for (let index = 0; index < RELIC_SLOT_COUNT; index++) {
-      await expect
-        .element(
-          screen.getByRole("button", {
-            name: m["ui.inventory.slot.empty"]({ 0: index + 1 }),
-          })
-        )
-        .toBeInTheDocument();
-    }
+    expect(
+      document.querySelectorAll('[data-slot="inventory-card"]')
+    ).toHaveLength(INVENTORY_GRID_SIZE);
   });
 
-  test("variant D shows info button and hold label for filled relic slot", async () => {
+  test("shows use button for filled relic slot without an info button", async () => {
     seedInventorySlot();
     const screen = await openInventory();
 
-    const relicCard = screen.getByRole("button", {
-      name: m["ui.inventory.holdToActivate"]({ 0: localizedAuroraDust.name }),
+    const useButton = screen.getByRole("button", {
+      name: localizedUseAuroraDust,
     });
 
-    await expect.element(relicCard).toBeInTheDocument();
+    await expect.element(useButton).toBeInTheDocument();
 
     await expect
       .element(
@@ -84,50 +70,22 @@ describe("InventoryDialog", () => {
           name: m["ui.inventory.slot.info"]({ 0: localizedAuroraDust.name }),
         })
       )
-      .toBeInTheDocument();
+      .not.toBeInTheDocument();
   });
 
-  test("activates power-up after hold completes", async () => {
-    vi.useFakeTimers();
+  test("activates power-up when use button is clicked", async () => {
     seedInventorySlot();
     const screen = await openInventory();
 
-    const relicCard = screen.getByRole("button", {
-      name: m["ui.inventory.holdToActivate"]({ 0: localizedAuroraDust.name }),
+    const useButton = screen.getByRole("button", {
+      name: localizedUseAuroraDust,
     });
 
-    relicCard
-      .element()
-      .dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-
-    await expect.element(relicCard).toHaveAttribute("aria-busy", "true");
-
-    await vi.advanceTimersByTimeAsync(HOLD_DURATION_MS);
+    await useButton.click();
 
     expect(getInventoryState().activePowerUp?.powerUpId).toBe("auroraDust");
     expect(getInventoryState().slots).toEqual([
       { powerUpId: "auroraDust", count: 1, tier: "common" },
-    ]);
-
-    vi.useRealTimers();
-  });
-
-  test("short tap does not activate power-up", async () => {
-    seedInventorySlot();
-    const screen = await openInventory();
-
-    const relicCard = screen.getByRole("button", {
-      name: m["ui.inventory.holdToActivate"]({ 0: localizedAuroraDust.name }),
-    });
-
-    const buttonElement = relicCard.element();
-
-    buttonElement.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-    buttonElement.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-
-    expect(getInventoryState().activePowerUp).toBeNull();
-    expect(getInventoryState().slots).toEqual([
-      { powerUpId: "auroraDust", count: 2, tier: "common" },
     ]);
   });
 });

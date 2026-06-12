@@ -42,7 +42,6 @@ export const DailyRewardCalendar = (props: DailyRewardCalendarProps) => {
           key={entry.day}
           powerUpId={entry.powerUpId}
           status={getDailyRewardDayStatus(entry.day, dayInCycle, isPending)}
-          tier={entry.tier}
         />
       ))}
     </div>

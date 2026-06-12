@@ -1,6 +1,6 @@
 import { m } from "@/i18n/messages";
 
-type MessageKey = keyof typeof m;
+type MessageKey = Extract<keyof typeof m, string>;
 
 export const translate = (key: string): string =>
   (m[key as MessageKey] as () => string)();

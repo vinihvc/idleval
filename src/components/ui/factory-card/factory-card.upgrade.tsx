@@ -86,9 +86,6 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
     return "stone";
   };
 
-  const mutedUpgradeClass =
-    "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-muted/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10 active:scale-100";
-
   return (
     <div
       className={cn("flex min-w-0 items-stretch gap-1", className)}
@@ -97,7 +94,10 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
       <Button
         className={cn(
           "min-w-0 flex-1 justify-between gap-1 px-2 font-bold font-number",
-          isMutedUpgrade && mutedUpgradeClass
+          {
+            "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-muted/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10":
+              isMutedUpgrade,
+          }
         )}
         data-locked={isLocked}
         disabled={

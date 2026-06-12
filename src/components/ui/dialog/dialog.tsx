@@ -280,7 +280,7 @@ export const DialogMedia = (props: React.ComponentProps<typeof ark.div>) => {
   return (
     <ark.div
       className={cn(
-        "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2/3 md:left-2 md:translate-x-0",
+        "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2/3 md:left-4 md:translate-x-0",
         "inline-flex items-center justify-center",
         "size-24",
         "p-1",

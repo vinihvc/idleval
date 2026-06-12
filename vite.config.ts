@@ -4,6 +4,7 @@ import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
 import { paraglidePluginOptions } from "./src/i18n/paraglide.vite";
 
 // https://vite.dev/config/
@@ -15,6 +16,51 @@ export default defineConfig({
       presets: [reactCompilerPreset()],
     }),
     tailwindcss(),
+    VitePWA({
+      includeAssets: [
+        "apple-touch-icon.png",
+        "favicon-16x16.png",
+        "favicon-32x32.png",
+        "favicon.ico",
+      ],
+      workbox: {
+        globPatterns: ["**/*.{css,html,ico,js,png,wav,webmanifest,webp}"],
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+      },
+      manifest: {
+        name: "Idleval",
+        short_name: "Idleval",
+        description:
+          "Step into a medieval realm where you build, expand, and defend.",
+        theme_color: "#2a2418",
+        background_color: "#2a2418",
+        display: "standalone",
+        scope: ".",
+        start_url: ".",
+        icons: [
+          {
+            src: "icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+      devOptions: {
+        enabled: true,
+      },
+      registerType: "autoUpdate",
+    }),
   ],
   base: "",
   resolve: {

@@ -1,16 +1,8 @@
 import { Check } from "pixelarticons/react/Check";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  getPowerUpCardClassName,
-  PowerUpCardFilledContent,
-  powerUpCardBadgeClassName,
-} from "@/components/ui/power-up/power-up.card";
-import {
-  getLocalizedPowerUp,
-  type PowerUpId,
-  type PowerUpTier,
-} from "@/content/power-ups";
+import { PowerUpCard } from "@/components/ui/power-up-card/power-up-card";
+import { getLocalizedPowerUp, type PowerUpId } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
@@ -42,11 +34,10 @@ export interface DailyRewardDaySlotProps
   day: number;
   powerUpId: PowerUpId;
   status: DailyRewardDayStatus;
-  tier: PowerUpTier;
 }
 
 export const DailyRewardDaySlot = (props: DailyRewardDaySlotProps) => {
-  const { day, powerUpId, status, tier, className, ...rest } = props;
+  const { day, powerUpId, status, className, ...rest } = props;
 
   const localized = getLocalizedPowerUp(powerUpId);
   const dayLabel = formatDayLabel(day);
@@ -57,7 +48,6 @@ export const DailyRewardDaySlot = (props: DailyRewardDaySlotProps) => {
       data-day={day}
       data-slot="daily-reward-day"
       data-status={status}
-      data-tier={tier}
       {...rest}
     >
       <figcaption className="sr-only">
@@ -68,36 +58,26 @@ export const DailyRewardDaySlot = (props: DailyRewardDaySlotProps) => {
         })}
       </figcaption>
 
-      <div
+      <PowerUpCard
         aria-hidden
-        className={getPowerUpCardClassName({
-          tier,
-          status,
-        })}
-        data-slot="power-up-card"
-      >
-        <PowerUpCardFilledContent
-          badge={
-            <Badge
-              className={powerUpCardBadgeClassName}
-              size="sm"
-              variant={status === "claimed" ? "green" : "brown"}
-            >
-              {status === "claimed" ? (
-                <span className="flex items-center gap-0.5">
-                  <Check className="size-2.5" />
-                  {dayLabel}
-                </span>
-              ) : (
-                dayLabel
-              )}
-            </Badge>
-          }
-          imageClassName="size-[68%]"
-          powerUpId={powerUpId}
-          status={status}
-        />
-      </div>
+        badge={
+          <Badge
+            className="font-number tabular-nums"
+            size="sm"
+            variant={status === "claimed" ? "green" : "brown"}
+          >
+            {status === "claimed" ? (
+              <span className="flex items-center gap-0.5">
+                <Check className="size-2.5" />
+                {dayLabel}
+              </span>
+            ) : (
+              dayLabel
+            )}
+          </Badge>
+        }
+        powerUpId={powerUpId}
+      />
     </figure>
   );
 };
