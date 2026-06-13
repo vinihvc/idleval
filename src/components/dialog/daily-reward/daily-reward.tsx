@@ -39,7 +39,7 @@ export const DailyRewardDialog = () => {
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{m["ui.daily.title"]()}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription hideDescription>
+          <ResponsiveDialogDescription>
             {m["ui.daily.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>

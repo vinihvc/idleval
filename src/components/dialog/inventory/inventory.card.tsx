@@ -1,6 +1,5 @@
 import { InfoBox } from "pixelarticons/react/InfoBox";
 import type React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   PowerUpCard,
@@ -49,26 +48,28 @@ export const InventoryCard = (props: InventoryCardProps) => {
       className={cn("h-32", !canUse && "opacity-60", className)}
       data-slot="inventory-card"
     >
-      <PowerUpCardMedia powerUpId={item?.powerUpId} />
+      <PowerUpCardMedia className="pt-6" powerUpId={item?.powerUpId} />
+
       {item && (
         <div
           className="absolute top-1 right-1 font-number"
           data-slot="power-up-card-badge"
         >
-          <Badge className="text-base" size="sm">
+          <div className="flex size-6 select-none items-center justify-center rounded-md border bg-popover text-base text-popover-foreground">
             {item.count}
-          </Badge>
+          </div>
         </div>
       )}
+
       {item && (
-        <PowerUpCardFooter className="flex items-center">
+        <>
           <ToggleTooltip>
             <ToggleTooltipTrigger asChild>
               <Button
                 aria-label={m["ui.inventory.useItem"]({
                   0: getLocalizedPowerUp(item.powerUpId).name,
                 })}
-                className="hitbox-3 shrink-0 rounded-none rounded-r-none! rounded-b-sm"
+                className="absolute top-1 left-1 size-6 rounded-md border"
                 size="icon-xs"
                 variant="blue"
               >
@@ -82,19 +83,22 @@ export const InventoryCard = (props: InventoryCardProps) => {
               <p>{getLocalizedPowerUp(item.powerUpId).description}</p>
             </ToggleTooltipContent>
           </ToggleTooltip>
-          <Button
-            aria-label={m["ui.inventory.useItem"]({
-              0: getLocalizedPowerUp(item.powerUpId).name,
-            })}
-            className="hitbox-3 hitbox-l-0 w-full rounded-none rounded-b-sm rounded-l-none! font-bold text-sm"
-            disabled={!canUse}
-            onClick={usePowerUp}
-            size="xs"
-            variant="green"
-          >
-            {m["ui.common.use"]()}
-          </Button>
-        </PowerUpCardFooter>
+
+          <PowerUpCardFooter className="flex items-center p-1">
+            <Button
+              aria-label={m["ui.inventory.useItem"]({
+                0: getLocalizedPowerUp(item.powerUpId).name,
+              })}
+              className="w-full rounded-md font-bold text-sm"
+              disabled={!canUse}
+              onClick={usePowerUp}
+              size="xs"
+              variant="green"
+            >
+              {m["ui.common.use"]()}
+            </Button>
+          </PowerUpCardFooter>
+        </>
       )}
     </PowerUpCard>
   );

@@ -32,7 +32,7 @@ export const DailyRewardCard = (props: DailyRewardCardProps) => {
       variant={status === "claimed" ? "green" : "default"}
       {...rest}
     >
-      <PowerUpCardMedia className="py-6" powerUpId={powerUpId} />
+      <PowerUpCardMedia className="py-6 sm:pb-2" powerUpId={powerUpId} />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <Badge
           className="px-3 font-number text-base tabular-nums"

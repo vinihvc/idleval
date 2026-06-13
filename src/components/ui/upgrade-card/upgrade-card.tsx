@@ -1,8 +1,15 @@
 import { Image } from "@unpic/react";
+import { InfoBox } from "pixelarticons/react/InfoBox";
 import { tv } from "tailwind-variants";
 import { boxBorder } from "@/components/ui/box-border";
 import { HoldProgress } from "@/components/ui/hold-button";
 import { cn } from "@/lib/cn";
+import { Button } from "../button";
+import {
+  ToggleTooltip,
+  ToggleTooltipContent,
+  ToggleTooltipTrigger,
+} from "../toggle-tooltip";
 
 export type SealedState = "charter" | "open" | "saving";
 export type UpgradeCardVariant = "brown" | "green";
@@ -18,7 +25,7 @@ export const upgradeCardVariants = tv({
     "transition-[filter,transform,box-shadow] duration-200",
     "focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50",
     "disabled:pointer-events-none disabled:cursor-default",
-    "aria-disabled:pointer-events-none aria-disabled:cursor-default",
+    "aria-disabled:cursor-default",
   ],
   variants: {
     variant: {
@@ -139,7 +146,7 @@ export const UpgradeCardHeader = (props: UpgradeCardHeaderProps) => {
   return (
     <div
       className={cn(
-        "relative flex shrink-0 items-center gap-1.5 border-success/40 border-b-2",
+        "relative flex shrink-0 items-center gap-1 border-success/40 border-b-2",
         "bg-background px-1.5 py-1",
         "inset-shadow-xs",
         boxBorder({ inset: "sm", variant: "muted", soft: "none" }),
@@ -147,9 +154,6 @@ export const UpgradeCardHeader = (props: UpgradeCardHeaderProps) => {
       )}
       {...rest}
     >
-      <p className="min-w-0 flex-1 truncate text-left font-bold text-foreground text-xs leading-tight tracking-wide">
-        {title}
-      </p>
       {icon && (
         <Image
           alt=""
@@ -161,6 +165,31 @@ export const UpgradeCardHeader = (props: UpgradeCardHeaderProps) => {
           width={16}
         />
       )}
+      <p className="min-w-0 flex-1 truncate text-left font-bold text-foreground text-xs leading-tight tracking-wide">
+        {title}
+      </p>
+      <ToggleTooltip>
+        <ToggleTooltipTrigger asChild>
+          <Button
+            asChild
+            // TODO: add to i18n
+            // aria-label={m["ui.upgradeCard.info"]({ 0: title })}
+            className="size-5 rounded-md border"
+            size="icon-xs"
+            variant="blue"
+          >
+            <span className="cursor-pointer" tabIndex={0}>
+              <InfoBox />
+            </span>
+          </Button>
+        </ToggleTooltipTrigger>
+        <ToggleTooltipContent>
+          <h3>{title}</h3>
+
+          {/* TODO: add description to content */}
+          {/* <p>{description}</p> */}
+        </ToggleTooltipContent>
+      </ToggleTooltip>
     </div>
   );
 };
@@ -290,11 +319,11 @@ export const UpgradeCardHoldFeedback = (
         durationMs={durationMs}
         fillClassName="bg-success-foreground/50"
       />
-      {active && label ? (
+      {active && label && (
         <span className="absolute inset-0 z-10 flex items-center justify-center bg-background/5 font-bold text-foreground text-sm tracking-wide">
           {label}
         </span>
-      ) : null}
+      )}
     </div>
   );
 };
