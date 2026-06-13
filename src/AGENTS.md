@@ -10,7 +10,7 @@ Application source for Idleval — a Viking idle game with separated layers (con
 
 | Folder | AGENTS.md | Role |
 |--------|-----------|------|
-| [config/](config/local-storage-keys.ts) | Central `LOCAL_STORAGE_KEYS` for all persistence |
+| [config/](config/local-storage-keys.ts) | Central `LOCAL_STORAGE` for all persistence |
 | [app/](app/AGENTS.md) | Entry, providers, page composition |
 | [audio/](audio/AGENTS.md) | Sound engine, SFX registry |
 | [components/](components/AGENTS.md) | UI, dialogs, layout, debug |

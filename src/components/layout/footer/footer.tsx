@@ -4,9 +4,9 @@ const LazyAboutDialog = React.lazy(
   () => import("@/components/dialog/about/about")
 );
 
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 
 export const Footer = (props: React.ComponentProps<"footer">) => {
   const { className, ...rest } = props;
@@ -22,12 +22,16 @@ export const Footer = (props: React.ComponentProps<"footer">) => {
     >
       <div className="flex justify-center gap-5 font-medium text-base md:justify-end">
         <div>
+          <button
+            className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline"
+            onClick={() => toggleDialog(DIALOG_IDS.about)}
+            type="button"
+          >
+            {m["ui.nav.about"]()}
+          </button>
+
           <React.Suspense fallback={null}>
-            <LazyAboutDialog>
-              <ResponsiveDialogTrigger className="text-primary underline-offset-4 outline-hidden transition-colors hover:underline focus-visible:underline">
-                {m["ui.nav.about"]()}
-              </ResponsiveDialogTrigger>
-            </LazyAboutDialog>
+            <LazyAboutDialog />
           </React.Suspense>
         </div>
 

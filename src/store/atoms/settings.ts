@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import {
   type AppLocale,
   detectBrowserLocale,
@@ -16,13 +16,10 @@ export interface Settings {
   sfxVolume: number;
 }
 
-export const settingsAtom = persistedAtom<Settings>(
-  LOCAL_STORAGE_KEYS.settings,
-  {
-    musicVolume: 0.8,
-    sfxVolume: 0.8,
-  }
-);
+export const settingsAtom = persistedAtom<Settings>(LOCAL_STORAGE.settings, {
+  musicVolume: 0.8,
+  sfxVolume: 0.8,
+});
 
 export const getSettings = (): Settings => {
   const settings = store.get(settingsAtom);

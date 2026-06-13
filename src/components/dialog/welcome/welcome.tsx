@@ -1,45 +1,58 @@
-import { Image } from "@unpic/react";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
-  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { m } from "@/i18n/messages";
-import { cn } from "@/lib/cn";
+import {
+  DIALOG_IDS,
+  openDialog,
+  setDialogOpen,
+  useDialogOpen,
+} from "@/store/atoms/dialogs";
+import { WelcomeActions } from "./welcome.actions";
+import { WelcomeContent } from "./welcome.content";
+import { WelcomeGraphic } from "./welcome.graphic";
 
 interface WelcomeDialogProps {
   debug?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  open?: boolean;
 }
 
 export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
-  const { debug = false, open: controlledOpen, onOpenChange } = props;
-
+  const { debug = false } = props;
+  const dialogId = debug ? DIALOG_IDS.debugWelcome : DIALOG_IDS.welcome;
+  const open = useDialogOpen(dialogId);
   const [hasSeenWelcome, setHasSeenWelcome] = useLocalStorage(
-    LOCAL_STORAGE_KEYS.welcomeDialogSeen,
+    LOCAL_STORAGE.welcomeDialogSeen,
     false
   );
-  const [internalOpen, setInternalOpen] = React.useState(() => !hasSeenWelcome);
+  const wasOpenRef = React.useRef(open);
 
-  const isControlled = controlledOpen !== undefined;
-  const open = isControlled ? controlledOpen : internalOpen;
+  React.useEffect(() => {
+    if (debug || hasSeenWelcome) {
+      return;
+    }
+
+    openDialog(DIALOG_IDS.welcome);
+  }, [debug, hasSeenWelcome]);
+
+  React.useEffect(() => {
+    if (wasOpenRef.current && !open && debug === false) {
+      setHasSeenWelcome(true);
+    }
+
+    wasOpenRef.current = open;
+  }, [debug, open, setHasSeenWelcome]);
 
   const handleOpenChange = (nextOpen: boolean) => {
-    if (isControlled) {
-      onOpenChange?.(nextOpen);
-    } else {
-      setInternalOpen(nextOpen);
-    }
+    setDialogOpen(dialogId, nextOpen);
 
     if (nextOpen === false && debug === false) {
       setHasSeenWelcome(true);
@@ -53,20 +66,7 @@ export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
       role="alertdialog"
     >
       <ResponsiveDialogContent showCloseButton={false}>
-        <Image
-          aria-hidden
-          className={cn(
-            "absolute -top-12 left-1/2 inline-flex -translate-x-1/2 sm:-top-18 md:left-2 md:translate-x-0",
-            "pixel-crisp object-cover",
-            "aspect-square size-22 sm:size-28",
-            "drop-shadow-lg",
-            "pointer-events-none"
-          )}
-          height={112}
-          layout="constrained"
-          src="/images/msc/welcome.webp"
-          width={112}
-        />
+        <WelcomeGraphic />
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
@@ -79,17 +79,11 @@ export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid gap-4 text-muted/90 leading-relaxed">
-            <p>{m["ui.welcome.disclaimer"]()}</p>
-          </div>
+          <WelcomeContent />
         </ResponsiveDialogBody>
 
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose asChild>
-            <Button size="lg" variant="default">
-              {m["ui.welcome.begin"]()}
-            </Button>
-          </ResponsiveDialogClose>
+          <WelcomeActions />
         </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

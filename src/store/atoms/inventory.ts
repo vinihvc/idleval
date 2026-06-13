@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import {
   type ActivePowerUp,
   getDailyRewardOffer,
@@ -33,7 +33,7 @@ export const createInitialInventoryState = (): InventoryState => ({
 export const initialInventoryState = createInitialInventoryState();
 
 export const inventoryAtom = persistedAtom<InventoryState>(
-  LOCAL_STORAGE_KEYS.inventory,
+  LOCAL_STORAGE.inventory,
   initialInventoryState
 );
 

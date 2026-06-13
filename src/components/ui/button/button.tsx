@@ -9,7 +9,7 @@ import { type SoundsType, sound as soundFunction } from "@/providers/sound";
 export const buttonVariants = tv({
   base: [
     "relative",
-    "inline-flex shrink-0 items-center justify-center gap-2",
+    "inline-flex items-center justify-center gap-2",
     "font-medium text-base tracking-wide",
     "inset-shadow-xs rounded-lg border-3",
     "whitespace-nowrap",
@@ -125,11 +125,11 @@ export const buttonVariants = tv({
       md: "h-9 px-4 py-2 has-[>svg]:px-3 [&_svg:not([class*='size-'])]:size-4",
       lg: "h-10 px-6 has-[>svg]:px-4 [&_svg:not([class*='size-'])]:size-5",
       xl: "h-11 px-6 has-[>svg]:px-6 [&_svg:not([class*='size-'])]:size-5",
-      "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
-      "icon-sm": "size-7 [&_svg:not([class*='size-'])]:size-4",
-      "icon-md": "size-8 [&_svg:not([class*='size-'])]:size-4",
-      "icon-lg": "size-9 [&_svg:not([class*='size-'])]:size-5",
-      "icon-xl": 'size-10 [&_svg:not([class*="size-"])]:size-5',
+      "icon-xs": "size-7 [&_svg:not([class*='size-'])]:size-3",
+      "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
+      "icon-md": "size-9 [&_svg:not([class*='size-'])]:size-4",
+      "icon-lg": "size-10 [&_svg:not([class*='size-'])]:size-5",
+      "icon-xl": 'size-11 [&_svg:not([class*="size-"])]:size-5',
     },
     clickEffect: {
       true: "active:scale-[0.99]",

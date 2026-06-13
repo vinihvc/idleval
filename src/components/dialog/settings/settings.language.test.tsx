@@ -11,9 +11,7 @@ describe("SettingsLanguage", () => {
     const screen = await renderWithProviders(<SettingsLanguage />);
 
     await expect
-      .element(
-        screen.getByRole("group", { name: m["ui.settings.language"]() })
-      )
+      .element(screen.getByRole("group", { name: m["ui.settings.language"]() }))
       .toBeInTheDocument();
 
     for (const locale of SUPPORTED_LOCALES) {

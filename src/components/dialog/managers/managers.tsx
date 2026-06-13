@@ -1,4 +1,3 @@
-import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,22 +8,22 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { FACTORY_TYPES } from "@/content/factories";
-import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
-import { useNotificationDialogHandler } from "@/store/atoms/notifications";
-import { ManagersCard } from "./managers.card";
+import {
+  DIALOG_IDS,
+  setDialogOpen,
+  useDialogOpen,
+} from "@/store/atoms/dialogs";
+import { ManagersContent } from "./managers.content";
 
-export const ManagersDialog = (props: React.PropsWithChildren) => {
-  const { children } = props;
-
-  const { announce, message } = useLiveAnnouncer();
-  const onOpenChange = useNotificationDialogHandler("managers");
+export const ManagersDialog = () => {
+  const open = useDialogOpen(DIALOG_IDS.managers);
 
   return (
-    <ResponsiveDialog onOpenChange={onOpenChange}>
-      {children}
-
+    <ResponsiveDialog
+      onOpenChange={(nextOpen) => setDialogOpen(DIALOG_IDS.managers, nextOpen)}
+      open={open}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
@@ -38,24 +37,13 @@ export const ManagersDialog = (props: React.PropsWithChildren) => {
             {m["ui.managers.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription hideDescription>
+          <ResponsiveDialogDescription>
             {m["ui.managers.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <LiveAnnouncer message={message} />
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            {FACTORY_TYPES.map((factoryType) => (
-              <ManagersCard
-                factoryType={factoryType}
-                key={factoryType}
-                onPurchase={(name) =>
-                  announce(m["ui.a11y.purchased"]({ name }))
-                }
-              />
-            ))}
-          </div>
+          <ManagersContent />
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

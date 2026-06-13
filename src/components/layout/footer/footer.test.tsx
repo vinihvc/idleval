@@ -1,9 +1,14 @@
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import { Footer } from "@/components/layout/footer";
 import { m } from "@/i18n/messages";
+import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("Footer", () => {
+  beforeEach(() => {
+    resetGame();
+  });
+
   test("renders about link and attribution", async () => {
     const screen = await renderWithProviders(<Footer />);
 

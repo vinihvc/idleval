@@ -11,7 +11,7 @@ export const SettingsReset = (
     className="w-full text-lg"
     holdLabel={m["ui.common.hold"]()}
     onHoldComplete={resetGame}
-    size="xl"
+    size="lg"
     variant="destructive"
     {...props}
   >

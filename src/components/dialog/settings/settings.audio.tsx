@@ -8,6 +8,37 @@ import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Slider } from "@/components/ui/slider";
 import { m } from "@/i18n/messages";
+import { useSound } from "@/providers/sound";
+
+export const SettingsAudio = () => {
+  const { musicVolume, setMusicVolume, setSfxVolume, sfxVolume } = useSound();
+
+  return (
+    <FieldSet className="gap-4">
+      <FieldLegend className="sr-only" variant="legend">
+        {m["ui.settings.audio"]()}
+      </FieldLegend>
+
+      <FieldGroup className="min-w-0">
+        <VolumeControl
+          icon={<Music />}
+          label={m["ui.settings.music"]()}
+          muteAriaLabel={m["ui.settings.muteMusic"]()}
+          onChange={setMusicVolume}
+          value={musicVolume}
+        />
+
+        <VolumeControl
+          icon={<AudioWaveform />}
+          label={m["ui.settings.sfx"]()}
+          muteAriaLabel={m["ui.settings.muteSfx"]()}
+          onChange={setSfxVolume}
+          value={sfxVolume}
+        />
+      </FieldGroup>
+    </FieldSet>
+  );
+};
 
 const clampVolume = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -71,7 +102,7 @@ const VolumeControl = (props: VolumeControlProps) => {
   const isMuted = localValue === 0;
 
   return (
-    <div className="grid w-full min-w-0 grid-cols-1 items-center gap-3 md:grid-cols-2">
+    <div className="grid w-full min-w-0 grid-cols-2 items-center gap-3">
       <div className="flex min-w-0 items-center gap-2">
         <span
           aria-hidden
@@ -88,21 +119,22 @@ const VolumeControl = (props: VolumeControlProps) => {
         </span>
       </div>
 
-      <div className="flex w-full min-w-0 items-center gap-2 md:px-2.5">
+      <div className="flex w-full min-w-0 items-center gap-2">
         <Button
           aria-label={muteAriaLabel}
           aria-pressed={isMuted}
+          className="hidden shrink-0 sm:inline-flex"
           onClick={toggleMute}
           size="icon-sm"
           sound={false}
-          variant={isMuted ? "stone" : "brown"}
+          variant="brown"
         >
           <VolumeIcon aria-hidden />
         </Button>
 
         <Slider
           aria-labelledby={[labelId]}
-          className="w-full min-w-0 md:flex-1"
+          className="w-full min-w-0"
           max={1}
           min={0}
           onValueChange={(details) => {
@@ -118,43 +150,5 @@ const VolumeControl = (props: VolumeControlProps) => {
         />
       </div>
     </div>
-  );
-};
-
-interface SettingsAudioProps {
-  musicVolume: number;
-  onMusicVolumeChange: (value: number) => void;
-  onSfxVolumeChange: (value: number) => void;
-  sfxVolume: number;
-}
-
-export const SettingsAudio = (props: SettingsAudioProps) => {
-  const { musicVolume, onMusicVolumeChange, onSfxVolumeChange, sfxVolume } =
-    props;
-
-  return (
-    <FieldSet className="gap-4">
-      <FieldLegend className="sr-only" variant="legend">
-        {m["ui.settings.audio"]()}
-      </FieldLegend>
-
-      <FieldGroup className="min-w-0">
-        <VolumeControl
-          icon={<Music />}
-          label={m["ui.settings.music"]()}
-          muteAriaLabel={m["ui.settings.muteMusic"]()}
-          onChange={onMusicVolumeChange}
-          value={musicVolume}
-        />
-
-        <VolumeControl
-          icon={<AudioWaveform />}
-          label={m["ui.settings.sfx"]()}
-          muteAriaLabel={m["ui.settings.muteSfx"]()}
-          onChange={onSfxVolumeChange}
-          value={sfxVolume}
-        />
-      </FieldGroup>
-    </FieldSet>
   );
 };

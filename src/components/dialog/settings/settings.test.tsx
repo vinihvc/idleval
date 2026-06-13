@@ -1,18 +1,21 @@
 import { describe, expect, test } from "vitest";
 import { SettingsDialog } from "@/components/dialog/settings/settings";
+import { WikiDialog } from "@/components/dialog/wiki/wiki";
 import { Button } from "@/components/ui/button";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { m } from "@/i18n/messages";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { openDialog } from "@/test/component-helpers";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 const renderSettingsDialog = () =>
   renderWithProviders(
-    <SettingsDialog>
-      <ResponsiveDialogTrigger asChild>
-        <Button>{m["ui.settings.open"]()}</Button>
-      </ResponsiveDialogTrigger>
-    </SettingsDialog>
+    <>
+      <Button onClick={() => toggleDialog(DIALOG_IDS.settings)}>
+        {m["ui.settings.open"]()}
+      </Button>
+      <SettingsDialog />
+      <WikiDialog />
+    </>
   );
 
 describe("SettingsDialog", () => {
@@ -35,7 +38,7 @@ describe("SettingsDialog", () => {
       .toBeInTheDocument();
   });
 
-  test.skip("opens wiki and closes settings", async () => {
+  test("opens wiki and closes settings", async () => {
     const screen = await renderSettingsDialog();
 
     await openDialog(screen, m["ui.settings.open"]());

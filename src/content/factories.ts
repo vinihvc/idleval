@@ -1,12 +1,5 @@
 import { localizeLore, translate } from "@/i18n/localize";
 
-export interface FactoryData {
-  baseBuyCost: number;
-  productionTime: number;
-  productionValue: number;
-  unlockPrice: number;
-}
-
 export const FACTORY_DATA = {
   grain: {
     productionTime: 2,
@@ -46,11 +39,13 @@ export const FACTORY_DATA = {
   },
 } as const;
 
+export type FactoryDataType = typeof FACTORY_DATA;
+
 export type FactoryType = keyof typeof FACTORY_DATA;
 
 export const FACTORY_TYPES = Object.keys(FACTORY_DATA) as FactoryType[];
 
-const createLocalizedFactory = (factory: FactoryType) => {
+export const getLocalizedFactory = (factory: FactoryType) => {
   const prefix = `factory.${factory}`;
 
   return {
@@ -61,15 +56,5 @@ const createLocalizedFactory = (factory: FactoryType) => {
   };
 };
 
-const localizedFactories = Object.fromEntries(
-  FACTORY_TYPES.map((factory) => [
-    factory,
-    () => createLocalizedFactory(factory),
-  ])
-) as Record<FactoryType, () => ReturnType<typeof createLocalizedFactory>>;
-
-export const getLocalizedFactory = (factory: FactoryType) =>
-  localizedFactories[factory]();
-
 export type LocalizedLore = ReturnType<typeof localizeLore>;
-export type LocalizedFactory = ReturnType<typeof createLocalizedFactory>;
+export type LocalizedFactory = ReturnType<typeof getLocalizedFactory>;

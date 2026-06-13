@@ -3,6 +3,7 @@
 @import "@fontsource/grenze-gotisch/latin.css";
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./hitbox.css";
 
 @custom-variant dark (&:is(.dark *));
 

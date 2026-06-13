@@ -2,7 +2,6 @@ import { InfoBox } from "pixelarticons/react/InfoBox";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -11,6 +10,7 @@ import {
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
+import { getFactoryDialogId, toggleDialog } from "@/store/atoms/dialogs";
 import {
   setAmountBySelectedAmount,
   unlockFactory,
@@ -155,21 +155,23 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
       </Button>
 
       <React.Suspense fallback={null}>
-        <LazyFactoryDialog factoryType={factoryType}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ResponsiveDialogTrigger asChild>
-                <Button size="icon-lg" variant="blue">
-                  <span className="sr-only">{ledgerLabel}</span>
-                  <InfoBox className="size-4" />
-                </Button>
-              </ResponsiveDialogTrigger>
-            </TooltipTrigger>
-
-            <TooltipContent>{ledgerLabel}</TooltipContent>
-          </Tooltip>
-        </LazyFactoryDialog>
+        <LazyFactoryDialog factoryType={factoryType} />
       </React.Suspense>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={() => toggleDialog(getFactoryDialogId(factoryType))}
+            size="icon-md"
+            variant="blue"
+          >
+            <span className="sr-only">{ledgerLabel}</span>
+            <InfoBox className="size-4" />
+          </Button>
+        </TooltipTrigger>
+
+        <TooltipContent>{ledgerLabel}</TooltipContent>
+      </Tooltip>
     </div>
   );
 };

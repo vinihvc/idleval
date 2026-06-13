@@ -3,7 +3,6 @@ import { Menu } from "pixelarticons/react/Menu";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Float } from "@/components/ui/float";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { Status } from "@/components/ui/status";
 import {
   Tooltip,
@@ -11,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { m } from "@/i18n/messages";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { useNotifications } from "@/store/atoms/notifications";
 import { AmountToBuy } from "./header.amount";
 import { HeaderWiki } from "./header.wiki";
@@ -27,46 +27,54 @@ export const HeaderActions = () => {
   const notifications = useNotifications();
 
   return (
-    <nav aria-label={m["ui.nav.actions"]()} className="flex gap-2">
-      <AmountToBuy />
+    <>
+      <nav aria-label={m["ui.nav.actions"]()} className="flex gap-2">
+        <AmountToBuy />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => toggleDialog(DIALOG_IDS.dailyReward)}
+              size="icon-sm"
+              variant="cream"
+            >
+              <span className="sr-only">{m["ui.nav.daily"]()}</span>
+              <Gift />
+              {notifications.daily && (
+                <Float>
+                  <Status variant="success" />
+                </Float>
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{m["ui.nav.daily"]()}</TooltipContent>
+        </Tooltip>
+
+        <HeaderWiki />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => toggleDialog(DIALOG_IDS.settings)}
+              size="icon-sm"
+              variant="cream"
+            >
+              <span className="sr-only">{m["ui.settings.open"]()}</span>
+              <Menu />
+            </Button>
+          </TooltipTrigger>
+
+          <TooltipContent>{m["ui.settings.title"]()}</TooltipContent>
+        </Tooltip>
+      </nav>
 
       <React.Suspense fallback={null}>
-        <LazyDailyRewardDialog>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ResponsiveDialogTrigger asChild>
-                <Button size="icon-md" variant="cream">
-                  <span className="sr-only">{m["ui.nav.daily"]()}</span>
-                  <Gift />
-                  {notifications.daily && (
-                    <Float>
-                      <Status variant="success" />
-                    </Float>
-                  )}
-                </Button>
-              </ResponsiveDialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{m["ui.nav.daily"]()}</TooltipContent>
-          </Tooltip>
-        </LazyDailyRewardDialog>
+        <LazySettingsDialog />
       </React.Suspense>
-      <HeaderWiki />
-      <React.Suspense fallback={null}>
-        <LazySettingsDialog>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ResponsiveDialogTrigger asChild>
-                <Button size="icon-md" variant="cream">
-                  <span className="sr-only">{m["ui.settings.open"]()}</span>
-                  <Menu />
-                </Button>
-              </ResponsiveDialogTrigger>
-            </TooltipTrigger>
 
-            <TooltipContent>{m["ui.settings.title"]()}</TooltipContent>
-          </Tooltip>
-        </LazySettingsDialog>
+      <React.Suspense fallback={null}>
+        <LazyDailyRewardDialog />
       </React.Suspense>
-    </nav>
+    </>
   );
 };

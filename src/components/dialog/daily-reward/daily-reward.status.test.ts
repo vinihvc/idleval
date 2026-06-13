@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getDailyRewardDayStatus } from "@/components/dialog/daily-reward/daily-reward.calendar";
+import { getDailyRewardDayStatus } from "@/components/dialog/daily-reward/daily-reward.card";
 
 describe("getDailyRewardDayStatus", () => {
   it("marks earlier days as claimed and today as current when pending", () => {

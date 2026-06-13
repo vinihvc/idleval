@@ -1,10 +1,15 @@
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import { FactoryCard } from "@/components/ui/factory-card";
 import { m } from "@/i18n/messages";
+import { resetGame } from "@/store/reset";
 import { seedFactory, seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("FactoryCard", () => {
+  beforeEach(() => {
+    resetGame();
+  });
+
   test("renders unlocked grain factory", async () => {
     const screen = await renderWithProviders(<FactoryCard type="grain" />);
 
@@ -45,5 +50,24 @@ describe("FactoryCard", () => {
         })
       )
       .not.toBeDisabled();
+  });
+
+  test("opens factory ledger dialog", async () => {
+    const screen = await renderWithProviders(<FactoryCard type="grain" />);
+
+    await screen
+      .getByRole("button", {
+        name: m["ui.factoryCard.ledger"]({ name: "Grain" }),
+      })
+      .click();
+
+    await expect
+      .poll(() =>
+        screen
+          .getByRole("heading", { name: "Grain" })
+          .elements()
+          .some((element) => element.tagName === "H2")
+      )
+      .toBe(true);
   });
 });

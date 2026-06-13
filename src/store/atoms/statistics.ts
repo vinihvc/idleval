@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
 import { persistedAtomWithNormalize } from "@/store/storage";
@@ -94,7 +94,7 @@ const initialStatisticsState: StatisticsState = {
 };
 
 export const statisticsAtom = persistedAtomWithNormalize<StatisticsState>(
-  LOCAL_STORAGE_KEYS.statistics,
+  LOCAL_STORAGE.statistics,
   initialStatisticsState,
   normalizeStatisticsState
 );

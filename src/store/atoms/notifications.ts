@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
-import { useCallback, useMemo } from "react";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { useMemo } from "react";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import { store } from "@/providers/store";
 import {
   canPurchaseAnyManager,
@@ -41,7 +41,7 @@ export const initialNotificationsState = (): NotificationsState => ({
 });
 
 export const notificationsAtom = persistedAtom<NotificationsState>(
-  LOCAL_STORAGE_KEYS.notifications,
+  LOCAL_STORAGE.notifications,
   initialNotificationsState()
 );
 
@@ -129,13 +129,3 @@ export const useNotifications = (): Record<NotificationKey, boolean> => {
     [activeByKey, dismissed]
   );
 };
-
-export const useNotificationDialogHandler = (key: NotificationKey) =>
-  useCallback(
-    (open: boolean) => {
-      if (open) {
-        dismissNotification(key);
-      }
-    },
-    [key]
-  );

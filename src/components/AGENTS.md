@@ -12,12 +12,12 @@ All game UI — primitives, overlays, shell, and debug tools.
 - Strings via `m["ui.*"]()` from `@/i18n/messages`
 - State via store hooks (`useWallet`, `useFactory`, `useGods`)
 - Mutations via imported actions (`upgradeFactory`, `invokeGod`, `resetGame`)
-- Dialogs with `ResponsiveDialog` (Dialog ≥768px, Drawer below)
+- Domain dialogs read `useDialogOpen(id)` and write through `setDialogOpen(id, open)`; triggers live at call sites and call `toggleDialog(id)`
 - Tooltips with `ResponsiveTooltip` (Tooltip ≥768px, ToggleTooltip below)
 - Ark UI primitives + `tailwind-variants` (`tv`) + `cn()`
 - Box elevation via `boxBorder()` from `ui/box-border/`
 - Images with `@unpic/react` `Image`; icons with `pixelarticons/react/IconName` (per-icon imports, not the root barrel)
-- Lazy-load domain dialogs via colocated `lazy.ts` + `<Suspense fallback={null}>` at call sites; tests import dialog modules directly
+- Lazy-load domain dialogs with `<Suspense fallback={null}>` around only the dialog component; keep trigger buttons outside `Suspense`
 
 ## Don't
 
@@ -37,7 +37,7 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 
 - Suffixes: `*Dialog` (overlays), `*Card` (list items), dot-files for subparts (`factory-card.produce.tsx`)
 - Props via `interface XxxProps`
-- `ResponsiveDialogTrigger asChild` on triggers
+- `ResponsiveDialog` for content only (Dialog ≥768px, Drawer below); avoid `ResponsiveDialogTrigger` and trigger-as-children in domain dialogs
 - `sr-only` on icon-only buttons; labels on inputs
 - Component tests: `component-name.test.tsx` colocated in `component-name/` with `vitest-browser-react` + `renderWithProviders` from `@/test/render-with-providers`
 - One folder per component: `button/button.tsx` + `button/index.ts` exporting the public API
@@ -77,3 +77,4 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 - 2026-06-08 — Restored `ui/box-border/`; elevation via `boxBorder()` instead of `globals.css` utilities
 - 2026-06-08 — `variant-tools` fixed top-right; `action-tools` bottom ActionBar
 - 2026-06-08 — ResponsiveTooltip (Tooltip ≥768px, ToggleTooltip below)
+- 2026-06-13 — Domain dialog open state centralized in `store/atoms/dialogs`; triggers stay outside dialog wrappers and Suspense

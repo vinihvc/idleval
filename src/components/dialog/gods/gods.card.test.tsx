@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { GodsCard } from "@/components/dialog/gods/gods.card";
-import { getLocalizedGod, GOD_DATA } from "@/content/gods";
+import { GOD_DATA, getLocalizedGod } from "@/content/gods";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import { godsAtom } from "@/store/atoms/gods";
@@ -75,9 +75,7 @@ describe("GodsCard", () => {
 
     const buttonElement = card.element();
 
-    buttonElement.dispatchEvent(
-      new MouseEvent("mousedown", { bubbles: true })
-    );
+    buttonElement.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
     buttonElement.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
 
     expect(store.get(godsAtom).invoked).toEqual([]);

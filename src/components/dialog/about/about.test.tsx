@@ -1,15 +1,18 @@
 import { describe, expect, test } from "vitest";
-import { AboutDialog } from "@/components/dialog/about";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
+import { AboutDialog } from "@/components/dialog/about/about";
 import { m } from "@/i18n/messages";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("AboutDialog", () => {
   test("shows about content when opened", async () => {
     const screen = await renderWithProviders(
-      <AboutDialog>
-        <ResponsiveDialogTrigger>Open about</ResponsiveDialogTrigger>
-      </AboutDialog>
+      <>
+        <button onClick={() => toggleDialog(DIALOG_IDS.about)} type="button">
+          Open about
+        </button>
+        <AboutDialog />
+      </>
     );
 
     await screen.getByText("Open about").click();

@@ -1,4 +1,3 @@
-import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -9,26 +8,22 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { Separator } from "@/components/ui/separator";
 import { m } from "@/i18n/messages";
-import { useSound } from "@/providers/sound";
-import { SettingsAudio } from "./settings.audio";
-import { SettingsInstall } from "./settings.install";
-import { SettingsLanguage } from "./settings.language";
-import { SettingsWiki } from "./settings.wiki";
-import { SettingsReset } from "./settings-reset";
+import {
+  DIALOG_IDS,
+  setDialogOpen,
+  useDialogOpen,
+} from "@/store/atoms/dialogs";
+import { SettingsContent } from "./settings.content";
 
-export const SettingsDialog = (
-  props: React.ComponentProps<typeof ResponsiveDialog>
-) => {
-  const { children, ...rest } = props;
-
-  const { musicVolume, setMusicVolume, setSfxVolume, sfxVolume } = useSound();
+export const SettingsDialog = () => {
+  const open = useDialogOpen(DIALOG_IDS.settings);
 
   return (
-    <ResponsiveDialog {...rest}>
-      {children}
-
+    <ResponsiveDialog
+      onOpenChange={(nextOpen) => setDialogOpen(DIALOG_IDS.settings, nextOpen)}
+      open={open}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
@@ -48,26 +43,7 @@ export const SettingsDialog = (
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody className="grid min-w-0 gap-4 overflow-x-hidden">
-          <SettingsLanguage />
-
-          <Separator />
-
-          <SettingsAudio
-            musicVolume={musicVolume}
-            onMusicVolumeChange={setMusicVolume}
-            onSfxVolumeChange={setSfxVolume}
-            sfxVolume={sfxVolume}
-          />
-
-          <SettingsInstall />
-
-          <Separator />
-
-          <SettingsWiki />
-
-          <Separator />
-
-          <SettingsReset />
+          <SettingsContent />
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

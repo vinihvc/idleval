@@ -8,33 +8,32 @@ import {
 } from "@/components/ui/tooltip";
 import { m } from "@/i18n/messages";
 import { IS_DEV } from "@/lib/envs";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 
 const LazyWikiDialog = React.lazy(
   () => import("@/components/dialog/wiki/wiki")
 );
 
-export const HeaderWiki = () => {
-  const [open, setOpen] = React.useState(false);
-
-  if (!IS_DEV) {
-    return null;
-  }
-
-  return (
-    <>
+export const HeaderWiki = () => (
+  <>
+    {IS_DEV && (
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button onClick={() => setOpen(true)} size="icon-md" variant="cream">
+          <Button
+            onClick={() => toggleDialog(DIALOG_IDS.wiki)}
+            size="icon-sm"
+            variant="cream"
+          >
             <span className="sr-only">{m["ui.wiki.open"]()}</span>
             <BookOpen />
           </Button>
         </TooltipTrigger>
         <TooltipContent>{m["ui.wiki.title"]()}</TooltipContent>
       </Tooltip>
+    )}
 
-      <React.Suspense fallback={null}>
-        <LazyWikiDialog onOpenChange={setOpen} open={open} />
-      </React.Suspense>
-    </>
-  );
-};
+    <React.Suspense fallback={null}>
+      <LazyWikiDialog />
+    </React.Suspense>
+  </>
+);

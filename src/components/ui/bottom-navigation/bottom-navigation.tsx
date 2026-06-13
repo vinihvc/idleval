@@ -3,6 +3,7 @@
 import { ark } from "@ark-ui/react/factory";
 import type React from "react";
 import { cn } from "@/lib/cn";
+import { type SoundsType, sound as soundFunction } from "@/providers/sound";
 
 export const BottomNavigation = (props: React.ComponentProps<"nav">) => {
   const { className, ...rest } = props;
@@ -47,8 +48,32 @@ export const BottomNavigationListItem = (props: React.ComponentProps<"li">) => {
   );
 };
 
-export const BottomNavigationItem = (props: React.ComponentProps<"button">) => {
-  const { className, type = "button", ...rest } = props;
+export interface BottomNavigationItemProps
+  extends React.ComponentProps<"button"> {
+  /**
+   * Sound played on click. Pass `false` to disable.
+   *
+   * @default 'click'
+   */
+  sound?: SoundsType | false;
+}
+
+export const BottomNavigationItem = (props: BottomNavigationItemProps) => {
+  const {
+    className,
+    type = "button",
+    sound = "click",
+    onClick,
+    ...rest
+  } = props;
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (sound !== false) {
+      soundFunction.play(sound);
+    }
+
+    onClick?.(event);
+  };
 
   return (
     <button
@@ -73,6 +98,7 @@ export const BottomNavigationItem = (props: React.ComponentProps<"button">) => {
       data-slot="bottom-navigation-item"
       type={type}
       {...rest}
+      onClick={handleClick}
     />
   );
 };

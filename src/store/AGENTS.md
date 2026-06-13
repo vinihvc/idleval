@@ -10,10 +10,11 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 
 - Persist via `persistedAtom(key, initial)` from `storage.ts`
 - Use `persistedAtomWithNormalize(key, initial, normalize)` when reads need migration/normalization
-- Define all localStorage keys in `@/config/local-storage-keys` (`LOCAL_STORAGE_KEYS`) — never inline strings in atoms
+- Define all localStorage keys in `@/config/local-storage-keys` (`LOCAL_STORAGE`) — never inline strings in atoms
 - Mutations as imperative functions (`store.set`/`store.get`), not write-only atoms
 - Export `get*` (imperative) + `use*` (React) for reads
 - Split large domains: `factories.{atom,actions,selectors}.ts` + barrel `factories.ts`
+- Keep transient UI coordination, such as the globally open dialog id, in plain Jotai atoms rather than persisted storage
 - Store gold/decimals as serialized strings (`serializeDecimal`/`deserializeDecimal`)
 - Use `beforeEach(() => resetGame())` in tests; seed via `test-utils.ts`
 - Use `selectAtom` + `Map` cache for granular subscriptions
@@ -27,7 +28,7 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 - Import components or i18n strings
 - Import `useAtomValue` outside store atom accessor hooks (providers/components use `useSettings`, `useWallet`, etc.)
 - Use `useEffect` or other React lifecycle in `store/atoms/*` — move sync to `hooks/` + `providers/`
-- Change storage keys without a version suffix when schema changes (e.g. `wallet-v4`); update `LOCAL_STORAGE_KEYS` in config
+- Change storage keys without a version suffix when schema changes (e.g. `wallet-v4`); update `LOCAL_STORAGE` in config
 
 ## Patterns
 
@@ -53,6 +54,7 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 | `atoms/power-ups.actions.ts` | Claim daily reward, activate power-ups |
 | `atoms/settings.ts` | Locale, volumes |
 | `atoms/notifications.ts` | Dialog badge visibility, dismiss-on-visit |
+| `atoms/dialogs.ts` | Single-open dialog coordination and factory-scoped dialog ids |
 
 ## Neighbors
 
@@ -66,3 +68,4 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 - 2026-06-08 — `useAtomValue` restricted to atom accessor hooks; derived hooks compose accessors
 - 2026-06-08 — `notifications-v1` atom: dismiss-on-visit badges for nav dialogs
 - 2026-06-08 — Centralized keys in `config/local-storage-keys.ts`; `persistedAtomWithNormalize` for migrated atoms
+- 2026-06-13 — Added transient `dialogsAtom` to enforce one open `ResponsiveDialog` at a time

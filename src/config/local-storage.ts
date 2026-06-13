@@ -1,4 +1,4 @@
-export const LOCAL_STORAGE_KEYS = {
+export const LOCAL_STORAGE = {
   welcomeDialogSeen: "idleval:welcome-dialog-seen",
   wallet: "wallet",
   session: "session",
@@ -12,4 +12,4 @@ export const LOCAL_STORAGE_KEYS = {
 } as const;
 
 export type LocalStorageKey =
-  (typeof LOCAL_STORAGE_KEYS)[keyof typeof LOCAL_STORAGE_KEYS];
+  (typeof LOCAL_STORAGE)[keyof typeof LOCAL_STORAGE];

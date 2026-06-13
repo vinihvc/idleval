@@ -34,7 +34,7 @@ Use this for **future** A/B/C/D comparisons of new UI (not UpgradeCard — fixed
 | `usePickVariantTools(presets)` | `presets[activeVariant]` from a `Record<VariantTools, T>` |
 | `useIsVariantTools("a")` | Boolean guard for one variant |
 
-**Dev switching:** UI `components/debug/variant-tools.tsx` (top-right) + keys **1** → a, **2** → b, **3** → c, **4** → d (`keydown` in provider, `IS_DEV` only). Choice persists via `useLocalStorage` (`LOCAL_STORAGE_KEYS.openCardVariant`).
+**Dev switching:** UI `components/debug/variant-tools.tsx` (top-right) + keys **1** → a, **2** → b, **3** → c, **4** → d (`keydown` in provider, `IS_DEV` only). Choice persists via `useLocalStorage` (`LOCAL_STORAGE.openCardVariant`).
 
 **Agent rule:** Implement variations as keyed presets + these hooks — never one-off toggles or four duplicate components.
 
@@ -60,7 +60,7 @@ Use this for **future** A/B/C/D comparisons of new UI (not UpgradeCard — fixed
 
 ## Evolution
 
-- 2026-06-08 — Variant tools persist via `useLocalStorage` + `LOCAL_STORAGE_KEYS`
+- 2026-06-08 — Variant tools persist via `useLocalStorage` + `LOCAL_STORAGE`
 - 2026-06-08 — `variant-tools`: `useState` + native keydown; export `VARIANT_TOOLS`
 - 2026-06-08 — `VariantTools` type + hooks replace `OpenVisualVariant` naming
 - 2026-06-08 — `OpenVisualVariant` moved here; UpgradeCard decoupled from variant-tools

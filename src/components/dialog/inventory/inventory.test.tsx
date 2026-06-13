@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { InventoryDialog } from "@/components/dialog/inventory/inventory";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { getLocalizedPowerUp, INVENTORY_GRID_SIZE } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import {
   getInventoryState,
   initialInventoryState,
@@ -26,9 +26,12 @@ const seedInventorySlot = () => {
 
 const openInventory = async () => {
   const screen = await renderWithProviders(
-    <InventoryDialog>
-      <ResponsiveDialogTrigger>Open inventory</ResponsiveDialogTrigger>
-    </InventoryDialog>
+    <>
+      <button onClick={() => toggleDialog(DIALOG_IDS.inventory)} type="button">
+        Open inventory
+      </button>
+      <InventoryDialog />
+    </>
   );
 
   await screen.getByText("Open inventory").click();

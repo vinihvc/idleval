@@ -1,4 +1,5 @@
 import { store } from "@/providers/store";
+import { dialogsAtom } from "@/store/atoms/dialogs";
 import { godsAtom } from "@/store/atoms/gods";
 import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import {
@@ -14,6 +15,7 @@ import {
 import { resetRunProgress } from "@/store/reset-run-progress";
 import { D, serializeDecimal } from "@/utils/decimal";
 
+// biome-ignore lint/performance/noBarrelFile: Keep the existing reset import path stable.
 export { resetRunProgress } from "@/store/reset-run-progress";
 
 export const resetGame = () => {
@@ -29,4 +31,5 @@ export const resetGame = () => {
   store.set(sessionAtom, { lastSeenAt: Date.now() });
   store.set(offlineCycleProgressAtom, {});
   store.set(offlineSummaryAtom, null);
+  store.set(dialogsAtom, null);
 };

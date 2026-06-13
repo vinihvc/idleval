@@ -1,15 +1,21 @@
 import { describe, expect, test } from "vitest";
 import { DailyRewardDialog } from "@/components/dialog/daily-reward/daily-reward";
-import { ResponsiveDialogTrigger } from "@/components/ui/responsive-dialog";
 import { m } from "@/i18n/messages";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("DailyRewardDialog", () => {
   test("renders daily claim when offering is pending", async () => {
     const screen = await renderWithProviders(
-      <DailyRewardDialog>
-        <ResponsiveDialogTrigger>Open daily reward</ResponsiveDialogTrigger>
-      </DailyRewardDialog>
+      <>
+        <button
+          onClick={() => toggleDialog(DIALOG_IDS.dailyReward)}
+          type="button"
+        >
+          Open daily reward
+        </button>
+        <DailyRewardDialog />
+      </>
     );
 
     await screen.getByText("Open daily reward").click();

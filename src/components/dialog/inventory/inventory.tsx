@@ -1,5 +1,4 @@
-import type React from "react";
-import { InventoryCard } from "@/components/dialog/inventory/inventory.card";
+import { InventoryContent } from "@/components/dialog/inventory/inventory.content";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -10,26 +9,21 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { INVENTORY_GRID_SIZE } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
-import { useInventory } from "@/store/atoms/inventory";
-import { useNotificationDialogHandler } from "@/store/atoms/notifications";
+import {
+  DIALOG_IDS,
+  setDialogOpen,
+  useDialogOpen,
+} from "@/store/atoms/dialogs";
 
-const INVENTORY_CARD_KEYS = Array.from(
-  { length: INVENTORY_GRID_SIZE },
-  (_, index) => `inventory-card-${index}`
-);
-
-export const InventoryDialog = (props: React.PropsWithChildren) => {
-  const { children } = props;
-
-  const onOpenChange = useNotificationDialogHandler("inventory");
-  const { slots } = useInventory();
+export const InventoryDialog = () => {
+  const open = useDialogOpen(DIALOG_IDS.inventory);
 
   return (
-    <ResponsiveDialog onOpenChange={onOpenChange}>
-      {children}
-
+    <ResponsiveDialog
+      onOpenChange={(nextOpen) => setDialogOpen(DIALOG_IDS.inventory, nextOpen)}
+      open={open}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
@@ -43,19 +37,13 @@ export const InventoryDialog = (props: React.PropsWithChildren) => {
             {m["ui.inventory.title"]()}
           </ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription hideDescription>
+          <ResponsiveDialogDescription>
             {m["ui.inventory.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-4 gap-3 md:grid-cols-5">
-            {INVENTORY_CARD_KEYS.map((cardKey, index) => {
-              const slot = slots[index];
-
-              return <InventoryCard item={slot} key={cardKey} />;
-            })}
-          </div>
+          <InventoryContent />
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

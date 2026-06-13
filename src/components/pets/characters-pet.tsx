@@ -461,8 +461,7 @@ export const CharactersPet = (props: CharactersPetProps) => {
       <div
         aria-label={ariaLabel}
         className={cn(
-          "absolute start-0 top-0 select-none bg-no-repeat [image-rendering:pixelated]",
-          "motion-reduce:[background-position:0_0]",
+          "pixel-crisp absolute inset-s-0 top-0 select-none bg-no-repeat",
           spriteClassName
         )}
         data-frame={visual.frame}

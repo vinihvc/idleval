@@ -8,20 +8,22 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { m } from "@/i18n/messages";
-import { WikiFiguresTab } from "./wiki.figures-tab";
-import { WikiGodsTab } from "./wiki.gods-tab";
-import { WikiUpgradesTab } from "./wiki.upgrades-tab";
+import {
+  DIALOG_IDS,
+  setDialogOpen,
+  useDialogOpen,
+} from "@/store/atoms/dialogs";
+import { WikiContent } from "./wiki.content";
 
-export const WikiDialog = (
-  props: React.ComponentProps<typeof ResponsiveDialog>
-) => {
-  const { children, ...rest } = props;
+export const WikiDialog = () => {
+  const open = useDialogOpen(DIALOG_IDS.wiki);
 
   return (
-    <ResponsiveDialog {...rest}>
-      {children}
+    <ResponsiveDialog
+      onOpenChange={(nextOpen) => setDialogOpen(DIALOG_IDS.wiki, nextOpen)}
+      open={open}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
@@ -33,35 +35,13 @@ export const WikiDialog = (
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{m["ui.wiki.title"]()}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription hideDescription>
+          <ResponsiveDialogDescription>
             {m["ui.wiki.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody className="text-popover-foreground">
-          <Tabs defaultValue="gods">
-            <TabsList>
-              <TabsTrigger value="gods">{m["ui.wiki.tab.gods"]()}</TabsTrigger>
-              <TabsTrigger value="figures">
-                {m["ui.wiki.tab.figures"]()}
-              </TabsTrigger>
-              <TabsTrigger value="upgrades">
-                {m["ui.wiki.tab.upgrades"]()}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent className="mt-2" value="gods">
-              <WikiGodsTab />
-            </TabsContent>
-
-            <TabsContent className="mt-2" value="figures">
-              <WikiFiguresTab />
-            </TabsContent>
-
-            <TabsContent className="mt-2" value="upgrades">
-              <WikiUpgradesTab />
-            </TabsContent>
-          </Tabs>
+          <WikiContent />
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

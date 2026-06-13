@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { IS_DEV } from "@/lib/envs";
+import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import {
   addDebugGold,
   addDebugPowerUps,
@@ -38,8 +39,6 @@ const LazyWelcomeDialog = React.lazy(
 );
 
 export const ActionTools = () => {
-  const [debugWelcomeOpen, setDebugWelcomeOpen] = React.useState(false);
-
   if (!IS_DEV) {
     return null;
   }
@@ -146,7 +145,7 @@ export const ActionTools = () => {
                 </MenuItem>
                 <MenuItem
                   onSelect={() => {
-                    setDebugWelcomeOpen(true);
+                    toggleDialog(DIALOG_IDS.debugWelcome);
                   }}
                   value="welcome"
                 >
@@ -159,15 +158,9 @@ export const ActionTools = () => {
         </ActionBarContent>
       </ActionBar>
 
-      {debugWelcomeOpen && (
-        <React.Suspense fallback={null}>
-          <LazyWelcomeDialog
-            debug
-            onOpenChange={setDebugWelcomeOpen}
-            open={debugWelcomeOpen}
-          />
-        </React.Suspense>
-      )}
+      <React.Suspense fallback={null}>
+        <LazyWelcomeDialog debug />
+      </React.Suspense>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import type { FactoryPersistedState } from "@/game/types";
 import { persistedAtomWithNormalize } from "@/store/storage";
@@ -50,6 +50,6 @@ const normalizeFactoriesState = (
 
 export const factoriesAtom = persistedAtomWithNormalize<
   Record<FactoryType, FactoryPersistedState>
->(LOCAL_STORAGE_KEYS.factories, initialData, normalizeFactoriesState);
+>(LOCAL_STORAGE.factories, initialData, normalizeFactoriesState);
 
 export const useFactories = () => useAtomValue(factoriesAtom);

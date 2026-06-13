@@ -1,76 +1,101 @@
+import { InfoBox } from "pixelarticons/react/InfoBox";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PowerUpCard } from "@/components/ui/power-up-card/power-up-card";
+import {
+  PowerUpCard,
+  PowerUpCardFooter,
+  PowerUpCardMedia,
+} from "@/components/ui/power-up-card/power-up-card";
+import {
+  ToggleTooltip,
+  ToggleTooltipContent,
+  ToggleTooltipTrigger,
+} from "@/components/ui/toggle-tooltip";
 import { getLocalizedPowerUp } from "@/content/power-ups";
 import { canActivatePowerUp } from "@/game/power-ups";
-import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
+import { cn } from "@/lib/cn";
 import { type InventorySlot, useInventory } from "@/store/atoms/inventory";
-import { activatePowerUpAtSlot } from "@/store/atoms/power-ups.actions";
 
 export interface InventoryCardProps extends React.ComponentProps<"div"> {
+  /**
+   * The inventory slot to display.
+   */
   item: InventorySlot | undefined;
+  /**
+   * The function to call when the power up is used.
+   */
+  onUse: (item: InventorySlot) => void;
 }
 
 export const InventoryCard = (props: InventoryCardProps) => {
-  const { className, item, ...rest } = props;
+  const { item, className, onUse, ...rest } = props;
 
-  const { activePowerUp, slots } = useInventory();
-  const { announce, message } = useLiveAnnouncer();
-
-  const slotIndex = item ? slots.indexOf(item) : -1;
-  const canUse = Boolean(
-    item && slotIndex >= 0 && canActivatePowerUp(activePowerUp, item.count)
-  );
+  const { activePowerUp } = useInventory();
+  const canUse = Boolean(item && canActivatePowerUp(activePowerUp, item.count));
 
   const usePowerUp = () => {
-    if (!(item && slotIndex >= 0)) {
+    if (!item) {
       return;
     }
 
-    if (activatePowerUpAtSlot(slotIndex)) {
-      announce(
-        m["ui.a11y.activated"]({
-          name: getLocalizedPowerUp(item.powerUpId).name,
-        })
-      );
-    }
+    onUse(item);
   };
 
   return (
-    <>
-      <LiveAnnouncer message={message} />
-      <PowerUpCard
-        {...rest}
-        badge={
-          item ? (
-            <Badge className="h-6 min-w-6 rounded-sm px-0 font-bold text-lg leading-none">
-              {item.count}
-            </Badge>
-          ) : null
-        }
-        className={className}
-        data-slot="inventory-card"
-        footer={
-          item ? (
-            <Button
-              aria-label={m["ui.inventory.useItem"]({
-                0: getLocalizedPowerUp(item.powerUpId).name,
-              })}
-              className="h-7 w-full px-2 font-bold text-sm"
-              disabled={!canUse}
-              onClick={usePowerUp}
-              size="xs"
-              sound={false}
-              variant="green"
-            >
-              {m["ui.common.use"]()}
-            </Button>
-          ) : null
-        }
-        powerUpId={item?.powerUpId}
-      />
-    </>
+    <PowerUpCard
+      {...rest}
+      className={cn("h-32", !canUse && "opacity-60", className)}
+      data-slot="inventory-card"
+    >
+      <PowerUpCardMedia powerUpId={item?.powerUpId} />
+      {item && (
+        <div
+          className="absolute top-1 right-1 font-number"
+          data-slot="power-up-card-badge"
+        >
+          <Badge className="text-base" size="sm">
+            {item.count}
+          </Badge>
+        </div>
+      )}
+      {item && (
+        <PowerUpCardFooter className="flex items-center">
+          <ToggleTooltip>
+            <ToggleTooltipTrigger asChild>
+              <Button
+                aria-label={m["ui.inventory.useItem"]({
+                  0: getLocalizedPowerUp(item.powerUpId).name,
+                })}
+                className="hitbox-3 shrink-0 rounded-none rounded-r-none! rounded-b-sm"
+                size="icon-xs"
+                variant="blue"
+              >
+                <InfoBox />
+              </Button>
+            </ToggleTooltipTrigger>
+            <ToggleTooltipContent>
+              <h3 className="font-bold text-lg">
+                {getLocalizedPowerUp(item.powerUpId).name}
+              </h3>
+              <p>{getLocalizedPowerUp(item.powerUpId).description}</p>
+            </ToggleTooltipContent>
+          </ToggleTooltip>
+          <Button
+            aria-label={m["ui.inventory.useItem"]({
+              0: getLocalizedPowerUp(item.powerUpId).name,
+            })}
+            className="hitbox-3 hitbox-l-0 w-full rounded-none rounded-b-sm rounded-l-none! font-bold text-sm"
+            disabled={!canUse}
+            onClick={usePowerUp}
+            size="xs"
+            variant="green"
+          >
+            {m["ui.common.use"]()}
+          </Button>
+        </PowerUpCardFooter>
+      )}
+    </PowerUpCard>
   );
 };

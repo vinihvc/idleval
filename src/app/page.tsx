@@ -8,6 +8,7 @@ import { GameShell } from "@/components/game/shell";
 import { GameStage } from "@/components/game/stage/stage";
 import { Background } from "@/components/layout/background";
 import { Footer } from "@/components/layout/footer";
+import { GameSectionDialogs } from "@/components/layout/game-section-dialogs";
 import { Header } from "@/components/layout/header";
 import { Navigation } from "@/components/layout/navigation";
 import type { CharacterInstruction } from "@/components/pets/characters-pet";
@@ -59,6 +60,8 @@ export const HomePage = () => {
       <React.Suspense fallback={null}>
         <LazyWelcomeDialog />
       </React.Suspense>
+
+      <GameSectionDialogs />
 
       <ActionTools />
 

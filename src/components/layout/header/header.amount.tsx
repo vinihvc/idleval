@@ -46,7 +46,7 @@ export const AmountToBuy = () => {
         <Button
           className="w-14"
           onClick={toggleAmountToBuy}
-          size="icon-md"
+          size="icon-sm"
           variant="cream"
         >
           <span>

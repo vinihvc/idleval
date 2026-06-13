@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import type { FactoryType } from "@/content/factories";
 import {
   getAffordableUnitCount,
@@ -44,7 +44,7 @@ export interface PurchaseModeState {
 }
 
 export const purchaseModeAtom = persistedAtom<PurchaseModeState>(
-  LOCAL_STORAGE_KEYS.purchaseMode,
+  LOCAL_STORAGE.purchaseMode,
   {
     amountToBuy: 1,
   }

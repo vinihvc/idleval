@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
 import { canInvokeGodAtIndex, getTotalProductionMultiplier } from "@/game/gods";
 import { sound } from "@/providers/sound";
@@ -14,7 +14,7 @@ export interface GodsState {
   invoked: GodId[];
 }
 
-export const godsAtom = persistedAtom<GodsState>(LOCAL_STORAGE_KEYS.gods, {
+export const godsAtom = persistedAtom<GodsState>(LOCAL_STORAGE.gods, {
   invoked: [],
 });
 

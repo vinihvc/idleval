@@ -1,15 +1,26 @@
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
+import { GameSectionDialogs } from "@/components/layout/game-section-dialogs";
 import { Header } from "@/components/layout/header/header";
 import { m } from "@/i18n/messages";
 import { IS_DEV } from "@/lib/envs";
+import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("Header", () => {
+  beforeEach(() => {
+    resetGame();
+  });
+
   test("renders gold amount and navigation", async () => {
     seedGold(500);
 
-    const screen = await renderWithProviders(<Header />);
+    const screen = await renderWithProviders(
+      <>
+        <Header />
+        <GameSectionDialogs />
+      </>
+    );
 
     await expect.element(screen.getByText("$500")).toBeInTheDocument();
     await expect
@@ -27,5 +38,28 @@ describe("Header", () => {
         .element(screen.getByRole("button", { name: m["ui.wiki.open"]() }))
         .toBeInTheDocument();
     }
+  });
+
+  test("opens header dialogs from their triggers", async () => {
+    const screen = await renderWithProviders(<Header />);
+
+    await screen.getByRole("button", { name: m["ui.settings.open"]() }).click();
+    await expect
+      .element(screen.getByRole("heading", { name: m["ui.settings.title"]() }))
+      .toBeInTheDocument();
+
+    await screen
+      .getByRole("button", { name: m["ui.statistics.title"]() })
+      .click();
+    await expect
+      .element(
+        screen.getByRole("heading", { name: m["ui.statistics.title"]() })
+      )
+      .toBeInTheDocument();
+
+    await screen.getByRole("button", { name: m["ui.nav.daily"]() }).click();
+    await expect
+      .element(screen.getByRole("heading", { name: m["ui.daily.title"]() }))
+      .toBeInTheDocument();
   });
 });

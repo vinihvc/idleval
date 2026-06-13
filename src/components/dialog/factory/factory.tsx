@@ -1,9 +1,3 @@
-import { CalendarRange } from "pixelarticons/react/CalendarRange";
-import { Clock } from "pixelarticons/react/Clock";
-import { Hand } from "pixelarticons/react/Hand";
-import { Heart } from "pixelarticons/react/Heart";
-import type React from "react";
-import { FormattedNumber } from "@/components/ui/formatted-number";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -14,14 +8,17 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { StatTile } from "@/components/ui/stats";
 import type { FactoryType } from "@/content/factories";
-import { getFactoryYieldPerHour } from "@/game/factories";
 import { m } from "@/i18n/messages";
-import { useFactory, useProductionValue } from "@/store/atoms/factories";
-import { useGoldEarnedByFactory } from "@/store/atoms/statistics";
+import {
+  getFactoryDialogId,
+  setDialogOpen,
+  useDialogOpen,
+} from "@/store/atoms/dialogs";
+import { useFactory } from "@/store/atoms/factories";
+import { FactoryContent } from "./factory.content";
 
-interface FactoryDialogProps extends React.PropsWithChildren {
+interface FactoryDialogProps {
   /**
    * The factory type
    */
@@ -29,20 +26,16 @@ interface FactoryDialogProps extends React.PropsWithChildren {
 }
 
 export const FactoryDialog = (props: FactoryDialogProps) => {
-  const { factoryType, children } = props;
-
+  const { factoryType } = props;
+  const dialogId = getFactoryDialogId(factoryType);
   const factory = useFactory(factoryType);
-  const yieldPerTap = useProductionValue(factoryType);
-  const yieldPerHour = getFactoryYieldPerHour(
-    yieldPerTap,
-    factory.productionTime
-  );
-  const lifetimeYield = useGoldEarnedByFactory(factoryType);
+  const open = useDialogOpen(dialogId);
 
   return (
-    <ResponsiveDialog>
-      {children}
-
+    <ResponsiveDialog
+      onOpenChange={(nextOpen) => setDialogOpen(dialogId, nextOpen)}
+      open={open}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
@@ -60,26 +53,7 @@ export const FactoryDialog = (props: FactoryDialogProps) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <StatTile icon={<Clock />} label={m["ui.factory.craftPace"]()}>
-              <FormattedNumber value={factory.productionTime} />s
-            </StatTile>
-
-            <StatTile icon={<Hand />} label={m["ui.factory.yieldPerTap"]()}>
-              <FormattedNumber value={yieldPerTap} />
-            </StatTile>
-
-            <StatTile
-              icon={<CalendarRange />}
-              label={m["ui.factory.yieldPerHour"]()}
-            >
-              <FormattedNumber value={yieldPerHour} />
-            </StatTile>
-
-            <StatTile icon={<Heart />} label={m["ui.factory.lifetimeYield"]()}>
-              <FormattedNumber value={lifetimeYield} />
-            </StatTile>
-          </div>
+          <FactoryContent factoryType={factoryType} />
         </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

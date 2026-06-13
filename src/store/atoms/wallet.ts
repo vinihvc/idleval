@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { LOCAL_STORAGE_KEYS } from "@/config/local-storage-keys";
+import { LOCAL_STORAGE } from "@/config/local-storage";
 import type { FactoryType } from "@/content/factories";
 import { canAfford } from "@/game/economy";
 import { store } from "@/providers/store";
@@ -16,7 +16,7 @@ interface WalletState {
   gold: string;
 }
 
-export const walletAtom = persistedAtom(LOCAL_STORAGE_KEYS.wallet, {
+export const walletAtom = persistedAtom(LOCAL_STORAGE.wallet, {
   gold: serializeDecimal(D(0)),
 } satisfies WalletState);
 
