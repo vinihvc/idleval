@@ -189,7 +189,7 @@ export const ResponsiveDialogDescription = (
 
   if (hideDescription && props.children) {
     return (
-      <ToggleTooltip>
+      <ToggleTooltip positioning={{ placement: "top-start" }}>
         <ToggleTooltipTrigger asChild data-slot="drawer-tooltip">
           <Button
             className="size-6"

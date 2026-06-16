@@ -18,7 +18,9 @@ export const StatisticsContent = () => {
   return (
     <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
       <StatTile
-        icon={<Coin aria-hidden className="size-6 shrink-0" intrinsicSize={24} />}
+        icon={
+          <Coin aria-hidden className="size-6 shrink-0" intrinsicSize={24} />
+        }
         label={m["ui.statistics.realmTotal"]()}
       >
         <FormattedNumber value={totalGold} />

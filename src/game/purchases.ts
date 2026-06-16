@@ -88,7 +88,11 @@ export const getAffordableUnitCount = ({
     const budget = getPurchaseBudget(purchaseAmount, gold);
     const affordableInBudget = maxAffordable(baseBuyCost, owned, budget);
 
-    return affordableInBudget > 0 ? affordableInBudget : canAffordOne ? 1 : 0;
+    if (affordableInBudget > 0) {
+      return affordableInBudget;
+    }
+
+    return canAffordOne ? 1 : 0;
   }
 
   return canAffordOne ? 1 : 0;

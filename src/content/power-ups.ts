@@ -41,8 +41,7 @@ export const POWER_UP_EFFECTS = {
   yggdrasilTear: { advanceSeconds: 1800 },
 } as const;
 
-const msToMinutes = (durationMs: number): string =>
-  String(durationMs / 60_000);
+const msToMinutes = (durationMs: number): string => String(durationMs / 60_000);
 
 const getHasteRuneParams = (): Record<string, string> => {
   const { durationMs, timeMultiplier } = POWER_UP_EFFECTS.hasteRune;

@@ -1,4 +1,8 @@
 import { describe, expect, it } from "vitest";
+import {
+  DAILY_REWARD_CALENDAR,
+  DAILY_REWARD_CYCLE_DAYS,
+} from "@/content/daily-reward";
 import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
 import {
@@ -6,10 +10,6 @@ import {
   MISSION_COUNT,
   MISSION_IDS,
 } from "@/content/missions";
-import {
-  DAILY_REWARD_CALENDAR,
-  DAILY_REWARD_CYCLE_DAYS,
-} from "@/content/daily-reward";
 import {
   INVENTORY_GRID_SIZE,
   POWER_UP_TYPES,

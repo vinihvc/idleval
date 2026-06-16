@@ -1,10 +1,10 @@
 import React from "react";
 import { describe, expect, test } from "vitest";
+import { WikiCatalogSelectionProvider } from "@/components/dialog/wiki/wiki.catalog-selection";
 import {
   type WikiCatalogItem,
   WikiCatalogTab,
 } from "@/components/dialog/wiki/wiki.catalog-tab";
-import { WikiCatalogSelectionProvider } from "@/components/dialog/wiki/wiki.catalog-selection";
 import { m } from "@/i18n/messages";
 import { renderWithProviders } from "@/test/render-with-providers";
 

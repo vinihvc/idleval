@@ -62,12 +62,12 @@ export const menuContentVariants = tv({
     "p-(--space)",
     "bg-popover",
     "text-muted",
-    "rounded-xl border-2 border-primary/40 shadow-lg/5",
+    "rounded-xl border-2 border-primary ring-1 ring-secondary",
     boxBorder({ variant: "brown", size: "sm" }),
     "inset-shadow-xs",
     "origin-(--transform-origin)",
     "outline-none",
-    "overflow-y-auto",
+    "scrollbar-none overflow-y-auto",
     "duration-100",
     "data-[state=open]:animate-in",
     "data-[state=open]:fade-in-0",
@@ -299,7 +299,7 @@ export const MenuSub = (props: React.ComponentProps<typeof Menu>) => (
 export const MenuSubContent = (
   props: React.ComponentProps<typeof ArkMenu.Content>
 ) => {
-  const { className, ...rest } = props;
+  const { className, children, ...rest } = props;
 
   return (
     <Portal>
@@ -308,7 +308,9 @@ export const MenuSubContent = (
           className={cn(menuContentVariants(), className)}
           data-slot="menu-sub-content"
           {...rest}
-        />
+        >
+          {children}
+        </ArkMenu.Content>
       </MenuPositioner>
     </Portal>
   );

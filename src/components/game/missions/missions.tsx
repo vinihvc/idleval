@@ -1,6 +1,8 @@
 import React from "react";
 import type { MissionId } from "@/content/missions";
 import type { MissionProgress, MissionSlotView } from "@/game/types";
+import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { useVisibleMissionSlots } from "@/store/atoms/missions";
 import { MissionsCard } from "./missions.card";
@@ -13,6 +15,7 @@ export const Missions = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
 
   const slots = useVisibleMissionSlots();
+  const { announce, message } = useLiveAnnouncer();
   const [selectedMission, setSelectedMission] = React.useState<{
     id: MissionId;
     status: MissionSlotView["status"];
@@ -37,16 +40,23 @@ export const Missions = (props: React.ComponentProps<"div">) => {
     <>
       <div
         className={cn(
-          "mx-auto flex w-full items-center justify-center gap-2",
+          "mx-auto flex w-full items-stretch justify-center gap-2",
           className
         )}
         data-slot="mission-slots"
         {...rest}
       >
         {slots.map((slot) => (
-          <MissionsCard key={slot.id} onOpen={openMission} slot={slot} />
+          <MissionsCard
+            key={slot.id}
+            onClaim={() => announce(m["ui.a11y.missionClaimed"]())}
+            onOpen={openMission}
+            slot={slot}
+          />
         ))}
       </div>
+
+      <LiveAnnouncer message={message} />
 
       <MissionClaimDialog
         missionId={selectedMission?.id ?? null}

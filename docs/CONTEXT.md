@@ -38,7 +38,7 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 ## Fixed decisions
 
 - **Decimals:** `GameValue` / `D` from `@/utils/decimal` — never `number` for scaled gold.
-- **Persistence:** `persistedAtom` / `persistedAtomWithNormalize` from `store/storage.ts`; keys in `@/config/local-storage` (`LOCAL_STORAGE`), always versioned (`foo-v2`).
+- **Persistence:** `persistedAtom` / `persistedAtomWithNormalize` from `store/storage.ts`; stable keys in `@/config/local-storage` (`LOCAL_STORAGE`); evolve schema via `normalize` on read — never version-bump keys.
 - **Mutations:** imperative functions (`store.get` / `store.set`), not write-only atoms.
 - **Single-consumer hooks:** colocate in component or provider folder (`factory-card/use-*.ts`, `providers/offline-earning/`).
 - **Shared hooks:** only in `src/hooks/` when 2+ unrelated consumers need them.
@@ -66,7 +66,7 @@ End-to-end flow already implemented — use as a model for progress + reward fea
 |-------|-------|----------------|
 | content | `missions.ts` | `MISSION_DATA`, types, `getLocalizedMission` |
 | game | `missions.ts`, `types.ts` | snapshot, slots, progress, renown multiplier |
-| store | `missions.atom/actions/selectors.ts`, `missions.ts` | persist `missions-v2`, claim, sync, selectors |
+| store | `missions.atom/actions/selectors.ts`, `missions.ts` | persist `missions`, claim, sync, selectors |
 | UI stage | `game/stage/mission-slots.tsx`, `mission-slot.tsx` | visible slots on stage |
 | UI dialog | `dialog/missions/missions.claim-dialog.tsx`, `missions.claim-content.tsx` | claim flow |
 

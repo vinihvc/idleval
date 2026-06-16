@@ -3,6 +3,10 @@ import { useMemo } from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { store } from "@/providers/store";
 import {
+  getHasPendingDailyReward,
+  useDailyReward,
+} from "@/store/atoms/daily-reward.atom";
+import {
   canPurchaseAnyManager,
   canPurchaseAnyUpgrade,
   useCanPurchaseAnyManager,
@@ -13,10 +17,6 @@ import {
   getHasActivatablePowerUp,
   useHasActivatablePowerUp,
 } from "@/store/atoms/inventory";
-import {
-  getHasPendingDailyReward,
-  useDailyReward,
-} from "@/store/atoms/daily-reward.atom";
 import { persistedAtom } from "@/store/storage";
 
 export type NotificationKey =

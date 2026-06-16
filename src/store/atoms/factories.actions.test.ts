@@ -61,9 +61,7 @@ describe("factories.actions", () => {
 
     expect(grain.isProducing).toBe(true);
     expect(grain.productionStartedAt).toBeGreaterThanOrEqual(before);
-    expect(grain.productionDurationSec).toBe(
-      FACTORY_DATA.grain.productionTime
-    );
+    expect(grain.productionDurationSec).toBe(FACTORY_DATA.grain.productionTime);
   });
 
   it("startProducing is blocked for automated factories", () => {

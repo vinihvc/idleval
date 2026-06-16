@@ -11,7 +11,7 @@ import {
   isTimedPowerUpActive,
 } from "@/game/power-ups";
 import { store } from "@/providers/store";
-import { persistedAtomWithNormalizeAndLegacy } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 
 export type { ActivePowerUp, InventorySlot } from "@/game/power-ups";
@@ -84,25 +84,10 @@ const normalizeInventoryState = (value: unknown): InventoryState => {
   };
 };
 
-const readLegacyInventoryState = (): unknown => {
-  if (typeof localStorage === "undefined") {
-    return null;
-  }
-
-  try {
-    const raw = localStorage.getItem("inventory-v6");
-
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-};
-
-export const inventoryAtom = persistedAtomWithNormalizeAndLegacy<InventoryState>(
+export const inventoryAtom = persistedAtomWithNormalize<InventoryState>(
   LOCAL_STORAGE.inventory,
   initialInventoryState,
-  normalizeInventoryState,
-  readLegacyInventoryState
+  normalizeInventoryState
 );
 
 export const getInventoryState = (): InventoryState => store.get(inventoryAtom);

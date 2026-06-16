@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import MissionDialog from "@/components/dialog/mission/mission";
-import {
-  getLocalizedMissionTitle,
-} from "@/content/missions";
+import { getLocalizedMissionTitle } from "@/content/missions";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import { missionsAtom } from "@/store/atoms/missions.atom";
@@ -33,9 +31,7 @@ describe("MissionDialog", () => {
       .toBeInTheDocument();
 
     await expect
-      .poll(() =>
-        document.querySelector('[data-slot="mission-claim-content"]')
-      )
+      .poll(() => document.querySelector('[data-slot="mission-claim-content"]'))
       .not.toBeNull();
 
     await expect
@@ -55,9 +51,7 @@ describe("MissionDialog", () => {
     );
 
     await expect
-      .element(
-        screen.getByRole("heading", { name: m["ui.missions.title"]() })
-      )
+      .element(screen.getByRole("heading", { name: m["ui.missions.title"]() }))
       .toBeInTheDocument();
 
     expect(

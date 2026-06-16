@@ -78,9 +78,7 @@ describe("WikiDialog", () => {
       .element(screen.getByText(m["wiki.powerup.mimirCoin.lore"]()))
       .toBeInTheDocument();
     await expect
-      .element(
-        screen.getByText(getLocalizedPowerUpWikiMechanics("mimirCoin"))
-      )
+      .element(screen.getByText(getLocalizedPowerUpWikiMechanics("mimirCoin")))
       .toBeInTheDocument();
 
     await screen.getByRole("tab", { name: m["ui.wiki.tab.relics"]() }).click();

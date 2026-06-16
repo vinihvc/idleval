@@ -7,4 +7,4 @@ export const useLocalizedGod = (godId: GodId): LocalizedGod => {
   return getLocalizedGod(godId);
 };
 
-export type { LocalizedGod };
+export type { LocalizedGod } from "@/content/gods";

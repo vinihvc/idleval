@@ -14,9 +14,7 @@ describe("SkipNav", () => {
     });
 
     await expect.element(link).toHaveAttribute("href", "#main-content");
-    await expect
-      .element(link)
-      .toHaveAttribute("data-slot", "skip-nav-link");
+    await expect.element(link).toHaveAttribute("data-slot", "skip-nav-link");
   });
 
   test("renders main content landmark with focus target attributes", async () => {

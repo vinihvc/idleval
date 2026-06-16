@@ -1,3 +1,1 @@
-import { m } from "@/i18n/paraglide/messages.js";
-
-export { m };
+export { m } from "@/i18n/paraglide/messages.js";

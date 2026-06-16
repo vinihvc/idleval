@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MISSION_CATALOG } from "@/content/missions";
+import { assert, beforeEach, describe, expect, it, vi } from "vitest";
+import { getMissionById } from "@/content/missions";
 import { store } from "@/providers/store";
 import {
   claimMissionReward,
@@ -48,7 +48,8 @@ describe("missions actions", () => {
       readyToClaimIds: ["mission-001"],
     }));
 
-    const mission = MISSION_CATALOG[0]!;
+    const mission = getMissionById("mission-001");
+    assert(mission);
     const claimed = claimMissionReward(mission.id);
 
     expect(claimed).toBe(true);

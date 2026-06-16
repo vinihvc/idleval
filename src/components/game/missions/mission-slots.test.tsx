@@ -20,9 +20,14 @@ if (!mission) {
 
 const objectiveLabel = getLocalizedMissionObjective(mission.objective);
 
-const getFirstSlotButton = () =>
+const getReadySlotButton = () =>
   document.querySelector(
-    '[data-slot="mission-slot"]'
+    '[data-slot="mission-slot"][data-status="ready"]'
+  ) as HTMLButtonElement | null;
+
+const getFirstInProgressSlotButton = () =>
+  document.querySelector(
+    '[data-slot="mission-slot"][data-status="in_progress"]'
   ) as HTMLButtonElement | null;
 
 describe("MissionSlots", () => {
@@ -55,22 +60,56 @@ describe("MissionSlots", () => {
 
     const screen = await renderWithProviders(<Missions />);
 
+    await expect.poll(() => getReadySlotButton()).not.toBeNull();
+
+    const readySlot = getReadySlotButton();
+
+    expect(readySlot?.querySelector('[role="progressbar"]')).toBeNull();
+
     await expect
-      .poll(() =>
-        document.querySelector(
-          '[data-slot="mission-slot"][data-status="ready"]'
-        )
+      .element(
+        screen.getByRole("button", {
+          name: m["ui.missions.slot.claimable"]({
+            order: "1",
+            title: objectiveLabel,
+          }),
+        })
       )
-      .not.toBeNull();
+      .toHaveAttribute("data-status", "ready");
+  });
 
-    const button = screen.getByRole("button", {
-      name: m["ui.missions.slot.claimable"]({
-        order: "1",
-        title: objectiveLabel,
-      }),
-    });
+  test("claims ready mission from card without opening dialog", async () => {
+    store.set(missionsAtom, (previous) => ({
+      ...previous,
+      readyToClaimIds: ["mission-001"],
+    }));
 
-    await expect.element(button).toHaveAttribute("data-status", "ready");
+    const screen = await renderWithProviders(<Missions />);
+
+    await expect.poll(() => getReadySlotButton()).not.toBeNull();
+
+    await screen
+      .getByRole("button", {
+        name: m["ui.missions.slot.claimable"]({
+          order: "1",
+          title: objectiveLabel,
+        }),
+      })
+      .click();
+
+    await expect
+      .poll(() => store.get(missionsAtom).readyToClaimIds)
+      .toEqual([]);
+
+    expect(store.get(missionsAtom).claimedIds).toContain("mission-001");
+
+    await expect
+      .poll(() => document.querySelector('[role="status"]')?.textContent)
+      .toBe(m["ui.a11y.missionClaimed"]());
+
+    expect(
+      document.querySelector('[data-slot="mission-claim-content"]')
+    ).toBeNull();
   });
 
   test("includes progress in in-progress aria label", async () => {
@@ -82,7 +121,7 @@ describe("MissionSlots", () => {
 
     const screen = await renderWithProviders(<Missions />);
 
-    await expect.poll(() => getFirstSlotButton()).not.toBeNull();
+    await expect.poll(() => getFirstInProgressSlotButton()).not.toBeNull();
 
     await expect
       .element(
@@ -100,19 +139,19 @@ describe("MissionSlots", () => {
   test("sets progress value from slot ratio", async () => {
     await renderWithProviders(<Missions />);
 
-    await expect.poll(() => getFirstSlotButton()).not.toBeNull();
+    await expect.poll(() => getFirstInProgressSlotButton()).not.toBeNull();
 
     const progress = document.querySelector('[role="progressbar"]');
 
     expect(progress?.getAttribute("aria-valuenow")).toBe("0");
   });
 
-  test("opens mission dialog when a slot is clicked", async () => {
+  test("opens mission dialog when an in-progress slot is clicked", async () => {
     await renderWithProviders(<Missions />);
 
-    await expect.poll(() => getFirstSlotButton()).not.toBeNull();
+    await expect.poll(() => getFirstInProgressSlotButton()).not.toBeNull();
 
-    getFirstSlotButton()?.click();
+    getFirstInProgressSlotButton()?.click();
 
     await expect
       .poll(() => document.querySelector('[data-slot="mission-claim-content"]'))

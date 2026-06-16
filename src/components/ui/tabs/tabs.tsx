@@ -5,6 +5,7 @@ import React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { type SoundsType, sound as soundFunction } from "@/providers/sound";
 
 export const useTabs = useTabsContext;
 
@@ -161,16 +162,33 @@ export const TabsList = (props: TabsListProps) => {
   );
 };
 
-export const TabsTrigger = (
-  props: React.ComponentProps<typeof ArkTabs.Trigger>
-) => {
-  const { className, ...rest } = props;
+export interface TabsTriggerProps
+  extends React.ComponentProps<typeof ArkTabs.Trigger> {
+  /**
+   * Sound played on click. Pass `false` to disable.
+   *
+   * @default 'click'
+   */
+  sound?: SoundsType | false;
+}
+
+export const TabsTrigger = (props: TabsTriggerProps) => {
+  const { className, sound = "click", onClick, ...rest } = props;
   const { variant } = React.useContext(TabsVariantContext);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (sound !== false) {
+      soundFunction.play(sound);
+    }
+
+    onClick?.(event);
+  };
 
   return (
     <ArkTabs.Trigger
       className={cn(tabsTriggerVariants({ variant }), className)}
       data-slot="tabs-trigger"
+      onClick={handleClick}
       {...rest}
     />
   );

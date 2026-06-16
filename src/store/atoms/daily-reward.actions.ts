@@ -1,10 +1,10 @@
-import { addInventorySlot } from "@/game/power-ups";
 import {
   getDailyRewardOffer,
   getLocalDateString,
   hasPendingDailyReward,
   shouldResetDailyStreak,
 } from "@/game/daily-reward";
+import { addInventorySlot } from "@/game/power-ups";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import {

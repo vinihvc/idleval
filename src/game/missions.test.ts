@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import { FACTORY_TYPES } from "@/content/factories";
-import { MISSION_CATALOG } from "@/content/missions";
+import { getMissionById, MISSION_CATALOG } from "@/content/missions";
 import {
   canClaimMission,
   findNewlyReadyMissionIds,
@@ -50,7 +50,8 @@ const createSnapshot = (
 
 describe("missions", () => {
   it("tracks own-units progress from statistics", () => {
-    const mission = MISSION_CATALOG[0]!;
+    const mission = getMissionById("mission-001");
+    assert(mission);
     const snapshot = createSnapshot({
       statistics: {
         goldEarned: "0",
@@ -96,7 +97,8 @@ describe("missions", () => {
   });
 
   it("finds newly ready missions and supports claim checks", () => {
-    const mission = MISSION_CATALOG[1]!;
+    const mission = getMissionById("mission-002");
+    assert(mission);
     const state = createInitialMissionsState();
     const snapshot = createSnapshot({
       statistics: {

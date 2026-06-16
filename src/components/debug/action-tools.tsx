@@ -1,12 +1,12 @@
 import { AppWindows } from "pixelarticons/react/AppWindows";
 import { ArrowUpBox } from "pixelarticons/react/ArrowUpBox";
-import { Brackets } from "pixelarticons/react/Brackets";
 import { Briefcase } from "pixelarticons/react/Briefcase";
 import { Coins } from "pixelarticons/react/Coins";
 import { Crown } from "pixelarticons/react/Crown";
 import { Gift } from "pixelarticons/react/Gift";
 import { Lock } from "pixelarticons/react/Lock";
 import { Message } from "pixelarticons/react/Message";
+import { PartyPopper } from "pixelarticons/react/PartyPopper";
 import { Potion } from "pixelarticons/react/Potion";
 import { Reload } from "pixelarticons/react/Reload";
 import React from "react";
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { IS_DEV } from "@/lib/envs";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
+import { triggerFallingLeaves } from "@/store/atoms/gods";
 import {
   addDebugGold,
   addDebugPowerUps,
@@ -34,13 +35,10 @@ import {
   resetGameState,
   unlockAllFactories,
 } from "@/store/debug";
+import FactoryState from "./factory-state";
 
 const LazyWelcomeDialog = React.lazy(
   () => import("@/components/dialog/welcome/welcome")
-);
-
-const LazyFactoriesStateDialog = React.lazy(
-  () => import("@/components/debug/factories-state-dialog")
 );
 
 export const ActionTools = () => {
@@ -88,19 +86,7 @@ export const ActionTools = () => {
               </TooltipTrigger>
               <TooltipContent>Factories</TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => toggleDialog(DIALOG_IDS.debugFactories)}
-                  size="icon-lg"
-                  variant="brown"
-                >
-                  <span className="sr-only">Factories JSON</span>
-                  <Brackets />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Factories JSON</TooltipContent>
-            </Tooltip>
+            <FactoryState />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -149,6 +135,19 @@ export const ActionTools = () => {
               </TooltipTrigger>
               <TooltipContent>God mode</TooltipContent>
             </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={triggerFallingLeaves}
+                  size="icon-lg"
+                  variant="teal"
+                >
+                  <span className="sr-only">Confetti</span>
+                  <PartyPopper />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Confetti</TooltipContent>
+            </Tooltip>
             <Menu positioning={{ placement: "right-start" }}>
               <MenuTrigger asChild>
                 <Button size="icon-lg" variant="ember">
@@ -178,7 +177,6 @@ export const ActionTools = () => {
 
       <React.Suspense fallback={null}>
         <LazyWelcomeDialog debug />
-        <LazyFactoriesStateDialog />
       </React.Suspense>
     </>
   );

@@ -3,7 +3,6 @@ import {
   type FactoryType,
   getLocalizedFactory,
   type LocalizedFactory,
-  type LocalizedLore,
 } from "@/content/factories";
 import { useLocale } from "@/i18n/provider";
 
@@ -21,4 +20,4 @@ export const useLocalizedFactoryName = (factory: FactoryType): string => {
 
 export const getFactoryData = (factory: FactoryType) => FACTORY_DATA[factory];
 
-export type { LocalizedFactory, LocalizedLore };
+export type { LocalizedFactory, LocalizedLore } from "@/content/factories";

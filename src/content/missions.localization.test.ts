@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { MISSION_CATALOG } from "@/content/missions";
+import { assert, describe, expect, it } from "vitest";
 import {
   getLocalizedMissionObjective,
   getLocalizedMissionTitle,
+  getMissionById,
+  MISSION_CATALOG,
 } from "@/content/missions";
 
 describe("mission localization", () => {
@@ -16,13 +17,15 @@ describe("mission localization", () => {
   });
 
   it("resolves mission objectives with interpolated params", () => {
-    const firstMission = MISSION_CATALOG[0]!;
+    const firstMission = getMissionById("mission-001");
+    assert(firstMission);
 
     expect(getLocalizedMissionObjective(firstMission.objective)).toBe(
       "Buy 1 Grain"
     );
 
-    const secondMission = MISSION_CATALOG[1]!;
+    const secondMission = getMissionById("mission-002");
+    assert(secondMission);
 
     expect(getLocalizedMissionObjective(secondMission.objective)).toBe(
       "Earn 500 gold"

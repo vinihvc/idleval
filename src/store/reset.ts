@@ -1,12 +1,12 @@
 import { createInitialMissionsState } from "@/game/types";
 import { store } from "@/providers/store";
-import { dialogsAtom } from "@/store/atoms/dialogs";
-import { godsAtom } from "@/store/atoms/gods";
-import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import {
   dailyRewardAtom,
   initialDailyRewardState,
 } from "@/store/atoms/daily-reward.atom";
+import { dialogsAtom } from "@/store/atoms/dialogs";
+import { godsAtom } from "@/store/atoms/gods";
+import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { missionsAtom } from "@/store/atoms/missions.atom";
 import {
   initialNotificationsState,
@@ -21,7 +21,6 @@ import {
 import { resetRunProgress } from "@/store/reset-run-progress";
 import { D, serializeDecimal } from "@/utils/decimal";
 
-// biome-ignore lint/performance/noBarrelFile: Keep the existing reset import path stable.
 export { resetRunProgress } from "@/store/reset-run-progress";
 
 export const resetGame = () => {

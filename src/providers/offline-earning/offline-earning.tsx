@@ -1,6 +1,6 @@
 import React from "react";
-import { syncMissionProgress } from "@/store/atoms/missions";
 import { refreshDailyStreakState } from "@/store/atoms/daily-reward.actions";
+import { syncMissionProgress } from "@/store/atoms/missions";
 import { useNotificationSync } from "./use-notification-sync";
 import { useOfflineEarning } from "./use-offline-earning";
 import { useProductionScheduler } from "./use-production-scheduler";

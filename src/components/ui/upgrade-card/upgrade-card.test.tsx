@@ -181,9 +181,13 @@ describe("UpgradeCard", () => {
       <UpgradeCardHeader description={COMPLETE_DESCRIPTION} title="Done" />
     );
 
-    await screen.getByLabelText(m["ui.upgradeCard.info"]({ 0: "Done" })).click();
+    await screen
+      .getByLabelText(m["ui.upgradeCard.info"]({ 0: "Done" }))
+      .click();
 
-    await expect.element(screen.getByText(COMPLETE_DESCRIPTION)).toBeInTheDocument();
+    await expect
+      .element(screen.getByText(COMPLETE_DESCRIPTION))
+      .toBeInTheDocument();
   });
 
   test("shows hold progress feedback while pressing", async () => {

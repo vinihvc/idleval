@@ -42,4 +42,4 @@ export const syncParaglideLocale = (locale: AppLocale) => {
   setParaglideLocale(normalized, { reload: false });
 };
 
-export { getParaglideLocale };
+export { getLocale as getParaglideLocale } from "@/i18n/paraglide/runtime.js";

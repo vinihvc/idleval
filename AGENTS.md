@@ -27,13 +27,11 @@ Biome (the underlying engine) provides robust linting and formatting. Most issue
 |------|-----|
 | Stable shape | `persistedAtom` |
 | Normalize / strip removed fields | `persistedAtomWithNormalize` |
-| Read from retired keys on first load | `persistedAtomWithNormalizeAndLegacy` |
 
 **On schema change:**
 
 1. Update the atom’s `normalize` function — default missing fields, drop removed ones.
-2. If data lived under another key (or a brief experimental key), add a `readLegacy` fallback; first read writes the canonical key.
-3. Only rename a `LOCAL_STORAGE` key when normalization truly cannot recover old saves (rare — ask first).
+2. Never rename or version-bump a `LOCAL_STORAGE` key — evolve schema via `normalize` only.
 
 Details and examples: [`src/store/AGENTS.md`](src/store/AGENTS.md).
 

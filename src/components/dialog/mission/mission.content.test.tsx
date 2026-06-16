@@ -143,7 +143,6 @@ describe("MissionClaimContent", () => {
     }
   });
 
-
   test("returns null for unknown mission id", async () => {
     await renderWithProviders(
       <MissionClaimContent

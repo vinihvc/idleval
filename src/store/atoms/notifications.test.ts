@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { store } from "@/providers/store";
+import { claimDailyReward } from "@/store/atoms/daily-reward.actions";
 import {
   clearDismissed,
   dismissNotification,
@@ -9,7 +10,6 @@ import {
   notificationsAtom,
   syncNotificationDismissals,
 } from "@/store/atoms/notifications";
-import { claimDailyReward } from "@/store/atoms/daily-reward.actions";
 import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 

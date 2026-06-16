@@ -2,14 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getLocalDateString } from "@/game/daily-reward";
 import { store } from "@/providers/store";
 import {
+  claimDailyReward,
+  refreshDailyStreakState,
+} from "@/store/atoms/daily-reward.actions";
+import {
   dailyRewardAtom,
   getDailyRewardState,
   initialDailyRewardState,
 } from "@/store/atoms/daily-reward.atom";
-import {
-  claimDailyReward,
-  refreshDailyStreakState,
-} from "@/store/atoms/daily-reward.actions";
 import {
   getInventoryState,
   initialInventoryState,
@@ -32,9 +32,7 @@ describe("daily-reward.actions", () => {
       { powerUpId: "mimirCoin", count: 1, tier: "common" },
     ]);
     expect(getDailyRewardState().dailyStreak).toBe(1);
-    expect(getDailyRewardState().lastClaimLocalDate).toBe(
-      getLocalDateString()
-    );
+    expect(getDailyRewardState().lastClaimLocalDate).toBe(getLocalDateString());
 
     store.set(inventoryAtom, {
       ...initialInventoryState,

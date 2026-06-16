@@ -126,9 +126,7 @@ describe("SoundEngine", () => {
     );
 
     expect(playGain).toBeDefined();
-    expect(
-      mockWebAudio.sources[mockWebAudio.sources.length - 1]?.start
-    ).toHaveBeenCalled();
+    expect(mockWebAudio.sources.at(-1)?.start).toHaveBeenCalled();
   });
 
   it("throttles rapid coin plays", () => {
@@ -173,7 +171,7 @@ describe("SoundEngine", () => {
   it("loops hold SFX while playing and stops on release", () => {
     engine.play("hold");
 
-    const holdSource = mockWebAudio.sources[mockWebAudio.sources.length - 1];
+    const holdSource = mockWebAudio.sources.at(-1);
 
     expect(holdSource?.loop).toBe(true);
     expect(holdSource?.start).toHaveBeenCalled();

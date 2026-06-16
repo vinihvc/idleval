@@ -14,10 +14,10 @@ export interface FactoryPersistedState {
   isUnlocked: boolean;
   /** Whether the factory production upgrade has been purchased. */
   isUpgraded: boolean;
-  /** Epoch ms when the current manual cycle started; null when idle. */
-  productionStartedAt: number | null;
   /** Effective cycle duration (seconds) locked at manual cycle start; null when idle. */
   productionDurationSec: number | null;
+  /** Epoch ms when the current manual cycle started; null when idle. */
+  productionStartedAt: number | null;
 }
 
 export type FactoriesPersistedState = Partial<

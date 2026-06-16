@@ -3,8 +3,8 @@ import {
   UpgradeCardArt,
   UpgradeCardPanel,
 } from "@/components/ui/upgrade-card";
-import { WikiEntry } from "./wiki.entry";
 import { useWikiCatalogSelection } from "./wiki.catalog-selection";
+import { WikiEntry } from "./wiki.entry";
 
 export interface WikiCatalogItem {
   flavor: string;

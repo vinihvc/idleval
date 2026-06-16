@@ -195,7 +195,10 @@ describe("power-ups", () => {
     const factories = structuredClone(createInitialFactoriesState());
     factories.grain.isAutomated = true;
 
-    const base = getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber();
+    const base = getRealmGoldPerSecond({
+      factories,
+      godsInvoked: [],
+    }).toNumber();
     const withRenown = getRealmGoldPerSecond({
       factories,
       godsInvoked: [],
