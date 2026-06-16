@@ -1,3 +1,4 @@
+import type React from "react";
 import { tv } from "tailwind-variants";
 import { boxBorder } from "@/components/ui/box-border";
 import {
@@ -9,7 +10,6 @@ import { borderedText } from "@/components/ui/text-border";
 import {
   getLocalizedMissionObjective,
   getMissionById,
-  type MissionId,
 } from "@/content/missions";
 import type { MissionSlotView } from "@/game/types";
 import { m } from "@/i18n/messages";
@@ -20,7 +20,7 @@ import { MissionObjectiveLabel } from "./mission-objective";
 
 const missionSlotVariants = tv({
   base: [
-    "relative flex h-full min-w-0 flex-1 basis-0 flex-col gap-0.5 rounded-md border-2 p-0.5",
+    "relative flex h-full w-full min-w-0 flex-col gap-0.5 rounded-md border-2 p-0.5",
     "text-left transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
     boxBorder({ variant: "default", size: "sm" }),
@@ -49,7 +49,6 @@ const missionSlotVariants = tv({
 interface MissionsCardProps
   extends Omit<React.ComponentProps<"button">, "onClick" | "slot"> {
   onClaim?: () => void;
-  onOpen: (missionId: MissionId) => void;
   slot: MissionSlotView;
 }
 
@@ -126,7 +125,7 @@ const MissionSlotClaimFooter = () => (
 );
 
 export const MissionsCard = (props: MissionsCardProps) => {
-  const { slot, onOpen, onClaim, className, ...rest } = props;
+  const { slot, onClaim, className, ref, onClick, ...rest } = props;
   const { id: missionId, status } = slot;
   const missionDefinition = getMissionById(missionId);
   const objective = missionDefinition?.objective;
@@ -152,7 +151,7 @@ export const MissionsCard = (props: MissionsCardProps) => {
         progress: progressLabel,
       });
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (isReady) {
       if (claimMissionReward(missionId)) {
         onClaim?.();
@@ -161,7 +160,7 @@ export const MissionsCard = (props: MissionsCardProps) => {
       return;
     }
 
-    onOpen(missionId);
+    onClick?.(event);
   };
 
   return (
@@ -171,6 +170,7 @@ export const MissionsCard = (props: MissionsCardProps) => {
       data-slot="mission-slot"
       data-status={status}
       onClick={handleClick}
+      ref={ref}
       type="button"
       {...rest}
     >

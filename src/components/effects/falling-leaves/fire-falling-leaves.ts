@@ -1,69 +1,87 @@
 import confetti from "canvas-confetti";
 
-export const FALLING_LEAVES_BURST_COUNT = 6;
-export const FALLING_LEAVES_PARTICLES_PER_BURST = 4;
-export const FALLING_LEAVES_DURATION_MS = 3500;
-export const FALLING_LEAVES_SPAWN_WINDOW_MS = 1200;
-export const FALLING_LEAVES_Z_INDEX = 40;
+export const CONFETTI_RAIN_INTERVAL_MS = 80;
+export const CONFETTI_RAIN_DURATION_MS = 3500;
+export const CONFETTI_RAIN_PARTICLES_MIN = 2;
+export const CONFETTI_RAIN_PARTICLES_MAX = 4;
+export const FALLING_LEAVES_Z_INDEX = 9999;
 
-const LEAF_PATH = "M8 1C4 5 2 9 2 13c0 3 2.5 5 6 5s6-2 6-5c0-4-2-8-6-12Z";
+export const getConfettiRainSpawnCount = (): number =>
+  Math.floor(CONFETTI_RAIN_DURATION_MS / CONFETTI_RAIN_INTERVAL_MS) + 1;
 
-const LEAF_COLORS = ["#6b7c3e", "#4a8a7a", "#7a7a82"] as const;
+type ConfettiLauncher = ReturnType<typeof confetti.create>;
 
-const leafShape = confetti.shapeFromPath({
-  path: LEAF_PATH,
-  matrix: new DOMMatrix([0.6, 0, 0, 0.6, -4.8, -5.4]),
-});
+const pendingRainIntervals = new Set<number>();
+const pendingRainTimeouts = new Set<number>();
 
-const pendingBurstTimeouts = new Set<number>();
+let confettiLauncher: ConfettiLauncher | null = null;
+
+export const setFallingLeavesConfettiLauncher = (
+  launcher: ConfettiLauncher | null
+): void => {
+  confettiLauncher = launcher;
+};
 
 const randomInRange = (min: number, max: number): number =>
   min + Math.random() * (max - min);
 
-const fireLeafBurst = (): void => {
-  confetti({
+const randomIntInclusive = (min: number, max: number): number =>
+  Math.floor(randomInRange(min, max + 1));
+
+const getLauncher = (): ConfettiLauncher => confettiLauncher ?? confetti;
+
+const spawnRainTick = (color: string): void => {
+  getLauncher()({
     angle: 270,
-    colors: [...LEAF_COLORS],
+    colors: [color],
+    decay: 1,
     disableForReducedMotion: true,
     drift: randomInRange(-0.3, 0.3),
-    gravity: randomInRange(0.6, 0.9),
+    flat: true,
+    gravity: randomInRange(0.9, 1.1),
     origin: {
       x: Math.random(),
       y: 0,
     },
-    particleCount: FALLING_LEAVES_PARTICLES_PER_BURST,
-    scalar: randomInRange(1, 1.4),
-    shapes: [leafShape],
-    spread: randomInRange(60, 90),
-    startVelocity: randomInRange(12, 18),
-    ticks: 180,
-    zIndex: FALLING_LEAVES_Z_INDEX,
+    particleCount: randomIntInclusive(
+      CONFETTI_RAIN_PARTICLES_MIN,
+      CONFETTI_RAIN_PARTICLES_MAX
+    ),
+    scalar: randomInRange(0.9, 1.2),
+    spread: 0,
+    startVelocity: 0,
+    ticks: randomIntInclusive(250, 300),
   });
 };
 
-export const fireFallingLeaves = (): void => {
-  for (
-    let burstIndex = 0;
-    burstIndex < FALLING_LEAVES_BURST_COUNT;
-    burstIndex++
-  ) {
-    const delayMs =
-      (burstIndex / (FALLING_LEAVES_BURST_COUNT - 1)) *
-      FALLING_LEAVES_SPAWN_WINDOW_MS;
+export const fireFallingLeaves = (color: string): void => {
+  spawnRainTick(color);
 
-    const timeoutId = window.setTimeout(() => {
-      pendingBurstTimeouts.delete(timeoutId);
-      fireLeafBurst();
-    }, delayMs);
+  const intervalId = window.setInterval(() => {
+    spawnRainTick(color);
+  }, CONFETTI_RAIN_INTERVAL_MS);
 
-    pendingBurstTimeouts.add(timeoutId);
-  }
+  pendingRainIntervals.add(intervalId);
+
+  const stopTimeoutId = window.setTimeout(() => {
+    window.clearInterval(intervalId);
+    pendingRainIntervals.delete(intervalId);
+    pendingRainTimeouts.delete(stopTimeoutId);
+  }, CONFETTI_RAIN_DURATION_MS);
+
+  pendingRainTimeouts.add(stopTimeoutId);
 };
 
 export const resetFallingLeavesForTests = (): void => {
-  for (const timeoutId of pendingBurstTimeouts) {
+  for (const intervalId of pendingRainIntervals) {
+    window.clearInterval(intervalId);
+  }
+
+  for (const timeoutId of pendingRainTimeouts) {
     window.clearTimeout(timeoutId);
   }
 
-  pendingBurstTimeouts.clear();
+  pendingRainIntervals.clear();
+  pendingRainTimeouts.clear();
+  confettiLauncher = null;
 };

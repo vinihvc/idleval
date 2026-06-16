@@ -1,3 +1,4 @@
+import { Image } from "@unpic/react";
 import React from "react";
 import {
   ResponsiveDialog,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/responsive-dialog";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { m } from "@/i18n/messages";
+import { cn } from "@/lib/cn";
 import {
   DIALOG_IDS,
   openDialog,
@@ -19,7 +21,6 @@ import {
 import { useLocalStorage } from "./use-local-storage";
 import { WelcomeActions } from "./welcome.actions";
 import { WelcomeContent } from "./welcome.content";
-import { WelcomeGraphic } from "./welcome.graphic";
 
 interface WelcomeDialogProps {
   debug?: boolean;
@@ -67,7 +68,20 @@ export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
       role="alertdialog"
     >
       <ResponsiveDialogContent showCloseButton={false}>
-        <WelcomeGraphic />
+        <Image
+          aria-hidden
+          className={cn(
+            "absolute -top-12 left-1/2 inline-flex -translate-x-1/2 sm:-top-18 md:left-2 md:translate-x-0",
+            "pixel-crisp object-cover",
+            "aspect-square size-22",
+            "drop-shadow-lg",
+            "pointer-events-none"
+          )}
+          height={112}
+          layout="constrained"
+          src="/images/msc/welcome.webp"
+          width={112}
+        />
 
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>

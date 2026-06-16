@@ -1,20 +1,27 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import MissionDialog from "@/components/dialog/mission/mission";
-import { getLocalizedMissionTitle } from "@/content/missions";
+import { getLocalizedMissionTitle, getMissionById } from "@/content/missions";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import { missionsAtom } from "@/store/atoms/missions.atom";
 import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
 
+const mission001 = getMissionById("mission-001");
+
+if (!mission001) {
+  throw new Error("Expected mission-001 to exist in catalog");
+}
+
 describe("MissionDialog", () => {
   beforeEach(() => {
     resetGame();
   });
+
   test("renders mission title and claim content when open", async () => {
     const screen = await renderWithProviders(
       <MissionDialog
-        missionId="mission-001"
+        mission={mission001}
         onOpenChange={vi.fn()}
         open
         progress={{ current: 0, target: 1, ratio: 0.5 }}
@@ -39,30 +46,10 @@ describe("MissionDialog", () => {
       .toBeInTheDocument();
   });
 
-  test("falls back to missions title when mission id is null", async () => {
-    const screen = await renderWithProviders(
-      <MissionDialog
-        missionId={null}
-        onOpenChange={vi.fn()}
-        open
-        progress={null}
-        status="in_progress"
-      />
-    );
-
-    await expect
-      .element(screen.getByRole("heading", { name: m["ui.missions.title"]() }))
-      .toBeInTheDocument();
-
-    expect(
-      document.querySelector('[data-slot="mission-claim-content"]')
-    ).toBeNull();
-  });
-
   test("renders hero image as decorative", async () => {
     await renderWithProviders(
       <MissionDialog
-        missionId="mission-001"
+        mission={mission001}
         onOpenChange={vi.fn()}
         open
         progress={{ current: 0, target: 1, ratio: 0 }}
@@ -79,7 +66,7 @@ describe("MissionDialog", () => {
   test("shows claim button in footer when mission is ready", async () => {
     const screen = await renderWithProviders(
       <MissionDialog
-        missionId="mission-001"
+        mission={mission001}
         onOpenChange={vi.fn()}
         open
         progress={{ current: 1, target: 1, ratio: 1 }}
@@ -102,7 +89,7 @@ describe("MissionDialog", () => {
 
     const screen = await renderWithProviders(
       <MissionDialog
-        missionId="mission-001"
+        mission={mission001}
         onOpenChange={onOpenChange}
         open
         progress={{ current: 1, target: 1, ratio: 1 }}

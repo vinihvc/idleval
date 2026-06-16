@@ -138,7 +138,7 @@ export const ActionTools = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  onClick={triggerFallingLeaves}
+                  onClick={() => triggerFallingLeaves("huangdi")}
                   size="icon-lg"
                   variant="teal"
                 >

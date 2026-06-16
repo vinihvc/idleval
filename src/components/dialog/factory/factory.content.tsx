@@ -26,21 +26,21 @@ export const FactoryContent = (props: FactoryContentProps) => {
   const lifetimeYield = useGoldEarnedByFactory(factoryType);
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
       <StatTile icon={<Clock />} label={m["ui.factory.craftPace"]()}>
         <FormattedNumber value={factory.productionTime} />s
       </StatTile>
 
       <StatTile icon={<Hand />} label={m["ui.factory.yieldPerTap"]()}>
-        <FormattedNumber value={yieldPerTap} />
+        <FormattedNumber isDollar value={yieldPerTap} />
       </StatTile>
 
       <StatTile icon={<CalendarRange />} label={m["ui.factory.yieldPerHour"]()}>
-        <FormattedNumber value={yieldPerHour} />
+        <FormattedNumber isDollar value={yieldPerHour} />
       </StatTile>
 
       <StatTile icon={<Heart />} label={m["ui.factory.lifetimeYield"]()}>
-        <FormattedNumber value={lifetimeYield} />
+        <FormattedNumber isDollar value={lifetimeYield} />
       </StatTile>
     </div>
   );

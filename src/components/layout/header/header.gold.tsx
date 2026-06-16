@@ -23,36 +23,38 @@ export const HeaderGold = () => {
 
   return (
     <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            className="min-w-32 translate-x-2 justify-end bg-popover px-0 pr-2"
-            clickEffect={false}
-            onClick={() => toggleDialog(DIALOG_IDS.statistics)}
-            size="sm"
-            variant="cream"
-          >
-            <Coin
-              aria-hidden
-              className="absolute top-0 -left-2.5 size-10 shrink-0 -translate-y-2 drop-shadow-md"
-              intrinsicSize={40}
-            />
-
-            <span
-              className={cn(
-                "font-bold font-number text-lg text-muted tabular-nums tracking-normal sm:text-xl",
-                borderedText({ variant: "default" })
-              )}
+      <div className="min-w-0 max-w-[40vw] sm:max-w-none">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="min-w-32 max-w-full translate-x-2 justify-end bg-popover px-0 pr-2"
+              clickEffect={false}
+              onClick={() => toggleDialog(DIALOG_IDS.statistics)}
+              size="sm"
+              variant="cream"
             >
-              <FormattedNumber isDollar value={gold} />
-            </span>
+              <Coin
+                aria-hidden
+                className="absolute top-0 -left-2.5 size-10 shrink-0 -translate-y-2 drop-shadow-md"
+                intrinsicSize={40}
+              />
 
-            <span className="sr-only">{m["ui.statistics.title"]()}</span>
-          </Button>
-        </TooltipTrigger>
+              <span
+                className={cn(
+                  "truncate font-bold font-number text-lg text-muted tabular-nums tracking-normal sm:text-xl",
+                  borderedText({ variant: "default" })
+                )}
+              >
+                <FormattedNumber isDollar value={gold} />
+              </span>
 
-        <TooltipContent>{m["ui.statistics.title"]()}</TooltipContent>
-      </Tooltip>
+              <span className="sr-only">{m["ui.statistics.title"]()}</span>
+            </Button>
+          </TooltipTrigger>
+
+          <TooltipContent>{m["ui.statistics.title"]()}</TooltipContent>
+        </Tooltip>
+      </div>
 
       <React.Suspense fallback={null}>
         <LazyStatisticsDialog />

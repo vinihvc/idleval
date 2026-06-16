@@ -12,6 +12,7 @@ export const ToggleTooltip = (
   const {
     positioning = {
       placement: "top",
+      gutter: 20,
     },
     lazyMount = true,
     unmountOnExit = true,
@@ -36,21 +37,30 @@ export const ToggleTooltipTrigger = (
 ) => <ArkPopover.Trigger data-slot="toggle-tooltip-trigger" {...props} />;
 
 export const ToggleTooltipContent = (
-  props: React.ComponentProps<typeof ArkPopover.Content>
+  props: React.ComponentProps<typeof ArkPopover.Content> & {
+    fitContent?: boolean;
+  }
 ) => {
-  const { className, children, ...rest } = props;
+  const { className, children, fitContent = false, ...rest } = props;
 
   return (
     <Portal>
       <ArkPopover.Positioner
-        className="z-100 max-sm:fixed max-sm:inset-x-2 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-[min(20rem,calc(100vw-2rem))]"
+        className={cn(
+          "z-100 sm:max-w-[min(20rem,calc(100vw-2rem))]",
+          fitContent
+            ? "max-sm:w-fit max-sm:max-w-[calc(100vw-1rem)]"
+            : "max-sm:fixed max-sm:inset-x-2 max-sm:max-w-[calc(100vw-1rem)]"
+        )}
         data-slot="toggle-tooltip-positioner"
       >
         <ArkPopover.Content
           className={cn(
             menuContentVariants(),
             "relative z-100",
-            "w-full min-w-0 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-72",
+            fitContent
+              ? "max-sm:w-fit max-sm:max-w-none sm:max-w-72"
+              : "w-full min-w-0 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-72",
             "not-[class*='w-']:min-w-0",
             "wrap-break-word whitespace-normal text-pretty",
             className

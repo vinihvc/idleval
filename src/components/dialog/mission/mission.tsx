@@ -9,31 +9,49 @@ import {
   ResponsiveDialogMedia,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import type { MissionId } from "@/content/missions";
-import { getLocalizedMissionTitle, getMissionById } from "@/content/missions";
+import type { MissionDefinition } from "@/content/missions";
+import { getLocalizedMissionTitle } from "@/content/missions";
 import type { MissionProgress, MissionSlotStatus } from "@/game/types";
 import { m } from "@/i18n/messages";
 import { MissionClaim } from "./mission.claim";
 import { MissionClaimContent } from "./mission.content";
+import { MissionDialogTrigger } from "./mission.trigger";
 
 export interface MissionDialogProps
   extends React.ComponentProps<typeof ResponsiveDialog> {
-  missionId: MissionId | null;
-  progress: MissionProgress | null;
+  children?: React.ReactNode;
+  mission: MissionDefinition;
+  progress: MissionProgress;
   status: MissionSlotStatus;
 }
 
 const MissionDialog = (props: MissionDialogProps) => {
-  const { missionId, open, progress, status, onOpenChange } = props;
+  const {
+    children,
+    mission,
+    open,
+    progress,
+    status,
+    onOpenChange,
+    ...dialogProps
+  } = props;
 
-  const mission = missionId ? getMissionById(missionId) : undefined;
-
-  const missionTitle = mission
-    ? getLocalizedMissionTitle(mission.id)
-    : m["ui.missions.title"]();
+  const missionTitle = getLocalizedMissionTitle(mission.id);
 
   return (
-    <ResponsiveDialog onOpenChange={onOpenChange} open={open}>
+    <ResponsiveDialog
+      lazyMount
+      onOpenChange={onOpenChange}
+      open={open}
+      unmountOnExit
+      {...dialogProps}
+    >
+      {status === "in_progress" && children ? (
+        <MissionDialogTrigger>{children}</MissionDialogTrigger>
+      ) : (
+        children
+      )}
+
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
@@ -52,16 +70,14 @@ const MissionDialog = (props: MissionDialogProps) => {
         </ResponsiveDialogHeader>
 
         <ResponsiveDialogBody>
-          {progress && missionId && (
-            <MissionClaimContent
-              missionId={missionId}
-              progress={progress}
-              status={status}
-            />
-          )}
+          <MissionClaimContent
+            mission={mission}
+            progress={progress}
+            status={status}
+          />
         </ResponsiveDialogBody>
 
-        {mission && progress && status === "ready" && (
+        {status === "ready" && (
           <ResponsiveDialogFooter>
             <MissionClaim
               missionId={mission.id}

@@ -74,10 +74,10 @@ export const FactoryCardProgress = (
           borderedText({ variant: "cream" })
         )}
       >
-        <span className="w-40 font-number tabular-nums">
+        <span className="shrink-0 font-number tabular-nums">
           {timeFormatter(remainingTime)}
         </span>
-        <span className="font-number tabular-nums">
+        <span className="min-w-0 truncate text-right font-number tabular-nums">
           {amountFormatterWithDolarSign(totalEarn)}
         </span>
       </div>

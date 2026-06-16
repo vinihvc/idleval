@@ -16,14 +16,14 @@ export const StatisticsContent = () => {
   const { count: godsInvoked } = useGods();
 
   return (
-    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
       <StatTile
         icon={
           <Coin aria-hidden className="size-6 shrink-0" intrinsicSize={24} />
         }
         label={m["ui.statistics.realmTotal"]()}
       >
-        <FormattedNumber value={totalGold} />
+        <FormattedNumber isDollar value={totalGold} />
       </StatTile>
 
       <StatTile
@@ -75,7 +75,7 @@ const FactoryStatTile = (props: FactoryStatTileProps) => {
       }
       label={name}
     >
-      <FormattedNumber value={goldEarned} />
+      <FormattedNumber isDollar value={goldEarned} />
     </StatTile>
   );
 };

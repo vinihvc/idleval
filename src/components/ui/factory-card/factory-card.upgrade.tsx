@@ -1,5 +1,6 @@
 import { InfoBox } from "pixelarticons/react/InfoBox";
 import React from "react";
+import { tv } from "tailwind-variants";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
 import {
@@ -17,6 +18,22 @@ import {
 import { useFactoryCard } from "./factory-card.context";
 import { useFactoryPurchase } from "./use-factory-purchase";
 
+const factoryCardUpgradeButtonVariants = tv({
+  base: [
+    "min-w-0",
+    "flex-1 justify-between gap-1",
+    "px-2",
+    "font-bold font-number text-base",
+  ],
+  variants: {
+    muted: {
+      true: [
+        "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-muted/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10",
+      ],
+    },
+  },
+});
+
 const LazyFactoryDialog = React.lazy(
   () => import("@/components/dialog/factory/factory")
 );
@@ -25,7 +42,6 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
 
   const factoryCard = useFactoryCard();
-  const { name } = factoryCard;
   const purchase = useFactoryPurchase(factoryCard);
   const {
     factoryType,
@@ -45,6 +61,8 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
     disabled,
   } = purchase;
 
+  const { name } = factoryCard;
+
   const ledgerLabel = m["ui.factoryCard.ledger"]({ name });
 
   return (
@@ -53,13 +71,7 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
       {...rest}
     >
       <Button
-        className={cn(
-          "min-w-0 flex-1 justify-between gap-1 px-2 font-bold font-number",
-          {
-            "border-popover-foreground/25 border-dashed bg-popover-foreground/10! text-muted/50 shadow-none [-webkit-text-stroke-width:0] hover:bg-popover-foreground/10":
-              isMutedUpgrade,
-          }
-        )}
+        className={factoryCardUpgradeButtonVariants({ muted: isMutedUpgrade })}
         data-locked={isLocked}
         disabled={disabled}
         onClick={handleBuy}
@@ -68,14 +80,14 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
       >
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
-            <span className="flex items-center gap-1">
+            <span className="flex min-w-0 shrink items-center gap-1 truncate">
               {m["ui.factoryCard.buy"]()}
-              <NumberText variant="green">
+              <NumberText className="shrink-0 text-base" variant="green">
                 {amountFormatter(totalCanBuy)}
               </NumberText>
             </span>
 
-            <NumberText variant="green">
+            <NumberText className="shrink-0 text-base" variant="green">
               {amountFormatterWithDolarSign(totalToPay)}
             </NumberText>
           </>
@@ -83,8 +95,10 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {!isUnlocked && canUnlock && (
           <>
-            {m["ui.factoryCard.unlock"]()}
-            <NumberText variant="default">
+            <span className="min-w-0 shrink truncate">
+              {m["ui.factoryCard.unlock"]()}
+            </span>
+            <NumberText className="shrink-0 text-base" variant="default">
               {amountFormatterWithDolarSign(unlockPrice)}
             </NumberText>
           </>
@@ -92,10 +106,10 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {showEmptyCoffers && (
           <>
-            <span className="[-webkit-text-stroke-width:0]">
+            <span className="min-w-0 shrink truncate [-webkit-text-stroke-width:0]">
               {m["ui.factoryCard.emptyCoffers"]()}
             </span>
-            <NumberText className="[-webkit-text-stroke-width:0]">
+            <NumberText className="shrink-0 text-base [-webkit-text-stroke-width:0]">
               {amountFormatterWithDolarSign(buyPrice)}
             </NumberText>
           </>
@@ -103,10 +117,10 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {isLocked && (
           <>
-            <span className="[-webkit-text-stroke-width:0]">
+            <span className="min-w-0 shrink truncate [-webkit-text-stroke-width:0]">
               {m["ui.factoryCard.underSeal"]()}
             </span>
-            <NumberText className="[-webkit-text-stroke-width:0]">
+            <NumberText className="shrink-0 text-base [-webkit-text-stroke-width:0]">
               {amountFormatterWithDolarSign(unlockPrice)}
             </NumberText>
           </>

@@ -23,7 +23,7 @@ export const GodsContent = (props: GodsContentProps) => {
             key={god.id}
             onInvoke={(name) => {
               announce(m["ui.a11y.invoked"]({ name }));
-              triggerFallingLeaves();
+              triggerFallingLeaves(god.id);
               onInvoke();
             }}
           />

@@ -74,13 +74,18 @@ export const ResponsiveTooltipTrigger = (props: ResponsiveTooltipPartProps) => {
 };
 
 export const ResponsiveTooltipContent = (
-  props: React.ComponentProps<typeof TooltipContent>
+  props: React.ComponentProps<typeof TooltipContent> & {
+    fitContent?: boolean;
+  }
 ) => {
   const { isDesktop } = useResponsiveTooltip();
+  const { fitContent, ...rest } = props;
 
-  const Component = isDesktop ? TooltipContent : ToggleTooltipContent;
+  if (isDesktop) {
+    return <TooltipContent {...rest} />;
+  }
 
-  return <Component {...props} />;
+  return <ToggleTooltipContent fitContent={fitContent} {...rest} />;
 };
 
 export const ResponsiveTooltipArrow = (

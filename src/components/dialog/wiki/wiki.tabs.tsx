@@ -6,7 +6,7 @@ export const WikiTabs = () => {
   const { onTabTriggerClick } = useWikiState();
 
   return (
-    <TabsList className="px-(--space) py-[calc(var(--space)/3)]">
+    <TabsList className="w-full max-w-full overflow-x-auto px-(--space) py-[calc(var(--space)/3)] **:data-[slot=tabs-trigger]:text-sm">
       <TabsTrigger
         onClick={() => {
           onTabTriggerClick("gods");

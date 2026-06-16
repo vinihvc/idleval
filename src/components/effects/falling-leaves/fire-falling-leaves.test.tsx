@@ -1,28 +1,28 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-const { confettiMock, shapeFromPathMock } = vi.hoisted(() => ({
+const { confettiMock } = vi.hoisted(() => ({
   confettiMock: vi.fn(),
-  shapeFromPathMock: vi.fn(() => ({ type: "path" as const, path: "leaf" })),
 }));
 
 vi.mock("canvas-confetti", () => ({
-  default: Object.assign(confettiMock, {
-    shapeFromPath: shapeFromPathMock,
-  }),
+  default: confettiMock,
 }));
 
 import {
-  FALLING_LEAVES_BURST_COUNT,
-  FALLING_LEAVES_PARTICLES_PER_BURST,
+  CONFETTI_RAIN_DURATION_MS,
+  CONFETTI_RAIN_INTERVAL_MS,
+  CONFETTI_RAIN_PARTICLES_MAX,
+  CONFETTI_RAIN_PARTICLES_MIN,
   fireFallingLeaves,
+  getConfettiRainSpawnCount,
   resetFallingLeavesForTests,
+  setFallingLeavesConfettiLauncher,
 } from "./fire-falling-leaves";
 
 describe("fireFallingLeaves", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     confettiMock.mockClear();
-    shapeFromPathMock.mockClear();
     resetFallingLeavesForTests();
   });
 
@@ -31,28 +31,61 @@ describe("fireFallingLeaves", () => {
     vi.useRealTimers();
   });
 
-  test("fires staggered leaf bursts with reduced-motion support", () => {
-    fireFallingLeaves();
+  test("spawns continuous top-down rain without burst physics", () => {
+    fireFallingLeaves("#f8c808");
 
-    expect(confettiMock).not.toHaveBeenCalled();
+    expect(confettiMock).toHaveBeenCalledTimes(1);
 
-    vi.runAllTimers();
+    vi.advanceTimersByTime(CONFETTI_RAIN_DURATION_MS);
 
-    expect(confettiMock).toHaveBeenCalledTimes(FALLING_LEAVES_BURST_COUNT);
+    expect(confettiMock).toHaveBeenCalledTimes(getConfettiRainSpawnCount());
 
     for (const call of confettiMock.mock.calls) {
       const [options] = call;
 
       expect(options).toMatchObject({
         angle: 270,
+        colors: ["#f8c808"],
+        decay: 1,
         disableForReducedMotion: true,
+        flat: true,
         origin: { y: 0 },
-        particleCount: FALLING_LEAVES_PARTICLES_PER_BURST,
-        shapes: [{ type: "path", path: "leaf" }],
-        zIndex: 40,
+        spread: 0,
+        startVelocity: 0,
       });
+      expect(options.particleCount).toBeGreaterThanOrEqual(
+        CONFETTI_RAIN_PARTICLES_MIN
+      );
+      expect(options.particleCount).toBeLessThanOrEqual(
+        CONFETTI_RAIN_PARTICLES_MAX
+      );
+      expect(options.ticks).toBeGreaterThanOrEqual(250);
+      expect(options.ticks).toBeLessThanOrEqual(300);
       expect(options.origin.x).toBeGreaterThanOrEqual(0);
       expect(options.origin.x).toBeLessThanOrEqual(1);
     }
+  });
+
+  test("stops spawning after the rain duration", () => {
+    fireFallingLeaves("#f8c808");
+
+    vi.advanceTimersByTime(CONFETTI_RAIN_DURATION_MS);
+    const spawnCount = confettiMock.mock.calls.length;
+
+    vi.advanceTimersByTime(CONFETTI_RAIN_INTERVAL_MS * 5);
+
+    expect(confettiMock.mock.calls.length).toBe(spawnCount);
+  });
+
+  test("uses the registered canvas launcher when available", () => {
+    const launcher = vi.fn();
+    setFallingLeavesConfettiLauncher(launcher);
+
+    fireFallingLeaves("#d82808");
+
+    vi.advanceTimersByTime(CONFETTI_RAIN_DURATION_MS);
+
+    expect(launcher).toHaveBeenCalledTimes(getConfettiRainSpawnCount());
+    expect(confettiMock).not.toHaveBeenCalled();
   });
 });

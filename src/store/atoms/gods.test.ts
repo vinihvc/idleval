@@ -64,7 +64,7 @@ describe("gods store", () => {
     expect(store.get(factoriesAtom)).toEqual(initialData);
     expect(deserializeDecimal(store.get(walletAtom).gold).toNumber()).toBe(0);
     expect(store.get(statisticsAtom).goldEarned).toBe("5000");
-    expect(vi.mocked(sound.play)).toHaveBeenCalledWith("upgrade");
+    expect(vi.mocked(sound.play)).toHaveBeenCalledWith("pray");
     expect(getGodsProductionMultiplier().toNumber()).toBe(
       GOD_DATA[0].productionMultiplier
     );

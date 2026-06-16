@@ -131,6 +131,12 @@ describe("content invariants", () => {
     }
   });
 
+  it("every god has a valid confetti color", () => {
+    for (const god of GOD_DATA) {
+      expect(god.confettiColor).toMatch(/^#[0-9a-fA-F]{6}$/);
+    }
+  });
+
   it("mission catalog has one hundred unique ordered missions", () => {
     expect(MISSION_CATALOG).toHaveLength(MISSION_COUNT);
     expect(new Set(MISSION_IDS).size).toBe(MISSION_COUNT);

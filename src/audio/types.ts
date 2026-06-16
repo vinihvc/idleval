@@ -5,7 +5,7 @@ export interface PlayOptions {
   volume?: number;
 }
 
-export type SfxId = "click" | "coin" | "hold" | "upgrade";
+export type SfxId = "click" | "coin" | "hold" | "pray" | "upgrade";
 
 export type MusicId = "theme";
 

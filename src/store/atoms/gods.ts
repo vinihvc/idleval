@@ -7,7 +7,6 @@ import {
   getTotalProductionMultiplier,
   hasInvokableGod,
 } from "@/game/gods";
-import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { syncMissionProgress } from "@/store/atoms/missions.actions";
 import { resetRunProgress } from "@/store/reset-run-progress";
@@ -15,10 +14,21 @@ import { persistedAtom } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold, useWallet } from "./wallet";
 
-export const fallingLeavesTriggerAtom = atom(0);
+export interface FallingLeavesTrigger {
+  godId: GodId;
+  seq: number;
+}
 
-export const triggerFallingLeaves = (): void => {
-  store.set(fallingLeavesTriggerAtom, (previous) => previous + 1);
+export const fallingLeavesTriggerAtom = atom<FallingLeavesTrigger>({
+  seq: 0,
+  godId: "huangdi",
+});
+
+export const triggerFallingLeaves = (godId: GodId): void => {
+  store.set(fallingLeavesTriggerAtom, (previous) => ({
+    seq: previous.seq + 1,
+    godId,
+  }));
 };
 
 export interface GodsState {
@@ -89,7 +99,6 @@ export const invokeGod = (godIndex: number): boolean => {
 
     resetRunProgress();
     syncMissionProgress();
-    sound.play("upgrade");
 
     return true;
   } finally {

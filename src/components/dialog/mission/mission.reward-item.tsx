@@ -20,15 +20,17 @@ export const MissionRewardItem = (props: MissionRewardItemProps) => {
     case "gold":
       return (
         <MissionRewardListItem>
-          <span className="flex items-center gap-1.5">
+          <span className="flex min-w-0 items-center gap-1.5">
             <span className="sr-only">
               {getGoldRewardAriaLabel(reward.amount)}
             </span>
-            <span aria-hidden className="flex items-center gap-1.5">
+            <span aria-hidden className="flex min-w-0 items-center gap-1.5">
               <span className="flex w-6 shrink-0 items-center justify-center sm:w-7">
                 <Coin className="size-4 sm:size-5" intrinsicSize={20} />
               </span>
-              <FormattedNumber isDollar value={D(reward.amount)} />
+              <span className="truncate">
+                <FormattedNumber isDollar value={D(reward.amount)} />
+              </span>
             </span>
           </span>
         </MissionRewardListItem>
@@ -40,7 +42,7 @@ export const MissionRewardItem = (props: MissionRewardItemProps) => {
 
       return (
         <MissionRewardListItem>
-          <span className="flex items-center gap-1.5">
+          <span className="flex min-w-0 items-center gap-1.5">
             <span className="sr-only">
               {m["ui.missions.reward.powerUp"]({
                 count: String(count),
@@ -60,9 +62,12 @@ export const MissionRewardItem = (props: MissionRewardItemProps) => {
                 width={powerUpIconSize}
               />
             </span>
-            <span aria-hidden className="inline-flex items-center gap-1.5">
-              <span>{localizedPowerUp.name}</span>
-              <span className="text-muted">
+            <span
+              aria-hidden
+              className="inline-flex min-w-0 items-center gap-1.5"
+            >
+              <span className="truncate">{localizedPowerUp.name}</span>
+              <span className="shrink-0 text-muted">
                 {translateParams("ui.missions.reward.powerUpQuantity", {
                   count: String(count),
                 })}
@@ -75,14 +80,14 @@ export const MissionRewardItem = (props: MissionRewardItemProps) => {
     case "renown":
       return (
         <MissionRewardListItem>
-          <span className="flex items-center gap-1.5">
+          <span className="flex min-w-0 items-center gap-1.5">
             <span
               aria-hidden
               className="flex w-6 shrink-0 items-center justify-center sm:w-7"
             >
               <Crown className="size-4 sm:size-5" />
             </span>
-            <span>
+            <span className="min-w-0 truncate">
               {m["ui.missions.reward.renown"]({
                 percent: String(reward.percent),
               })}
@@ -101,7 +106,7 @@ const getGoldRewardAriaLabel = (amount: string): string =>
   `${amountFormatterWithDolarSign(D(amount))} ${translate("mission.objective.goldLabel")}`;
 
 const MissionRewardListItem = (props: React.PropsWithChildren) => (
-  <li className="flex items-center gap-2">
+  <li className="flex min-w-0 items-center gap-2">
     <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-muted" />
     {props.children}
   </li>
