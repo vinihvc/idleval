@@ -176,7 +176,7 @@ describe("MissionObjectiveLabel", () => {
     );
 
     expect(
-      document.querySelector('img[src="/images/power-ups/power-ups.webp"]')
+      document.querySelector('img[src="/images/characters/fizzwick.webp"]')
     ).not.toBeNull();
   });
 
@@ -192,7 +192,7 @@ describe("MissionObjectiveLabel", () => {
     );
 
     expect(
-      document.querySelector('img[src="/images/msc/inventory.webp"]')
+      document.querySelector('img[src="/images/characters/grimbold.webp"]')
     ).not.toBeNull();
   });
 });

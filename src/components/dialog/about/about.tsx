@@ -27,8 +27,8 @@ export const AboutDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.nav.about"]()}
-            src="/images/msc/about.webp"
+            alt={m["ui.about.imageAlt"]()}
+            src="/images/characters/aru.webp"
           />
         </ResponsiveDialogMedia>
 

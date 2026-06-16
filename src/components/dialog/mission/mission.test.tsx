@@ -57,10 +57,10 @@ describe("MissionDialog", () => {
       />
     );
 
-    const hero = document.querySelector('img[src="/images/msc/missions.webp"]');
+    const hero = document.querySelector('img[src="/images/characters/heracles.webp"]');
 
     expect(hero?.getAttribute("aria-hidden")).toBe("true");
-    expect(hero?.getAttribute("alt")).toBe("");
+    expect(hero?.getAttribute("alt")).toBe(m["ui.missions.imageAlt"]());
   });
 
   test("shows claim button in footer when mission is ready", async () => {

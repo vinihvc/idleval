@@ -57,7 +57,7 @@ After generating a pixel-art sprite (AI or otherwise), always run this pipeline 
 
 ```bash
 # Game sprites (400×400) — auto-picks green when purple is detected
-pnpm remove-bg input.png public/images/msc/example.webp --size 400 --auto-key
+pnpm remove-bg input.png public/images/characters/example.webp --size 400 --auto-key
 pnpm remove-bg input.png public/images/gods/example.webp --size 400 --auto-key
 
 # Explicit green-screen source (purple cape, violet robes)
@@ -75,8 +75,8 @@ Defaults: `--key magenta`, subject-color protection + despill, nearest-neighbor 
 ### 3. Compress for production
 
 ```bash
-pnpm compress-image public/images/msc/example.webp --in-place
-pnpm compress-image -- --batch public/images/msc public/images/msc --in-place
+pnpm compress-image public/images/characters/example.webp --in-place
+pnpm compress-image -- --batch public/images/characters public/images/characters --in-place
 ```
 
 Defaults: **400×400**, WebP **quality 70%**, nearest-neighbor resize.
@@ -84,8 +84,8 @@ Defaults: **400×400**, WebP **quality 70%**, nearest-neighbor resize.
 ### Full pipeline example
 
 ```bash
-pnpm remove-bg sprite.png public/images/msc/about.webp --size 400 --auto-key
-pnpm compress-image public/images/msc/about.webp --in-place
+pnpm remove-bg sprite.png public/images/characters/aru.webp --size 400 --auto-key
+pnpm compress-image public/images/characters/aru.webp --in-place
 ```
 
 Inspect the result visually. Complex interiors (e.g. harp strings, thin gaps) may need manual pixel cleanup after the automated pass.

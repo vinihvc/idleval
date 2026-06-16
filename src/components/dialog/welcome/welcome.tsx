@@ -69,6 +69,7 @@ export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
     >
       <ResponsiveDialogContent showCloseButton={false}>
         <Image
+          alt={m["ui.welcome.imageAlt"]()}
           aria-hidden
           className={cn(
             "absolute -top-12 left-1/2 inline-flex -translate-x-1/2 sm:-top-18 md:left-2 md:translate-x-0",
@@ -79,7 +80,7 @@ export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
           )}
           height={112}
           layout="constrained"
-          src="/images/msc/welcome.webp"
+          src="/images/characters/realm-seal.webp"
           width={112}
         />
 

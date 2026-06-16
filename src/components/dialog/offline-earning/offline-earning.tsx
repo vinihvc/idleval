@@ -66,7 +66,7 @@ export const OfflineEarningDialog = (props: OfflineEarningDialogProps) => {
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
             alt={m["ui.offline.imageAlt"]()}
-            src="/images/msc/gift.webp"
+            src="/images/characters/zurvan.webp"
           />
         </ResponsiveDialogMedia>
 

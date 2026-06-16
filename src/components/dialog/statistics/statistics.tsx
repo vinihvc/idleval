@@ -29,8 +29,8 @@ export const StatisticsDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.statistics.title"]()}
-            src="/images/msc/statistic.webp"
+            alt={m["ui.statistics.imageAlt"]()}
+            src="/images/characters/tallyfang.webp"
           />
         </ResponsiveDialogMedia>
 

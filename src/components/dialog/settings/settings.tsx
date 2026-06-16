@@ -27,8 +27,8 @@ export const SettingsDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.settings.title"]()}
-            src="/images/msc/setting.webp"
+            alt={m["ui.settings.imageAlt"]()}
+            src="/images/characters/chiron.webp"
           />
         </ResponsiveDialogMedia>
 

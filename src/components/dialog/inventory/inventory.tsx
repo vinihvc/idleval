@@ -27,8 +27,8 @@ export const InventoryDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.inventory.title"]()}
-            src="/images/msc/inventory.webp"
+            alt={m["ui.inventory.imageAlt"]()}
+            src="/images/characters/grimbold.webp"
           />
         </ResponsiveDialogMedia>
 

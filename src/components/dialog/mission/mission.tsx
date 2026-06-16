@@ -55,9 +55,9 @@ const MissionDialog = (props: MissionDialogProps) => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt=""
+            alt={m["ui.missions.imageAlt"]()}
             aria-hidden
-            src="/images/msc/missions.webp"
+            src="/images/characters/heracles.webp"
           />
         </ResponsiveDialogMedia>
 

@@ -31,8 +31,8 @@ export const DailyRewardDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.daily.title"]()}
-            src="/images/power-ups/power-ups.webp"
+            alt={m["ui.daily.imageAlt"]()}
+            src="/images/characters/fizzwick.webp"
           />
         </ResponsiveDialogMedia>
 

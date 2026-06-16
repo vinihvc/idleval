@@ -27,8 +27,8 @@ export const UpgradesDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.upgrades.title"]()}
-            src="/images/upgrades/upgrade.webp"
+            alt={m["ui.upgrades.imageAlt"]()}
+            src="/images/characters/edda.webp"
           />
         </ResponsiveDialogMedia>
 

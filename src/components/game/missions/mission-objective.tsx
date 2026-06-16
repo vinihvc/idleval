@@ -114,9 +114,9 @@ const getMissionObjectiveIconSource = (
     case "completeCycles":
       return { kind: "image", src: "/images/factories/grain.webp" };
     case "claimDailyRewards":
-      return { kind: "image", src: "/images/power-ups/power-ups.webp" };
+      return { kind: "image", src: "/images/characters/fizzwick.webp" };
     case "activatePowerUps":
-      return { kind: "image", src: "/images/msc/inventory.webp" };
+      return { kind: "image", src: "/images/characters/grimbold.webp" };
     default: {
       const exhaustiveCheck: never = objective;
       return exhaustiveCheck;

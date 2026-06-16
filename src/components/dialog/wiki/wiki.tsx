@@ -27,8 +27,8 @@ export const WikiDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.wiki.title"]()}
-            src="/images/msc/wiki.webp"
+            alt={m["ui.wiki.imageAlt"]()}
+            src="/images/characters/minerva.webp"
           />
         </ResponsiveDialogMedia>
 

@@ -27,8 +27,8 @@ export const ManagersDialog = () => {
       <ResponsiveDialogContent>
         <ResponsiveDialogMedia>
           <ResponsiveDialogImage
-            alt={m["ui.managers.singular"]()}
-            src="/images/managers/manager.webp"
+            alt={m["ui.managers.imageAlt"]()}
+            src="/images/characters/whiskerwick.webp"
           />
         </ResponsiveDialogMedia>
 

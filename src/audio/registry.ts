@@ -45,11 +45,6 @@ export const SOUND_REGISTRY = {
     category: "sfx",
     volume: 0.5,
   },
-  pray: {
-    src: "/sounds/pray.wav",
-    category: "sfx",
-    volume: 0.9,
-  },
   hold: {
     src: "/sounds/hold.wav",
     category: "sfx",
