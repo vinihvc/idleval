@@ -12,7 +12,6 @@ export const ToggleTooltip = (
   const {
     positioning = {
       placement: "top",
-      gutter: 20,
     },
     lazyMount = true,
     unmountOnExit = true,

@@ -70,14 +70,23 @@ export const FactoryCardProgress = (
           "px-2",
           "font-semibold text-foreground text-lg tracking-wide",
           "pointer-events-none",
-          "text-nowrap",
-          borderedText({ variant: "cream" })
+          "text-nowrap"
         )}
       >
-        <span className="shrink-0 font-number tabular-nums">
+        <span
+          className={cn(
+            "shrink-0 font-number tabular-nums",
+            borderedText({ variant: "cream" })
+          )}
+        >
           {timeFormatter(remainingTime)}
         </span>
-        <span className="min-w-0 truncate text-right font-number tabular-nums">
+        <span
+          className={cn(
+            "min-w-0 text-right font-number tabular-nums",
+            borderedText({ variant: "cream", truncateSafe: true })
+          )}
+        >
           {amountFormatterWithDolarSign(totalEarn)}
         </span>
       </div>

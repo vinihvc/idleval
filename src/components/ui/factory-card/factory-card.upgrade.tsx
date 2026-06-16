@@ -3,6 +3,7 @@ import React from "react";
 import { tv } from "tailwind-variants";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
+import { borderedTextStrokeInset } from "@/components/ui/text-border";
 import {
   Tooltip,
   TooltipContent,
@@ -80,14 +81,16 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
       >
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
-            <span className="flex min-w-0 shrink items-center gap-1 truncate">
-              {m["ui.factoryCard.buy"]()}
-              <NumberText className="shrink-0 text-base" variant="green">
+            <span className="flex min-w-0 shrink items-center gap-1">
+              <span className={cn("min-w-0 truncate", borderedTextStrokeInset)}>
+                {m["ui.factoryCard.buy"]()}
+              </span>
+              <NumberText bordered={false} className="shrink-0 text-base">
                 {amountFormatter(totalCanBuy)}
               </NumberText>
             </span>
 
-            <NumberText className="shrink-0 text-base" variant="green">
+            <NumberText bordered={false} className="shrink-0 text-base">
               {amountFormatterWithDolarSign(totalToPay)}
             </NumberText>
           </>
@@ -95,10 +98,12 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {!isUnlocked && canUnlock && (
           <>
-            <span className="min-w-0 shrink truncate">
+            <span
+              className={cn("min-w-0 shrink truncate", borderedTextStrokeInset)}
+            >
               {m["ui.factoryCard.unlock"]()}
             </span>
-            <NumberText className="shrink-0 text-base" variant="default">
+            <NumberText bordered={false} className="shrink-0 text-base">
               {amountFormatterWithDolarSign(unlockPrice)}
             </NumberText>
           </>

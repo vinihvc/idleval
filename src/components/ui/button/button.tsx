@@ -196,7 +196,11 @@ export const Button = (props: ButtonProps) => {
       className={cn(
         buttonVariants({ variant, size, clickEffect }),
         borderedVariant &&
-          borderedText({ variant: borderedVariant, size: "lg" }),
+          borderedText({
+            variant: borderedVariant,
+            size: "lg",
+            clipSafe: true,
+          }),
         className
       )}
       data-size={size}

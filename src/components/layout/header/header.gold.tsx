@@ -41,8 +41,8 @@ export const HeaderGold = () => {
 
               <span
                 className={cn(
-                  "truncate font-bold font-number text-lg text-muted tabular-nums tracking-normal sm:text-xl",
-                  borderedText({ variant: "default" })
+                  "font-bold font-number text-lg text-muted tabular-nums tracking-normal sm:text-xl",
+                  borderedText({ variant: "default", truncateSafe: true })
                 )}
               >
                 <FormattedNumber isDollar value={gold} />

@@ -5,16 +5,26 @@ import { cn } from "@/lib/cn";
 
 interface NumberTextProps
   extends React.ComponentProps<"span">,
-    VariantProps<typeof borderedText> {}
+    VariantProps<typeof borderedText> {
+  /** When false, inherit stroke from a bordered parent (e.g. Button). @default true */
+  bordered?: boolean;
+}
 
 export const NumberText = (props: NumberTextProps) => {
-  const { variant, size, className, ...rest } = props;
+  const {
+    variant,
+    size,
+    truncateSafe,
+    bordered = true,
+    className,
+    ...rest
+  } = props;
 
   return (
     <span
       className={cn(
         "font-number text-lg tabular-nums",
-        borderedText({ variant, size }),
+        bordered && borderedText({ variant, size, truncateSafe }),
         className
       )}
       {...rest}

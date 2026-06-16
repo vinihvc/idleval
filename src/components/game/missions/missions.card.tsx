@@ -99,8 +99,7 @@ const MissionSlotProgress = (props: {
           "pointer-events-none absolute inset-0",
           "flex items-center justify-center px-0.5",
           "font-medium font-number text-foreground text-xs tabular-nums tracking-wide",
-          "truncate text-nowrap",
-          borderedText({ variant: "cream", size: "sm" })
+          borderedText({ variant: "cream", size: "sm", truncateSafe: true })
         )}
       >
         {progressLabel}
@@ -115,11 +114,15 @@ const MissionSlotClaimFooter = () => (
     className={cn(
       missionSlotFooterClassName,
       "flex items-center justify-center border-success-foreground/40 bg-success text-white",
-      "font-medium text-xs tracking-wide",
-      borderedText({ variant: "green", size: "sm" })
+      "font-medium text-xs tracking-wide"
     )}
   >
-    <span className="block w-full truncate text-center">
+    <span
+      className={cn(
+        "block w-full text-center",
+        borderedText({ variant: "green", size: "sm", truncateSafe: true })
+      )}
+    >
       {m["ui.missions.claim"]()}
     </span>
   </div>
