@@ -42,18 +42,41 @@ export interface MissionCounters {
   dailyRewardsClaimed: number;
   powerUpsActivated: number;
   productionCyclesCompleted: number;
+  runGoldEarned: string;
+  runGoldSpent: string;
 }
 
 export const createInitialMissionCounters = (): MissionCounters => ({
   productionCyclesCompleted: 0,
   powerUpsActivated: 0,
   dailyRewardsClaimed: 0,
+  runGoldEarned: "0",
+  runGoldSpent: "0",
+});
+
+export interface MissionProgressBaseline {
+  dailyRewardsClaimed: number;
+  goldEarned: string;
+  goldSpent: string;
+  powerUpsActivated: number;
+  productionCyclesCompleted: number;
+}
+
+export const createMissionProgressBaseline = (
+  snapshot: MissionGameSnapshot
+): MissionProgressBaseline => ({
+  goldEarned: snapshot.statistics.goldEarned,
+  goldSpent: snapshot.statistics.goldSpent,
+  productionCyclesCompleted: snapshot.counters.productionCyclesCompleted,
+  powerUpsActivated: snapshot.counters.powerUpsActivated,
+  dailyRewardsClaimed: snapshot.counters.dailyRewardsClaimed,
 });
 
 export interface MissionsPersistedState {
   activeSlotIds: MissionId[];
   claimedIds: MissionId[];
   counters: MissionCounters;
+  progressBaselines: Partial<Record<MissionId, MissionProgressBaseline>>;
   readyToClaimIds: MissionId[];
   renownPercent: number;
 }
@@ -63,6 +86,7 @@ export const createInitialMissionsState = (): MissionsPersistedState => ({
   claimedIds: [],
   readyToClaimIds: [],
   counters: createInitialMissionCounters(),
+  progressBaselines: {},
   renownPercent: 0,
 });
 

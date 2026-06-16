@@ -5,6 +5,7 @@ import {
 } from "@/content/missions";
 import {
   canClaimMission,
+  captureMissionBaselines,
   findNewlyReadyMissionIds,
   replaceActiveSlotAfterClaim,
   resolveActiveSlotIds,
@@ -18,8 +19,16 @@ import { inventoryAtom } from "@/store/atoms/inventory";
 import { missionsAtom } from "@/store/atoms/missions.atom";
 import { buildMissionGameSnapshot } from "@/store/atoms/missions.selectors";
 import { increaseGoldByAmount } from "@/store/atoms/wallet";
+import {
+  deserializeDecimal,
+  type GameValue,
+  serializeDecimal,
+} from "@/utils/decimal";
 
-type MissionCounterKey = keyof MissionCounters;
+type MissionCounterKey = keyof Pick<
+  MissionCounters,
+  "dailyRewardsClaimed" | "powerUpsActivated" | "productionCyclesCompleted"
+>;
 
 const setMissions = (
   updater: (state: MissionsPersistedState) => MissionsPersistedState
@@ -44,26 +53,87 @@ export const incrementMissionCounter = (
   }));
 };
 
-export const syncMissionProgress = (): void => {
-  const state = store.get(missionsAtom);
-  const snapshot = buildMissionGameSnapshot();
-  const newlyReady = findNewlyReadyMissionIds(MISSION_CATALOG, state, snapshot);
-
-  if (newlyReady.length === 0) {
+export const incrementRunGoldEarned = (amount: GameValue): void => {
+  if (amount.lte(0)) {
     return;
   }
 
-  setMissions((previous) => {
-    const readyToClaimIds = [...previous.readyToClaimIds, ...newlyReady];
+  setMissions((previous) => ({
+    ...previous,
+    counters: {
+      ...previous.counters,
+      runGoldEarned: serializeDecimal(
+        deserializeDecimal(previous.counters.runGoldEarned).plus(amount)
+      ),
+    },
+  }));
+};
 
-    return {
-      ...previous,
-      readyToClaimIds,
-      activeSlotIds: resolveActiveSlotIds(MISSION_CATALOG, {
-        ...previous,
-        readyToClaimIds,
-      }),
-    };
+export const incrementRunGoldSpent = (amount: GameValue): void => {
+  if (amount.lte(0)) {
+    return;
+  }
+
+  setMissions((previous) => ({
+    ...previous,
+    counters: {
+      ...previous.counters,
+      runGoldSpent: serializeDecimal(
+        deserializeDecimal(previous.counters.runGoldSpent).plus(amount)
+      ),
+    },
+  }));
+};
+
+const applyMissionSync = (
+  previous: MissionsPersistedState,
+  snapshot = buildMissionGameSnapshot()
+): MissionsPersistedState => {
+  const activeSlotIds = resolveActiveSlotIds(
+    MISSION_CATALOG,
+    previous,
+    snapshot
+  );
+  const withBaselines = captureMissionBaselines(
+    { ...previous, activeSlotIds },
+    snapshot,
+    activeSlotIds
+  );
+  const newlyReady = findNewlyReadyMissionIds(
+    MISSION_CATALOG,
+    withBaselines,
+    snapshot
+  );
+  const readyToClaimIds = [
+    ...new Set([...withBaselines.readyToClaimIds, ...newlyReady]),
+  ];
+
+  return {
+    ...withBaselines,
+    readyToClaimIds,
+    activeSlotIds: resolveActiveSlotIds(
+      MISSION_CATALOG,
+      { ...withBaselines, readyToClaimIds },
+      snapshot
+    ),
+  };
+};
+
+export const syncMissionProgress = (): void => {
+  const snapshot = buildMissionGameSnapshot();
+
+  setMissions((previous) => {
+    const next = applyMissionSync(previous, snapshot);
+
+    if (
+      next.activeSlotIds.join() === previous.activeSlotIds.join() &&
+      next.readyToClaimIds.join() === previous.readyToClaimIds.join() &&
+      next.progressBaselines === previous.progressBaselines
+    ) {
+      return previous;
+    }
+
+    return next;
   });
 };
 
@@ -113,24 +183,34 @@ export const claimMissionReward = (id: MissionId): boolean => {
   }
 
   setMissions((previous) => {
+    const snapshot = buildMissionGameSnapshot();
     const readyToClaimIds = previous.readyToClaimIds.filter(
       (readyId) => readyId !== id
     );
     const claimedIds = [...previous.claimedIds, id];
+    const { [id]: _removed, ...progressBaselines } = previous.progressBaselines;
     const afterClaim = {
       ...previous,
       readyToClaimIds,
       claimedIds,
+      progressBaselines,
     };
 
-    return {
-      ...afterClaim,
-      activeSlotIds: replaceActiveSlotAfterClaim(
-        MISSION_CATALOG,
-        afterClaim,
-        id
-      ),
-    };
+    const activeSlotIds = replaceActiveSlotAfterClaim(
+      MISSION_CATALOG,
+      afterClaim,
+      id,
+      snapshot
+    );
+
+    return captureMissionBaselines(
+      {
+        ...afterClaim,
+        activeSlotIds,
+      },
+      snapshot,
+      activeSlotIds
+    );
   });
 
   sound.play("upgrade");

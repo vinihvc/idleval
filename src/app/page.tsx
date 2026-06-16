@@ -1,5 +1,4 @@
 import React from "react";
-import { Characters } from "@/components/characters";
 import { ActionTools } from "@/components/debug/action-tools";
 import { MediaQuery } from "@/components/debug/media-query";
 import { FallingLeaves } from "@/components/effects/falling-leaves";
@@ -13,7 +12,6 @@ import { Footer } from "@/components/layout/footer";
 import { GameSectionDialogs } from "@/components/layout/game-section-dialogs";
 import { Header } from "@/components/layout/header";
 import { Navigation } from "@/components/layout/navigation";
-import type { CharacterInstruction } from "@/components/pets/characters-pet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SkipNavContent, SkipNavLink } from "@/components/ui/skip-nav";
 import { m } from "@/i18n/messages";
@@ -40,20 +38,13 @@ export const HomePage = () => {
             <Header />
 
             <GameStage>
-              <div className="relative flex w-full items-center justify-center">
-                <div className="absolute top-1/2 left-2 z-10 -translate-y-1/2">
-                  <Characters
-                    imagePath={STAGE_CHARACTER_IMAGE_PATH}
-                    instructions={STAGE_CHARACTER_INSTRUCTIONS}
-                  />
-                </div>
-                <Missions className="max-w-md" />
-              </div>
+              <Missions className="max-w-md" />
             </GameStage>
 
             <main className="min-h-0 flex-1">
               <SkipNavContent />
-              <ScrollArea>
+
+              <ScrollArea className="**:data-[slot=scroll-area-scrollbar]:hidden">
                 <FactoryGrid />
               </ScrollArea>
             </main>
@@ -77,24 +68,3 @@ export const HomePage = () => {
     </Providers>
   );
 };
-
-const STAGE_CHARACTER_IMAGE_PATH = "/images/pets/characters-32";
-
-const STAGE_CHARACTER_INSTRUCTIONS: CharacterInstruction[] = [
-  { duration: 800, type: "wait" },
-  { type: "moveTo", x: 32, y: 0, duration: 900 },
-  { duration: 350, type: "wait" },
-  { type: "moveTo", x: 96, y: 0, duration: 1500 },
-  { duration: 600, type: "wait" },
-  { type: "wave", duration: 700 },
-  { duration: 300, type: "wait" },
-  { type: "moveTo", x: 56, y: 0, duration: 750 },
-  { type: "moveTo", x: 76, y: 0, duration: 420 },
-  { type: "moveTo", x: 48, y: 0, duration: 520 },
-  { duration: 900, type: "wait" },
-  { type: "wave", duration: 500 },
-  { type: "moveTo", x: 8, y: 0, duration: 1400 },
-  { duration: 400, type: "wait" },
-  { type: "moveTo", x: 24, y: 0, duration: 360 },
-  { type: "moveTo", x: 0, y: 0, duration: 560 },
-];

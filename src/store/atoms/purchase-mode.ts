@@ -34,7 +34,7 @@ export const AMOUNT_TO_BUY = [
   {
     name: "max",
     symbol: "",
-    description: "all you can afford",
+    description: "max affordable",
     value: "max",
   },
 ] as const;

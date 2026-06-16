@@ -168,4 +168,37 @@ describe("content invariants", () => {
       }
     }
   });
+
+  it("since-active objectives use positive targets", () => {
+    for (const mission of MISSION_CATALOG) {
+      const { objective } = mission;
+
+      if (!("scope" in objective) || objective.scope !== "sinceActive") {
+        continue;
+      }
+
+      if ("target" in objective) {
+        const target =
+          typeof objective.target === "string"
+            ? Number(objective.target)
+            : objective.target;
+
+        expect(target).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("does not repeat invoke-god objectives back-to-back", () => {
+    for (let index = 1; index < MISSION_CATALOG.length; index++) {
+      const previous = MISSION_CATALOG[index - 1];
+      const current = MISSION_CATALOG[index];
+
+      if (
+        previous?.objective.type === "invokeGod" &&
+        current?.objective.type === "invokeGod"
+      ) {
+        expect(previous.objective.godId).not.toBe(current.objective.godId);
+      }
+    }
+  });
 });

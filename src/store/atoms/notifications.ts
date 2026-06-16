@@ -1,6 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
+import { getHasClaimableMission } from "@/game/missions";
 import { store } from "@/providers/store";
 import {
   getHasPendingDailyReward,
@@ -17,6 +18,10 @@ import {
   getHasActivatablePowerUp,
   useHasActivatablePowerUp,
 } from "@/store/atoms/inventory";
+import {
+  getMissionsState,
+  useMissionsState,
+} from "@/store/atoms/missions.atom";
 import { persistedAtom } from "@/store/storage";
 
 export type NotificationKey =
@@ -24,7 +29,8 @@ export type NotificationKey =
   | "managers"
   | "gods"
   | "inventory"
-  | "daily";
+  | "daily"
+  | "missions";
 
 export const NOTIFICATION_KEYS = [
   "upgrades",
@@ -32,6 +38,7 @@ export const NOTIFICATION_KEYS = [
   "gods",
   "inventory",
   "daily",
+  "missions",
 ] as const satisfies readonly NotificationKey[];
 
 export interface NotificationsState {
@@ -57,6 +64,7 @@ export const buildNotificationActiveMap = (
   gods: input.gods,
   inventory: input.inventory,
   daily: input.daily,
+  missions: input.missions,
 });
 
 const applyNotificationDismissals = (
@@ -68,6 +76,7 @@ const applyNotificationDismissals = (
   gods: activeByKey.gods && !dismissed.gods,
   inventory: activeByKey.inventory && !dismissed.inventory,
   daily: activeByKey.daily && !dismissed.daily,
+  missions: activeByKey.missions && !dismissed.missions,
 });
 
 export const getActiveNotificationsByKey = (): NotificationActiveMap =>
@@ -77,6 +86,7 @@ export const getActiveNotificationsByKey = (): NotificationActiveMap =>
     gods: canInvokeGod(),
     inventory: getHasActivatablePowerUp(),
     daily: getHasPendingDailyReward(),
+    missions: getHasClaimableMission(getMissionsState()),
   });
 
 const getNotificationActive = (key: NotificationKey): boolean =>
@@ -126,6 +136,8 @@ export const useNotificationActiveMap = (): NotificationActiveMap => {
   const godsActive = useCanInvokeGod();
   const inventoryActive = useHasActivatablePowerUp();
   const { isPending: dailyActive } = useDailyReward();
+  const missionsState = useMissionsState();
+  const missionsActive = getHasClaimableMission(missionsState);
 
   return useMemo(
     () =>
@@ -135,8 +147,16 @@ export const useNotificationActiveMap = (): NotificationActiveMap => {
         gods: godsActive,
         inventory: inventoryActive,
         daily: dailyActive,
+        missions: missionsActive,
       }),
-    [upgradesActive, managersActive, godsActive, inventoryActive, dailyActive]
+    [
+      upgradesActive,
+      managersActive,
+      godsActive,
+      inventoryActive,
+      dailyActive,
+      missionsActive,
+    ]
   );
 };
 

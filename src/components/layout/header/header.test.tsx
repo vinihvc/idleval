@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, test } from "vitest";
 import { GameSectionDialogs } from "@/components/layout/game-section-dialogs";
 import { Header } from "@/components/layout/header/header";
 import { m } from "@/i18n/messages";
-import { IS_DEV } from "@/lib/envs";
 import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
@@ -32,12 +31,6 @@ describe("Header", () => {
     await expect
       .element(screen.getByRole("button", { name: m["ui.settings.open"]() }))
       .toBeInTheDocument();
-
-    if (IS_DEV) {
-      await expect
-        .element(screen.getByRole("button", { name: m["ui.wiki.open"]() }))
-        .toBeInTheDocument();
-    }
   });
 
   test("opens header dialogs from their triggers", async () => {

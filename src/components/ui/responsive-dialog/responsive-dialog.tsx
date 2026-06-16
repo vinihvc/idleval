@@ -192,7 +192,7 @@ export const ResponsiveDialogDescription = (
       <ToggleTooltip positioning={{ placement: "top-start" }}>
         <ToggleTooltipTrigger asChild data-slot="drawer-tooltip">
           <Button
-            className="size-6"
+            className="size-5 rounded-md border"
             size="icon-xs"
             sound={false}
             variant="blue"

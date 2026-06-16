@@ -87,7 +87,7 @@ export const BottomNavigationItem = (props: BottomNavigationItemProps) => {
         "transition-colors",
         "hover:text-foreground",
         "aria-expanded:text-primary",
-        "aria-expanded:before:absolute aria-expanded:before:bottom-0 aria-expanded:before:h-0.5 aria-expanded:before:w-8 aria-expanded:before:rounded-full aria-expanded:before:bg-foreground",
+        "aria-expanded:before:absolute aria-expanded:before:bottom-0 aria-expanded:before:h-0.5 aria-expanded:before:w-8 aria-expanded:before:rounded-full aria-expanded:before:bg-primary",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "disabled:pointer-events-none disabled:opacity-64",
         "aria-disabled:pointer-events-none aria-disabled:opacity-64",

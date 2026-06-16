@@ -1,23 +1,83 @@
 import { useAtomValue } from "jotai";
 import { LOCAL_STORAGE } from "@/config/local-storage";
+import type { MissionId } from "@/content/missions";
 import {
+  createInitialMissionCounters,
   createInitialMissionsState,
   type MissionsPersistedState,
 } from "@/game/types";
 import { store } from "@/providers/store";
 import { persistedAtomWithNormalize } from "@/store/storage";
 
-const isMissionCounters = (
+const normalizeMissionCounters = (
   value: unknown
-): value is MissionsPersistedState["counters"] =>
+): MissionsPersistedState["counters"] => {
+  const empty = createInitialMissionCounters();
+
+  if (typeof value !== "object" || value === null) {
+    return empty;
+  }
+
+  const raw = value as Partial<MissionsPersistedState["counters"]>;
+
+  return {
+    productionCyclesCompleted:
+      typeof raw.productionCyclesCompleted === "number"
+        ? raw.productionCyclesCompleted
+        : empty.productionCyclesCompleted,
+    powerUpsActivated:
+      typeof raw.powerUpsActivated === "number"
+        ? raw.powerUpsActivated
+        : empty.powerUpsActivated,
+    dailyRewardsClaimed:
+      typeof raw.dailyRewardsClaimed === "number"
+        ? raw.dailyRewardsClaimed
+        : empty.dailyRewardsClaimed,
+    runGoldEarned:
+      typeof raw.runGoldEarned === "string"
+        ? raw.runGoldEarned
+        : empty.runGoldEarned,
+    runGoldSpent:
+      typeof raw.runGoldSpent === "string"
+        ? raw.runGoldSpent
+        : empty.runGoldSpent,
+  };
+};
+
+const isMissionProgressBaseline = (
+  value: unknown
+): value is MissionsPersistedState["progressBaselines"][MissionId] =>
   typeof value === "object" &&
   value !== null &&
+  "goldEarned" in value &&
+  typeof value.goldEarned === "string" &&
+  "goldSpent" in value &&
+  typeof value.goldSpent === "string" &&
   "productionCyclesCompleted" in value &&
   typeof value.productionCyclesCompleted === "number" &&
   "powerUpsActivated" in value &&
   typeof value.powerUpsActivated === "number" &&
   "dailyRewardsClaimed" in value &&
   typeof value.dailyRewardsClaimed === "number";
+
+const normalizeProgressBaselines = (
+  value: unknown
+): MissionsPersistedState["progressBaselines"] => {
+  if (typeof value !== "object" || value === null) {
+    return {};
+  }
+
+  const entries = Object.entries(value).filter(
+    (
+      entry
+    ): entry is [
+      MissionId,
+      MissionsPersistedState["progressBaselines"][MissionId],
+    ] => typeof entry[0] === "string" && isMissionProgressBaseline(entry[1])
+  );
+
+  return Object.fromEntries(entries);
+};
 
 const normalizeMissionsState = (value: unknown): MissionsPersistedState => {
   const empty = createInitialMissionsState();
@@ -47,7 +107,8 @@ const normalizeMissionsState = (value: unknown): MissionsPersistedState => {
             typeof id === "string"
         )
       : empty.readyToClaimIds,
-    counters: isMissionCounters(raw.counters) ? raw.counters : empty.counters,
+    counters: normalizeMissionCounters(raw.counters),
+    progressBaselines: normalizeProgressBaselines(raw.progressBaselines),
     renownPercent:
       typeof raw.renownPercent === "number" && raw.renownPercent >= 0
         ? raw.renownPercent

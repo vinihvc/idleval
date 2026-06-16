@@ -46,7 +46,7 @@ describe("DailyRewardCard", () => {
   });
 
   test.each([
-    ["current", "hasteRune", 4, "04", "brown", null] as const,
+    ["current", "hasteRune", 4, "04", "green", null] as const,
     ["locked", "mimirCoin", 2, "02", "brown", null] as const,
     ["next", "hasteRune", 4, "04", "brown", getLocalDateString()] as const,
   ])("renders %s status with expected badge styling", async (_status, powerUpId, day, dayLabel, badgeVariant, lastClaimLocalDate) => {

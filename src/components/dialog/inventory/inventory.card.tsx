@@ -55,7 +55,7 @@ export const InventoryCard = (props: InventoryCardProps) => {
           className="absolute top-1 right-1 font-number"
           data-slot="power-up-card-badge"
         >
-          <div className="flex size-6 select-none items-center justify-center rounded-md border bg-popover text-base text-popover-foreground">
+          <div className="flex size-5 select-none items-center justify-center rounded-md border bg-popover text-popover-foreground text-sm">
             {item.count}
           </div>
         </div>
@@ -69,7 +69,7 @@ export const InventoryCard = (props: InventoryCardProps) => {
                 aria-label={m["ui.inventory.slot.info"]({
                   0: getLocalizedPowerUp(item.powerUpId).name,
                 })}
-                className="absolute top-1 left-1 size-6 rounded-md border"
+                className="absolute top-1 left-1 size-5 rounded-md border"
                 size="icon-xs"
                 variant="blue"
               >

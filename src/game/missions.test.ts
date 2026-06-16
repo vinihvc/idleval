@@ -3,12 +3,15 @@ import { FACTORY_TYPES } from "@/content/factories";
 import { getMissionById, MISSION_CATALOG } from "@/content/missions";
 import {
   canClaimMission,
+  captureMissionBaselines,
   findNewlyReadyMissionIds,
   getMissionProgress,
   getRenownProductionMultiplier,
   getVisibleMissionSlots,
   isMissionReadyToClaim,
+  meetsMissionRequirements,
   replaceActiveSlotAfterClaim,
+  resolveActiveSlotIds,
   summarizeMissionRewards,
 } from "@/game/missions";
 import {
@@ -52,6 +55,7 @@ describe("missions", () => {
   it("tracks own-units progress from statistics", () => {
     const mission = getMissionById("mission-001");
     assert(mission);
+    const state = createInitialMissionsState();
     const snapshot = createSnapshot({
       statistics: {
         goldEarned: "0",
@@ -63,14 +67,103 @@ describe("missions", () => {
       },
     });
 
-    expect(getMissionProgress(mission.objective, snapshot).ratio).toBe(1);
-    expect(isMissionReadyToClaim(mission.objective, snapshot)).toBe(true);
+    expect(
+      getMissionProgress(mission.objective, snapshot, state, mission.id).ratio
+    ).toBe(1);
+    expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(true);
+  });
+
+  it("requires since-active progress after baseline capture", () => {
+    const mission = getMissionById("mission-002");
+    assert(mission);
+    const snapshot = createSnapshot({
+      counters: {
+        ...createInitialMissionCounters(),
+        productionCyclesCompleted: 20,
+      },
+    });
+    const state = captureMissionBaselines(
+      {
+        ...createInitialMissionsState(),
+        activeSlotIds: ["mission-002"],
+        progressBaselines: {
+          "mission-002": {
+            goldEarned: "0",
+            goldSpent: "0",
+            productionCyclesCompleted: 20,
+            powerUpsActivated: 0,
+            dailyRewardsClaimed: 0,
+          },
+        },
+      },
+      snapshot,
+      ["mission-002"]
+    );
+
+    expect(
+      getMissionProgress(mission.objective, snapshot, state, mission.id).ratio
+    ).toBe(0);
+    expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(false);
+  });
+
+  it("gates missions until factory tier is unlocked", () => {
+    const state = createInitialMissionsState();
+    const snapshot = createSnapshot();
+    const wineMission = getMissionById("mission-021");
+    assert(wineMission);
+
+    expect(meetsMissionRequirements(wineMission, snapshot)).toBe(false);
+
+    const unlockedWine = createSnapshot({
+      factories: {
+        grain: createSnapshot().factories.grain,
+        wine: {
+          amount: 1,
+          isAutomated: false,
+          isProducing: false,
+          isUnlocked: true,
+          isUpgraded: false,
+          productionStartedAt: null,
+          productionDurationSec: null,
+        },
+      },
+    });
+
+    expect(meetsMissionRequirements(wineMission, unlockedWine)).toBe(true);
+    expect(resolveActiveSlotIds(MISSION_CATALOG, state, snapshot)).toEqual([
+      "mission-001",
+      "mission-002",
+      "mission-003",
+    ]);
   });
 
   it("keeps ready missions in their original slot position", () => {
     const state = createInitialMissionsState();
     state.activeSlotIds = ["mission-001", "mission-002", "mission-003"];
     state.readyToClaimIds = ["mission-003"];
+    state.progressBaselines = {
+      "mission-001": {
+        goldEarned: "0",
+        goldSpent: "0",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 0,
+        dailyRewardsClaimed: 0,
+      },
+      "mission-002": {
+        goldEarned: "0",
+        goldSpent: "0",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 0,
+        dailyRewardsClaimed: 0,
+      },
+      "mission-003": {
+        goldEarned: "0",
+        goldSpent: "0",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 0,
+        dailyRewardsClaimed: 0,
+      },
+    };
     const snapshot = createSnapshot();
 
     const slots = getVisibleMissionSlots(MISSION_CATALOG, state, snapshot);
@@ -86,24 +179,39 @@ describe("missions", () => {
   it("replaces only the claimed slot when advancing the queue", () => {
     const state = createInitialMissionsState();
     state.activeSlotIds = ["mission-001", "mission-002", "mission-003"];
+    const snapshot = createSnapshot();
 
     const nextSlots = replaceActiveSlotAfterClaim(
       MISSION_CATALOG,
       { ...state, claimedIds: ["mission-001"] },
-      "mission-001"
+      "mission-001",
+      snapshot
     );
 
     expect(nextSlots).toEqual(["mission-004", "mission-002", "mission-003"]);
   });
 
   it("finds newly ready missions and supports claim checks", () => {
-    const mission = getMissionById("mission-002");
+    const mission = getMissionById("mission-001");
     assert(mission);
     const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-001"];
+    state.progressBaselines = {
+      "mission-001": {
+        goldEarned: "0",
+        goldSpent: "0",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 0,
+        dailyRewardsClaimed: 0,
+      },
+    };
     const snapshot = createSnapshot({
       statistics: {
         ...createSnapshot().statistics,
-        goldEarned: "500",
+        factories: {
+          ...createSnapshot().statistics.factories,
+          grain: { goldEarned: "0", goldSpent: "0", quantity: 1 },
+        },
       },
     });
 

@@ -264,7 +264,7 @@ export const DialogTitle = (
   return (
     <ArkDialog.Title
       className={cn(
-        "font-display font-semibold text-2xl text-muted tracking-wide",
+        "font-display font-semibold text-muted text-xl tracking-wide",
         className
       )}
       data-slot="dialog-title"

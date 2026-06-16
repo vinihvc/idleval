@@ -3,6 +3,7 @@
 import { Popover as ArkPopover } from "@ark-ui/react/popover";
 import { Portal } from "@ark-ui/react/portal";
 import type React from "react";
+import { menuContentVariants } from "@/components/ui/menu";
 import { cn } from "@/lib/cn";
 
 export const ToggleTooltip = (
@@ -11,11 +12,6 @@ export const ToggleTooltip = (
   const {
     positioning = {
       placement: "top",
-      strategy: "fixed",
-      flip: true,
-      slide: true,
-      fitViewport: true,
-      overflowPadding: 8,
     },
     lazyMount = true,
     unmountOnExit = true,
@@ -52,19 +48,11 @@ export const ToggleTooltipContent = (
       >
         <ArkPopover.Content
           className={cn(
+            menuContentVariants(),
             "relative z-100",
             "w-full min-w-0 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-72",
-            "whitespace-normal text-pretty break-words",
-            "px-3 py-2",
-            "bg-foreground font-medium text-background text-base",
-            "rounded-lg border-2 border-secondary shadow-lg/5",
-            "fade-in-0 zoom-in-[98%] origin-(--transform-origin) animate-in",
-            "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%] data-[state=closed]:animate-out",
-            "data-[placement=bottom]:slide-in-from-top-2",
-            "data-[placement=left]:slide-in-from-end-2",
-            "data-[placement=right]:slide-in-from-start-2",
-            "data-[placement=top]:slide-in-from-bottom-2",
-            "motion-reduce:animate-none!",
+            "not-[class*='w-']:min-w-0",
+            "wrap-break-word whitespace-normal text-pretty",
             className
           )}
           data-slot="toggle-tooltip-content"
@@ -89,14 +77,14 @@ export const ToggleTooltipArrow = (
       data-slot="toggle-tooltip-arrow"
       style={
         {
-          "--arrow-background": "var(--foreground)",
+          "--arrow-background": "var(--popover)",
           "--arrow-size": "calc(1.5 * var(--spacing))",
           ...style,
         } as React.CSSProperties
       }
       {...rest}
     >
-      <ArkPopover.ArrowTip />
+      <ArkPopover.ArrowTip className="border-primary/40 border-s border-t" />
     </ArkPopover.Arrow>
   );
 };

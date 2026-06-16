@@ -15,6 +15,7 @@ import {
 } from "@/store/atoms/inventory";
 import {
   incrementMissionCounter,
+  incrementRunGoldSpent,
   syncMissionProgress,
 } from "@/store/atoms/missions.actions";
 import { getMissionRenownProductionMultiplier } from "@/store/atoms/missions.selectors";
@@ -58,6 +59,7 @@ export const setAmountBySelectedAmount = (
 
   decreaseGold(amountToPay);
   recordGoldSpent(factory, amountToPay);
+  incrementRunGoldSpent(amountToPay);
   recordQuantity(factory, amountToBuy);
   syncMissionProgress();
 };
@@ -133,6 +135,7 @@ export const autoFactory = (factory: FactoryType) => {
 
   decreaseGold(cost);
   recordGoldSpent(factory, cost);
+  incrementRunGoldSpent(cost);
   syncMissionProgress();
 };
 
@@ -153,6 +156,7 @@ export const upgradeFactory = (factory: FactoryType) => {
 
   decreaseGold(cost);
   recordGoldSpent(factory, cost);
+  incrementRunGoldSpent(cost);
   syncMissionProgress();
 };
 
@@ -174,6 +178,7 @@ export const unlockFactory = (factory: FactoryType) => {
 
   decreaseGold(unlockPrice);
   recordGoldSpent(factory, D(unlockPrice));
+  incrementRunGoldSpent(D(unlockPrice));
   recordQuantity(factory, 1);
   syncMissionProgress();
 };

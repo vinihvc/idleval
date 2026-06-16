@@ -1,4 +1,4 @@
-import type { FactoryType } from "@/content/factories";
+import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import {
   ACTIVE_MISSION_SLOTS,
   type MissionDefinition,
@@ -7,12 +7,14 @@ import {
   type MissionReward,
 } from "@/content/missions";
 import { createInitialFactoryState } from "@/game/factories";
-import type {
-  MissionGameSnapshot,
-  MissionProgress,
-  MissionSlotStatus,
-  MissionSlotView,
-  MissionsPersistedState,
+import {
+  createMissionProgressBaseline,
+  type MissionGameSnapshot,
+  type MissionProgress,
+  type MissionProgressBaseline,
+  type MissionSlotStatus,
+  type MissionSlotView,
+  type MissionsPersistedState,
 } from "@/game/types";
 import { D, type GameValue } from "@/utils/decimal";
 
@@ -33,7 +35,7 @@ const getDecimalProgress = (
   target: GameValue
 ): MissionProgress => {
   const targetNumber = target.lte(0) ? 1 : target.toNumber();
-  const currentNumber = Math.min(current.toNumber(), targetNumber);
+  const currentNumber = Math.min(Math.max(0, current.toNumber()), targetNumber);
 
   return {
     current: currentNumber,
@@ -42,38 +44,193 @@ const getDecimalProgress = (
   };
 };
 
-const getCountProgress = (
-  current: number,
-  target: number
-): MissionProgress => ({
-  current: Math.min(current, target),
-  target,
-  ratio: clampRatio(current, target),
-});
+const getCountProgress = (current: number, target: number): MissionProgress => {
+  const safeCurrent = Math.max(0, Math.min(current, target));
+
+  return {
+    current: safeCurrent,
+    target,
+    ratio: clampRatio(safeCurrent, target),
+  };
+};
+
+const getFactoryTierIndex = (factory: FactoryType): number =>
+  FACTORY_TYPES.indexOf(factory);
+
+export interface PlayerProgressStage {
+  godsInvoked: number;
+  highestFactory: FactoryType;
+  highestFactoryIndex: number;
+}
+
+/**
+ * Derives the player's macro progression stage from the current snapshot.
+ */
+export const getPlayerProgressStage = (
+  snapshot: MissionGameSnapshot
+): PlayerProgressStage => {
+  let highestFactoryIndex = 0;
+
+  for (const factory of FACTORY_TYPES) {
+    const state = getFactoryState(snapshot, factory);
+
+    if (state.isUnlocked) {
+      highestFactoryIndex = Math.max(
+        highestFactoryIndex,
+        getFactoryTierIndex(factory)
+      );
+    }
+  }
+
+  return {
+    highestFactory: FACTORY_TYPES[highestFactoryIndex] ?? "grain",
+    highestFactoryIndex,
+    godsInvoked: snapshot.gods.invoked.length,
+  };
+};
+
+export const meetsMissionRequirements = (
+  mission: MissionDefinition,
+  snapshot: MissionGameSnapshot
+): boolean => {
+  if (!mission.requires) {
+    return true;
+  }
+
+  const stage = getPlayerProgressStage(snapshot);
+
+  if (mission.requires.minFactoryUnlocked) {
+    const requiredIndex = getFactoryTierIndex(
+      mission.requires.minFactoryUnlocked
+    );
+
+    if (stage.highestFactoryIndex < requiredIndex) {
+      return false;
+    }
+  }
+
+  if (
+    mission.requires.minGodsInvoked !== undefined &&
+    stage.godsInvoked < mission.requires.minGodsInvoked
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
+const getBaseline = (
+  missionId: MissionId,
+  state: MissionsPersistedState
+): MissionProgressBaseline | undefined => state.progressBaselines[missionId];
+
+const getSinceActiveGoldEarned = (
+  snapshot: MissionGameSnapshot,
+  baseline: MissionProgressBaseline | undefined
+): GameValue => {
+  const current = D(snapshot.statistics.goldEarned);
+  const base = D(baseline?.goldEarned ?? "0");
+
+  return current.minus(base).max(0);
+};
+
+const getSinceActiveGoldSpent = (
+  snapshot: MissionGameSnapshot,
+  baseline: MissionProgressBaseline | undefined
+): GameValue => {
+  const current = D(snapshot.statistics.goldSpent);
+  const base = D(baseline?.goldSpent ?? "0");
+
+  return current.minus(base).max(0);
+};
+
+const getSinceActiveCycles = (
+  snapshot: MissionGameSnapshot,
+  baseline: MissionProgressBaseline | undefined
+): number =>
+  Math.max(
+    0,
+    snapshot.counters.productionCyclesCompleted -
+      (baseline?.productionCyclesCompleted ?? 0)
+  );
+
+const getSinceActivePowerUps = (
+  snapshot: MissionGameSnapshot,
+  baseline: MissionProgressBaseline | undefined
+): number =>
+  Math.max(
+    0,
+    snapshot.counters.powerUpsActivated - (baseline?.powerUpsActivated ?? 0)
+  );
+
+const getSinceActiveDailyRewards = (
+  snapshot: MissionGameSnapshot,
+  baseline: MissionProgressBaseline | undefined
+): number =>
+  Math.max(
+    0,
+    snapshot.counters.dailyRewardsClaimed - (baseline?.dailyRewardsClaimed ?? 0)
+  );
+
+const getScopedGoldProgress = (
+  scope: MissionObjective["scope"],
+  target: string,
+  runValue: string,
+  lifetimeValue: string,
+  sinceActiveValue: GameValue
+): MissionProgress => {
+  if (scope === "run") {
+    return getDecimalProgress(D(runValue), D(target));
+  }
+
+  if (scope === "sinceActive") {
+    return getDecimalProgress(sinceActiveValue, D(target));
+  }
+
+  return getDecimalProgress(D(lifetimeValue), D(target));
+};
+
+const getScopedCountProgress = (
+  scope: MissionObjective["scope"],
+  target: number,
+  lifetimeValue: number,
+  sinceActiveValue: number
+): MissionProgress => {
+  if (scope === "sinceActive") {
+    return getCountProgress(sinceActiveValue, target);
+  }
+
+  return getCountProgress(lifetimeValue, target);
+};
 
 /**
  * Returns progress toward a mission objective from the current game snapshot.
- *
- * @example
- * ```ts
- * getMissionProgress(mission, snapshot);
- * // => { current: 3, target: 10, ratio: 0.3 }
- * ```
  */
 export const getMissionProgress = (
   objective: MissionObjective,
-  snapshot: MissionGameSnapshot
+  snapshot: MissionGameSnapshot,
+  state?: MissionsPersistedState,
+  missionId?: MissionId
 ): MissionProgress => {
+  const baseline =
+    state && missionId ? getBaseline(missionId, state) : undefined;
+
   switch (objective.type) {
     case "earnGold":
-      return getDecimalProgress(
-        D(snapshot.statistics.goldEarned),
-        D(objective.target)
+      return getScopedGoldProgress(
+        objective.scope,
+        objective.target,
+        snapshot.counters.runGoldEarned,
+        snapshot.statistics.goldEarned,
+        getSinceActiveGoldEarned(snapshot, baseline)
       );
     case "spendGold":
-      return getDecimalProgress(
-        D(snapshot.statistics.goldSpent),
-        D(objective.target)
+      return getScopedGoldProgress(
+        objective.scope,
+        objective.target,
+        snapshot.counters.runGoldSpent,
+        snapshot.statistics.goldSpent,
+        getSinceActiveGoldSpent(snapshot, baseline)
       );
     case "holdGold":
       return getDecimalProgress(snapshot.walletGold, D(objective.target));
@@ -103,19 +260,25 @@ export const getMissionProgress = (
         1
       );
     case "completeCycles":
-      return getCountProgress(
+      return getScopedCountProgress(
+        objective.scope,
+        objective.target,
         snapshot.counters.productionCyclesCompleted,
-        objective.target
+        getSinceActiveCycles(snapshot, baseline)
       );
     case "claimDailyRewards":
-      return getCountProgress(
+      return getScopedCountProgress(
+        objective.scope,
+        objective.target,
         snapshot.counters.dailyRewardsClaimed,
-        objective.target
+        getSinceActiveDailyRewards(snapshot, baseline)
       );
     case "activatePowerUps":
-      return getCountProgress(
+      return getScopedCountProgress(
+        objective.scope,
+        objective.target,
         snapshot.counters.powerUpsActivated,
-        objective.target
+        getSinceActivePowerUps(snapshot, baseline)
       );
     default: {
       const exhaustiveCheck: never = objective;
@@ -128,9 +291,11 @@ export const getMissionProgress = (
  * Whether a mission objective is complete in the current snapshot.
  */
 export const isMissionReadyToClaim = (
-  objective: MissionObjective,
-  snapshot: MissionGameSnapshot
-): boolean => getMissionProgress(objective, snapshot).ratio >= 1;
+  mission: MissionDefinition,
+  snapshot: MissionGameSnapshot,
+  state: MissionsPersistedState
+): boolean =>
+  getMissionProgress(mission.objective, snapshot, state, mission.id).ratio >= 1;
 
 export const getMissionSlotStatus = (
   id: MissionId,
@@ -152,13 +317,56 @@ export const canClaimMission = (
   state: MissionsPersistedState
 ): boolean => state.readyToClaimIds.includes(id);
 
-const getNextMissionCandidates = (
+const getEligibleMissions = (
   catalog: MissionDefinition[],
-  state: MissionsPersistedState
+  state: MissionsPersistedState,
+  snapshot: MissionGameSnapshot
 ): MissionDefinition[] => {
   const claimed = new Set(state.claimedIds);
 
-  return catalog.filter((mission) => !claimed.has(mission.id));
+  return catalog.filter(
+    (mission) =>
+      !claimed.has(mission.id) && meetsMissionRequirements(mission, snapshot)
+  );
+};
+
+const getNextMissionCandidates = (
+  catalog: MissionDefinition[],
+  state: MissionsPersistedState,
+  snapshot: MissionGameSnapshot
+): MissionDefinition[] => getEligibleMissions(catalog, state, snapshot);
+
+/**
+ * Captures baselines for active missions that do not have one yet.
+ */
+export const captureMissionBaselines = (
+  state: MissionsPersistedState,
+  snapshot: MissionGameSnapshot,
+  activeSlotIds: MissionId[]
+): MissionsPersistedState => {
+  let progressBaselines = state.progressBaselines;
+  let changed = false;
+
+  for (const id of activeSlotIds) {
+    if (progressBaselines[id]) {
+      continue;
+    }
+
+    progressBaselines = {
+      ...progressBaselines,
+      [id]: createMissionProgressBaseline(snapshot),
+    };
+    changed = true;
+  }
+
+  if (!changed) {
+    return state;
+  }
+
+  return {
+    ...state,
+    progressBaselines,
+  };
 };
 
 /**
@@ -167,12 +375,18 @@ const getNextMissionCandidates = (
  */
 export const resolveActiveSlotIds = (
   catalog: MissionDefinition[],
-  state: MissionsPersistedState
+  state: MissionsPersistedState,
+  snapshot: MissionGameSnapshot
 ): MissionId[] => {
   const claimed = new Set(state.claimedIds);
+  const eligible = new Set(
+    getEligibleMissions(catalog, state, snapshot).map((mission) => mission.id)
+  );
 
   const isVisibleMission = (id: MissionId): boolean =>
-    catalog.some((mission) => mission.id === id) && !claimed.has(id);
+    catalog.some((mission) => mission.id === id) &&
+    !claimed.has(id) &&
+    eligible.has(id);
 
   const slots: MissionId[] = [];
   const used = new Set<MissionId>();
@@ -195,7 +409,11 @@ export const resolveActiveSlotIds = (
       break;
     }
 
-    if (claimed.has(mission.id) || used.has(mission.id)) {
+    if (
+      claimed.has(mission.id) ||
+      used.has(mission.id) ||
+      !eligible.has(mission.id)
+    ) {
       continue;
     }
 
@@ -212,19 +430,20 @@ export const resolveActiveSlotIds = (
 export const replaceActiveSlotAfterClaim = (
   catalog: MissionDefinition[],
   state: MissionsPersistedState,
-  claimedId: MissionId
+  claimedId: MissionId,
+  snapshot: MissionGameSnapshot
 ): MissionId[] => {
   const slotIndex = state.activeSlotIds.indexOf(claimedId);
 
   if (slotIndex === -1) {
-    return resolveActiveSlotIds(catalog, state);
+    return resolveActiveSlotIds(catalog, state, snapshot);
   }
 
   const nextSlots = [...state.activeSlotIds];
   const usedIds = new Set(
     nextSlots.filter((id, index) => index !== slotIndex && id !== claimedId)
   );
-  const nextMission = getNextMissionCandidates(catalog, state).find(
+  const nextMission = getNextMissionCandidates(catalog, state, snapshot).find(
     (mission) => !usedIds.has(mission.id)
   );
 
@@ -234,10 +453,14 @@ export const replaceActiveSlotAfterClaim = (
     nextSlots.splice(slotIndex, 1);
   }
 
-  return resolveActiveSlotIds(catalog, {
-    ...state,
-    activeSlotIds: nextSlots,
-  });
+  return resolveActiveSlotIds(
+    catalog,
+    {
+      ...state,
+      activeSlotIds: nextSlots,
+    },
+    snapshot
+  );
 };
 
 /**
@@ -248,9 +471,10 @@ export const getVisibleMissionSlots = (
   state: MissionsPersistedState,
   snapshot: MissionGameSnapshot
 ): MissionSlotView[] => {
+  const activeSlotIds = resolveActiveSlotIds(catalog, state, snapshot);
   const slots: MissionSlotView[] = [];
 
-  for (const id of resolveActiveSlotIds(catalog, state)) {
+  for (const id of activeSlotIds) {
     const mission = catalog.find((entry) => entry.id === id);
 
     if (!mission) {
@@ -261,7 +485,7 @@ export const getVisibleMissionSlots = (
       id,
       order: mission.order,
       status: getMissionSlotStatus(id, state),
-      progress: getMissionProgress(mission.objective, snapshot),
+      progress: getMissionProgress(mission.objective, snapshot, state, id),
     });
   }
 
@@ -278,20 +502,34 @@ export const findNewlyReadyMissionIds = (
 ): MissionId[] => {
   const ready = new Set(state.readyToClaimIds);
   const claimed = new Set(state.claimedIds);
+  const activeSlotIds = resolveActiveSlotIds(catalog, state, snapshot);
+  const active = new Set(activeSlotIds);
   const newlyReady: MissionId[] = [];
 
   for (const mission of catalog) {
-    if (ready.has(mission.id) || claimed.has(mission.id)) {
+    if (
+      ready.has(mission.id) ||
+      claimed.has(mission.id) ||
+      !active.has(mission.id)
+    ) {
       continue;
     }
 
-    if (isMissionReadyToClaim(mission.objective, snapshot)) {
+    if (!meetsMissionRequirements(mission, snapshot)) {
+      continue;
+    }
+
+    if (isMissionReadyToClaim(mission, snapshot, state)) {
       newlyReady.push(mission.id);
     }
   }
 
   return newlyReady;
 };
+
+export const getHasClaimableMission = (
+  state: MissionsPersistedState
+): boolean => state.readyToClaimIds.length > 0;
 
 /**
  * Permanent production multiplier from stacked renown rewards.

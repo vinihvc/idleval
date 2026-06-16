@@ -6,6 +6,7 @@ import {
   useTooltipContext,
 } from "@ark-ui/react/tooltip";
 import type React from "react";
+import { menuContentVariants } from "@/components/ui/menu";
 import { cn } from "@/lib/cn";
 
 export const useTooltip = useTooltipContext;
@@ -51,20 +52,9 @@ export const TooltipContent = (
       <ArkTooltip.Positioner data-slot="tooltip-positioner">
         <ArkTooltip.Content
           className={cn(
+            menuContentVariants(),
             "z-50 hidden w-fit sm:block",
-            "px-2.5 py-1",
-            "bg-foreground",
-            "font-medium text-background text-base",
-            "rounded-lg border-2 border-secondary shadow-lg/5",
-            "origin-(--transform-origin) animate-in",
-            "fade-in-0 zoom-in-[98%]",
-            "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%]",
-            "data-[state=closed]:animate-out",
-            "data-[placement=bottom]:slide-in-from-top-2",
-            "data-[placement=left]:slide-in-from-end-2",
-            "data-[placement=right]:slide-in-from-start-2",
-            "data-[placement=top]:slide-in-from-bottom-2",
-            "motion-reduce:animate-none!",
+            "not-[class*='w-']:min-w-0",
             className
           )}
           data-slot="tooltip-content"
@@ -87,14 +77,14 @@ export const TooltipArrow = (
       data-slot="tooltip-arrow"
       style={
         {
-          "--arrow-background": "var(--foreground)",
+          "--arrow-background": "var(--popover)",
           "--arrow-size": "calc(1.5 * var(--spacing))",
           ...style,
         } as React.CSSProperties
       }
       {...rest}
     >
-      <ArkTooltip.ArrowTip />
+      <ArkTooltip.ArrowTip className="border-primary/40 border-s border-t" />
     </ArkTooltip.Arrow>
   );
 };

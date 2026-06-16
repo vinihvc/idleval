@@ -175,7 +175,7 @@ export const UpgradeCardHeader = (props: UpgradeCardHeaderProps) => {
           <Button
             aria-label={m["ui.upgradeCard.info"]({ 0: title })}
             asChild
-            className="size-5 rounded-md border"
+            className="hitbox-2 size-4 rounded-sm border"
             size="icon-xs"
             variant="blue"
           >
@@ -231,7 +231,7 @@ export const UpgradeCardArt = (props: UpgradeCardArtProps) => {
           <Image
             alt=""
             aria-hidden
-            className="pixel-crisp pointer-events-none size-20 object-contain object-center"
+            className="pixel-crisp pointer-events-none size-14 object-contain object-center sm:size-20"
             height={140}
             layout="constrained"
             src={src}

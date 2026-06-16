@@ -12,7 +12,7 @@ export const FactoryGrid = (props: React.ComponentProps<"section">) => {
       className={className}
       {...rest}
     >
-      <div className="grid w-full gap-10 px-5 py-6 pb-12 md:grid-cols-2 md:gap-8 md:px-4 md:py-6">
+      <div className="grid w-full gap-10 px-3 py-6 md:grid-cols-2 md:gap-8">
         {FACTORY_TYPES.map((factory) => (
           <FactoryCard key={factory} type={factory} />
         ))}

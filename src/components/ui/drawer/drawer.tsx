@@ -270,7 +270,7 @@ export const DrawerContent = (props: DrawerContentProps) => {
                     aria-label={m["ui.common.close"]()}
                     className={cn(
                       "absolute top-2 right-2",
-                      "size-12",
+                      "size-8",
                       "inset-shadow-none rounded-full border-0 drop-shadow-[0_4px_5px_rgba(0,0,0,0.45)]",
                       "bg-transparent",
                       "hover:bg-transparent hover:brightness-110",
@@ -281,7 +281,7 @@ export const DrawerContent = (props: DrawerContentProps) => {
                     variant="ghost"
                   >
                     <WaxSealIcon className="absolute inset-0 size-full" />
-                    <Close className="relative z-10 size-5 drop-shadow-[0_1px_1px_rgba(80,0,0,0.75)] sm:size-6" />
+                    <Close className="relative z-10 size-3" />
                   </Button>
                 </DrawerClose>
               )}

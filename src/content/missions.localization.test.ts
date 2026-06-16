@@ -28,7 +28,7 @@ describe("mission localization", () => {
     assert(secondMission);
 
     expect(getLocalizedMissionObjective(secondMission.objective)).toBe(
-      "Earn 500 gold"
+      "Finish 8 production runs on this quest"
     );
   });
 });

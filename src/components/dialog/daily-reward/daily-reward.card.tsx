@@ -29,11 +29,13 @@ export const DailyRewardCard = (props: DailyRewardCardProps) => {
   const dayLabel = String(day).padStart(2, "0");
 
   const isClaimed = status === "claimed";
+  const isClaimable = status === "current";
+  const isGreen = isClaimed || isClaimable;
 
   return (
     <PowerUpCard
       className={className}
-      variant={isClaimed ? "green" : "default"}
+      variant={isGreen ? "green" : "default"}
       {...rest}
     >
       <PowerUpCardMedia className="py-6 sm:pb-2" powerUpId={powerUpId} />
@@ -50,7 +52,7 @@ export const DailyRewardCard = (props: DailyRewardCardProps) => {
         <Badge
           className="px-3 font-number text-base tabular-nums"
           size="lg"
-          variant={isClaimed ? "green" : "brown"}
+          variant={isGreen ? "green" : "brown"}
         >
           {dayLabel}
         </Badge>

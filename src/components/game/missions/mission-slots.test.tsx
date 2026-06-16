@@ -79,8 +79,20 @@ describe("MissionSlots", () => {
   });
 
   test("claims ready mission from card without opening dialog", async () => {
+    store.set(statisticsAtom, (previous) => ({
+      ...previous,
+      factories: {
+        ...previous.factories,
+        grain: {
+          ...previous.factories.grain,
+          quantity: 1,
+        },
+      },
+    }));
+
     store.set(missionsAtom, (previous) => ({
       ...previous,
+      activeSlotIds: ["mission-001", "mission-002", "mission-003"],
       readyToClaimIds: ["mission-001"],
     }));
 

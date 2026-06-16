@@ -13,7 +13,6 @@ import { m } from "@/i18n/messages";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { useNotifications } from "@/store/atoms/notifications";
 import { AmountToBuy } from "./header.amount";
-import { HeaderWiki } from "./header.wiki";
 
 const LazySettingsDialog = React.lazy(
   () => import("@/components/dialog/settings/settings")
@@ -49,8 +48,6 @@ export const HeaderActions = () => {
           </TooltipTrigger>
           <TooltipContent>{m["ui.nav.daily"]()}</TooltipContent>
         </Tooltip>
-
-        <HeaderWiki />
 
         <Tooltip>
           <TooltipTrigger asChild>

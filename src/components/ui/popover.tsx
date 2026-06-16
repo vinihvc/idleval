@@ -12,6 +12,7 @@ import { boxBorder } from "@/components/ui/box-border";
 import { Button } from "@/components/ui/button";
 import { FantasyCorner } from "@/components/ui/fantasy-corner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 
 export const usePopover = usePopoverContext;
@@ -102,7 +103,7 @@ export const PopoverContent = (props: PopoverContentProps) => {
           {!!showCloseButton && (
             <PopoverClose asChild>
               <Button
-                aria-label="Close"
+                aria-label={m["ui.common.close"]()}
                 className="absolute inset-e-2 top-2 opacity-64 hover:opacity-100"
                 size="icon-sm"
                 variant="ghost"

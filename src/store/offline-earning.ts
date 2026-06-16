@@ -24,6 +24,7 @@ import {
   getActivePowerUp,
   getPowerUpIncomeMultiplierForEarn,
 } from "@/store/atoms/inventory";
+import { syncMissionProgress } from "@/store/atoms/missions.actions";
 import { getMissionRenownProductionMultiplier } from "@/store/atoms/missions.selectors";
 import { refreshExpiredPowerUps } from "@/store/atoms/power-ups.actions";
 import { getLastSeenAt, touchLastSeen } from "@/store/atoms/session";
@@ -174,6 +175,7 @@ export const applyOfflineEarning = (
 
   touchLastSeen(now);
   refreshExpiredPowerUps(now);
+  syncMissionProgress();
 
   const totalGold = computed.totalGold.plus(manualGold);
   const summaryResults = [

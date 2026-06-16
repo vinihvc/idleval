@@ -1,6 +1,6 @@
 # Idleval
 
-Step into a medieval realm where you build, expand, and defend. Recruit heroes, gather riches, and grow your kingdom, even while you are away!
+Raise a tiny realm, hire strange helpers, court impossible powers, and watch your coffers grow while you are away.
 
 ### Preview
 
