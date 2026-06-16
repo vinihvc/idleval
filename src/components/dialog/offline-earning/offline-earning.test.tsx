@@ -33,7 +33,25 @@ describe("OfflineEarningDialog", () => {
             .elements().length
       )
       .toBeGreaterThan(0);
-    await expect.element(screen.getByText("$500")).toBeInTheDocument();
+    await expect
+      .poll(
+        () =>
+          document
+            .querySelector('[data-slot="offline-earning-duration"]')
+            ?.textContent?.includes("1h")
+      )
+      .toBe(true);
+    await expect
+      .poll(
+        () =>
+          document
+            .querySelector('[data-slot="offline-earning-gold"]')
+            ?.textContent?.includes("$500")
+      )
+      .toBe(true);
+    await expect
+      .element(screen.getByText(m["ui.offline.earnedLabel"]()))
+      .toBeInTheDocument();
   });
 
   test("keeps offline summary when a lower-priority dialog is blocked", async () => {

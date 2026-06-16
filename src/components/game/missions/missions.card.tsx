@@ -49,6 +49,7 @@ const missionSlotVariants = tv({
 interface MissionsCardProps
   extends Omit<React.ComponentProps<"button">, "onClick" | "slot"> {
   onClaim?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   slot: MissionSlotView;
 }
 
@@ -126,6 +127,7 @@ const MissionSlotClaimFooter = () => (
 
 export const MissionsCard = (props: MissionsCardProps) => {
   const { slot, onClaim, className, ref, onClick, ...rest } = props;
+
   const { id: missionId, status } = slot;
   const missionDefinition = getMissionById(missionId);
   const objective = missionDefinition?.objective;

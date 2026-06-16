@@ -4,6 +4,9 @@ import { usePresenceContext } from "@ark-ui/react/presence";
 import React from "react";
 import { useResponsiveDialog } from "@/components/ui/responsive-dialog";
 
+interface MissionDialogTriggerChildProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+
 interface MissionDialogTriggerProps {
   children: React.ReactElement;
 }
@@ -15,21 +18,23 @@ const mergeTriggerProps = (
   >,
   presence: ReturnType<typeof usePresenceContext>
 ) => {
-  const childOnClick = children.props.onClick as
-    | React.MouseEventHandler<HTMLElement>
-    | undefined;
+  const childProps = children.props as MissionDialogTriggerChildProps;
+  const childOnClick = childProps.onClick;
 
-  return React.cloneElement(children, {
-    ...children.props,
-    ...triggerProps,
-    "aria-controls": presence.unmounted
-      ? undefined
-      : triggerProps["aria-controls"],
-    onClick: (event: React.MouseEvent<HTMLElement>) => {
-      triggerProps.onClick?.(event);
-      childOnClick?.(event);
-    },
-  });
+  return React.cloneElement(
+    children as React.ReactElement<MissionDialogTriggerChildProps>,
+    {
+      ...childProps,
+      ...triggerProps,
+      "aria-controls": presence.unmounted
+        ? undefined
+        : triggerProps["aria-controls"],
+      onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
+        triggerProps.onClick?.(event);
+        childOnClick?.(event);
+      },
+    }
+  );
 };
 
 const MissionDialogDesktopTrigger = (props: MissionDialogTriggerProps) => {

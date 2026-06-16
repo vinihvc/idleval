@@ -9,7 +9,7 @@ export const FALLING_LEAVES_Z_INDEX = 9999;
 export const getConfettiRainSpawnCount = (): number =>
   Math.floor(CONFETTI_RAIN_DURATION_MS / CONFETTI_RAIN_INTERVAL_MS) + 1;
 
-type ConfettiLauncher = ReturnType<typeof confetti.create>;
+type ConfettiLauncher = (options?: confetti.Options) => void;
 
 const pendingRainIntervals = new Set<number>();
 const pendingRainTimeouts = new Set<number>();

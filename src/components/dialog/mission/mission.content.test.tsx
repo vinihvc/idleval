@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { MissionClaimContent } from "@/components/dialog/mission/mission.content";
 import { formatMissionProgressLabel } from "@/components/game/missions/format-mission-progress";
-import type { MissionId } from "@/content/missions";
 import { getMissionById } from "@/content/missions";
 import { getLocalizedPowerUp } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
@@ -36,7 +35,7 @@ describe("MissionClaimContent", () => {
   test("hides progress bar when mission is ready", async () => {
     await renderWithProviders(
       <MissionClaimContent
-        missionId="mission-001"
+        mission={mission001}
         progress={{ current: 1, target: 1, ratio: 1 }}
         status="ready"
       />
@@ -54,7 +53,7 @@ describe("MissionClaimContent", () => {
 
     await renderWithProviders(
       <MissionClaimContent
-        missionId="mission-001"
+        mission={mission001}
         progress={progress}
         status="in_progress"
       />
@@ -74,7 +73,7 @@ describe("MissionClaimContent", () => {
 
     const screen = await renderWithProviders(
       <MissionClaimContent
-        missionId="mission-001"
+        mission={mission001}
         progress={{ current: 0, target: 1, ratio: 0 }}
         status="in_progress"
       />
@@ -100,7 +99,7 @@ describe("MissionClaimContent", () => {
 
     const screen = await renderWithProviders(
       <MissionClaimContent
-        missionId="mission-003"
+        mission={mission003}
         progress={{ current: 2, target: 5, ratio: 0.4 }}
         status="in_progress"
       />
@@ -124,7 +123,7 @@ describe("MissionClaimContent", () => {
 
     const screen = await renderWithProviders(
       <MissionClaimContent
-        missionId="mission-005"
+        mission={mission005}
         progress={{ current: 1000, target: 2000, ratio: 0.5 }}
         status="in_progress"
       />
@@ -143,17 +142,4 @@ describe("MissionClaimContent", () => {
     }
   });
 
-  test("returns null for unknown mission id", async () => {
-    await renderWithProviders(
-      <MissionClaimContent
-        missionId={"mission-unknown" as MissionId}
-        progress={{ current: 0, target: 1, ratio: 0 }}
-        status="in_progress"
-      />
-    );
-
-    expect(
-      document.querySelector('[data-slot="mission-claim-content"]')
-    ).toBeNull();
-  });
 });

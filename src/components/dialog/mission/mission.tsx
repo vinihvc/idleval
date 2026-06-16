@@ -18,8 +18,8 @@ import { MissionClaimContent } from "./mission.content";
 import { MissionDialogTrigger } from "./mission.trigger";
 
 export interface MissionDialogProps
-  extends React.ComponentProps<typeof ResponsiveDialog> {
-  children?: React.ReactNode;
+  extends Omit<React.ComponentProps<typeof ResponsiveDialog>, "children"> {
+  children?: React.ReactElement;
   mission: MissionDefinition;
   progress: MissionProgress;
   status: MissionSlotStatus;

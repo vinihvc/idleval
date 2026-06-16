@@ -36,6 +36,7 @@ import {
 } from "../toggle-tooltip";
 
 interface RootResponsiveDialogProps extends React.PropsWithChildren {
+  lazyMount?: boolean;
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
   /**
@@ -44,6 +45,7 @@ interface RootResponsiveDialogProps extends React.PropsWithChildren {
    * @default "dialog"
    */
   role?: "dialog" | "alertdialog";
+  unmountOnExit?: boolean;
 }
 
 interface ResponsiveDialogProps extends React.PropsWithChildren {

@@ -1,6 +1,9 @@
-import { ParaglideMessage } from "@inlang/paraglide-js-react";
+import { Clock } from "pixelarticons/react/Clock";
+import { Coin } from "@/components/icons/coin";
+import { boxBorder } from "@/components/ui/box-border";
 import { NumberText } from "@/components/ui/number-text";
 import { m } from "@/i18n/messages";
+import { cn } from "@/lib/cn";
 import type { OfflineSummary } from "@/store/offline-earning";
 import {
   amountFormatterWithDolarSign,
@@ -17,21 +20,62 @@ interface OfflineEarningSummaryProps {
 export const OfflineEarningSummary = (props: OfflineEarningSummaryProps) => {
   const { summary } = props;
 
+  const duration = formatElapsedDuration(summary.elapsedMs);
+  const amount = amountFormatterWithDolarSign(summary.totalGold);
+
   return (
-    <ParaglideMessage
-      inputs={{
-        "0": formatElapsedDuration(summary.elapsedMs),
-        "1": amountFormatterWithDolarSign(summary.totalGold),
-      }}
-      markup={{
-        duration: ({ children }) => (
-          <span className="font-number text-2xl">{children}</span>
-        ),
-        amount: ({ children }) => (
-          <NumberText className="text-2xl text-primary">{children}</NumberText>
-        ),
-      }}
-      message={m["ui.offline.summary"]}
-    />
+    <div className="flex flex-col items-center gap-5 text-center sm:pb-2">
+      <p className="sr-only">
+        {m["ui.offline.summaryA11y"]({ 0: duration, 1: amount })}
+      </p>
+
+      <div
+        className="flex flex-col items-center gap-1.5 text-lg text-popover-foreground"
+        data-slot="offline-earning-duration"
+      >
+        <p className="font-semibold tracking-wide">
+          {m["ui.offline.durationLabel"]()}
+        </p>
+        <div className="flex items-center justify-center gap-2">
+          <Clock
+            aria-hidden
+            className="size-5 shrink-0 text-popover-foreground sm:size-6"
+          />
+          <NumberText
+            className="text-3xl text-popover-foreground sm:text-4xl"
+            size="sm"
+            variant="default"
+          >
+            {duration}
+          </NumberText>
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          "flex w-full flex-col items-center gap-2.5 rounded-xl border-2 border-secondary bg-card px-4 py-4",
+          boxBorder({ variant: "cream" })
+        )}
+        data-slot="offline-earning-gold"
+      >
+        <p className="font-semibold tracking-wide">
+          {m["ui.offline.earnedLabel"]()}
+        </p>
+        <div className="flex items-center justify-center gap-2.5">
+          <Coin
+            aria-hidden
+            className="size-9 shrink-0 drop-shadow-md sm:size-10"
+            intrinsicSize={40}
+          />
+          <NumberText
+            className="text-5xl text-primary"
+            size="lg"
+            variant="cream"
+          >
+            {amount}
+          </NumberText>
+        </div>
+      </div>
+    </div>
   );
 };

@@ -4,7 +4,7 @@ import { m } from "@/i18n/messages";
 
 export const OfflineEarningActions = () => (
   <ResponsiveDialogClose asChild>
-    <Button className="w-full" variant="default">
+    <Button className="w-full" size="lg" variant="default">
       {m["ui.offline.claimContinue"]()}
     </Button>
   </ResponsiveDialogClose>
