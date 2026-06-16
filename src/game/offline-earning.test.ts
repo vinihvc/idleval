@@ -1,12 +1,36 @@
 import { describe, expect, it } from "vitest";
 import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
 import {
+  createInitialFactoriesState,
+  getFactoryEarnPerCycle,
+} from "@/game/factories";
+import {
   computeOfflineEarning,
   MIN_OFFLINE_MS,
   meetsMinimumOfflineDuration,
 } from "@/game/offline-earning";
-import { initialData } from "@/store/atoms/factories.atom";
+import type { ActivePowerUp } from "@/game/power-ups";
 import { D } from "@/utils/decimal";
+
+const grainFactory = () => {
+  const factories = structuredClone(createInitialFactoriesState());
+  factories.grain = {
+    ...factories.grain,
+    isAutomated: true,
+    isUnlocked: true,
+    amount: 1,
+  };
+
+  return factories;
+};
+
+const grainEarnPerCycle = () =>
+  getFactoryEarnPerCycle({
+    amount: 1,
+    godsProductionMultiplier: D(1),
+    isUpgraded: false,
+    productionValue: FACTORY_DATA.grain.productionValue,
+  });
 
 describe("offline-earning", () => {
   it("meetsMinimumOfflineDuration at the 60s threshold", () => {
@@ -15,7 +39,12 @@ describe("offline-earning", () => {
   });
 
   it("returns empty results when lastSeenAt is null", () => {
-    const result = computeOfflineEarning(Date.now(), null, initialData, D(1));
+    const result = computeOfflineEarning(
+      Date.now(),
+      null,
+      createInitialFactoriesState(),
+      D(1)
+    );
 
     expect(result.elapsedMs).toBe(0);
     expect(result.totalGold.toNumber()).toBe(0);
@@ -24,14 +53,24 @@ describe("offline-earning", () => {
 
   it("returns empty results when lastSeenAt is in the future", () => {
     const now = 1_000_000;
-    const result = computeOfflineEarning(now, now + 1000, initialData, D(1));
+    const result = computeOfflineEarning(
+      now,
+      now + 1000,
+      createInitialFactoriesState(),
+      D(1)
+    );
 
     expect(result.totalGold.toNumber()).toBe(0);
   });
 
   it("returns empty results when elapsed time is zero", () => {
     const now = 1_000_000;
-    const result = computeOfflineEarning(now, now, initialData, D(1));
+    const result = computeOfflineEarning(
+      now,
+      now,
+      createInitialFactoriesState(),
+      D(1)
+    );
 
     expect(result.elapsedMs).toBe(0);
     expect(result.totalGold.toNumber()).toBe(0);
@@ -39,7 +78,7 @@ describe("offline-earning", () => {
   });
 
   it("awards automated factories for elapsed offline time", () => {
-    const factories = structuredClone(initialData);
+    const factories = structuredClone(createInitialFactoriesState());
     factories.grain = {
       ...factories.grain,
       isAutomated: true,
@@ -61,7 +100,7 @@ describe("offline-earning", () => {
   });
 
   it("skips locked and non-automated factories", () => {
-    const factories = structuredClone(initialData);
+    const factories = structuredClone(createInitialFactoriesState());
     factories.grain = {
       ...factories.grain,
       isAutomated: false,
@@ -83,7 +122,7 @@ describe("offline-earning", () => {
   });
 
   it("sums multiple automated factories into totalGold", () => {
-    const factories = structuredClone(initialData);
+    const factories = structuredClone(createInitialFactoriesState());
     factories.grain = {
       ...factories.grain,
       isAutomated: true,
@@ -109,7 +148,7 @@ describe("offline-earning", () => {
   });
 
   it("calculates secondsRemaining for partial and complete cycles", () => {
-    const factories = structuredClone(initialData);
+    const factories = structuredClone(createInitialFactoriesState());
     factories.grain = {
       ...factories.grain,
       isAutomated: true,
@@ -143,7 +182,7 @@ describe("offline-earning", () => {
   });
 
   it("applies upgrade and god multipliers to offline earnings", () => {
-    const factories = structuredClone(initialData);
+    const factories = structuredClone(createInitialFactoriesState());
     factories.grain = {
       ...factories.grain,
       isAutomated: true,
@@ -160,7 +199,7 @@ describe("offline-earning", () => {
   });
 
   it("returns results in FACTORY_TYPES order", () => {
-    const factories = structuredClone(initialData);
+    const factories = structuredClone(createInitialFactoriesState());
 
     for (const factory of FACTORY_TYPES) {
       factories[factory] = {
@@ -175,5 +214,90 @@ describe("offline-earning", () => {
     const factoryOrder = result.results.map((entry) => entry.factory);
 
     expect(factoryOrder).toEqual(FACTORY_TYPES);
+  });
+
+  it("prorates lightning shard income for the buff window only", () => {
+    const factories = grainFactory();
+    const lastSeenAt = 0;
+    const now = 20 * 60 * 1000;
+    const activePowerUp: ActivePowerUp = {
+      expiresAt: 5 * 60 * 1000,
+      powerUpId: "lightningShard",
+      tier: "rare",
+    };
+    const productionTime = FACTORY_DATA.grain.productionTime;
+    const earnPerCycle = grainEarnPerCycle();
+    const buffSec = 5 * 60;
+    const normalSec = 15 * 60;
+    const expectedGold = earnPerCycle
+      .times(2)
+      .times(Math.floor(buffSec / productionTime))
+      .plus(earnPerCycle.times(Math.floor(normalSec / productionTime)));
+
+    const baseline = computeOfflineEarning(now, lastSeenAt, factories, D(1));
+    const boosted = computeOfflineEarning(
+      now,
+      lastSeenAt,
+      factories,
+      D(1),
+      activePowerUp
+    );
+
+    expect(boosted.totalGold.eq(expectedGold)).toBe(true);
+    expect(boosted.totalGold.gt(baseline.totalGold)).toBe(true);
+  });
+
+  it("prorates haste rune production speed for the buff window only", () => {
+    const factories = grainFactory();
+    const lastSeenAt = 0;
+    const now = 20 * 60 * 1000;
+    const activePowerUp: ActivePowerUp = {
+      expiresAt: 5 * 60 * 1000,
+      powerUpId: "hasteRune",
+      tier: "uncommon",
+    };
+    const baseProductionTime = FACTORY_DATA.grain.productionTime;
+    const buffProductionTime = Math.max(
+      1,
+      Math.round(baseProductionTime * 0.6)
+    );
+    const earnPerCycle = grainEarnPerCycle();
+    const expectedGold = earnPerCycle
+      .times(Math.floor((5 * 60) / buffProductionTime))
+      .plus(earnPerCycle.times(Math.floor((15 * 60) / baseProductionTime)));
+
+    const baseline = computeOfflineEarning(now, lastSeenAt, factories, D(1));
+    const boosted = computeOfflineEarning(
+      now,
+      lastSeenAt,
+      factories,
+      D(1),
+      activePowerUp
+    );
+
+    expect(boosted.totalGold.eq(expectedGold)).toBe(true);
+    expect(boosted.totalGold.gt(baseline.totalGold)).toBe(true);
+  });
+
+  it("ignores an already-expired buff when computing offline earnings", () => {
+    const factories = grainFactory();
+    const lastSeenAt = 400_000;
+    const now = 1_200_000;
+    const activePowerUp: ActivePowerUp = {
+      expiresAt: 300_000,
+      powerUpId: "lightningShard",
+      tier: "rare",
+    };
+
+    const baseline = computeOfflineEarning(now, lastSeenAt, factories, D(1));
+    const withExpiredBuff = computeOfflineEarning(
+      now,
+      lastSeenAt,
+      factories,
+      D(1),
+      activePowerUp
+    );
+
+    expect(withExpiredBuff.totalGold.eq(baseline.totalGold)).toBe(true);
   });
 });

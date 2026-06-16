@@ -1,6 +1,7 @@
 # components/
 
-> Parent: [src/AGENTS.md](../AGENTS.md) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI
+> Parent: [src/AGENTS.md](../AGENTS.md) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI  
+> Visual design: [docs/DESIGN.md](../../docs/DESIGN.md) · Architecture: [docs/CONTEXT.md](../../docs/CONTEXT.md)
 
 ## Purpose
 
@@ -26,6 +27,7 @@ All game UI — primitives, overlays, shell, and debug tools.
 - Inline purchase/economy logic — use `game/` + store actions
 - Create barrel files that re-export everything
 - Change `data-slot` without reason (used for styling)
+- Extract Tailwind/CSS class strings into variables (`const fooClasses = "flex gap-2"`). Put classes on the element's `className` (inline or via `cn()` at the call site). Use `tv()` for variants and design-system helpers (`boxBorder`, `borderedText`) for shared presets
 
 ## Visual variants (dev tooling)
 
@@ -41,6 +43,7 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 - `sr-only` on icon-only buttons; labels on inputs
 - Component tests: `component-name.test.tsx` colocated in `component-name/` with `vitest-browser-react` + `renderWithProviders` from `@/test/render-with-providers`
 - One folder per component: `button/button.tsx` + `button/index.ts` exporting the public API
+- Colocate `use-*.ts` in the component folder when only that component (or its subfiles) consumes the hook — e.g. `factory-card/use-factory-card.ts`, `upgrade-card/use-upgrade-card-affordance.ts`
 
 ## Subfolders
 
@@ -48,11 +51,11 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 |-----------|------|
 | `ui/` | Design-system primitives (`text-border`, button, dialog, drawer, …) |
 | `ui/factory-card/`, `ui/upgrade-card/` | Composites with provider + dot-notation subfiles |
-| `dialog/` | Domain overlays (`settings/`, `wiki/`, `upgrades/`, `managers/`, `gods/`, `inventory/`, `offline-earning/`) |
-| `game/` | Game shell: `shell/`, `panel/`, `stage/`, `factory-grid/` |
+| `dialog/` | Domain overlays (`settings/`, `wiki/`, `upgrades/`, `managers/`, `gods/`, `inventory/`, `missions/`, `offline-earning/`) |
+| `game/` | Game shell: `shell/`, `panel/`, `stage/`, `factory-grid/`, `missions/` |
 | `layout/` | Chrome: `header/`, `navigation/`, `footer/`, `background/` |
 | `icons/` | Custom SVGs (`coin`, `logo`, `wax-seal`) |
-| `debug/` | Dev-only (`variant-tools` fixed top-right, `action-tools` bottom bar, `media-query`) |
+| `debug/` | Dev-only (`variant-tools` fixed top-right, `action-tools` bottom bar, `media-query`, `factories-state-dialog`) |
 
 ## Key files
 
@@ -61,6 +64,8 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 | `ui/responsive-dialog/` | Adaptive Dialog/Drawer (768px breakpoint) |
 | `ui/responsive-tooltip/` | Adaptive Tooltip/ToggleTooltip (768px breakpoint) |
 | `game/stage/` | Persistent stage strip (messages, sprites, power-up status) |
+| `game/missions/` | Mission slots on stage (`mission-slots`, `mission-objective`) |
+| `dialog/mission/` | Mission claim dialog |
 | `game/factory-grid/` | Main factory grid |
 | `layout/navigation/` | Mobile + desktop nav |
 
@@ -71,10 +76,8 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 
 ## Evolution
 
-- 2026-06-08 — Game shell moved from `layout/` to `game/` (`shell`, `panel`, `stage`, `factory-grid`)
-- 2026-06-08 — `ui/menu` (Shark) + debug dialog menu in ActionTools
-- 2026-06-08 — UpgradeCard refactored to stateless compound API in single file; domain cards compose named subparts
-- 2026-06-08 — Restored `ui/box-border/`; elevation via `boxBorder()` instead of `globals.css` utilities
-- 2026-06-08 — `variant-tools` fixed top-right; `action-tools` bottom ActionBar
-- 2026-06-08 — ResponsiveTooltip (Tooltip ≥768px, ToggleTooltip below)
+- 2026-06-15 — `factories-state-dialog` dev JSON inspector for `factoriesAtom`
+- 2026-06-15 — `game/missions/` consolidated to `mission-objective.tsx` + `mission-slots.tsx`
+- 2026-06-15 — Ban module-level Tailwind class string variables; inline on className or use tv()/helpers
+- 2026-06-14 — Mission UI: stage slots + `dialog/mission/` claim flow
 - 2026-06-13 — Domain dialog open state centralized in `store/atoms/dialogs`; triggers stay outside dialog wrappers and Suspense

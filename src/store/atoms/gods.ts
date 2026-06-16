@@ -1,14 +1,25 @@
-import { useAtomValue } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
-import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
-import { canInvokeGodAtIndex, getTotalProductionMultiplier } from "@/game/gods";
+import { GOD_DATA, type GodId } from "@/content/gods";
+import {
+  canInvokeGodAtIndex,
+  getTotalProductionMultiplier,
+  hasInvokableGod,
+} from "@/game/gods";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
+import { syncMissionProgress } from "@/store/atoms/missions.actions";
 import { resetRunProgress } from "@/store/reset-run-progress";
 import { persistedAtom } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold, useWallet } from "./wallet";
+
+export const fallingLeavesTriggerAtom = atom(0);
+
+export const triggerFallingLeaves = (): void => {
+  store.set(fallingLeavesTriggerAtom, (previous) => previous + 1);
+};
 
 export interface GodsState {
   invoked: GodId[];
@@ -42,32 +53,14 @@ export const useGodsProductionMultiplier = (): GameValue => {
   return getTotalProductionMultiplier(invoked);
 };
 
-export const canInvokeGod = (): boolean => {
-  const invoked = getInvokedGods();
-  const gold = getGold();
-
-  for (let index = 0; index < GOD_COUNT; index++) {
-    if (canInvokeGodAtIndex(index, invoked, gold)) {
-      return true;
-    }
-  }
-
-  return false;
-};
+export const canInvokeGod = (): boolean =>
+  hasInvokableGod(getInvokedGods(), getGold());
 
 export const useCanInvokeGod = (): boolean => {
   const { gold } = useWallet();
   const { invoked } = useGods();
 
-  return useMemo(() => {
-    for (let index = 0; index < GOD_COUNT; index++) {
-      if (canInvokeGodAtIndex(index, invoked, gold)) {
-        return true;
-      }
-    }
-
-    return false;
-  }, [gold, invoked]);
+  return useMemo(() => hasInvokableGod(invoked, gold), [gold, invoked]);
 };
 
 export const invokeGod = (godIndex: number): boolean => {
@@ -95,6 +88,7 @@ export const invokeGod = (godIndex: number): boolean => {
     });
 
     resetRunProgress();
+    syncMissionProgress();
     sound.play("upgrade");
 
     return true;

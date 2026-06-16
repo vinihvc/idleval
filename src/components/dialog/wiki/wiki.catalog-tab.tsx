@@ -1,13 +1,10 @@
-import { ChevronLeft } from "pixelarticons/react/ChevronLeft";
-import React from "react";
-import { Button } from "@/components/ui/button";
 import {
   UpgradeCard,
   UpgradeCardArt,
   UpgradeCardPanel,
 } from "@/components/ui/upgrade-card";
-import { m } from "@/i18n/messages";
 import { WikiEntry } from "./wiki.entry";
+import { useWikiCatalogSelection } from "./wiki.catalog-selection";
 
 export interface WikiCatalogItem {
   flavor: string;
@@ -25,36 +22,25 @@ interface WikiCatalogTabProps {
 
 export const WikiCatalogTab = (props: WikiCatalogTabProps) => {
   const { items } = props;
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const { selectedId, setSelectedId } = useWikiCatalogSelection();
 
   const selectedItem = items.find((item) => item.id === selectedId);
 
   if (selectedItem) {
     return (
-      <div className="grid gap-3">
-        <Button
-          className="w-fit gap-1.5"
-          onClick={() => setSelectedId(null)}
-          variant="brown"
-        >
-          <ChevronLeft />
-          {m["ui.wiki.back"]()}
-        </Button>
-
-        <WikiEntry
-          flavor={selectedItem.flavor}
-          icon={selectedItem.icon}
-          image={selectedItem.image}
-          lore={selectedItem.lore}
-          mechanics={selectedItem.mechanics}
-          title={selectedItem.title}
-        />
-      </div>
+      <WikiEntry
+        flavor={selectedItem.flavor}
+        icon={selectedItem.icon}
+        image={selectedItem.image}
+        lore={selectedItem.lore}
+        mechanics={selectedItem.mechanics}
+        title={selectedItem.title}
+      />
     );
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+    <div className="grid grid-cols-4 gap-2 sm:gap-3">
       {items.map((item) => (
         <UpgradeCard
           aria-label={item.title}

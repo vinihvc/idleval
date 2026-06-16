@@ -195,6 +195,10 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
+  img {
+    image-rendering: pixelated;
+  }
 }
 
 @layer utilities {

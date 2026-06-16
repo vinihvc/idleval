@@ -66,7 +66,7 @@ export const InventoryCard = (props: InventoryCardProps) => {
           <ToggleTooltip>
             <ToggleTooltipTrigger asChild>
               <Button
-                aria-label={m["ui.inventory.useItem"]({
+                aria-label={m["ui.inventory.slot.info"]({
                   0: getLocalizedPowerUp(item.powerUpId).name,
                 })}
                 className="absolute top-1 left-1 size-6 rounded-md border"

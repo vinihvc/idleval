@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import type { FactoryType } from "@/content/factories";
-import { canAfford } from "@/game/economy";
 import { store } from "@/providers/store";
 import { persistedAtom } from "@/store/storage";
 import {
@@ -72,9 +71,6 @@ export const bulkIncreaseGold = (
     gold: serializeDecimal(deserializeDecimal(prev.gold).plus(total)),
   }));
 };
-
-export const hasGoldToBuy = (price: number | GameValue) =>
-  canAfford(getGold(), price);
 
 export const decreaseGold = (amount: number | GameValue) => {
   store.set(walletAtom, (prev) => ({

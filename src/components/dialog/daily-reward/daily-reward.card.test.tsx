@@ -1,36 +1,14 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { DailyRewardCard } from "@/components/dialog/daily-reward/daily-reward.card";
-import { getLocalizedPowerUp, type PowerUpId } from "@/content/power-ups";
-import { getLocalDateString } from "@/game/power-ups";
-import { m } from "@/i18n/messages";
+import type { PowerUpId } from "@/content/power-ups";
+import { getLocalDateString } from "@/game/daily-reward";
 import { store } from "@/providers/store";
-import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
+import {
+  dailyRewardAtom,
+  initialDailyRewardState,
+} from "@/store/atoms/daily-reward.atom";
 import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
-
-const getFigureName = (
-  day: number,
-  powerUpId: PowerUpId,
-  status: "claimed" | "current" | "locked" | "next"
-) => {
-  const lore = getLocalizedPowerUp(powerUpId);
-  const dayLabel = String(day).padStart(2, "0");
-  let statusLabel = m["ui.daily.status.next"](String(day));
-
-  if (status === "claimed") {
-    statusLabel = m["ui.daily.status.claimed"](String(day));
-  } else if (status === "current") {
-    statusLabel = m["ui.daily.status.today"](String(day));
-  } else if (status === "locked") {
-    statusLabel = m["ui.daily.status.locked"](String(day));
-  }
-
-  return m["ui.daily.dayReward"]({
-    day: dayLabel,
-    name: lore.name,
-    status: statusLabel,
-  });
-};
 
 describe("DailyRewardCard", () => {
   beforeEach(() => {
@@ -41,59 +19,47 @@ describe("DailyRewardCard", () => {
     dailyStreak: number;
     lastClaimLocalDate: string | null;
   }) => {
-    store.set(inventoryAtom, {
-      ...initialInventoryState,
+    store.set(dailyRewardAtom, {
+      ...initialDailyRewardState,
       dailyStreak: options.dailyStreak,
       lastClaimLocalDate: options.lastClaimLocalDate,
     });
   };
 
-  test("renders day metadata and claimed status label", async () => {
+  test("renders claimed day with green badge and collected overlay", async () => {
     setDailyRewardState({ dailyStreak: 3, lastClaimLocalDate: null });
 
     const screen = await renderWithProviders(
-      <DailyRewardCard powerUpId="auroraDust" />
+      <DailyRewardCard day={1} powerUpId="mimirCoin" />
     );
 
-    const card = screen.getByRole("figure", {
-      name: getFigureName(1, "auroraDust", "claimed"),
-    });
+    const badge = screen.getByText("01");
 
-    await expect.element(card).toHaveAttribute("data-day", "1");
-    await expect.element(card).toHaveAttribute("data-status", "claimed");
+    await expect.element(badge).toHaveAttribute("data-variant", "green");
+    await expect
+      .poll(() => {
+        const card = document.querySelector('[data-slot="power-up-card"]');
+
+        return card?.querySelector("svg");
+      })
+      .not.toBeNull();
   });
 
   test.each([
-    ["current", 4, "hasteRune", null] as const,
-    ["locked", 5, "lightningShard", null] as const,
-    ["next", 4, "hasteRune", getLocalDateString()] as const,
-  ])("renders %s status in screen-reader caption", async (status, day, powerUpId, lastClaimLocalDate) => {
-    setDailyRewardState({ dailyStreak: 3, lastClaimLocalDate });
+    ["current", "hasteRune", 4, "04", "brown", null] as const,
+    ["locked", "mimirCoin", 2, "02", "brown", null] as const,
+    ["next", "hasteRune", 4, "04", "brown", getLocalDateString()] as const,
+  ])("renders %s status with expected badge styling", async (_status, powerUpId, day, dayLabel, badgeVariant, lastClaimLocalDate) => {
+    const dailyStreak = _status === "locked" ? 0 : 3;
+
+    setDailyRewardState({ dailyStreak, lastClaimLocalDate });
 
     const screen = await renderWithProviders(
-      <DailyRewardCard powerUpId={powerUpId} />
+      <DailyRewardCard day={day} powerUpId={powerUpId as PowerUpId} />
     );
 
-    await expect
-      .element(
-        screen.getByRole("figure", {
-          name: getFigureName(day, powerUpId, status),
-        })
-      )
-      .toBeInTheDocument();
-  });
+    const badge = screen.getByText(dayLabel);
 
-  test("shows check icon in badge when claimed", async () => {
-    setDailyRewardState({ dailyStreak: 3, lastClaimLocalDate: null });
-
-    const screen = await renderWithProviders(
-      <DailyRewardCard powerUpId="auroraDust" />
-    );
-
-    const card = screen.getByRole("figure", {
-      name: getFigureName(1, "auroraDust", "claimed"),
-    });
-
-    await expect.poll(() => card.element().querySelector("svg")).not.toBeNull();
+    await expect.element(badge).toHaveAttribute("data-variant", badgeVariant);
   });
 });

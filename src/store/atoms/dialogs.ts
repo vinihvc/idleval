@@ -10,6 +10,7 @@ import {
 export const DIALOG_IDS = {
   about: "about",
   dailyReward: "daily-reward",
+  debugFactories: "debug-factories",
   debugWelcome: "debug-welcome",
   gods: "gods",
   inventory: "inventory",
@@ -67,14 +68,12 @@ const getDialogOpenAtom = (id: DialogId) => {
   return dialogOpenAtom;
 };
 
-export const useOpenDialogId = () => useAtomValue(dialogsAtom);
-
 export const useDialogOpen = (id: DialogId) =>
   useAtomValue(getDialogOpenAtom(id));
 
-export const getOpenDialogId = (): DialogId | null => store.get(dialogsAtom);
+export const useDialogs = () => useAtomValue(dialogsAtom);
 
-export const isDialogOpen = (id: DialogId): boolean => getOpenDialogId() === id;
+export const getOpenDialogId = (): DialogId | null => store.get(dialogsAtom);
 
 const getDialogPriority = (id: DialogId): number | null => {
   const priority = DIALOG_PRIORITY.indexOf(id);
@@ -117,10 +116,6 @@ export const openDialog = (id: DialogId) => {
 
   dismissDialogNotification(id);
   store.set(dialogsAtom, id);
-};
-
-export const closeCurrentDialog = () => {
-  store.set(dialogsAtom, null);
 };
 
 export const closeDialog = (id: DialogId) => {

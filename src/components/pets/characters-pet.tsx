@@ -453,7 +453,7 @@ export const CharactersPet = (props: CharactersPetProps) => {
   return (
     <div
       className={cn(
-        "relative isolate min-h-[520px] overflow-hidden rounded-xl border bg-muted",
+        "pointer-events-none relative isolate min-h-[520px] overflow-hidden rounded-xl border bg-muted",
         className
       )}
       ref={hostRef}

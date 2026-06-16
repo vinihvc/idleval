@@ -1,6 +1,7 @@
 import { GOD_DATA } from "@/content/gods";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
+import { triggerFallingLeaves } from "@/store/atoms/gods";
 import { GodsCard } from "./gods.card";
 
 interface GodsContentProps {
@@ -22,6 +23,7 @@ export const GodsContent = (props: GodsContentProps) => {
             key={god.id}
             onInvoke={(name) => {
               announce(m["ui.a11y.invoked"]({ name }));
+              triggerFallingLeaves();
               onInvoke();
             }}
           />

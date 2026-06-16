@@ -2,11 +2,11 @@ import { Image } from "@unpic/react";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
 import { POWER_UP_DATA } from "@/content/power-ups";
-import { useActivePowerUpDisplay } from "@/hooks/use-active-power-up-display";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { countdownFormatter, formatElapsedDuration } from "@/utils/formatters";
 import { borderedText } from "../text-border";
+import { useActivePowerUpDisplay } from "./use-active-power-up-display";
 
 export const GameStagePowerUp = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
@@ -30,17 +30,13 @@ export const GameStagePowerUp = (props: React.ComponentProps<"div">) => {
         )}
         data-slot="power-up-countdown"
       >
-        {countdownFormatter(display?.remainingMs ?? 0)}
+        {countdownFormatter(display.remainingMs ?? 0)}
       </span>
 
       <Badge
-        aria-label={
-          display.kind === "pending-harvest"
-            ? m["ui.powerUp.cauldronPending"]()
-            : m["ui.powerUp.remaining"]({
-                duration: formatElapsedDuration(display.remainingMs ?? 0),
-              })
-        }
+        aria-label={m["ui.powerUp.remaining"]({
+          duration: formatElapsedDuration(display.remainingMs ?? 0),
+        })}
         data-slot="power-up-badge"
         role="status"
         size="lg"

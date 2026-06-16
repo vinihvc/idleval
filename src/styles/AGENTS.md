@@ -1,6 +1,7 @@
 # styles/
 
-> Parent: [src/AGENTS.md](../AGENTS.md) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI
+> Parent: [src/AGENTS.md](../AGENTS.md) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI  
+> Color and typography reference: [docs/DESIGN.md](../../docs/DESIGN.md)
 
 ## Purpose
 
@@ -41,6 +42,7 @@ Global CSS — theme tokens, fonts, and Tailwind v4 variables.
 
 ## Evolution
 
+- 2026-06-15 — Token semantics documented in `docs/DESIGN.md`
 - 2026-06-08 — Medieval palette tokens: `teal`, `olive`, `wine`, `ember`
 - 2026-06-08 — Lock mobile zoom via viewport meta + `touch-action: manipulation` on `html`
 - 2026-06-08 — Mobile-first breakpoints (`sm:`/`md:`) instead of `max-sm:`/`max-md:`

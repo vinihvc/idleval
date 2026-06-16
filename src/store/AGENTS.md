@@ -10,7 +10,8 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 
 - Persist via `persistedAtom(key, initial)` from `storage.ts`
 - Use `persistedAtomWithNormalize(key, initial, normalize)` when reads need migration/normalization
-- Define all localStorage keys in `@/config/local-storage-keys` (`LOCAL_STORAGE`) — never inline strings in atoms
+- Use `persistedAtomWithNormalizeAndLegacy(key, initial, normalize, readLegacy)` when saves may still live under a retired key — first read migrates into the canonical key
+- Define all localStorage keys in `@/config/local-storage` (`LOCAL_STORAGE`) — never inline strings in atoms
 - Mutations as imperative functions (`store.set`/`store.get`), not write-only atoms
 - Export `get*` (imperative) + `use*` (React) for reads
 - Split large domains: `factories.{atom,actions,selectors}.ts` + barrel `factories.ts`
@@ -28,7 +29,7 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 - Import components or i18n strings
 - Import `useAtomValue` outside store atom accessor hooks (providers/components use `useSettings`, `useWallet`, etc.)
 - Use `useEffect` or other React lifecycle in `store/atoms/*` — move sync to `hooks/` + `providers/`
-- Change storage keys without a version suffix when schema changes (e.g. `wallet-v4`); update `LOCAL_STORAGE` in config
+- Bump `LOCAL_STORAGE` key versions to migrate schema changes — use `normalize` + legacy fallback instead (see [localStorage persistence](../../AGENTS.md#localstorage-persistence))
 
 ## Patterns
 
@@ -38,20 +39,31 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 - Colocated tests `*.test.ts`; `vi.mock("@/providers/sound")` when actions trigger audio
 - Explicit imports: `@/store/atoms/factories`, `@/store/reset`
 
+### Persistence / migration
+
+1. Register the key once in `LOCAL_STORAGE` — do not suffix-bump (`inventory-v5` stays `inventory-v5`).
+2. Implement `normalize(value: unknown): T` — coerce types, defaults for new fields, ignore removed fields.
+3. When splitting or renaming storage, wire `readLegacy()` to check retired keys (e.g. streak fields that lived inside `inventory-v5`, or a short-lived `inventory-v6`). `createNormalizedJsonStorageWithLegacyFallback` writes the canonical key on first successful read.
+4. Bump a key only if old data is unrecoverable — document why in Evolution.
+
 ## Key files
 
 | File | Role |
 |------|------|
-| `storage.ts` | `persistedAtom`, `persistedAtomWithNormalize`, in-memory fallback for SSR/test |
+| `storage.ts` | `persistedAtom`, `persistedAtomWithNormalize`, `persistedAtomWithNormalizeAndLegacy`, in-memory fallback for SSR/test |
 | `reset.ts` | `resetGame()` — full wipe |
 | `reset-run-progress.ts` | Run reset (partial prestige) |
 | `offline-earning.ts` | `applyOfflineEarning`, `offlineSummaryAtom`, `offlineCycleProgressAtom` |
 | `atoms/session.ts` | Persisted `lastSeenAt`, `touchLastSeen*` helpers |
 | `test-utils.ts` | `seedGold`, `seedFactory`, `setupStoreTest` |
-| `atoms/factories.actions.ts` | Purchases, production, upgrades |
+| `atoms/factories.ts` | Barrel — factories atom, actions, selectors |
+| `atoms/missions.ts` | Barrel — missions atom, actions, selectors |
 | `atoms/wallet.ts` | Gold balance |
-| `atoms/inventory.ts` | Power-up slots, daily streak, active buff (`inventory-v4`) |
+| `atoms/inventory.ts` | Power-up slots, active buff, income/time selectors |
+| `atoms/daily-reward.atom.ts` | Daily streak + claim date (migrates from legacy inventory keys) |
 | `atoms/power-ups.actions.ts` | Claim daily reward, activate power-ups |
+| `atoms/gods.ts` | Invoked gods + falling-leaves trigger atom |
+| `atoms/production-ticks.atom.ts` | Per-factory scheduler countdown state |
 | `atoms/settings.ts` | Locale, volumes |
 | `atoms/notifications.ts` | Dialog badge visibility, dismiss-on-visit |
 | `atoms/dialogs.ts` | Single-open dialog coordination and factory-scoped dialog ids |
@@ -63,9 +75,8 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 
 ## Evolution
 
-- 2026-06-08 — Removed legacy save migrations; bumped inventory/gods/factories/statistics keys
-- 2026-06-08 — Notification dismissal sync moved to `use-notification-sync`; no `useEffect` in store atoms
-- 2026-06-08 — `useAtomValue` restricted to atom accessor hooks; derived hooks compose accessors
-- 2026-06-08 — `notifications-v1` atom: dismiss-on-visit badges for nav dialogs
-- 2026-06-08 — Centralized keys in `config/local-storage-keys.ts`; `persistedAtomWithNormalize` for migrated atoms
+- 2026-06-15 — `reconcileManualProduction` in `offline-earning.ts`; factories key `factorie-v2`
+- 2026-06-14 — Dedup notifications map; merged `power-ups.selectors` into `inventory`; effects atom in `gods.ts`
+- 2026-06-14 — `missions-v2` atom with claim/sync actions and renown multiplier
 - 2026-06-13 — Added transient `dialogsAtom` to enforce one open `ResponsiveDialog` at a time
+- 2026-06-15 — Stable `LOCAL_STORAGE` keys + `persistedAtomWithNormalizeAndLegacy` for migrations (no version bumps on schema change)

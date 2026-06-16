@@ -40,7 +40,7 @@ Use this for **future** A/B/C/D comparisons of new UI (not UpgradeCard — fixed
 
 ## Patterns
 
-- One file per provider
+- One file per provider; subfolder when the provider owns colocated hooks (`offline-earning/`)
 - `store` exported for imperative access (`store.get`, `store.set`) in actions and tests
 - Effects in `useEffect` with explicit cleanup
 
@@ -50,18 +50,18 @@ Use this for **future** A/B/C/D comparisons of new UI (not UpgradeCard — fixed
 |------|------|
 | `store.tsx` | `createStore()`, `StoreProvider`, export `store` |
 | `sound.tsx` | `SoundProvider`, `useSound()`, volumes + play API |
-| `offline-earning.tsx` | `useOfflineEarning` + `useProductionScheduler` + lazy welcome-back dialog |
+| `offline-earning/` | Offline apply, production scheduler, notification sync, power-up bootstrap |
 | `variant-tools.tsx` | Open-card variant store, context, dev hotkeys (1–4) |
 
 ## Neighbors
 
-- Reads from: `store/`, `audio/`, `hooks/`
+- Reads from: `store/`, `audio/`
 - Consumed by: `app/providers.tsx`, `store/` actions (singleton)
 
 ## Evolution
 
+- 2026-06-14 — `offline-earning/` subfolder colocates scheduler, session, and bootstrap hooks
 - 2026-06-08 — Variant tools persist via `useLocalStorage` + `LOCAL_STORAGE`
 - 2026-06-08 — `variant-tools`: `useState` + native keydown; export `VARIANT_TOOLS`
 - 2026-06-08 — `VariantTools` type + hooks replace `OpenVisualVariant` naming
 - 2026-06-08 — `OpenVisualVariant` moved here; UpgradeCard decoupled from variant-tools
-- 2026-06-08 — Inlined `useProductionScheduler` into `offline-earning.tsx`

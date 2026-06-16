@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { WikiDialog } from "@/components/dialog/wiki/wiki";
+import { getLocalizedPowerUpWikiMechanics } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { setupStoreTest } from "@/store/test-utils";
@@ -49,10 +50,45 @@ describe("WikiDialog", () => {
       .element(screen.getByText(m["ui.wiki.section.lore"]()))
       .toBeInTheDocument();
 
-    await screen.getByRole("button", { name: m["ui.wiki.back"]() }).click();
+    await screen.getByRole("tab", { name: m["ui.wiki.tab.gods"]() }).click();
 
     await expect
       .element(screen.getByRole("button", { name: m["god.huangdi.name"]() }))
+      .toBeInTheDocument();
+  });
+
+  test("opens relic detail from the relics tab", async () => {
+    setupStoreTest();
+
+    const screen = await openWikiDialog();
+
+    await screen.getByRole("tab", { name: m["ui.wiki.tab.relics"]() }).click();
+
+    await expect
+      .element(
+        screen.getByRole("button", { name: m["powerup.mimirCoin.name"]() })
+      )
+      .toBeInTheDocument();
+
+    await screen
+      .getByRole("button", { name: m["powerup.mimirCoin.name"]() })
+      .click();
+
+    await expect
+      .element(screen.getByText(m["wiki.powerup.mimirCoin.lore"]()))
+      .toBeInTheDocument();
+    await expect
+      .element(
+        screen.getByText(getLocalizedPowerUpWikiMechanics("mimirCoin"))
+      )
+      .toBeInTheDocument();
+
+    await screen.getByRole("tab", { name: m["ui.wiki.tab.relics"]() }).click();
+
+    await expect
+      .element(
+        screen.getByRole("button", { name: m["powerup.mimirCoin.name"]() })
+      )
       .toBeInTheDocument();
   });
 });

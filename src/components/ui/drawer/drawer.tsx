@@ -6,7 +6,7 @@ import { Portal } from "@ark-ui/react/portal";
 import { Close } from "pixelarticons/react/Close";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { WaxSeal } from "@/components/icons/wax-seal";
+import { WaxSealIcon } from "@/components/icons/wax-seal";
 import { Button } from "@/components/ui/button";
 import { DialogImage, DialogMedia } from "@/components/ui/dialog";
 import { FantasyCorner } from "@/components/ui/fantasy-corner";
@@ -109,17 +109,17 @@ export const DrawerOverlay = (
 
 const drawerPositionerVariants = tv({
   base: [
-    "[--drawer-image-overflow:4.5rem] sm:[--drawer-image-overflow:4.5rem]",
+    "[--drawer-image-overflow:4.5rem]",
     "fixed inset-0 z-50",
     "flex flex-col items-center justify-end",
     "w-screen overscroll-contain",
     // Full viewport height; sheet anchors to bottom-0 (nav overlays via z-index)
     "bottom-0 overflow-visible",
     "pt-[calc(env(safe-area-inset-top,0)+var(--drawer-image-overflow))]",
-    "sm:bottom-auto sm:pt-0",
-    "has-data-[swipe-direction=up]:bottom-0 has-data-[swipe-direction=up]:justify-start has-data-[swipe-direction=up]:pt-0 has-data-[swipe-direction=up]:sm:bottom-auto",
-    "has-data-[swipe-direction=left]:bottom-0 has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0 has-data-[swipe-direction=left]:sm:bottom-auto",
-    "has-data-[swipe-direction=right]:bottom-0 has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0 has-data-[swipe-direction=right]:sm:bottom-auto",
+    "md:bottom-auto md:pt-0",
+    "has-data-[swipe-direction=up]:bottom-0 has-data-[swipe-direction=up]:justify-start has-data-[swipe-direction=up]:pt-0 has-data-[swipe-direction=up]:md:bottom-auto",
+    "has-data-[swipe-direction=left]:bottom-0 has-data-[swipe-direction=left]:items-stretch has-data-[swipe-direction=left]:justify-start has-data-[swipe-direction=left]:pt-0 has-data-[swipe-direction=left]:md:bottom-auto",
+    "has-data-[swipe-direction=right]:bottom-0 has-data-[swipe-direction=right]:items-stretch has-data-[swipe-direction=right]:justify-end has-data-[swipe-direction=right]:pt-0 has-data-[swipe-direction=right]:md:bottom-auto",
   ],
   variants: {
     variant: {
@@ -158,8 +158,8 @@ const drawerContentVariants = tv({
     "h-auto max-h-[calc(92svh-env(safe-area-inset-top,0)-var(--drawer-image-overflow))] shrink-0",
     "has-data-[slot=drawer-media]:overflow-visible",
     "mb-0 pb-14",
-    "sm:-mb-(--bleed) sm:max-h-[92svh] sm:shrink sm:pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
-    "sm:has-data-[slot=drawer-media]:overflow-hidden",
+    "md:-mb-(--bleed) md:max-h-[92svh] md:shrink md:pb-[calc(0+env(safe-area-inset-bottom,0)+var(--bleed))]",
+    "md:has-data-[slot=drawer-media]:overflow-hidden",
     "has-data-[slot=dialog-image]:max-h-[min(92svh,calc(92svh-var(--drawer-image-overflow)-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)))]",
     "border-4 border-primary bg-popover",
     "text-muted",
@@ -202,8 +202,8 @@ const drawerContentVariants = tv({
     variant: {
       default: "",
       inset: [
-        "sm:rounded-2xl sm:border",
-        "sm:**:data-[slot=drawer-footer]:rounded-b-[calc(var(--radius-2xl)-1px)]",
+        "md:rounded-2xl md:border",
+        "md:**:data-[slot=drawer-footer]:rounded-b-[calc(var(--radius-2xl)-1px)]",
       ],
     },
   },
@@ -280,7 +280,7 @@ export const DrawerContent = (props: DrawerContentProps) => {
                     size="icon-xl"
                     variant="ghost"
                   >
-                    <WaxSeal className="absolute inset-0 size-full" />
+                    <WaxSealIcon className="absolute inset-0 size-full" />
                     <Close className="relative z-10 size-5 drop-shadow-[0_1px_1px_rgba(80,0,0,0.75)] sm:size-6" />
                   </Button>
                 </DrawerClose>

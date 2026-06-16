@@ -24,19 +24,28 @@ export default defineConfig({
         "favicon.ico",
       ],
       workbox: {
-        globPatterns: ["**/*.{css,html,ico,js,png,wav,webmanifest,webp}"],
+        globPatterns: [
+          "**/*.{css,html,ico,js,png,wav,webmanifest,webp,woff,woff2}",
+        ],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/api\//],
       },
       manifest: {
+        id: "/",
         name: "Idleval",
         short_name: "Idleval",
         description:
           "Step into a medieval realm where you build, expand, and defend.",
+        lang: "en",
         theme_color: "#2a2418",
         background_color: "#2a2418",
         display: "standalone",
+        display_override: ["standalone", "browser"],
+        orientation: "any",
+        categories: ["games"],
         scope: ".",
-        start_url: ".",
+        start_url: "./",
         icons: [
           {
             src: "icon-192.png",

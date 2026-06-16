@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { createInitialMissionsState } from "@/game/types";
 import { store } from "@/providers/store";
 import { factoriesAtom, initialData } from "@/store/atoms/factories.atom";
 import { godsAtom } from "@/store/atoms/gods";
+import { missionsAtom } from "@/store/atoms/missions.atom";
 import { purchaseModeAtom } from "@/store/atoms/purchase-mode";
 import { sessionAtom } from "@/store/atoms/session";
 import { statisticsAtom } from "@/store/atoms/statistics";
@@ -51,6 +53,11 @@ describe("reset", () => {
       results: [],
       totalGold: D(100),
     });
+    store.set(missionsAtom, (previous) => ({
+      ...previous,
+      claimedIds: ["mission-001"],
+      renownPercent: 5,
+    }));
 
     resetGame();
 
@@ -59,6 +66,7 @@ describe("reset", () => {
     expect(store.get(statisticsAtom).goldEarned).toBe("0");
     expect(store.get(offlineCycleProgressAtom)).toEqual({});
     expect(store.get(offlineSummaryAtom)).toBeNull();
+    expect(store.get(missionsAtom)).toEqual(createInitialMissionsState());
     expect(store.get(sessionAtom).lastSeenAt).not.toBeNull();
   });
 });

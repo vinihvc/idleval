@@ -1,8 +1,10 @@
+import React from "react";
 import { describe, expect, test } from "vitest";
 import {
   type WikiCatalogItem,
   WikiCatalogTab,
 } from "@/components/dialog/wiki/wiki.catalog-tab";
+import { WikiCatalogSelectionProvider } from "@/components/dialog/wiki/wiki.catalog-selection";
 import { m } from "@/i18n/messages";
 import { renderWithProviders } from "@/test/render-with-providers";
 
@@ -27,10 +29,40 @@ const mockItems: WikiCatalogItem[] = [
   },
 ];
 
+const ControlledWikiCatalogTab = () => {
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          if (selectedId) {
+            setSelectedId(null);
+          }
+        }}
+        type="button"
+      >
+        {m["ui.wiki.tab.gods"]()}
+      </button>
+      <WikiCatalogSelectionProvider
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+      >
+        <WikiCatalogTab items={mockItems} />
+      </WikiCatalogSelectionProvider>
+    </>
+  );
+};
+
 describe("WikiCatalogTab", () => {
   test("renders all catalog cards", async () => {
     const screen = await renderWithProviders(
-      <WikiCatalogTab items={mockItems} />
+      <WikiCatalogSelectionProvider
+        selectedId={null}
+        setSelectedId={() => undefined}
+      >
+        <WikiCatalogTab items={mockItems} />
+      </WikiCatalogSelectionProvider>
     );
 
     await expect
@@ -41,17 +73,15 @@ describe("WikiCatalogTab", () => {
       .toBeInTheDocument();
   });
 
-  test("opens detail view for any entry and returns to grid", async () => {
-    const screen = await renderWithProviders(
-      <WikiCatalogTab items={mockItems} />
-    );
+  test("opens detail view and returns to grid when active tab is clicked again", async () => {
+    const screen = await renderWithProviders(<ControlledWikiCatalogTab />);
 
     await screen.getByRole("button", { name: "Locked Entry" }).click();
 
     await expect.element(screen.getByText("Locked Entry")).toBeInTheDocument();
     await expect.element(screen.getByText("Hidden lore")).toBeInTheDocument();
 
-    await screen.getByRole("button", { name: m["ui.wiki.back"]() }).click();
+    await screen.getByRole("button", { name: m["ui.wiki.tab.gods"]() }).click();
 
     await expect
       .element(screen.getByRole("button", { name: "Locked Entry" }))

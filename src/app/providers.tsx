@@ -1,5 +1,5 @@
 import { I18nProvider } from "@/i18n/provider";
-import { OfflineEarning } from "@/providers/offline-earning";
+import { OfflineEarning } from "@/providers/offline-earning/index";
 import { SoundProvider } from "@/providers/sound";
 import { StoreProvider } from "@/providers/store";
 

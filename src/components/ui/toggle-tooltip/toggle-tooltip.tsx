@@ -11,6 +11,11 @@ export const ToggleTooltip = (
   const {
     positioning = {
       placement: "top",
+      strategy: "fixed",
+      flip: true,
+      slide: true,
+      fitViewport: true,
+      overflowPadding: 8,
     },
     lazyMount = true,
     unmountOnExit = true,
@@ -42,22 +47,19 @@ export const ToggleTooltipContent = (
   return (
     <Portal>
       <ArkPopover.Positioner
-        className="z-100"
+        className="z-100 max-sm:fixed max-sm:inset-x-2 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-[min(20rem,calc(100vw-2rem))]"
         data-slot="toggle-tooltip-positioner"
       >
         <ArkPopover.Content
           className={cn(
-            "z-100",
-            "relative",
-            "w-full max-w-[calc(100vw-2rem)] sm:w-fit sm:max-w-[min(20rem,calc(100vw-2rem))]",
+            "relative z-100",
+            "w-full min-w-0 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-72",
+            "whitespace-normal text-pretty break-words",
             "px-3 py-2",
-            "bg-foreground",
-            "font-medium text-background text-xl",
+            "bg-foreground font-medium text-background text-base",
             "rounded-lg border-2 border-secondary shadow-lg/5",
-            "origin-(--transform-origin) animate-in",
-            "fade-in-0 zoom-in-[98%]",
-            "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%]",
-            "data-[state=closed]:animate-out",
+            "fade-in-0 zoom-in-[98%] origin-(--transform-origin) animate-in",
+            "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%] data-[state=closed]:animate-out",
             "data-[placement=bottom]:slide-in-from-top-2",
             "data-[placement=left]:slide-in-from-end-2",
             "data-[placement=right]:slide-in-from-start-2",

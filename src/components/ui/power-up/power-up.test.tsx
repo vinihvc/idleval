@@ -1,11 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { GameStagePowerUp } from "@/components/ui/power-up/power-up";
-import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
-import {
-  initialInventoryState,
-  inventoryAtom,
-} from "@/store/atoms/inventory";
+import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("GameStagePowerUp", () => {
@@ -23,10 +19,9 @@ describe("GameStagePowerUp", () => {
     store.set(inventoryAtom, {
       ...initialInventoryState,
       activePowerUp: {
-        powerUpId: "auroraDust",
+        powerUpId: "hasteRune",
         tier: "common",
         expiresAt,
-        ghostCandleFactory: null,
       },
     });
 
@@ -39,22 +34,5 @@ describe("GameStagePowerUp", () => {
     const statuses = screen.getByRole("status").elements();
     expect(statuses.length).toBeGreaterThan(0);
     expect(statuses[0]?.getAttribute("aria-label") ?? "").toContain("left");
-  });
-
-  test("shows cauldron pending label when harvest boost is queued", async () => {
-    store.set(inventoryAtom, {
-      ...initialInventoryState,
-      pendingCauldronDrop: true,
-    });
-
-    const screen = await renderWithProviders(<GameStagePowerUp />);
-
-    await expect
-      .element(
-        screen.getByRole("status", {
-          name: m["ui.powerUp.cauldronPending"](),
-        })
-      )
-      .toBeInTheDocument();
   });
 });

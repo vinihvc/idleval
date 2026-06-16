@@ -1,35 +1,34 @@
-import {
-  FACTORY_DATA,
-  FACTORY_TYPES,
-  type FactoryType,
-} from "@/content/factories";
+import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
 import type { PowerUpId, PowerUpTier } from "@/content/power-ups";
 import { isFactoryProductionActive } from "@/game/factories";
 import {
   type ActivePowerUp,
-  addInventorySlot,
   canActivatePowerUp,
   consumeInventorySlot,
-  getDailyRewardOffer,
-  getLocalDateString,
   getPowerUpDurationMs,
   getYggdrasilAdvanceSeconds,
-  hasPendingDailyReward,
   isInstantPowerUp,
   isTimedPowerUpActive,
-  pickGhostCandleFactory,
-  shouldResetDailyStreak,
+  rollMimirCoinGold,
 } from "@/game/power-ups";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import { completeProductionCycle } from "@/store/atoms/factories";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
-import { getInventoryState, inventoryAtom } from "@/store/atoms/inventory";
-import { getEffectiveProductionTimeForActivePowerUp } from "@/store/atoms/power-ups.selectors";
+import { getInvokedGods } from "@/store/atoms/gods";
 import {
-  type FactoryTickState,
-  productionTicksAtom,
-} from "@/store/atoms/production-ticks.atom";
+  getEffectiveProductionTimeForActivePowerUp,
+  getInventoryState,
+  inventoryAtom,
+} from "@/store/atoms/inventory";
+import {
+  incrementMissionCounter,
+  syncMissionProgress,
+} from "@/store/atoms/missions.actions";
+import { getMissionsState } from "@/store/atoms/missions.atom";
+import { productionTicksAtom } from "@/store/atoms/production-ticks.atom";
+import { increaseGoldByAmount } from "@/store/atoms/wallet";
+import type { GameValue } from "@/utils/decimal";
 
 const setInventory = (
   updater: (
@@ -39,47 +38,12 @@ const setInventory = (
   store.set(inventoryAtom, (previous) => updater(previous));
 };
 
-export const refreshDailyStreakState = () => {
-  const today = getLocalDateString();
+export interface ActivatePowerUpResult {
+  mimirCoinGold?: GameValue;
+  success: boolean;
+}
 
-  setInventory((state) => {
-    if (!shouldResetDailyStreak(state.lastClaimLocalDate, today)) {
-      return state;
-    }
-
-    return {
-      ...state,
-      dailyStreak: 0,
-    };
-  });
-};
-
-export const claimDailyReward = (): boolean => {
-  const today = getLocalDateString();
-  const state = getInventoryState();
-
-  if (!hasPendingDailyReward(state.lastClaimLocalDate, today)) {
-    return false;
-  }
-
-  const offer = getDailyRewardOffer(state.dailyStreak);
-
-  setInventory((current) => ({
-    ...current,
-    slots: addInventorySlot(current.slots, {
-      powerUpId: offer.powerUpId,
-      tier: offer.tier,
-    }),
-    dailyStreak: current.dailyStreak + 1,
-    lastClaimLocalDate: today,
-  }));
-
-  sound.play("upgrade");
-
-  return true;
-};
-
-export const refreshExpiredPowerUps = () => {
+export const refreshExpiredPowerUps = (now = Date.now()) => {
   const state = getInventoryState();
   const { activePowerUp } = state;
 
@@ -87,7 +51,7 @@ export const refreshExpiredPowerUps = () => {
     return;
   }
 
-  if (isTimedPowerUpActive(activePowerUp)) {
+  if (isTimedPowerUpActive(activePowerUp, now)) {
     return;
   }
 
@@ -100,7 +64,6 @@ export const refreshExpiredPowerUps = () => {
 const createTimedActivePowerUp = (
   powerUpId: PowerUpId,
   tier: PowerUpTier,
-  ghostCandleFactory: FactoryType | null,
   now: number
 ): ActivePowerUp => {
   const durationMs = getPowerUpDurationMs(powerUpId);
@@ -108,7 +71,6 @@ const createTimedActivePowerUp = (
   return {
     powerUpId,
     tier,
-    ghostCandleFactory,
     expiresAt: durationMs == null ? null : now + durationMs,
   };
 };
@@ -116,16 +78,12 @@ const createTimedActivePowerUp = (
 const advanceFactoryTicksBySeconds = (seconds: number) => {
   const factories = store.get(factoriesAtom);
   const ticks = store.get(productionTicksAtom);
-  const activePowerUp = getInventoryState().activePowerUp;
   const nextTicks = { ...ticks };
 
   for (const factory of FACTORY_TYPES) {
     const tick = ticks[factory];
     const factoryState = factories[factory];
-    const isGhostActive =
-      activePowerUp?.powerUpId === "ghostCandle" &&
-      activePowerUp.ghostCandleFactory === factory;
-    const isActive = isFactoryProductionActive(factoryState) || isGhostActive;
+    const isActive = isFactoryProductionActive(factoryState);
 
     if (!(isActive && tick.isRunning)) {
       continue;
@@ -154,64 +112,52 @@ const advanceFactoryTicksBySeconds = (seconds: number) => {
 const activateInstantPowerUp = (
   powerUpId: PowerUpId,
   tier: PowerUpTier
-): boolean => {
-  if (powerUpId === "cauldronDrop") {
-    setInventory((state) => ({
-      ...state,
-      pendingCauldronDrop: true,
-    }));
-    return true;
+): { mimirCoinGold?: GameValue; success: boolean } => {
+  if (powerUpId === "mimirCoin") {
+    const gold = rollMimirCoinGold(tier, {
+      factories: store.get(factoriesAtom),
+      godsInvoked: getInvokedGods(),
+      renownPercent: getMissionsState().renownPercent,
+    });
+
+    increaseGoldByAmount("grain", gold);
+    sound.play("coin");
+
+    return { success: true, mimirCoinGold: gold };
   }
 
   if (powerUpId === "yggdrasilTear") {
-    advanceFactoryTicksBySeconds(getYggdrasilAdvanceSeconds(tier));
-    return true;
+    advanceFactoryTicksBySeconds(getYggdrasilAdvanceSeconds());
+    return { success: true };
   }
 
-  return false;
+  return { success: false };
 };
 
-const startGhostCandleProduction = (factory: FactoryType) => {
-  const tick = store.get(productionTicksAtom)[factory];
-
-  if (tick.isRunning) {
-    return;
-  }
-
-  store.set(productionTicksAtom, (previous) => ({
-    ...previous,
-    [factory]: {
-      cycleKey: previous[factory].cycleKey + 1,
-      isRunning: true,
-      seconds: getEffectiveProductionTimeForActivePowerUp(
-        FACTORY_DATA[factory].productionTime
-      ),
-    } satisfies FactoryTickState,
-  }));
-};
-
-export const activatePowerUpAtSlot = (slotIndex: number): boolean => {
+export const activatePowerUpAtSlot = (
+  slotIndex: number
+): ActivatePowerUpResult => {
   refreshExpiredPowerUps();
 
   const state = getInventoryState();
   const slot = state.slots[slotIndex];
 
   if (!slot) {
-    return false;
+    return { success: false };
   }
 
   if (!canActivatePowerUp(state.activePowerUp, slot.count)) {
-    return false;
+    return { success: false };
   }
 
   const { powerUpId, tier } = slot;
   const now = Date.now();
 
   if (isInstantPowerUp(powerUpId)) {
-    const activated = activateInstantPowerUp(powerUpId, tier);
+    const instantResult = activateInstantPowerUp(powerUpId, tier);
 
-    if (!activated) {
-      return false;
+    if (!instantResult.success) {
+      return { success: false };
     }
 
     setInventory((current) => ({
@@ -219,76 +165,28 @@ export const activatePowerUpAtSlot = (slotIndex: number): boolean => {
       slots: consumeInventorySlot(current.slots, slotIndex),
     }));
 
-    sound.play("upgrade");
-
-    return true;
-  }
-
-  const factories = store.get(factoriesAtom);
-  let ghostCandleFactory: FactoryType | null = null;
-
-  if (powerUpId === "ghostCandle") {
-    ghostCandleFactory = pickGhostCandleFactory(factories);
-
-    if (!ghostCandleFactory) {
-      return false;
+    if (powerUpId !== "mimirCoin") {
+      sound.play("upgrade");
     }
+
+    incrementMissionCounter("powerUpsActivated");
+    syncMissionProgress();
+
+    return {
+      success: true,
+      mimirCoinGold: instantResult.mimirCoinGold,
+    };
   }
 
   setInventory((current) => ({
     ...current,
     slots: consumeInventorySlot(current.slots, slotIndex),
-    activePowerUp: createTimedActivePowerUp(
-      powerUpId,
-      tier,
-      ghostCandleFactory,
-      now
-    ),
+    activePowerUp: createTimedActivePowerUp(powerUpId, tier, now),
   }));
-
-  if (ghostCandleFactory) {
-    startGhostCandleProduction(ghostCandleFactory);
-  }
 
   sound.play("upgrade");
+  incrementMissionCounter("powerUpsActivated");
+  syncMissionProgress();
 
-  return true;
+  return { success: true };
 };
-
-export const consumePendingCauldronDrop = (): boolean => {
-  const state = getInventoryState();
-
-  if (!state.pendingCauldronDrop) {
-    return false;
-  }
-
-  setInventory((current) => ({
-    ...current,
-    pendingCauldronDrop: false,
-  }));
-
-  return true;
-};
-
-export const isGhostCandleFactoryActive = (factory: FactoryType): boolean => {
-  refreshExpiredPowerUps();
-
-  const activePowerUp = getInventoryState().activePowerUp;
-
-  return (
-    isTimedPowerUpActive(activePowerUp) &&
-    activePowerUp?.powerUpId === "ghostCandle" &&
-    activePowerUp.ghostCandleFactory === factory
-  );
-};
-
-export const isFactoryDrivenByScheduler = (
-  factory: FactoryType,
-  factoryState: {
-    isAutomated: boolean;
-    isProducing: boolean;
-    isUnlocked: boolean;
-  }
-): boolean =>
-  isFactoryProductionActive(factoryState) ||
-  isGhostCandleFactoryActive(factory);

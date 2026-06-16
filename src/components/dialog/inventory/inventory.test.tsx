@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { InventoryDialog } from "@/components/dialog/inventory/inventory";
-import { getLocalizedPowerUp, INVENTORY_GRID_SIZE } from "@/content/power-ups";
+import { getLocalizedPowerUp } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
@@ -12,15 +12,28 @@ import {
 import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
 
-const localizedAuroraDust = getLocalizedPowerUp("auroraDust");
-const localizedUseAuroraDust = m["ui.inventory.useItem"]({
-  0: localizedAuroraDust.name,
+const { useMediaQueryMock } = vi.hoisted(() => ({
+  useMediaQueryMock: vi.fn<(query: string) => boolean>(),
+}));
+
+vi.mock("@uidotdev/usehooks", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@uidotdev/usehooks")>();
+
+  return {
+    ...actual,
+    useMediaQuery: useMediaQueryMock,
+  };
+});
+
+const localizedMimirCoin = getLocalizedPowerUp("mimirCoin");
+const localizedUseMimirCoin = m["ui.inventory.useItem"]({
+  0: localizedMimirCoin.name,
 });
 
 const seedInventorySlot = () => {
   store.set(inventoryAtom, {
     ...initialInventoryState,
-    slots: [{ powerUpId: "auroraDust", count: 2, tier: "common" }],
+    slots: [{ powerUpId: "mimirCoin", count: 2, tier: "common" }],
   });
 };
 
@@ -39,30 +52,44 @@ const openInventory = async () => {
   return screen;
 };
 
+const countInventoryCards = () =>
+  document.querySelectorAll('[data-slot="inventory-card"]').length;
+
 describe("InventoryDialog", () => {
   beforeEach(() => {
     vi.useRealTimers();
     resetGame();
+    useMediaQueryMock.mockReturnValue(false);
   });
 
-  test("renders inventory grid", async () => {
+  test("renders eight inventory cards on desktop", async () => {
+    useMediaQueryMock.mockReturnValue(false);
     const screen = await openInventory();
 
     await expect
       .element(screen.getByRole("heading", { name: m["ui.inventory.title"]() }))
       .toBeInTheDocument();
 
-    expect(
-      document.querySelectorAll('[data-slot="inventory-card"]')
-    ).toHaveLength(INVENTORY_GRID_SIZE);
+    expect(countInventoryCards()).toBe(8);
   });
 
-  test("shows use button for filled relic slot without an info button", async () => {
+  test("renders nine inventory cards on mobile", async () => {
+    useMediaQueryMock.mockReturnValue(true);
+    const screen = await openInventory();
+
+    await expect
+      .element(screen.getByRole("heading", { name: m["ui.inventory.title"]() }))
+      .toBeInTheDocument();
+
+    expect(countInventoryCards()).toBe(9);
+  });
+
+  test("shows use and info buttons for filled relic slot", async () => {
     seedInventorySlot();
     const screen = await openInventory();
 
     const useButton = screen.getByRole("button", {
-      name: localizedUseAuroraDust,
+      name: localizedUseMimirCoin,
     });
 
     await expect.element(useButton).toBeInTheDocument();
@@ -70,25 +97,25 @@ describe("InventoryDialog", () => {
     await expect
       .element(
         screen.getByRole("button", {
-          name: m["ui.inventory.slot.info"]({ 0: localizedAuroraDust.name }),
+          name: m["ui.inventory.slot.info"]({ 0: localizedMimirCoin.name }),
         })
       )
-      .not.toBeInTheDocument();
+      .toBeInTheDocument();
   });
 
-  test("activates power-up when use button is clicked", async () => {
+  test("consumes mimir coin and grants gold when use button is clicked", async () => {
     seedInventorySlot();
     const screen = await openInventory();
 
     const useButton = screen.getByRole("button", {
-      name: localizedUseAuroraDust,
+      name: localizedUseMimirCoin,
     });
 
     await useButton.click();
 
-    expect(getInventoryState().activePowerUp?.powerUpId).toBe("auroraDust");
+    expect(getInventoryState().activePowerUp).toBeNull();
     expect(getInventoryState().slots).toEqual([
-      { powerUpId: "auroraDust", count: 1, tier: "common" },
+      { powerUpId: "mimirCoin", count: 1, tier: "common" },
     ]);
   });
 });

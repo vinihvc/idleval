@@ -8,6 +8,9 @@ import {
 } from "@/utils/formatters";
 
 interface OfflineEarningSummaryProps {
+  /**
+   * The summary of the offline earning
+   */
   summary: OfflineSummary;
 }
 

@@ -5,6 +5,8 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 ## Per-folder context
 
 Domain-specific conventions live in [`src/AGENTS.md`](src/AGENTS.md) and each `src/{folder}/AGENTS.md`.
+Architecture and feature recipes: [`docs/CONTEXT.md`](docs/CONTEXT.md).
+Visual design system: [`docs/DESIGN.md`](docs/DESIGN.md).
 Read the folder's AGENTS.md before editing files in it.
 
 ## Quick Reference
@@ -14,6 +16,26 @@ Read the folder's AGENTS.md before editing files in it.
 - **Diagnose setup**: `pnpm dlx ultracite doctor`
 
 Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+---
+
+## localStorage persistence
+
+**Do not bump storage key versions when persisted shape changes.** Keep stable keys in [`src/config/local-storage.ts`](src/config/local-storage.ts) (`LOCAL_STORAGE`) and migrate old blobs on read.
+
+| Need | Use |
+|------|-----|
+| Stable shape | `persistedAtom` |
+| Normalize / strip removed fields | `persistedAtomWithNormalize` |
+| Read from retired keys on first load | `persistedAtomWithNormalizeAndLegacy` |
+
+**On schema change:**
+
+1. Update the atom’s `normalize` function — default missing fields, drop removed ones.
+2. If data lived under another key (or a brief experimental key), add a `readLegacy` fallback; first read writes the canonical key.
+3. Only rename a `LOCAL_STORAGE` key when normalization truly cannot recover old saves (rare — ask first).
+
+Details and examples: [`src/store/AGENTS.md`](src/store/AGENTS.md).
 
 ---
 

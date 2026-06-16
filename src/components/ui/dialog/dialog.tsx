@@ -7,7 +7,7 @@ import { Image, type ImageProps } from "@unpic/react";
 import { Close } from "pixelarticons/react/Close";
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { WaxSeal } from "@/components/icons/wax-seal";
+import { WaxSealIcon } from "@/components/icons/wax-seal";
 import { boxBorder } from "@/components/ui/box-border";
 import { Button } from "@/components/ui/button";
 import { FantasyCorner } from "@/components/ui/fantasy-corner";
@@ -173,7 +173,7 @@ export const DialogContent = (props: DialogContentProps) => {
                 size="icon-xl"
                 variant="ghost"
               >
-                <WaxSeal className="absolute inset-0 size-full" />
+                <WaxSealIcon className="absolute inset-0 size-full" />
                 <Close className="size-6 drop-shadow-[0_1px_1px_rgba(80,0,0,0.75)]" />
               </Button>
             </DialogClose>
@@ -198,16 +198,15 @@ export const DialogBody = (props: DialogBodyProps) => {
 
   return (
     <ScrollArea
-      className="h-auto max-h-[calc(100svh-12rem)] flex-none"
+      className={cn("h-auto max-h-[calc(100svh-12rem)] flex-none")}
       scrollFade={scrollFade}
     >
       <ark.div
         className={cn(
           "p-(--space)",
           "text-center text-xl sm:text-left",
-          "overflow-auto",
-          "in-[[data-slot=dialog-content]:has([data-slot=dialog-header])]:pt-1",
-          "in-[[data-slot=dialog-content]:has([data-slot=dialog-footer]:not(.border-t))]:pb-1",
+          "in-[[data-slot=dialog-content]:has([data-slot=dialog-header])]:pt-2",
+          "in-[[data-slot=dialog-content]:has([data-slot=dialog-footer]:not(.border-t))]:pb-2",
           className
         )}
         data-slot="dialog-body"

@@ -7,10 +7,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  canStartManualProduction,
-  getUpgradeMultiplierLabel,
-} from "@/game/factories";
+import { ECONOMY } from "@/game/economy";
+import { canStartManualProduction } from "@/game/factories";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { startProducing } from "@/store/atoms/factories";
@@ -92,7 +90,7 @@ export const FactoryCardProduce = (
             {isUpgraded && (
               <div className="absolute -top-1 -right-1 flex size-6.5 items-center justify-center rounded-full border-2 border-secondary bg-primary p-1">
                 <NumberText className="text-base" variant="cream">
-                  {getUpgradeMultiplierLabel()}
+                  {`${ECONOMY.upgradeProductionMultiplier}x`}
                 </NumberText>
               </div>
             )}

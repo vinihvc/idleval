@@ -12,12 +12,18 @@ import {
 } from "@/components/ui/bottom-navigation";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
-import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
+import { DIALOG_IDS, toggleDialog, useDialogs } from "@/store/atoms/dialogs";
 
 export const Navigation = (
   props: React.ComponentProps<typeof BottomNavigation>
 ) => {
   const { className, ...rest } = props;
+
+  const openDialogId = useDialogs();
+  const isUpgradesOpen = openDialogId === DIALOG_IDS.upgrades;
+  const isManagersOpen = openDialogId === DIALOG_IDS.managers;
+  const isGodsOpen = openDialogId === DIALOG_IDS.gods;
+  const isInventoryOpen = openDialogId === DIALOG_IDS.inventory;
 
   return (
     <BottomNavigation
@@ -33,6 +39,7 @@ export const Navigation = (
       >
         <BottomNavigationListItem>
           <BottomNavigationItem
+            aria-expanded={isUpgradesOpen}
             onClick={() => toggleDialog(DIALOG_IDS.upgrades)}
           >
             <BottomNavigationItemIcon>
@@ -44,6 +51,7 @@ export const Navigation = (
 
         <BottomNavigationListItem>
           <BottomNavigationItem
+            aria-expanded={isManagersOpen}
             onClick={() => toggleDialog(DIALOG_IDS.managers)}
           >
             <BottomNavigationItemIcon>
@@ -54,7 +62,10 @@ export const Navigation = (
         </BottomNavigationListItem>
 
         <BottomNavigationListItem>
-          <BottomNavigationItem onClick={() => toggleDialog(DIALOG_IDS.gods)}>
+          <BottomNavigationItem
+            aria-expanded={isGodsOpen}
+            onClick={() => toggleDialog(DIALOG_IDS.gods)}
+          >
             <BottomNavigationItemIcon>
               <Crown />
             </BottomNavigationItemIcon>
@@ -64,6 +75,7 @@ export const Navigation = (
 
         <BottomNavigationListItem>
           <BottomNavigationItem
+            aria-expanded={isInventoryOpen}
             onClick={() => toggleDialog(DIALOG_IDS.inventory)}
           >
             <BottomNavigationItemIcon>

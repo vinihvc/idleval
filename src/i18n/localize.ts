@@ -5,6 +5,12 @@ type MessageKey = Extract<keyof typeof m, string>;
 export const translate = (key: string): string =>
   (m[key as MessageKey] as () => string)();
 
+export const translateParams = (
+  key: string,
+  params: Record<string, string>
+): string =>
+  (m[key as MessageKey] as (inputs: Record<string, string>) => string)(params);
+
 export const hasMessageKey = (key: string): key is MessageKey => key in m;
 
 export const localizeLore = (prefix: string) => ({

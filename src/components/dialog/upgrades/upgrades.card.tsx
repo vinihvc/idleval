@@ -1,21 +1,19 @@
 import React from "react";
 import { NumberText } from "@/components/ui/number-text";
 import {
-  getSealedState,
-  getUpgradeCardCostStyle,
   UpgradeCard,
   UpgradeCardArt,
   UpgradeCardHeader,
   UpgradeCardPanel,
   UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
+import { useUpgradeCardAffordance } from "@/components/ui/upgrade-card/use-upgrade-card-affordance";
 import type { FactoryType } from "@/content/factories";
 import { m } from "@/i18n/messages";
 import type { GameValue } from "@/utils/decimal";
 import { amountFormatter } from "@/utils/formatters";
 
 export interface UpgradesCardProps {
-  affordable: boolean;
   canBuy: boolean;
   complete: boolean;
   description?: string;
@@ -33,13 +31,17 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
     description,
     complete,
     locked,
-    affordable,
     canBuy,
     upgradeCost,
     onPurchase,
   } = props;
 
-  const sealed = getSealedState({ complete, locked, affordable });
+  const { sealed, costStyle, interactive, variant, dataAttributes } =
+    useUpgradeCardAffordance({
+      complete,
+      locked,
+      canAfford: canBuy,
+    });
   const descriptionId = React.useId();
 
   const getAriaLabel = () => {
@@ -58,8 +60,6 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
     return `${m["ui.upgrades.improve"]()} ${name}`;
   };
 
-  const costStyle = getUpgradeCardCostStyle({ affordable, locked });
-
   const costNode = complete ? undefined : (
     <NumberText
       className={costStyle.className}
@@ -75,22 +75,24 @@ export const UpgradesCard = (props: UpgradesCardProps) => {
       aria-describedby={description ? descriptionId : undefined}
       aria-disabled={complete || !canBuy || undefined}
       aria-label={getAriaLabel()}
-      data-affordable={affordable}
-      data-complete={complete}
-      data-locked={locked}
-      data-masked={sealed !== null}
-      data-sealed={sealed ?? undefined}
-      interactive={canBuy && !locked && !complete}
+      {...dataAttributes}
+      interactive={interactive}
       onClick={canBuy && !locked ? onPurchase : undefined}
-      variant={sealed === "open" || complete ? "green" : "brown"}
+      variant={variant}
     >
       <UpgradeCardPanel
         charter={sealed === "charter"}
         complete={complete}
         open={sealed === "open"}
       >
+        {description && (
+          <span className="sr-only" id={descriptionId}>
+            {description}
+          </span>
+        )}
         {complete && (
           <UpgradeCardHeader
+            description={description}
             icon={`/images/factories/${factoryType}.webp`}
             title={name}
           />

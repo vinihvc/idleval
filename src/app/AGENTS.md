@@ -32,6 +32,7 @@ SPA entry point — game shell composition and provider tree.
 |------|------|
 | `page.tsx` | Composition: GameShell, GamePanel, Header, FactoryGrid, nav, Footer, WelcomeDialog |
 | `providers.tsx` | Application provider stack |
+| `use-context-menu.ts` | Disables browser context menu outside dev |
 
 ## Neighbors
 
@@ -40,5 +41,6 @@ SPA entry point — game shell composition and provider tree.
 
 ## Evolution
 
+- 2026-06-14 — `use-context-menu.ts` colocated with `page.tsx` (single consumer)
 - 2026-06-07 — I18nProvider innermost so `key={locale}` remounts page without resetting scheduler/sound
 - 2026-06-07 — Initial docs: entry + provider stack

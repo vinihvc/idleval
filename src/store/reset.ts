@@ -1,7 +1,13 @@
+import { createInitialMissionsState } from "@/game/types";
 import { store } from "@/providers/store";
 import { dialogsAtom } from "@/store/atoms/dialogs";
 import { godsAtom } from "@/store/atoms/gods";
 import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
+import {
+  dailyRewardAtom,
+  initialDailyRewardState,
+} from "@/store/atoms/daily-reward.atom";
+import { missionsAtom } from "@/store/atoms/missions.atom";
 import {
   initialNotificationsState,
   notificationsAtom,
@@ -27,6 +33,8 @@ export const resetGame = () => {
   });
   store.set(godsAtom, { invoked: [] });
   store.set(inventoryAtom, initialInventoryState);
+  store.set(dailyRewardAtom, initialDailyRewardState);
+  store.set(missionsAtom, createInitialMissionsState());
   store.set(notificationsAtom, initialNotificationsState());
   store.set(sessionAtom, { lastSeenAt: Date.now() });
   store.set(offlineCycleProgressAtom, {});

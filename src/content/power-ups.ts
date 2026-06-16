@@ -1,9 +1,7 @@
-import { localizeLore } from "@/i18n/localize";
+import { translate, translateParams } from "@/i18n/localize";
 
 export const POWER_UP_TYPES = [
-  "auroraDust",
-  "ghostCandle",
-  "cauldronDrop",
+  "mimirCoin",
   "hasteRune",
   "lightningShard",
   "yggdrasilTear",
@@ -18,9 +16,7 @@ export interface PowerUpData {
 }
 
 export const POWER_UP_DATA: Record<PowerUpId, PowerUpData> = {
-  auroraDust: { image: "/images/power-ups/aurora-dust.webp" },
-  ghostCandle: { image: "/images/power-ups/ghost-candle.webp" },
-  cauldronDrop: { image: "/images/power-ups/cauldron-drop.webp" },
+  mimirCoin: { image: "/images/power-ups/mimir-coin.webp" },
   hasteRune: { image: "/images/power-ups/haste-rune.webp" },
   lightningShard: { image: "/images/power-ups/lightning-shard.webp" },
   yggdrasilTear: { image: "/images/power-ups/yggdrasil-tear.webp" },
@@ -31,29 +27,113 @@ export const RELIC_SLOT_COUNT = 6;
 export const RITUAL_SLOT_COUNT = 4;
 export const INVENTORY_GRID_SIZE = RELIC_SLOT_COUNT + RITUAL_SLOT_COUNT;
 
-export const DAILY_REWARD_CYCLE_DAYS = 6;
-
-export const DAILY_REWARD_CALENDAR: {
-  day: number;
-  powerUpId: PowerUpId;
-  tier: PowerUpTier;
-}[] = [
-  { day: 1, powerUpId: "auroraDust", tier: "common" },
-  { day: 2, powerUpId: "ghostCandle", tier: "common" },
-  { day: 3, powerUpId: "cauldronDrop", tier: "uncommon" },
-  { day: 4, powerUpId: "hasteRune", tier: "uncommon" },
-  { day: 5, powerUpId: "lightningShard", tier: "rare" },
-  { day: 6, powerUpId: "yggdrasilTear", tier: "epic" },
-];
-
 export const POWER_UP_EFFECTS = {
-  auroraDust: { incomeMultiplier: 1.5, durationMs: 60_000 },
-  ghostCandle: { durationMs: 180_000 },
-  cauldronDrop: { nextCycleMultiplier: 3 },
-  hasteRune: { timeMultiplier: 0.6, durationMs: 120_000 },
-  lightningShard: { incomeMultiplier: 2, durationMs: 45_000 },
-  yggdrasilTear: { advanceSeconds: 30, epicAdvanceSeconds: 120 },
+  mimirCoin: {
+    rollSecondsByTier: {
+      common: { min: 45, max: 90 },
+      uncommon: { min: 90, max: 150 },
+      rare: { min: 150, max: 240 },
+      epic: { min: 240, max: 360 },
+    },
+  },
+  hasteRune: { timeMultiplier: 0.6, durationMs: 1_200_000 },
+  lightningShard: { incomeMultiplier: 2, durationMs: 900_000 },
+  yggdrasilTear: { advanceSeconds: 1800 },
 } as const;
 
-export const getLocalizedPowerUp = (powerUpId: PowerUpId) =>
-  localizeLore(`powerup.${powerUpId}`);
+const msToMinutes = (durationMs: number): string =>
+  String(durationMs / 60_000);
+
+const getHasteRuneParams = (): Record<string, string> => {
+  const { durationMs, timeMultiplier } = POWER_UP_EFFECTS.hasteRune;
+
+  return {
+    duration: msToMinutes(durationMs),
+    timePercent: String(timeMultiplier * 100),
+  };
+};
+
+const getLightningShardParams = (): Record<string, string> => {
+  const { durationMs, incomeMultiplier } = POWER_UP_EFFECTS.lightningShard;
+
+  return {
+    duration: msToMinutes(durationMs),
+    multiplier: String(incomeMultiplier),
+  };
+};
+
+const getYggdrasilTearParams = (): Record<string, string> => {
+  const { advanceSeconds } = POWER_UP_EFFECTS.yggdrasilTear;
+
+  return {
+    duration: String(advanceSeconds / 60),
+    advanceSeconds: String(advanceSeconds),
+  };
+};
+
+const getMimirCoinWikiParams = (): Record<string, string> => {
+  const { rollSecondsByTier } = POWER_UP_EFFECTS.mimirCoin;
+
+  return {
+    commonMin: String(rollSecondsByTier.common.min),
+    commonMax: String(rollSecondsByTier.common.max),
+    uncommonMin: String(rollSecondsByTier.uncommon.min),
+    uncommonMax: String(rollSecondsByTier.uncommon.max),
+    rareMin: String(rollSecondsByTier.rare.min),
+    rareMax: String(rollSecondsByTier.rare.max),
+    epicMin: String(rollSecondsByTier.epic.min),
+    epicMax: String(rollSecondsByTier.epic.max),
+  };
+};
+
+const getPowerUpDescriptionParams = (
+  powerUpId: PowerUpId
+): Record<string, string> => {
+  switch (powerUpId) {
+    case "hasteRune":
+      return getHasteRuneParams();
+    case "lightningShard":
+      return getLightningShardParams();
+    case "yggdrasilTear":
+      return getYggdrasilTearParams();
+    case "mimirCoin":
+      return {};
+    default: {
+      const _exhaustive: never = powerUpId;
+      return _exhaustive;
+    }
+  }
+};
+
+const getPowerUpWikiMechanicsParams = (
+  powerUpId: PowerUpId
+): Record<string, string> => {
+  switch (powerUpId) {
+    case "hasteRune":
+      return getHasteRuneParams();
+    case "lightningShard":
+      return getLightningShardParams();
+    case "yggdrasilTear":
+      return getYggdrasilTearParams();
+    case "mimirCoin":
+      return getMimirCoinWikiParams();
+    default: {
+      const _exhaustive: never = powerUpId;
+      return _exhaustive;
+    }
+  }
+};
+
+export const getLocalizedPowerUp = (powerUpId: PowerUpId) => ({
+  name: translate(`powerup.${powerUpId}.name`),
+  description: translateParams(
+    `powerup.${powerUpId}.description`,
+    getPowerUpDescriptionParams(powerUpId)
+  ),
+});
+
+export const getLocalizedPowerUpWikiMechanics = (powerUpId: PowerUpId) =>
+  translateParams(
+    `wiki.powerup.${powerUpId}.mechanics`,
+    getPowerUpWikiMechanicsParams(powerUpId)
+  );

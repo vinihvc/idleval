@@ -4,8 +4,8 @@ import {
   canInvokeGodAtIndex,
   getGodCardStatus,
   getGodGoldRequired,
-  getMultiplierAfterInvocation,
   getTotalProductionMultiplier,
+  hasInvokableGod,
   isGodInvocationComplete,
 } from "@/game/gods";
 import { D } from "@/utils/decimal";
@@ -57,17 +57,10 @@ describe("gods rules", () => {
     ).toBe(true);
   });
 
-  it("getMultiplierAfterInvocation includes the selected god", () => {
-    expect(
-      getMultiplierAfterInvocation(0, []).eq(
-        getTotalProductionMultiplier(["huangdi"])
-      )
-    ).toBe(true);
-    expect(
-      getMultiplierAfterInvocation(2, ["huangdi", "dagda"]).eq(
-        getTotalProductionMultiplier(["huangdi", "dagda", "shango"])
-      )
-    ).toBe(true);
+  it("hasInvokableGod is true when any god can be invoked", () => {
+    expect(hasInvokableGod([], D("1e12"))).toBe(true);
+    expect(hasInvokableGod([], D(1))).toBe(false);
+    expect(hasInvokableGod(["huangdi"], D("1e18"))).toBe(true);
   });
 
   it("getGodGoldRequired returns configured threshold", () => {

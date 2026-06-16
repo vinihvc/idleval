@@ -7,24 +7,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { getFactoryDialogId, toggleDialog } from "@/store/atoms/dialogs";
-import {
-  setAmountBySelectedAmount,
-  unlockFactory,
-} from "@/store/atoms/factories";
-import {
-  computePurchaseTotals,
-  usePurchaseMode,
-} from "@/store/atoms/purchase-mode";
-import { useWallet } from "@/store/atoms/wallet";
 import {
   amountFormatter,
   amountFormatterWithDolarSign,
 } from "@/utils/formatters";
 import { useFactoryCard } from "./factory-card.context";
+import { useFactoryPurchase } from "./use-factory-purchase";
 
 const LazyFactoryDialog = React.lazy(
   () => import("@/components/dialog/factory/factory")
@@ -33,58 +24,28 @@ const LazyFactoryDialog = React.lazy(
 export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
 
+  const factoryCard = useFactoryCard();
+  const { name } = factoryCard;
+  const purchase = useFactoryPurchase(factoryCard);
   const {
     factoryType,
-    amount,
-    baseBuyCost,
+    isLocked,
     isUnlocked,
     unlockPrice,
-    name,
-    nextUnitCost,
-    isLocked,
-  } = useFactoryCard();
-  const { gold } = useWallet();
-  const { value: amountToBuy } = usePurchaseMode();
-  const { totalCanBuy, totalToPay } = React.useMemo(
-    () => computePurchaseTotals(amountToBuy, gold, amount, baseBuyCost),
-    [amountToBuy, gold, amount, baseBuyCost]
-  );
-
-  const totalGreaterThan0 = totalCanBuy > 0;
-  const buyPrice = totalGreaterThan0 ? totalToPay : nextUnitCost;
-  const ledgerLabel = m["ui.factoryCard.ledger"]({ name });
-
-  const handleBuy = () => {
-    if (isUnlocked) {
-      setAmountBySelectedAmount(factoryType, amountToBuy);
-    } else {
-      unlockFactory(factoryType);
-    }
-  };
-
-  const canBuyAmount = canPurchaseUnits({
-    gold,
-    quantity: totalCanBuy,
+    totalCanBuy,
     totalToPay,
-  });
-  const canUnlock = canUnlockFactory(gold, unlockPrice);
+    totalGreaterThan0,
+    buyPrice,
+    canBuyAmount,
+    canUnlock,
+    showEmptyCoffers,
+    isMutedUpgrade,
+    buttonVariant,
+    handleBuy,
+    disabled,
+  } = purchase;
 
-  const canShowBuy = isUnlocked && canBuyAmount && totalGreaterThan0;
-  const showEmptyCoffers = isUnlocked && !canShowBuy;
-  const isMutedUpgrade = isLocked || showEmptyCoffers;
-
-  const buttonVariant = () => {
-    if (!totalGreaterThan0) {
-      return "stone";
-    }
-    if (isUnlocked && canBuyAmount) {
-      return "green";
-    }
-    if (!isUnlocked && canUnlock) {
-      return "default";
-    }
-    return "stone";
-  };
+  const ledgerLabel = m["ui.factoryCard.ledger"]({ name });
 
   return (
     <div
@@ -100,9 +61,7 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
           }
         )}
         data-locked={isLocked}
-        disabled={
-          isUnlocked ? !(canBuyAmount && totalGreaterThan0) : !canUnlock
-        }
+        disabled={disabled}
         onClick={handleBuy}
         size="md"
         variant={isLocked ? "stone" : buttonVariant()}

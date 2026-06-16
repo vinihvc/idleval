@@ -14,8 +14,7 @@ export interface WikiEntryProps extends React.ComponentProps<"article"> {
 }
 
 export const WikiEntry = (props: WikiEntryProps) => {
-  const { title, flavor, lore, mechanics, image, icon, className, ...rest } =
-    props;
+  const { title, flavor, lore, mechanics, icon, className, ...rest } = props;
 
   return (
     <article
@@ -28,55 +27,33 @@ export const WikiEntry = (props: WikiEntryProps) => {
       data-slot="wiki-entry"
       {...rest}
     >
-      <div className="flex gap-3">
-        <div
-          className={cn(
-            "relative size-16 shrink-0 overflow-hidden rounded-sm",
-            "border-2 border-primary-foreground/25 bg-muted",
-            boxBorder({ inset: "well", variant: "muted", soft: "none" })
+      <header className="border-primary/20 border-b pb-2">
+        <div className="flex items-center justify-center gap-1.5">
+          {icon && (
+            <Image
+              alt=""
+              aria-hidden
+              className="pixel-crisp size-6 shrink-0 rounded-sm object-contain"
+              height={24}
+              layout="constrained"
+              src={icon}
+              width={24}
+            />
           )}
-        >
-          <Image
-            alt=""
-            aria-hidden
-            className="pixel-crisp size-full object-contain object-center"
-            height={64}
-            layout="constrained"
-            src={image}
-            width={64}
-          />
+          <h3 className="font-bold text-base leading-tight tracking-wide">
+            {title}
+          </h3>
         </div>
+        <p className="mt-1 text-center text-primary-foreground italic leading-snug">
+          &ldquo;{flavor}&rdquo;
+        </p>
+      </header>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <h3 className="font-bold text-base leading-tight tracking-wide">
-              {title}
-            </h3>
-            {icon && (
-              <Image
-                alt=""
-                aria-hidden
-                className="pixel-crisp size-4 shrink-0 rounded-sm object-contain"
-                height={16}
-                layout="constrained"
-                src={icon}
-                width={16}
-              />
-            )}
-          </div>
-          <p className="mt-1 text-primary-foreground italic leading-relaxed">
-            {flavor}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-2 leading-relaxed">
-        <div>
-          <p className="font-display font-semibold text-primary-foreground text-xs uppercase tracking-wider">
-            {m["ui.wiki.section.lore"]()}
-          </p>
-          <p className="mt-1">{lore}</p>
-        </div>
+      <div className="text-justify leading-relaxed [&>*+*]:mt-2">
+        <p className="font-display font-semibold text-primary-foreground text-xs uppercase tracking-wider">
+          {m["ui.wiki.section.lore"]()}
+        </p>
+        <p>{lore}</p>
 
         <p>{mechanics}</p>
       </div>

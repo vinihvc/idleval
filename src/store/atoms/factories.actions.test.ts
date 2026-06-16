@@ -52,10 +52,18 @@ describe("factories.actions", () => {
     ).toBe(true);
   });
 
-  it("startProducing sets isProducing for manual unlocked factories", () => {
+  it("startProducing sets isProducing and persists cycle timestamps", () => {
+    const before = Date.now();
+
     startProducing("grain");
 
-    expect(store.get(factoriesAtom).grain.isProducing).toBe(true);
+    const grain = store.get(factoriesAtom).grain;
+
+    expect(grain.isProducing).toBe(true);
+    expect(grain.productionStartedAt).toBeGreaterThanOrEqual(before);
+    expect(grain.productionDurationSec).toBe(
+      FACTORY_DATA.grain.productionTime
+    );
   });
 
   it("startProducing is blocked for automated factories", () => {
@@ -66,13 +74,22 @@ describe("factories.actions", () => {
     expect(store.get(factoriesAtom).grain.isProducing).toBe(false);
   });
 
-  it("completeProductionCycle awards gold and plays coin for manual production", () => {
-    seedFactory("grain", { isProducing: true, amount: 2 });
+  it("completeProductionCycle awards gold, clears cycle fields, and plays coin for manual production", () => {
+    seedFactory("grain", {
+      isProducing: true,
+      amount: 2,
+      productionStartedAt: 0,
+      productionDurationSec: FACTORY_DATA.grain.productionTime,
+    });
     const goldBefore = getGold();
 
     completeProductionCycle("grain");
 
-    expect(store.get(factoriesAtom).grain.isProducing).toBe(false);
+    const grain = store.get(factoriesAtom).grain;
+
+    expect(grain.isProducing).toBe(false);
+    expect(grain.productionStartedAt).toBeNull();
+    expect(grain.productionDurationSec).toBeNull();
     expect(getGold().gt(goldBefore)).toBe(true);
     expect(vi.mocked(sound.play)).toHaveBeenCalledWith("coin");
   });

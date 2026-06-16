@@ -96,7 +96,7 @@ const tabsTriggerVariants = tv({
         "active:brightness-95",
         "hover:brightness-105 focus-visible:ring-primary/20",
         "aria-selected:z-10",
-        "aria-selected:border-primary/30 aria-selected:bg-muted aria-selected:text-foreground",
+        "aria-selected:border-primary/30 aria-selected:bg-secondary aria-selected:text-foreground",
         "pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
       ],
       underline: [

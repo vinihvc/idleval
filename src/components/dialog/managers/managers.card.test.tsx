@@ -3,8 +3,8 @@ import { ManagersCard } from "@/components/dialog/managers/managers.card";
 import { getLocalizedFactory } from "@/content/factories";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
+import { getFactory } from "@/store/atoms/factories";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
-import { getFactory } from "@/store/atoms/factories.selectors";
 import { seedFactory, seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
 

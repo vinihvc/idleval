@@ -1,10 +1,11 @@
 {
+  "version": 1,
   "hooks": {
-    "afterFileEdit": [
+    "preToolUse": [
       {
-        "command": "pnpm run fix --skip=correctness/noUnusedImports"
+        "command": ".cursor/hooks/inject-agents-md.mjs",
+        "matcher": "Write|StrReplace|EditNotebook|Delete"
       }
     ]
-  },
-  "version": 1
+  }
 }

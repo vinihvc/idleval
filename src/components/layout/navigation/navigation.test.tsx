@@ -51,6 +51,47 @@ describe("Navigation", () => {
     expect(screen.getByRole("dialog").elements()).toHaveLength(1);
   });
 
+  test("marks the active nav item when its dialog is open", async () => {
+    const screen = await renderWithProviders(
+      <>
+        <Navigation />
+        <GameSectionDialogs />
+      </>
+    );
+
+    const upgradesButton = screen.getByRole("button", {
+      name: m["ui.nav.upgrades"](),
+    });
+    const managersButton = screen.getByRole("button", {
+      name: m["ui.nav.managers"](),
+    });
+
+    await expect
+      .element(upgradesButton)
+      .toHaveAttribute("aria-expanded", "false");
+    await expect
+      .element(managersButton)
+      .toHaveAttribute("aria-expanded", "false");
+
+    await upgradesButton.click();
+
+    await expect
+      .element(upgradesButton)
+      .toHaveAttribute("aria-expanded", "true");
+    await expect
+      .element(managersButton)
+      .toHaveAttribute("aria-expanded", "false");
+
+    await managersButton.click();
+
+    await expect
+      .element(upgradesButton)
+      .toHaveAttribute("aria-expanded", "false");
+    await expect
+      .element(managersButton)
+      .toHaveAttribute("aria-expanded", "true");
+  });
+
   test("opening another nav dialog closes the previous dialog", async () => {
     const screen = await renderWithProviders(
       <>

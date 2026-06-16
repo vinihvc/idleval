@@ -9,7 +9,11 @@ import {
   UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
 import { useHoldPress } from "@/hooks/use-hold-press";
+import { m } from "@/i18n/messages";
 import { renderWithProviders } from "@/test/render-with-providers";
+
+const COMPLETE_DESCRIPTION =
+  "Channels and royal silos tied to the river; famine rarely returns.";
 
 const OpenCard = () => (
   <UpgradeCard data-affordable data-masked data-sealed="open" variant="green">
@@ -29,7 +33,7 @@ const OpenCard = () => (
 const CompleteCard = () => (
   <UpgradeCard data-complete variant="green">
     <UpgradeCardPanel complete>
-      <UpgradeCardHeader title="Done" />
+      <UpgradeCardHeader description={COMPLETE_DESCRIPTION} title="Done" />
       <UpgradeCardArt complete showImage src="/images/upgrades/grain.webp" />
     </UpgradeCardPanel>
   </UpgradeCard>
@@ -170,6 +174,16 @@ describe("UpgradeCard", () => {
     await expect
       .poll(() => button.element().className.includes("bg-success"))
       .toBe(true);
+  });
+
+  test("info tooltip shows title and description when complete", async () => {
+    const screen = await renderWithProviders(
+      <UpgradeCardHeader description={COMPLETE_DESCRIPTION} title="Done" />
+    );
+
+    await screen.getByLabelText(m["ui.upgradeCard.info"]({ 0: "Done" })).click();
+
+    await expect.element(screen.getByText(COMPLETE_DESCRIPTION)).toBeInTheDocument();
   });
 
   test("shows hold progress feedback while pressing", async () => {

@@ -1,5 +1,11 @@
+import {
+  FACTORY_DATA,
+  FACTORY_TYPES,
+  type FactoryType,
+} from "@/content/factories";
 import { D, type GameValue } from "@/utils/decimal";
-import { canAfford, ECONOMY } from "./economy";
+import { canAfford, ECONOMY, managerCost, upgradeCost } from "./economy";
+import type { FactoryPersistedState } from "./types";
 
 interface FactoryProductionValueInput {
   /** Multiplier granted by invoked gods and applied to factory production. */
@@ -79,15 +85,6 @@ export const getFactoryYieldPerHour = (
 ): GameValue => yieldPerCycle.times(SECONDS_PER_HOUR).div(productionTime);
 
 /**
- * Display label for the production upgrade multiplier.
- *
- * @example
- * getUpgradeMultiplierLabel() // "2x"
- */
-export const getUpgradeMultiplierLabel = (): string =>
-  `${ECONOMY.upgradeProductionMultiplier}x`;
-
-/**
  * Whether a factory should be driven by the production scheduler.
  *
  * @example
@@ -100,6 +97,17 @@ export const isFactoryProductionActive = ({
   isUnlocked,
 }: FactoryProductionState): boolean =>
   isUnlocked && (isAutomated || isProducing);
+
+/**
+ * Whether the scheduler should tick this factory's production countdown.
+ *
+ * @example
+ * isFactoryDrivenByScheduler("grain", { isUnlocked: true, isAutomated: true, isProducing: false }) // true
+ */
+export const isFactoryDrivenByScheduler = (
+  _factory: FactoryType,
+  factoryState: FactoryProductionState
+): boolean => isFactoryProductionActive(factoryState);
 
 /**
  * Whether the player can start a manual production tap.
@@ -144,3 +152,116 @@ export const canPurchaseUpgrade = ({
   isUpgraded,
 }: UpgradePurchaseState): boolean =>
   isUnlocked && !isUpgraded && canAfford(gold, cost);
+
+const INITIAL_FACTORY: FactoryType = "grain";
+
+interface CreateInitialFactoryStateOptions {
+  amount?: number;
+}
+
+/**
+ * Returns the default persisted state for a single factory.
+ *
+ * @example
+ * createInitialFactoryState("grain").amount // 1
+ * createInitialFactoryState("wine").amount // 0
+ */
+export const createInitialFactoryState = (
+  factory: FactoryType,
+  options?: CreateInitialFactoryStateOptions
+): FactoryPersistedState => ({
+  amount: options?.amount ?? (factory === INITIAL_FACTORY ? 1 : 0),
+  isProducing: false,
+  isUpgraded: false,
+  isAutomated: false,
+  isUnlocked: factory === INITIAL_FACTORY,
+  productionStartedAt: null,
+  productionDurationSec: null,
+});
+
+/**
+ * Returns the default persisted state for every factory.
+ */
+export const createInitialFactoriesState = (): Record<
+  FactoryType,
+  FactoryPersistedState
+> =>
+  Object.fromEntries(
+    FACTORY_TYPES.map((factory) => [
+      factory,
+      createInitialFactoryState(factory),
+    ])
+  ) as Record<FactoryType, FactoryPersistedState>;
+
+/**
+ * Calculates passive gold per second for one factory at its current state.
+ */
+export const getFactoryGoldPerSecond = (
+  factory: FactoryType,
+  state: FactoryPersistedState,
+  godsMultiplier: GameValue
+): GameValue => {
+  const config = FACTORY_DATA[factory];
+  const earnPerCycle = getFactoryEarnPerCycle({
+    amount: state.amount,
+    godsProductionMultiplier: godsMultiplier,
+    isUpgraded: state.isUpgraded,
+    productionValue: config.productionValue,
+  });
+
+  return earnPerCycle.div(config.productionTime);
+};
+
+/**
+ * Whether the player can purchase any factory upgrade with the given gold.
+ */
+export const canPurchaseAnyUpgrade = (
+  factories: Record<FactoryType, FactoryPersistedState>,
+  gold: GameValue
+): boolean => {
+  for (const factory of FACTORY_TYPES) {
+    const state = factories[factory];
+    const config = FACTORY_DATA[factory];
+    const cost = upgradeCost(config.baseBuyCost, state.amount);
+
+    if (
+      canPurchaseUpgrade({
+        cost,
+        gold,
+        isUnlocked: state.isUnlocked,
+        isUpgraded: state.isUpgraded,
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Whether the player can appoint a manager for any unlocked factory.
+ */
+export const canPurchaseAnyManager = (
+  factories: Record<FactoryType, FactoryPersistedState>,
+  gold: GameValue
+): boolean => {
+  for (const factory of FACTORY_TYPES) {
+    const state = factories[factory];
+    const config = FACTORY_DATA[factory];
+    const cost = managerCost(config.baseBuyCost, state.amount);
+
+    if (
+      canPurchaseManager({
+        cost,
+        gold,
+        isAutomated: state.isAutomated,
+        isUnlocked: state.isUnlocked,
+      })
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};

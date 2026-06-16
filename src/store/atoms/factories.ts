@@ -9,7 +9,11 @@ export {
 } from "./factories.actions";
 export { factoriesAtom, initialData, useFactories } from "./factories.atom";
 export {
+  canPurchaseAnyManager,
+  canPurchaseAnyUpgrade,
   getFactory,
+  useCanPurchaseAnyManager,
+  useCanPurchaseAnyUpgrade,
   useFactory,
   useProductionValue,
   useTotalToEarnAfterProduce,

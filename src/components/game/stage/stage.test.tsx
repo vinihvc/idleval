@@ -63,10 +63,9 @@ describe("GameStage", () => {
     store.set(inventoryAtom, {
       ...initialInventoryState,
       activePowerUp: {
-        powerUpId: "auroraDust",
+        powerUpId: "hasteRune",
         tier: "common",
         expiresAt: Date.now() + 60_000,
-        ghostCandleFactory: null,
       },
     });
 

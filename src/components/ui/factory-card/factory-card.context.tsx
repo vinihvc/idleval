@@ -1,29 +1,8 @@
 import React from "react";
 import type { FactoryType } from "@/content/factories";
-import { getEffectiveProductionTime } from "@/game/power-ups";
-import { isFactorySealed } from "@/game/purchases";
-import { useCountdown } from "@/hooks/use-countdown";
-import { useFactory } from "@/store/atoms/factories";
-import { useInventory } from "@/store/atoms/inventory";
-import { useWallet } from "@/store/atoms/wallet";
+import { type FactoryCardModel, useFactoryCardModel } from "./use-factory-card";
 
-interface FactoryCardContextValue {
-  amount: ReturnType<typeof useFactory>["amount"];
-  baseBuyCost: ReturnType<typeof useFactory>["baseBuyCost"];
-  cycleKey: number;
-  factoryType: FactoryType;
-  isAutomated: boolean;
-  isLocked: boolean;
-  isProducing: boolean;
-  isRunning: boolean;
-  isUnlocked: boolean;
-  isUpgraded: boolean;
-  name: string;
-  nextUnitCost: ReturnType<typeof useFactory>["nextUnitCost"];
-  productionTime: number;
-  seconds: number;
-  unlockPrice: ReturnType<typeof useFactory>["unlockPrice"];
-}
+type FactoryCardContextValue = FactoryCardModel;
 
 const FactoryCardContext = React.createContext({} as FactoryCardContextValue);
 
@@ -33,41 +12,7 @@ interface FactoryCardProviderProps extends React.PropsWithChildren {
 
 export const FactoryCardProvider = (props: FactoryCardProviderProps) => {
   const { factoryType, children } = props;
-
-  const factory = useFactory(factoryType);
-  const { activePowerUp } = useInventory();
-  const { gold } = useWallet();
-  const { seconds, isRunning, cycleKey } = useCountdown(factoryType);
-
-  const isLocked = isFactorySealed({
-    gold,
-    isUnlocked: factory.isUnlocked,
-    unlockPrice: factory.unlockPrice,
-  });
-
-  const value = React.useMemo(
-    (): FactoryCardContextValue => ({
-      factoryType,
-      cycleKey,
-      isRunning,
-      seconds,
-      isLocked,
-      ...factory,
-      productionTime: getEffectiveProductionTime(
-        factory.productionTime,
-        activePowerUp
-      ),
-    }),
-    [
-      factoryType,
-      cycleKey,
-      isRunning,
-      seconds,
-      isLocked,
-      factory,
-      activePowerUp,
-    ]
-  );
+  const value = useFactoryCardModel(factoryType);
 
   return (
     <FactoryCardContext.Provider value={value}>

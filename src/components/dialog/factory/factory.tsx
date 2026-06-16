@@ -47,7 +47,7 @@ export const FactoryDialog = (props: FactoryDialogProps) => {
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{factory.name}</ResponsiveDialogTitle>
 
-          <ResponsiveDialogDescription>
+          <ResponsiveDialogDescription hideDescription={false}>
             {factory.description}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>

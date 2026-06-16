@@ -9,7 +9,7 @@ export const GameStage = (props: React.ComponentProps<"section">) => {
       className={cn(
         "relative",
         "w-full",
-        "px-2 py-1",
+        "p-2",
         "bg-secondary/95",
         "border-primary border-b",
         className

@@ -3,38 +3,106 @@ import { useMemo } from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import {
   type ActivePowerUp,
-  getDailyRewardOffer,
-  getLocalDateString,
+  getEffectiveProductionTime,
+  getPowerUpIncomeMultiplier,
   hasActivatablePowerUp,
-  hasPendingDailyReward,
   type InventorySlot,
+  isPowerUpId,
+  isTimedPowerUpActive,
 } from "@/game/power-ups";
 import { store } from "@/providers/store";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalizeAndLegacy } from "@/store/storage";
+import type { GameValue } from "@/utils/decimal";
 
 export type { ActivePowerUp, InventorySlot } from "@/game/power-ups";
 
 export interface InventoryState {
   activePowerUp: ActivePowerUp | null;
-  dailyStreak: number;
-  lastClaimLocalDate: string | null;
-  pendingCauldronDrop: boolean;
   slots: InventorySlot[];
 }
 
 export const createInitialInventoryState = (): InventoryState => ({
   slots: [],
-  dailyStreak: 0,
-  lastClaimLocalDate: null,
   activePowerUp: null,
-  pendingCauldronDrop: false,
 });
 
 export const initialInventoryState = createInitialInventoryState();
 
-export const inventoryAtom = persistedAtom<InventoryState>(
+const isInventorySlot = (value: unknown): value is InventorySlot =>
+  typeof value === "object" &&
+  value !== null &&
+  "powerUpId" in value &&
+  typeof value.powerUpId === "string" &&
+  "count" in value &&
+  typeof value.count === "number" &&
+  "tier" in value &&
+  typeof value.tier === "string";
+
+const normalizeActivePowerUp = (value: unknown): ActivePowerUp | null => {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+
+  const raw = value as ActivePowerUp;
+
+  if (!isPowerUpId(raw.powerUpId)) {
+    return null;
+  }
+
+  if (raw.expiresAt != null && !isTimedPowerUpActive(raw)) {
+    return null;
+  }
+
+  return {
+    powerUpId: raw.powerUpId,
+    tier: raw.tier,
+    expiresAt: raw.expiresAt,
+  };
+};
+
+const normalizeInventoryState = (value: unknown): InventoryState => {
+  if (typeof value !== "object" || value === null) {
+    return createInitialInventoryState();
+  }
+
+  const raw = value as Partial<InventoryState> & {
+    pendingCauldronDrop?: boolean;
+    dailyStreak?: number;
+    lastClaimLocalDate?: string | null;
+  };
+
+  const slots = Array.isArray(raw.slots)
+    ? raw.slots.filter(
+        (slot): slot is InventorySlot =>
+          isInventorySlot(slot) && isPowerUpId(slot.powerUpId)
+      )
+    : [];
+
+  return {
+    slots,
+    activePowerUp: normalizeActivePowerUp(raw.activePowerUp),
+  };
+};
+
+const readLegacyInventoryState = (): unknown => {
+  if (typeof localStorage === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = localStorage.getItem("inventory-v6");
+
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const inventoryAtom = persistedAtomWithNormalizeAndLegacy<InventoryState>(
   LOCAL_STORAGE.inventory,
-  initialInventoryState
+  initialInventoryState,
+  normalizeInventoryState,
+  readLegacyInventoryState
 );
 
 export const getInventoryState = (): InventoryState => store.get(inventoryAtom);
@@ -42,19 +110,19 @@ export const getInventoryState = (): InventoryState => store.get(inventoryAtom);
 export const getActivePowerUp = (): ActivePowerUp | null =>
   getInventoryState().activePowerUp;
 
-export const getPendingCauldronDrop = (): boolean =>
-  getInventoryState().pendingCauldronDrop;
+export const getPowerUpIncomeMultiplierForEarn = (): GameValue =>
+  getPowerUpIncomeMultiplier(getActivePowerUp());
+
+export const getEffectiveProductionTimeForActivePowerUp = (
+  baseProductionTime: number,
+  now = Date.now()
+): number =>
+  getEffectiveProductionTime(baseProductionTime, getActivePowerUp(), now);
 
 export const getHasActivatablePowerUp = (): boolean => {
   const state = getInventoryState();
 
   return hasActivatablePowerUp(state.activePowerUp, state.slots);
-};
-
-export const getHasPendingDailyReward = (): boolean => {
-  const state = getInventoryState();
-
-  return hasPendingDailyReward(state.lastClaimLocalDate, getLocalDateString());
 };
 
 export const useInventoryState = () => useAtomValue(inventoryAtom);
@@ -65,19 +133,6 @@ export const useInventory = () => {
   return {
     slots: state.slots,
     activePowerUp: state.activePowerUp,
-    pendingCauldronDrop: state.pendingCauldronDrop,
-  };
-};
-
-export const useDailyReward = () => {
-  const state = useInventoryState();
-  const today = getLocalDateString();
-
-  return {
-    dailyStreak: state.dailyStreak,
-    isPending: hasPendingDailyReward(state.lastClaimLocalDate, today),
-    offer: getDailyRewardOffer(state.dailyStreak),
-    today,
   };
 };
 

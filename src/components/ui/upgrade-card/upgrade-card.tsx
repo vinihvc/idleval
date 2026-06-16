@@ -3,6 +3,7 @@ import { InfoBox } from "pixelarticons/react/InfoBox";
 import { tv } from "tailwind-variants";
 import { boxBorder } from "@/components/ui/box-border";
 import { HoldProgress } from "@/components/ui/hold-button";
+import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { Button } from "../button";
 import {
@@ -18,7 +19,7 @@ export const upgradeCardVariants = tv({
   base: [
     "relative",
     "group",
-    "aspect-square w-full",
+    "aspect-9/10 w-full",
     "flex flex-col",
     "bg-primary",
     "inset-shadow-xs rounded-md border-2 border-primary/90 sm:border-4",
@@ -136,12 +137,13 @@ export const UpgradeCardPanel = (props: UpgradeCardPanelProps) => {
 };
 
 export interface UpgradeCardHeaderProps extends React.ComponentProps<"div"> {
+  description?: string;
   icon?: string;
   title: string;
 }
 
 export const UpgradeCardHeader = (props: UpgradeCardHeaderProps) => {
-  const { className, icon, title, ...rest } = props;
+  const { className, description, icon, title, ...rest } = props;
 
   return (
     <div
@@ -171,23 +173,20 @@ export const UpgradeCardHeader = (props: UpgradeCardHeaderProps) => {
       <ToggleTooltip>
         <ToggleTooltipTrigger asChild>
           <Button
+            aria-label={m["ui.upgradeCard.info"]({ 0: title })}
             asChild
-            // TODO: add to i18n
-            // aria-label={m["ui.upgradeCard.info"]({ 0: title })}
             className="size-5 rounded-md border"
             size="icon-xs"
             variant="blue"
           >
-            <span className="cursor-pointer" tabIndex={0}>
+            <span className="inline-flex cursor-pointer items-center justify-center">
               <InfoBox />
             </span>
           </Button>
         </ToggleTooltipTrigger>
         <ToggleTooltipContent>
-          <h3>{title}</h3>
-
-          {/* TODO: add description to content */}
-          {/* <p>{description}</p> */}
+          <h3 className="font-bold text-lg">{title}</h3>
+          {description && <p>{description}</p>}
         </ToggleTooltipContent>
       </ToggleTooltip>
     </div>
@@ -217,11 +216,13 @@ export const UpgradeCardArt = (props: UpgradeCardArtProps) => {
     <div className="relative min-h-0 flex-1 overflow-hidden bg-background p-2">
       <div
         className={cn(
-          "relative inset-shadow-xs size-full overflow-hidden rounded-sm border",
-          "border-primary-foreground/15 bg-muted",
+          "relative",
+          "flex items-center justify-center",
+          "size-full overflow-hidden rounded-sm border",
+          "inset-shadow-xs border-primary-foreground/15 bg-muted",
           boxBorder({ inset: "lg", variant: "muted", soft: "none" }),
-          open && "inset-shadow-xs border-success/80 bg-success/25",
-          complete && "inset-shadow-xs border-success/40 bg-success/20",
+          { "inset-shadow-xs border-success/80 bg-success/25": open },
+          { "inset-shadow-xs border-success/40 bg-success/20": complete },
           className
         )}
         {...rest}
@@ -230,7 +231,7 @@ export const UpgradeCardArt = (props: UpgradeCardArtProps) => {
           <Image
             alt=""
             aria-hidden
-            className="pixel-crisp pointer-events-none size-full object-contain object-center"
+            className="pixel-crisp pointer-events-none size-20 object-contain object-center"
             height={140}
             layout="constrained"
             src={src}

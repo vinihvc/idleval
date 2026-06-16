@@ -1,16 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getLocalDateString } from "@/game/power-ups";
 import { store } from "@/providers/store";
 import {
   getInventoryState,
   initialInventoryState,
   inventoryAtom,
 } from "@/store/atoms/inventory";
-import {
-  activatePowerUpAtSlot,
-  claimDailyReward,
-  refreshDailyStreakState,
-} from "@/store/atoms/power-ups.actions";
+import { activatePowerUpAtSlot } from "@/store/atoms/power-ups.actions";
+import { getGold } from "@/store/atoms/wallet";
 import { resetGame } from "@/store/reset";
 
 vi.mock("@/providers/sound", () => ({
@@ -22,79 +18,61 @@ describe("power-ups.actions", () => {
     resetGame();
   });
 
-  it("claims the fixed day-one reward and stacks duplicates", () => {
-    expect(claimDailyReward()).toBe(true);
-    expect(getInventoryState().slots).toEqual([
-      { powerUpId: "auroraDust", count: 1, tier: "common" },
-    ]);
-    expect(getInventoryState().dailyStreak).toBe(1);
-    expect(getInventoryState().lastClaimLocalDate).toBe(getLocalDateString());
-
-    store.set(inventoryAtom, {
-      ...initialInventoryState,
-      slots: [{ powerUpId: "auroraDust", count: 2, tier: "common" }],
-      dailyStreak: 0,
-      lastClaimLocalDate: null,
-    });
-
-    expect(claimDailyReward()).toBe(true);
-    expect(getInventoryState().slots).toEqual([
-      { powerUpId: "auroraDust", count: 3, tier: "common" },
-    ]);
-  });
-
   it("blocks using a second power-up while one is active", () => {
     store.set(inventoryAtom, {
       ...initialInventoryState,
       slots: [
-        { powerUpId: "auroraDust", count: 1, tier: "common" },
+        { powerUpId: "hasteRune", count: 1, tier: "common" },
         { powerUpId: "lightningShard", count: 1, tier: "common" },
       ],
     });
 
-    expect(activatePowerUpAtSlot(0)).toBe(true);
-    expect(activatePowerUpAtSlot(1)).toBe(false);
+    expect(activatePowerUpAtSlot(0).success).toBe(true);
+    expect(activatePowerUpAtSlot(1).success).toBe(false);
     expect(getInventoryState().slots).toEqual([
       { powerUpId: "lightningShard", count: 1, tier: "common" },
     ]);
+  });
+
+  it("grants gold when mimir coin is activated", () => {
+    store.set(inventoryAtom, {
+      ...initialInventoryState,
+      slots: [{ powerUpId: "mimirCoin", count: 1, tier: "common" }],
+    });
+
+    const goldBefore = getGold().toNumber();
+    const result = activatePowerUpAtSlot(0);
+
+    expect(result.success).toBe(true);
+    expect(result.mimirCoinGold?.toNumber()).toBeGreaterThan(0);
+    expect(getGold().toNumber()).toBeGreaterThan(goldBefore);
+    expect(getInventoryState().slots).toEqual([]);
   });
 
   it("shifts relics left when the last unit in a stack is used", () => {
     store.set(inventoryAtom, {
       ...initialInventoryState,
       slots: [
-        { powerUpId: "auroraDust", count: 1, tier: "common" },
-        { powerUpId: "ghostCandle", count: 1, tier: "common" },
+        { powerUpId: "mimirCoin", count: 1, tier: "common" },
+        { powerUpId: "hasteRune", count: 1, tier: "common" },
       ],
     });
 
-    expect(activatePowerUpAtSlot(0)).toBe(true);
+    expect(activatePowerUpAtSlot(0).success).toBe(true);
     expect(getInventoryState().slots).toEqual([
-      { powerUpId: "ghostCandle", count: 1, tier: "common" },
+      { powerUpId: "hasteRune", count: 1, tier: "common" },
     ]);
   });
 
   it("decrements stacked relics without shifting other slots", () => {
     store.set(inventoryAtom, {
       ...initialInventoryState,
-      slots: [{ powerUpId: "auroraDust", count: 2, tier: "common" }],
+      slots: [{ powerUpId: "hasteRune", count: 2, tier: "common" }],
     });
 
-    expect(activatePowerUpAtSlot(0)).toBe(true);
+    expect(activatePowerUpAtSlot(0).success).toBe(true);
     expect(getInventoryState().slots).toEqual([
-      { powerUpId: "auroraDust", count: 1, tier: "common" },
+      { powerUpId: "hasteRune", count: 1, tier: "common" },
     ]);
-  });
-
-  it("resets streak after missing a local day", () => {
-    store.set(inventoryAtom, {
-      ...initialInventoryState,
-      dailyStreak: 4,
-      lastClaimLocalDate: "2020-01-01",
-    });
-
-    refreshDailyStreakState();
-
-    expect(getInventoryState().dailyStreak).toBe(0);
   });
 });

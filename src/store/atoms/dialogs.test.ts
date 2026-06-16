@@ -7,7 +7,7 @@ import {
   DIALOG_PRIORITY,
   dialogsAtom,
   getFactoryDialogId,
-  isDialogOpen,
+  getOpenDialogId,
   openDialog,
   toggleDialog,
 } from "@/store/atoms/dialogs";
@@ -24,8 +24,8 @@ describe("dialogs", () => {
     openDialog(DIALOG_IDS.upgrades);
     openDialog(DIALOG_IDS.managers);
 
-    expect(isDialogOpen(DIALOG_IDS.upgrades)).toBe(false);
-    expect(isDialogOpen(DIALOG_IDS.managers)).toBe(true);
+    expect(getOpenDialogId()).not.toBe(DIALOG_IDS.upgrades);
+    expect(getOpenDialogId()).toBe(DIALOG_IDS.managers);
   });
 
   it("defines dialog priority by array order", () => {

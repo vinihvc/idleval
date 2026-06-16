@@ -7,7 +7,6 @@ import {
   bulkIncreaseGold,
   decreaseGold,
   getGold,
-  hasGoldToBuy,
   increaseGoldByAmount,
   walletAtom,
 } from "./wallet";
@@ -55,12 +54,5 @@ describe("wallet", () => {
     decreaseGold(75);
 
     expect(getGold().toNumber()).toBe(125);
-  });
-
-  it("hasGoldToBuy delegates to canAfford", () => {
-    seedGold(100);
-
-    expect(hasGoldToBuy(100)).toBe(true);
-    expect(hasGoldToBuy(101)).toBe(false);
   });
 });

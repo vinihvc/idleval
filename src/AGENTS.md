@@ -1,6 +1,7 @@
 # src/
 
-> Parent: [AGENTS.md](../AGENTS.md) (Ultracite) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI
+> Parent: [AGENTS.md](../AGENTS.md) (Ultracite) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI  
+> Architecture and recipes: [docs/CONTEXT.md](../docs/CONTEXT.md) · Visual design: [docs/DESIGN.md](../docs/DESIGN.md)
 
 ## Purpose
 
@@ -60,6 +61,7 @@ Sprites under `public/images/` are produced with a **magenta chroma-key pipeline
 
 ## Evolution
 
+- 2026-06-15 — [docs/CONTEXT.md](../docs/CONTEXT.md) and [docs/DESIGN.md](../docs/DESIGN.md) for AI architecture and visual system
 - 2026-06-08 — `config/local-storage-keys.ts` centralizes all localStorage key strings
 - 2026-06-08 — Link to root AGENTS.md magenta chroma-key pipeline for `public/images/` sprites
 - 2026-06-08 — `VariantTools` type + hooks replace `OpenVisualVariant` naming

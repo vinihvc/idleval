@@ -1,7 +1,7 @@
-import { useSetAtom } from "jotai";
 import React from "react";
 import {
   ResponsiveDialog,
+  ResponsiveDialogBody,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
@@ -18,8 +18,8 @@ import {
   useDialogOpen,
 } from "@/store/atoms/dialogs";
 import {
+  clearOfflineSummary,
   type OfflineSummary,
-  offlineSummaryAtom,
 } from "@/store/offline-earning";
 import { OfflineEarningActions } from "./offline-earning.actions";
 import { OfflineEarningSummary } from "./offline-earning.summary";
@@ -34,7 +34,6 @@ interface OfflineEarningDialogProps {
 export const OfflineEarningDialog = (props: OfflineEarningDialogProps) => {
   const { summary } = props;
   const open = useDialogOpen(DIALOG_IDS.offlineEarning);
-  const setSummary = useSetAtom(offlineSummaryAtom);
   const wasOpenRef = React.useRef(open);
 
   React.useEffect(() => {
@@ -43,17 +42,17 @@ export const OfflineEarningDialog = (props: OfflineEarningDialogProps) => {
 
   React.useEffect(() => {
     if (wasOpenRef.current && !open) {
-      setSummary(null);
+      clearOfflineSummary();
     }
 
     wasOpenRef.current = open;
-  }, [open, setSummary]);
+  }, [open]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setDialogOpen(DIALOG_IDS.offlineEarning, nextOpen);
 
     if (!nextOpen) {
-      setSummary(null);
+      clearOfflineSummary();
     }
   };
 
@@ -77,9 +76,13 @@ export const OfflineEarningDialog = (props: OfflineEarningDialogProps) => {
           </ResponsiveDialogTitle>
 
           <ResponsiveDialogDescription>
-            <OfflineEarningSummary summary={summary} />
+            {m["ui.offline.description"]()}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
+
+        <ResponsiveDialogBody>
+          <OfflineEarningSummary summary={summary} />
+        </ResponsiveDialogBody>
 
         <ResponsiveDialogFooter>
           <OfflineEarningActions />

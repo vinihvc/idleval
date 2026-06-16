@@ -4,14 +4,13 @@
 
 ## Purpose
 
-React hooks that connect browser lifecycle to the store and game logic.
+Shared React hooks used by multiple modules. Hooks with a single consumer live next to that consumer (component folder, `providers/*`, or `app/`).
 
 ## Do
 
-- Prefix with `use` (`useOfflineEarning`, `useProductionScheduler`)
-- Keep sync logic testable in pure modules (`production-scheduler-sync.ts`)
+- Prefix with `use` (`useHoldPress`, `useLiveAnnouncer`)
+- Colocate hooks used by one consumer — see `components/`, `providers/offline-earning/`, `app/use-context-menu.ts`
 - Use `store.get` / `store.set` via `@/providers/store` when outside React
-- Test pure sync in `*.test.ts` without RTL
 - Put long-lived global effects in `providers/` when appropriate
 
 ## Don't
@@ -19,23 +18,20 @@ React hooks that connect browser lifecycle to the store and game logic.
 - Duplicate `game/` rules — call functions from there
 - Own persisted state — use `store/` atoms
 - Call hooks conditionally (violates rules of hooks)
-- Return JSX — hooks return data/effects only
+- Return JSX — hooks return data/effects only (except `use-live-announcer.tsx`, shared across dialogs)
 
 ## Patterns
 
-- `use-*.ts` for React hooks; sync modules without the prefix
-- Tests: colocated sync modules; `use-offline-earning.test.ts` for pure visibility helpers
+- `use-*.ts` in this folder only when **two or more** unrelated consumers import it
+- Pure sync modules colocate with their hook (e.g. `providers/offline-earning/production-scheduler-sync.ts`)
 
 ## Key files
 
 | File | Role |
 |------|------|
-| `use-production-scheduler.ts` | Per-factory production tick |
-| `production-scheduler-sync.ts` | Pure tick sync + offline progress |
-| `use-offline-earning.ts` | Session heartbeat, tab visibility, offline apply + summary |
-| `use-notification-sync.ts` | Clears dismissed badges when notification conditions go inactive |
-| `use-context-menu.ts` | Disable context menu in production |
-| `use-countdown.ts`, `use-interval.ts` | Timing utilities |
+| `use-install-prompt.ts` | PWA install prompt + iOS Safari instructions (`main.tsx` + settings) |
+| `use-hold-press.ts` | Hold-to-confirm input (`hold-button`, domain cards) |
+| `use-live-announcer.tsx` | Screen-reader claim/purchase announcements (multiple dialogs) |
 
 ## Neighbors
 
@@ -44,6 +40,7 @@ React hooks that connect browser lifecycle to the store and game logic.
 
 ## Evolution
 
-- 2026-06-08 — `use-notification-sync` clears notification dismissals when conditions go inactive
-- 2026-06-08 — Renamed offline modules to singular `use-offline-earning`
+- 2026-06-14 — Single-consumer hooks colocated with components, `providers/offline-earning/`, and `app/`
+- 2026-06-14 — `use-install-prompt` adds iOS Safari install instructions and test reset helpers
+- 2026-06-08 — Renamed offline modules to singular `use-offline-earning` (now under `providers/offline-earning/`)
 - 2026-06-07 — Initial docs: scheduler + session sync + pure modules

@@ -1,14 +1,13 @@
 import React from "react";
 import { NumberText } from "@/components/ui/number-text";
 import {
-  getSealedState,
-  getUpgradeCardCostStyle,
   UpgradeCard,
   UpgradeCardArt,
   UpgradeCardHeader,
   UpgradeCardPanel,
   UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
+import { useUpgradeCardAffordance } from "@/components/ui/upgrade-card/use-upgrade-card-affordance";
 import type { FactoryType } from "@/content/factories";
 import { canPurchaseManager } from "@/game/factories";
 import { m } from "@/i18n/messages";
@@ -36,9 +35,14 @@ export const ManagersCard = (props: ManagersCardProps) => {
     gold,
     cost: managerCost,
   });
-  const affordable = !complete && canBuy;
   const locked = !isUnlocked;
-  const sealed = getSealedState({ complete, locked, affordable });
+  const affordance = useUpgradeCardAffordance({
+    complete,
+    locked,
+    canAfford: canBuy,
+  });
+  const { sealed, costStyle, interactive, variant, dataAttributes } =
+    affordance;
   const descriptionId = React.useId();
 
   const getAriaLabel = () => {
@@ -57,8 +61,6 @@ export const ManagersCard = (props: ManagersCardProps) => {
     return `${m["ui.managers.appoint"]()} ${manager.name}`;
   };
 
-  const costStyle = getUpgradeCardCostStyle({ affordable, locked });
-
   const costNode = complete ? undefined : (
     <NumberText
       className={costStyle.className}
@@ -74,12 +76,8 @@ export const ManagersCard = (props: ManagersCardProps) => {
       aria-describedby={manager.description ? descriptionId : undefined}
       aria-disabled={complete || !canBuy || undefined}
       aria-label={getAriaLabel()}
-      data-affordable={affordable}
-      data-complete={complete}
-      data-locked={locked}
-      data-masked={sealed !== null}
-      data-sealed={sealed ?? undefined}
-      interactive={canBuy && isUnlocked && !complete}
+      {...dataAttributes}
+      interactive={interactive}
       onClick={
         canBuy && isUnlocked
           ? () => {
@@ -89,15 +87,21 @@ export const ManagersCard = (props: ManagersCardProps) => {
             }
           : undefined
       }
-      variant={sealed === "open" || complete ? "green" : "brown"}
+      variant={variant}
     >
       <UpgradeCardPanel
         charter={sealed === "charter"}
         complete={complete}
         open={sealed === "open"}
       >
+        {manager.description && (
+          <span className="sr-only" id={descriptionId}>
+            {manager.description}
+          </span>
+        )}
         {complete && (
           <UpgradeCardHeader
+            description={manager.description}
             icon={`/images/factories/${factoryType}.webp`}
             title={manager.name}
           />

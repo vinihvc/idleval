@@ -47,12 +47,10 @@ const UpgradesCardConnected = (props: UpgradesCardConnectedProps) => {
     gold,
     cost: upgradeCost,
   });
-  const affordable = !complete && canBuy;
   const locked = !isUnlocked;
 
   return (
     <UpgradesCard
-      affordable={affordable}
       canBuy={canBuy}
       complete={complete}
       description={upgrade.description}

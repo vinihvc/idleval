@@ -35,6 +35,7 @@ export const HeaderGold = () => {
             <Coin
               aria-hidden
               className="absolute top-0 -left-2.5 size-10 shrink-0 -translate-y-2 drop-shadow-md"
+              intrinsicSize={40}
             />
 
             <span

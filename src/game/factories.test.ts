@@ -6,7 +6,6 @@ import {
   getFactoryEarnPerCycle,
   getFactoryProductionValue,
   getFactoryYieldPerHour,
-  getUpgradeMultiplierLabel,
   isFactoryProductionActive,
 } from "@/game/factories";
 import { D } from "@/utils/decimal";
@@ -17,10 +16,6 @@ describe("factories rules", () => {
     const yieldPerHour = getFactoryYieldPerHour(yieldPerCycle, 10);
 
     expect(yieldPerHour.toNumber()).toBe(3600);
-  });
-
-  it("getUpgradeMultiplierLabel reflects economy constant", () => {
-    expect(getUpgradeMultiplierLabel()).toBe("2x");
   });
 
   it("getFactoryProductionValue applies upgrade and god multipliers", () => {

@@ -28,17 +28,10 @@ describe("DailyRewardDialog", () => {
       .element(screen.getByRole("button", { name: m["ui.daily.claim"]() }))
       .toBeInTheDocument();
 
-    for (let day = 1; day <= 6; day++) {
-      await expect
-        .element(
-          screen
-            .getByRole("dialog")
-            .element()
-            .querySelector(
-              `[data-slot="daily-reward-day"][data-day="${day}"]`
-            ) as HTMLElement | null
-        )
-        .toBeInTheDocument();
+    for (let day = 1; day <= 4; day++) {
+      const dayLabel = String(day).padStart(2, "0");
+
+      await expect.element(screen.getByText(dayLabel)).toBeInTheDocument();
     }
   });
 });

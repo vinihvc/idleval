@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
-import { useDailyReward } from "@/store/atoms/inventory";
-import { claimDailyReward } from "@/store/atoms/power-ups.actions";
+import { claimDailyReward } from "@/store/atoms/daily-reward.actions";
+import { useDailyReward } from "@/store/atoms/daily-reward.atom";
 
 export const DailyRewardClaimButton = () => {
   const { isPending } = useDailyReward();
@@ -28,6 +28,7 @@ export const DailyRewardClaimButton = () => {
         ])}
         disabled={!isPending}
         onClick={isPending ? claimReward : undefined}
+        size="lg"
         variant={isPending ? "green" : "brown"}
       >
         {isPending ? m["ui.daily.claim"]() : m["ui.daily.claimed"]()}

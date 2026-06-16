@@ -1,8 +1,6 @@
 import React from "react";
 import { NumberText } from "@/components/ui/number-text";
 import {
-  getSealedState,
-  getUpgradeCardCostStyle,
   UpgradeCard,
   UpgradeCardArt,
   UpgradeCardHeader,
@@ -10,6 +8,7 @@ import {
   UpgradeCardPanel,
   UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
+import { useUpgradeCardAffordance } from "@/components/ui/upgrade-card/use-upgrade-card-affordance";
 import { type GodType, getGod } from "@/content/gods";
 import {
   canInvokeGodAtIndex,
@@ -42,14 +41,13 @@ export const GodsCard = (props: GodsCardProps) => {
   const canAfford = canInvokeGodAtIndex(godIndex, invoked, gold);
 
   const complete = status === "completed";
-  const affordable = !complete && canAfford;
-  const sealed = getSealedState({ complete, locked: false, affordable });
-  const descriptionId = React.useId();
-
-  const costStyle = getUpgradeCardCostStyle({
-    affordable,
+  const affordance = useUpgradeCardAffordance({
+    complete,
     locked: false,
+    canAfford,
   });
+  const { affordable, sealed, costStyle, variant, dataAttributes } = affordance;
+  const descriptionId = React.useId();
 
   const { isHolding, holdHandlers } = useHoldPress({
     disabled: complete || !canAfford,
@@ -101,21 +99,27 @@ export const GodsCard = (props: GodsCardProps) => {
         isHoldCard &&
           "touch-manipulation select-none [-webkit-touch-callout:none]"
       )}
-      data-affordable={affordable}
-      data-complete={complete}
-      data-masked={sealed !== null}
-      data-sealed={sealed ?? undefined}
+      {...dataAttributes}
       interactive={affordable}
       onClick={isHoldCard ? holdHandlers.onClick : undefined}
-      variant={sealed === "open" || complete ? "green" : "brown"}
+      variant={variant}
     >
       <UpgradeCardPanel
         charter={sealed === "charter"}
         complete={complete}
         open={sealed === "open"}
       >
+        {localizedGod.description && (
+          <span className="sr-only" id={descriptionId}>
+            {localizedGod.description}
+          </span>
+        )}
         {complete && (
-          <UpgradeCardHeader icon={god.icon} title={localizedGod.name} />
+          <UpgradeCardHeader
+            description={localizedGod.description}
+            icon={god.icon}
+            title={localizedGod.name}
+          />
         )}
         <UpgradeCardArt
           complete={complete}

@@ -13,6 +13,10 @@ Step into a medieval realm where you build, expand, and defend. Recruit heroes, 
 3. Start the development server with `pnpm dev`
 4. Open your browser and navigate to `http://localhost:5173`
 
+## Architecture
+
+Layered source under `src/` — see [docs/CONTEXT.md](docs/CONTEXT.md) for data flow, domain map, and feature recipes; [docs/DESIGN.md](docs/DESIGN.md) for visual tokens and UI patterns. Per-folder conventions live in [src/AGENTS.md](src/AGENTS.md) and each `src/{folder}/AGENTS.md`.
+
 ## Technologies
 
 - Vite 8 (Rolldown + Oxc) + React Compiler

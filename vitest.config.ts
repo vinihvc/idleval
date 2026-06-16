@@ -7,7 +7,47 @@ import { paraglidePluginOptions } from "./src/i18n/paraglide.vite";
 
 export default defineConfig({
   optimizeDeps: {
-    include: ["@inlang/paraglide-js-react"],
+    entries: ["src/**/*.test.tsx"],
+    include: [
+      "@inlang/paraglide-js-react",
+      "@ark-ui/react",
+      "@ark-ui/react/menu",
+      "@unpic/react",
+      "react",
+      "react-dom",
+      "react-dom/client",
+      "react/jsx-dev-runtime",
+      "react/jsx-runtime",
+      "pixelarticons/react/AppWindows",
+      "pixelarticons/react/ArrowUpBox",
+      "pixelarticons/react/AudioWaveform",
+      "pixelarticons/react/Backpack",
+      "pixelarticons/react/BookOpen",
+      "pixelarticons/react/Briefcase",
+      "pixelarticons/react/CalendarRange",
+      "pixelarticons/react/Check",
+      "pixelarticons/react/ChevronLeft",
+      "pixelarticons/react/ChevronRight",
+      "pixelarticons/react/Clock",
+      "pixelarticons/react/Close",
+      "pixelarticons/react/Coins",
+      "pixelarticons/react/Crown",
+      "pixelarticons/react/Download",
+      "pixelarticons/react/Gift",
+      "pixelarticons/react/Hand",
+      "pixelarticons/react/Heart",
+      "pixelarticons/react/InfoBox",
+      "pixelarticons/react/Loader",
+      "pixelarticons/react/Lock",
+      "pixelarticons/react/Menu",
+      "pixelarticons/react/Message",
+      "pixelarticons/react/Music",
+      "pixelarticons/react/Potion",
+      "pixelarticons/react/Reload",
+      "pixelarticons/react/Volume1",
+      "pixelarticons/react/Volume2",
+      "pixelarticons/react/Volume3",
+    ],
   },
   plugins: [react(), paraglideVitePlugin(paraglidePluginOptions)],
   resolve: {
@@ -18,6 +58,7 @@ export default defineConfig({
         "./src/test/pwa-register-mock.ts"
       ),
     },
+    dedupe: ["react", "react-dom"],
   },
   test: {
     projects: [
@@ -34,6 +75,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: "browser",
+          fileParallelism: false,
           include: ["src/**/*.test.tsx"],
           setupFiles: [
             "src/test/paraglide-test-setup.ts",

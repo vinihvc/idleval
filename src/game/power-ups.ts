@@ -1,25 +1,27 @@
-import type { FactoryType } from "@/content/factories";
-import { FACTORY_TYPES } from "@/content/factories";
 import {
-  DAILY_REWARD_CALENDAR,
-  DAILY_REWARD_CYCLE_DAYS,
+  FACTORY_DATA,
+  FACTORY_TYPES,
+  type FactoryType,
+} from "@/content/factories";
+import type { GodId } from "@/content/gods";
+import {
   POWER_UP_EFFECTS,
   POWER_UP_TYPES,
   type PowerUpId,
   type PowerUpTier,
   RELIC_SLOT_COUNT,
 } from "@/content/power-ups";
+import {
+  getFactoryEarnPerCycle,
+  getFactoryGoldPerSecond,
+} from "@/game/factories";
+import { getTotalProductionMultiplier } from "@/game/gods";
+import { getRenownProductionMultiplier } from "@/game/missions";
+import type { FactoryPersistedState } from "@/game/types";
 import { D, type GameValue } from "@/utils/decimal";
 
 export interface ActivePowerUp {
   expiresAt: number | null;
-  ghostCandleFactory: FactoryType | null;
-  powerUpId: PowerUpId;
-  tier: PowerUpTier;
-}
-
-export interface DailyRewardOffer {
-  dayInCycle: number;
   powerUpId: PowerUpId;
   tier: PowerUpTier;
 }
@@ -30,73 +32,94 @@ export interface InventorySlot {
   tier: PowerUpTier;
 }
 
-const MS_PER_DAY = 86_400_000;
+export interface RealmEconomyInput {
+  factories: Record<FactoryType, FactoryPersistedState>;
+  godsInvoked: GodId[];
+  /** Permanent production bonus from mission renown (percent). */
+  renownPercent?: number;
+}
 
-/**
- * Returns the player's current local calendar date as YYYY-MM-DD.
- */
-export const getLocalDateString = (date = new Date()): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+const sumGoldPerSecond = (
+  factories: Record<FactoryType, FactoryPersistedState>,
+  godsMultiplier: GameValue,
+  filter: (state: FactoryPersistedState) => boolean
+): GameValue => {
+  let total = D(0);
 
-  return `${year}-${month}-${day}`;
-};
+  for (const factory of FACTORY_TYPES) {
+    const state = factories[factory];
 
-const parseLocalDate = (value: string): Date => new Date(`${value}T00:00:00`);
+    if (!filter(state)) {
+      continue;
+    }
 
-/**
- * Whole-day difference between two local calendar dates.
- */
-export const getLocalDayDifference = (from: string, to: string): number => {
-  const start = parseLocalDate(from).getTime();
-  const end = parseLocalDate(to).getTime();
-
-  return Math.round((end - start) / MS_PER_DAY);
-};
-
-/**
- * Resets streak when the player missed one or more local days without claiming.
- */
-export const shouldResetDailyStreak = (
-  lastClaimLocalDate: string | null,
-  todayLocalDate: string
-): boolean => {
-  if (!lastClaimLocalDate) {
-    return false;
+    total = total.plus(getFactoryGoldPerSecond(factory, state, godsMultiplier));
   }
 
-  return getLocalDayDifference(lastClaimLocalDate, todayLocalDate) > 1;
+  return total;
 };
 
 /**
- * Whether a daily reward can still be claimed today.
+ * Returns the realm's passive gold per second from automated production,
+ * falling back to unlocked factories and then the starter grain rate.
+ *
+ * @example
+ * getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber() // > 0 at game start
  */
-export const hasPendingDailyReward = (
-  lastClaimLocalDate: string | null,
-  todayLocalDate: string
-): boolean => {
-  if (!lastClaimLocalDate) {
-    return true;
+export const getRealmGoldPerSecond = (input: RealmEconomyInput): GameValue => {
+  const godsMultiplier = getTotalProductionMultiplier(input.godsInvoked);
+  const renownMultiplier = getRenownProductionMultiplier(
+    input.renownPercent ?? 0
+  );
+
+  const applyRenown = (rate: GameValue): GameValue =>
+    rate.times(renownMultiplier);
+
+  const automatedRate = sumGoldPerSecond(
+    input.factories,
+    godsMultiplier,
+    (state) => state.isUnlocked && state.isAutomated && state.amount > 0
+  );
+
+  if (automatedRate.gt(0)) {
+    return applyRenown(automatedRate);
   }
 
-  return lastClaimLocalDate !== todayLocalDate;
+  const unlockedRate = sumGoldPerSecond(
+    input.factories,
+    godsMultiplier,
+    (state) => state.isUnlocked && state.amount > 0
+  );
+
+  if (unlockedRate.gt(0)) {
+    return applyRenown(unlockedRate);
+  }
+
+  return applyRenown(
+    getFactoryEarnPerCycle({
+      amount: 1,
+      godsProductionMultiplier: D(1),
+      isUpgraded: false,
+      productionValue: FACTORY_DATA.grain.productionValue,
+    }).div(FACTORY_DATA.grain.productionTime)
+  );
 };
 
 /**
- * Maps the current streak to the next reward in the fixed calendar.
+ * Rolls a fair gold grant for Moeda de Mimir based on realm production and tier.
+ *
+ * @example
+ * rollMimirCoinGold("common", input, () => 0).gte(getRealmGoldPerSecond(input).times(45))
  */
-export const getDailyRewardOffer = (dailyStreak: number): DailyRewardOffer => {
-  const dayInCycle = (dailyStreak % DAILY_REWARD_CYCLE_DAYS) + 1;
-  const reward =
-    DAILY_REWARD_CALENDAR.find((entry) => entry.day === dayInCycle) ??
-    DAILY_REWARD_CALENDAR[0];
+export const rollMimirCoinGold = (
+  tier: PowerUpTier,
+  input: RealmEconomyInput,
+  random = Math.random
+): GameValue => {
+  const { min, max } = POWER_UP_EFFECTS.mimirCoin.rollSecondsByTier[tier];
+  const seconds = min + random() * (max - min);
 
-  return {
-    dayInCycle,
-    powerUpId: reward.powerUpId,
-    tier: reward.tier,
-  };
+  return getRealmGoldPerSecond(input).times(seconds).floor();
 };
 
 export const isPowerUpId = (value: string): value is PowerUpId =>
@@ -183,6 +206,31 @@ export const hasActivatablePowerUp = (
 ): boolean =>
   slots.some((slot) => canActivatePowerUp(activePowerUp, slot.count, now));
 
+/**
+ * Seconds within `[lastSeenAt, now]` where a timed power-up was still active.
+ *
+ * @example
+ * // 5 min buff, player away 20 min from activation
+ * getOfflineActiveBuffSeconds(0, 1_200_000, { expiresAt: 300_000, ... }) // 300
+ */
+export const getOfflineActiveBuffSeconds = (
+  lastSeenAt: number,
+  now: number,
+  activePowerUp: ActivePowerUp | null
+): number => {
+  if (!activePowerUp?.expiresAt) {
+    return 0;
+  }
+
+  if (lastSeenAt >= activePowerUp.expiresAt) {
+    return 0;
+  }
+
+  const buffEndMs = Math.min(now, activePowerUp.expiresAt);
+
+  return Math.max(0, (buffEndMs - lastSeenAt) / 1000);
+};
+
 export const isTimedPowerUpActive = (
   activePowerUp: ActivePowerUp | null,
   now = Date.now()
@@ -205,15 +253,10 @@ export const getPowerUpIncomeMultiplier = (
   activePowerUp: ActivePowerUp | null,
   now = Date.now()
 ): GameValue => {
-  if (!(isTimedPowerUpActive(activePowerUp, now) && activePowerUp)) {
-    return D(1);
-  }
-
-  if (activePowerUp.powerUpId === "auroraDust") {
-    return D(POWER_UP_EFFECTS.auroraDust.incomeMultiplier);
-  }
-
-  if (activePowerUp.powerUpId === "lightningShard") {
+  if (
+    isTimedPowerUpActive(activePowerUp, now) &&
+    activePowerUp?.powerUpId === "lightningShard"
+  ) {
     return D(POWER_UP_EFFECTS.lightningShard.incomeMultiplier);
   }
 
@@ -247,42 +290,8 @@ export const getEffectiveProductionTime = (
   return Math.max(1, Math.round(baseProductionTime * multiplier));
 };
 
-export const isGhostCandleActiveForFactory = (
-  factory: FactoryType,
-  activePowerUp: ActivePowerUp | null,
-  now = Date.now()
-): boolean =>
-  isTimedPowerUpActive(activePowerUp, now) &&
-  activePowerUp?.powerUpId === "ghostCandle" &&
-  activePowerUp.ghostCandleFactory === factory;
-
-export const getCauldronDropMultiplier = (
-  pendingCauldronDrop: boolean
-): number =>
-  pendingCauldronDrop ? POWER_UP_EFFECTS.cauldronDrop.nextCycleMultiplier : 1;
-
-export const getYggdrasilAdvanceSeconds = (tier: PowerUpTier): number => {
-  if (tier === "epic") {
-    return POWER_UP_EFFECTS.yggdrasilTear.epicAdvanceSeconds;
-  }
-
-  return POWER_UP_EFFECTS.yggdrasilTear.advanceSeconds;
-};
-
-export const pickGhostCandleFactory = (
-  factories: Record<FactoryType, { isAutomated: boolean; isUnlocked: boolean }>
-): FactoryType | null => {
-  const unlockedManual = FACTORY_TYPES.find(
-    (factory) =>
-      factories[factory].isUnlocked && !factories[factory].isAutomated
-  );
-
-  if (unlockedManual) {
-    return unlockedManual;
-  }
-
-  return FACTORY_TYPES.find((factory) => factories[factory].isUnlocked) ?? null;
-};
+export const getYggdrasilAdvanceSeconds = (): number =>
+  POWER_UP_EFFECTS.yggdrasilTear.advanceSeconds;
 
 export const getPowerUpDurationMs = (powerUpId: PowerUpId): number | null => {
   const effect = POWER_UP_EFFECTS[powerUpId];
@@ -295,22 +304,16 @@ export const getPowerUpDurationMs = (powerUpId: PowerUpId): number | null => {
 };
 
 export const isInstantPowerUp = (powerUpId: PowerUpId): boolean =>
-  powerUpId === "cauldronDrop" || powerUpId === "yggdrasilTear";
+  powerUpId === "mimirCoin" || powerUpId === "yggdrasilTear";
 
-export type ActivePowerUpDisplayKind = "timed" | "pending-harvest";
+export type ActivePowerUpDisplayKind = "timed";
 
 export interface ActivePowerUpDisplay {
-  ghostCandleFactory: FactoryType | null;
   kind: ActivePowerUpDisplayKind;
   powerUpId: PowerUpId;
   progress: number | null;
   remainingMs: number | null;
   tier: PowerUpTier;
-}
-
-export interface PowerUpDisplayInput {
-  activePowerUp: ActivePowerUp | null;
-  pendingCauldronDrop: boolean;
 }
 
 /**
@@ -350,35 +353,21 @@ export const getActivePowerUpProgress = (
 };
 
 /**
- * Unified HUD state for timed buffs and pending cauldron drop.
+ * Unified HUD state for timed buffs.
  */
 export const getActivePowerUpDisplayState = (
-  input: PowerUpDisplayInput,
+  activePowerUp: ActivePowerUp | null,
   now = Date.now()
 ): ActivePowerUpDisplay | null => {
-  const { activePowerUp, pendingCauldronDrop } = input;
-
-  if (isTimedPowerUpActive(activePowerUp, now) && activePowerUp) {
-    return {
-      kind: "timed",
-      powerUpId: activePowerUp.powerUpId,
-      tier: activePowerUp.tier,
-      remainingMs: getActivePowerUpRemainingMs(activePowerUp, now),
-      progress: getActivePowerUpProgress(activePowerUp, now),
-      ghostCandleFactory: activePowerUp.ghostCandleFactory,
-    };
+  if (!(isTimedPowerUpActive(activePowerUp, now) && activePowerUp)) {
+    return null;
   }
 
-  if (pendingCauldronDrop) {
-    return {
-      kind: "pending-harvest",
-      powerUpId: "cauldronDrop",
-      tier: "common",
-      remainingMs: null,
-      progress: null,
-      ghostCandleFactory: null,
-    };
-  }
-
-  return null;
+  return {
+    kind: "timed",
+    powerUpId: activePowerUp.powerUpId,
+    tier: activePowerUp.tier,
+    remainingMs: getActivePowerUpRemainingMs(activePowerUp, now),
+    progress: getActivePowerUpProgress(activePowerUp, now),
+  };
 };

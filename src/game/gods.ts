@@ -31,19 +31,6 @@ export const getTotalProductionMultiplier = (invoked: GodId[]): GameValue => {
   return total;
 };
 
-/**
- * Returns the production multiplier after invoking the god at the given index.
- *
- * @example
- * getMultiplierAfterInvocation(0, []).toNumber() // 2
- * getMultiplierAfterInvocation(1, ["huangdi"]).toNumber() // 6
- */
-export const getMultiplierAfterInvocation = (
-  godIndex: number,
-  invoked: GodId[]
-): GameValue =>
-  getTotalProductionMultiplier([...invoked, GOD_DATA[godIndex].id]);
-
 export type GodCardStatus = "completed" | "available";
 
 /**
@@ -59,7 +46,7 @@ export const isGodInvocationComplete = (invoked: GodId[]): boolean =>
 /**
  * Whether the god at the given index has already been invoked.
  */
-export const isGodInvoked = (godIndex: number, invoked: GodId[]): boolean =>
+const isGodInvoked = (godIndex: number, invoked: GodId[]): boolean =>
   invoked.includes(GOD_DATA[godIndex].id);
 
 /**
@@ -98,4 +85,17 @@ export const canInvokeGodAtIndex = (
   }
 
   return gold.gte(getGodGoldRequired(godIndex));
+};
+
+/**
+ * Whether any uninvoked god can be invoked with the current gold balance.
+ */
+export const hasInvokableGod = (invoked: GodId[], gold: GameValue): boolean => {
+  for (let index = 0; index < GOD_COUNT; index++) {
+    if (canInvokeGodAtIndex(index, invoked, gold)) {
+      return true;
+    }
+  }
+
+  return false;
 };

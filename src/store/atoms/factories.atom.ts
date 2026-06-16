@@ -1,31 +1,46 @@
 import { useAtomValue } from "jotai";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
+import { createInitialFactoriesState } from "@/game/factories";
 import type { FactoryPersistedState } from "@/game/types";
 import { persistedAtomWithNormalize } from "@/store/storage";
 
-const INITIAL_FACTORY: FactoryType = "grain";
-
-export const initialData = Object.fromEntries(
-  FACTORY_TYPES.map((factory) => [
-    factory,
-    {
-      amount: factory === INITIAL_FACTORY ? 1 : 0,
-      isProducing: false,
-      isUpgraded: false,
-      isAutomated: false,
-      isUnlocked: factory === INITIAL_FACTORY,
-    },
-  ])
-) as Record<FactoryType, FactoryPersistedState>;
+export const initialData = createInitialFactoriesState();
 
 const isFactoryPersistedState = (
   value: unknown
-): value is FactoryPersistedState =>
+): value is Partial<FactoryPersistedState> & { amount: number } =>
   typeof value === "object" &&
   value !== null &&
   "amount" in value &&
   typeof value.amount === "number";
+
+const normalizeManualProductionFields = (
+  state: FactoryPersistedState
+): FactoryPersistedState => {
+  if (!state.isProducing) {
+    return {
+      ...state,
+      isProducing: false,
+      productionStartedAt: null,
+      productionDurationSec: null,
+    };
+  }
+
+  if (
+    state.productionStartedAt == null ||
+    state.productionDurationSec == null
+  ) {
+    return {
+      ...state,
+      isProducing: false,
+      productionStartedAt: null,
+      productionDurationSec: null,
+    };
+  }
+
+  return state;
+};
 
 const normalizeFactoriesState = (
   value: unknown
@@ -41,7 +56,12 @@ const normalizeFactoriesState = (
     const saved = raw[factory];
 
     if (isFactoryPersistedState(saved)) {
-      next[factory] = { ...next[factory], ...saved };
+      next[factory] = normalizeManualProductionFields({
+        ...next[factory],
+        ...saved,
+        productionStartedAt: saved.productionStartedAt ?? null,
+        productionDurationSec: saved.productionDurationSec ?? null,
+      });
     }
   }
 

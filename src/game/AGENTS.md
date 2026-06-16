@@ -22,7 +22,7 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Patterns
 
-- Modules by domain: `economy.ts`, `factories.ts`, `gods.ts`, `purchases.ts`, `offline-earning.ts`
+- Modules by domain: `economy.ts`, `factories.ts`, `gods.ts`, `purchases.ts`, `missions.ts`, `offline-earning.ts`
 - Persisted state shapes in `types.ts`
 
 ## Key files
@@ -30,10 +30,13 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 | File | Role |
 |------|------|
 | `economy.ts` | Costs, price scaling |
-| `factories.ts` | Yield, upgrade/unlock eligibility |
-| `gods.ts` | Multipliers, invocation rules |
+| `factories.ts` | Yield, eligibility, initial factory state, gold/s rate |
+| `gods.ts` | Multipliers, invocation rules, `hasInvokableGod` |
+| `power-ups.ts` | Buffs, daily rewards, inventory slots, realm economy |
 | `purchases.ts` | Buy modes (1, 10%, 50%, max) |
 | `offline-earning.ts` | Offline earnings simulation |
+| `manual-production.ts` | Manual cycle reconcile by wall-clock timestamp |
+| `missions.ts` | Quest progress, slots, renown multiplier |
 | `types.ts` | Persisted state shapes |
 
 ## Neighbors
@@ -43,5 +46,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Evolution
 
+- 2026-06-15 — `manual-production.ts`: persisted cycle timestamps, offline reconcile (max 1 cycle)
+- 2026-06-14 — `createInitialFactoriesState`, `canPurchaseAny*`, `getFactoryGoldPerSecond`, `hasInvokableGod` centralized in game layer
+- 2026-06-14 — `missions.ts` pure rules for quest progress, slots, and renown
 - 2026-06-08 — Removed difficulty system; game layer no longer imports store
 - 2026-06-07 — Initial docs: pure logic + colocated tests

@@ -2,7 +2,9 @@ import React from "react";
 import { Characters } from "@/components/characters";
 import { ActionTools } from "@/components/debug/action-tools";
 import { MediaQuery } from "@/components/debug/media-query";
+import { FallingLeaves } from "@/components/effects/falling-leaves";
 import { FactoryGrid } from "@/components/game/factory-grid";
+import { Missions } from "@/components/game/missions/missions";
 import { GamePanel } from "@/components/game/panel";
 import { GameShell } from "@/components/game/shell";
 import { GameStage } from "@/components/game/stage/stage";
@@ -14,9 +16,9 @@ import { Navigation } from "@/components/layout/navigation";
 import type { CharacterInstruction } from "@/components/pets/characters-pet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SkipNavContent, SkipNavLink } from "@/components/ui/skip-nav";
-import { useDisableContextMenu } from "@/hooks/use-context-menu";
 import { m } from "@/i18n/messages";
 import { Providers } from "./providers";
+import { useDisableContextMenu } from "./use-context-menu";
 
 const LazyWelcomeDialog = React.lazy(
   () => import("@/components/dialog/welcome/welcome")
@@ -31,16 +33,22 @@ export const HomePage = () => {
 
       <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden sm:h-auto sm:flex-none sm:overflow-visible">
         <Background />
+        <FallingLeaves />
 
         <GameShell>
           <GamePanel>
             <Header />
 
             <GameStage>
-              <Characters
-                imagePath={STAGE_CHARACTER_IMAGE_PATH}
-                instructions={STAGE_CHARACTER_INSTRUCTIONS}
-              />
+              <div className="relative flex w-full items-center justify-center">
+                <div className="absolute top-1/2 left-2 z-10 -translate-y-1/2">
+                  <Characters
+                    imagePath={STAGE_CHARACTER_IMAGE_PATH}
+                    instructions={STAGE_CHARACTER_INSTRUCTIONS}
+                  />
+                </div>
+                <Missions className="max-w-md" />
+              </div>
             </GameStage>
 
             <main className="min-h-0 flex-1">

@@ -9,7 +9,6 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { LOCAL_STORAGE } from "@/config/local-storage";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { m } from "@/i18n/messages";
 import {
   DIALOG_IDS,
@@ -17,6 +16,7 @@ import {
   setDialogOpen,
   useDialogOpen,
 } from "@/store/atoms/dialogs";
+import { useLocalStorage } from "./use-local-storage";
 import { WelcomeActions } from "./welcome.actions";
 import { WelcomeContent } from "./welcome.content";
 import { WelcomeGraphic } from "./welcome.graphic";
@@ -27,6 +27,7 @@ interface WelcomeDialogProps {
 
 export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
   const { debug = false } = props;
+
   const dialogId = debug ? DIALOG_IDS.debugWelcome : DIALOG_IDS.welcome;
   const open = useDialogOpen(dialogId);
   const [hasSeenWelcome, setHasSeenWelcome] = useLocalStorage(

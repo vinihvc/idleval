@@ -1,5 +1,6 @@
 import { AppWindows } from "pixelarticons/react/AppWindows";
 import { ArrowUpBox } from "pixelarticons/react/ArrowUpBox";
+import { Brackets } from "pixelarticons/react/Brackets";
 import { Briefcase } from "pixelarticons/react/Briefcase";
 import { Coins } from "pixelarticons/react/Coins";
 import { Crown } from "pixelarticons/react/Crown";
@@ -36,6 +37,10 @@ import {
 
 const LazyWelcomeDialog = React.lazy(
   () => import("@/components/dialog/welcome/welcome")
+);
+
+const LazyFactoriesStateDialog = React.lazy(
+  () => import("@/components/debug/factories-state-dialog")
 );
 
 export const ActionTools = () => {
@@ -82,6 +87,19 @@ export const ActionTools = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Factories</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => toggleDialog(DIALOG_IDS.debugFactories)}
+                  size="icon-lg"
+                  variant="brown"
+                >
+                  <span className="sr-only">Factories JSON</span>
+                  <Brackets />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Factories JSON</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -160,6 +178,7 @@ export const ActionTools = () => {
 
       <React.Suspense fallback={null}>
         <LazyWelcomeDialog debug />
+        <LazyFactoriesStateDialog />
       </React.Suspense>
     </>
   );

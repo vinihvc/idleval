@@ -9,7 +9,7 @@ import {
   notificationsAtom,
   syncNotificationDismissals,
 } from "@/store/atoms/notifications";
-import { claimDailyReward } from "@/store/atoms/power-ups.actions";
+import { claimDailyReward } from "@/store/atoms/daily-reward.actions";
 import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 

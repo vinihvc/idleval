@@ -5,14 +5,19 @@ import {
   canStartManualProduction,
   getFactoryEarnPerCycle,
 } from "@/game/factories";
+import { clearManualProductionFields } from "@/game/manual-production";
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
-import { consumePendingCauldronDrop } from "@/store/atoms/power-ups.actions";
 import {
-  getCauldronDropMultiplierForEarn,
+  getEffectiveProductionTimeForActivePowerUp,
   getPowerUpIncomeMultiplierForEarn,
-} from "@/store/atoms/power-ups.selectors";
+} from "@/store/atoms/inventory";
+import {
+  incrementMissionCounter,
+  syncMissionProgress,
+} from "@/store/atoms/missions.actions";
+import { getMissionRenownProductionMultiplier } from "@/store/atoms/missions.selectors";
 import { D } from "@/utils/decimal";
 import { factoriesAtom } from "./factories.atom";
 import { getFactory } from "./factories.selectors";
@@ -54,20 +59,28 @@ export const setAmountBySelectedAmount = (
   decreaseGold(amountToPay);
   recordGoldSpent(factory, amountToPay);
   recordQuantity(factory, amountToBuy);
+  syncMissionProgress();
 };
 
 export const startProducing = (factory: FactoryType) => {
-  const { isAutomated, isProducing, isUnlocked } = getFactory(factory);
+  const { isAutomated, isProducing, isUnlocked, productionTime } =
+    getFactory(factory);
 
   if (!canStartManualProduction({ isProducing, isAutomated, isUnlocked })) {
     return;
   }
+
+  const now = Date.now();
+  const productionDurationSec =
+    getEffectiveProductionTimeForActivePowerUp(productionTime);
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
     [factory]: {
       ...prev[factory],
       isProducing: true,
+      productionStartedAt: now,
+      productionDurationSec,
     },
   }));
 };
@@ -78,10 +91,7 @@ export const completeProductionCycle = (factory: FactoryType) => {
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
-    [factory]: {
-      ...prev[factory],
-      isProducing: false,
-    },
+    [factory]: clearManualProductionFields(prev[factory]),
   }));
 
   const goldEarned = getFactoryEarnPerCycle({
@@ -91,11 +101,11 @@ export const completeProductionCycle = (factory: FactoryType) => {
     productionValue,
   })
     .times(getPowerUpIncomeMultiplierForEarn())
-    .times(getCauldronDropMultiplierForEarn());
-
-  consumePendingCauldronDrop();
+    .times(getMissionRenownProductionMultiplier());
 
   increaseGoldByAmount(factory, goldEarned);
+  incrementMissionCounter("productionCyclesCompleted");
+  syncMissionProgress();
 
   if (!isAutomated) {
     sound.play("coin");
@@ -123,6 +133,7 @@ export const autoFactory = (factory: FactoryType) => {
 
   decreaseGold(cost);
   recordGoldSpent(factory, cost);
+  syncMissionProgress();
 };
 
 export const upgradeFactory = (factory: FactoryType) => {
@@ -142,6 +153,7 @@ export const upgradeFactory = (factory: FactoryType) => {
 
   decreaseGold(cost);
   recordGoldSpent(factory, cost);
+  syncMissionProgress();
 };
 
 export const unlockFactory = (factory: FactoryType) => {
@@ -163,4 +175,5 @@ export const unlockFactory = (factory: FactoryType) => {
   decreaseGold(unlockPrice);
   recordGoldSpent(factory, D(unlockPrice));
   recordQuantity(factory, 1);
+  syncMissionProgress();
 };

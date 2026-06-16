@@ -1,21 +1,22 @@
-import { createIcon } from "@/components/ui/create-icon";
+import React from "react";
 
-export const WaxSeal = createIcon({
-  title: "Wax seal",
-  viewBox: "0 0 256 256",
-  defaultProps: {
-    width: "100%",
-    height: "100%",
-  },
-  path: (
-    <>
+export const WaxSealIcon = (props: React.ComponentProps<"svg">) => {
+  const id = React.useId();
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 256 256"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
       <path
         d="M128 14c12.5 0 21.5 11.7 33.1 15.1 11.9 3.5 26.2-1 36.1 6.2 10 7.3 9.9 22.4 17.1 32.3 7.1 9.8 21.5 14.4 25.3 26.1 3.7 11.4-5.1 23.6-5.1 36.3s8.8 24.9 5.1 36.3c-3.8 11.7-18.2 16.3-25.3 26.1-7.2 9.9-7.1 25-17.1 32.3-9.9 7.2-24.2 2.7-36.1 6.2C149.5 234.3 140.5 246 128 246s-21.5-11.7-33.1-15.1c-11.9-3.5-26.2 1-36.1-6.2-10-7.3-9.9-22.4-17.1-32.3-7.1-9.8-21.5-14.4-25.3-26.1-3.7-11.4 5.1-23.6 5.1-36.3s-8.8-24.9-5.1-36.3c3.8-11.7 18.2-16.3 25.3-26.1 7.2-9.9 7.1-25 17.1-32.3 9.9-7.2 24.2-2.7 36.1-6.2C106.5 25.7 115.5 14 128 14z"
-        fill="url(#wax-seal-body)"
+        fill={`url(#${id}-wax-seal-body)`}
       />
       <path
         d="M128 25c11 0 18.9 10.4 29.1 13.4 10.7 3.2 23.2-.9 32.1 5.6 8.8 6.4 8.8 19.7 15.2 28.5 6.4 8.7 19.1 12.9 22.5 23.1 3.3 10.1-4.5 20.8-4.5 32.4s7.8 22.3 4.5 32.4c-3.4 10.2-16.1 14.4-22.5 23.1-6.4 8.8-6.4 22.1-15.2 28.5-8.9 6.5-21.4 2.4-32.1 5.6C146.9 220.6 139 231 128 231s-18.9-10.4-29.1-13.4c-10.7-3.2-23.2.9-32.1-5.6-8.8-6.4-8.8-19.7-15.2-28.5-6.4-8.7-19.1-12.9-22.5-23.1-3.3-10.1 4.5-20.8 4.5-32.4s-7.8-22.3-4.5-32.4c3.4-10.2 16.1-14.4 22.5-23.1C58 63.7 58 50.4 66.8 44c8.9-6.5 21.4-2.4 32.1-5.6C109.1 35.4 117 25 128 25z"
-        fill="url(#wax-seal-highlight)"
+        fill={`url(#${id}-wax-seal-highlight)`}
         opacity="0.8"
       />
       <circle cx="128" cy="128" fill="#b80000" r="78" />
@@ -46,13 +47,13 @@ export const WaxSeal = createIcon({
         strokeWidth="3"
       />
       <defs>
-        <radialGradient cx="48%" cy="42%" id="wax-seal-body" r="58%">
+        <radialGradient cx="48%" cy="42%" id={`${id}-wax-seal-body`} r="58%">
           <stop offset="0%" stopColor="#e00000" />
           <stop offset="62%" stopColor="#c70000" />
           <stop offset="100%" stopColor="#930000" />
         </radialGradient>
         <linearGradient
-          id="wax-seal-highlight"
+          id={`${id}-wax-seal-highlight`}
           x1="54"
           x2="195"
           y1="55"
@@ -63,6 +64,6 @@ export const WaxSeal = createIcon({
           <stop offset="100%" stopColor="#7d0000" stopOpacity="0.22" />
         </linearGradient>
       </defs>
-    </>
-  ),
-});
+    </svg>
+  );
+};
