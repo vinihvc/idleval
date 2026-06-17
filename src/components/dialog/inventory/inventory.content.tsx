@@ -8,7 +8,7 @@ import { activatePowerUpAtSlot } from "@/store/atoms/power-ups.actions";
 import { amountFormatterWithDolarSign } from "@/utils/formatters";
 
 const DESKTOP_INVENTORY_SLOTS = 8;
-const MOBILE_INVENTORY_SLOTS = 9;
+const MOBILE_INVENTORY_SLOTS = 6;
 
 export const InventoryContent = () => {
   const { slots } = useInventory();

@@ -152,7 +152,7 @@ describe("MissionObjectiveLabel", () => {
     expect(iconWrapper?.className).toContain("size-4");
   });
 
-  test("renders a manager image for automateFactory objectives", async () => {
+  test("renders a factory image for automateFactory objectives", async () => {
     await renderWithProviders(
       <MissionObjectiveLabel
         objective={{ type: "automateFactory", factory: "grain", scope: "run" }}
@@ -160,7 +160,7 @@ describe("MissionObjectiveLabel", () => {
     );
 
     expect(
-      document.querySelector('img[src="/images/managers/grain.webp"]')
+      document.querySelector('img[src="/images/factories/grain.webp"]')
     ).not.toBeNull();
   });
 

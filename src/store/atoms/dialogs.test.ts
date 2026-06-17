@@ -32,7 +32,6 @@ describe("dialogs", () => {
     expect(DIALOG_PRIORITY).toEqual([
       DIALOG_IDS.welcome,
       DIALOG_IDS.offlineEarning,
-      DIALOG_IDS.dailyReward,
     ]);
   });
 

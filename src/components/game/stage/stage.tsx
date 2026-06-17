@@ -1,4 +1,3 @@
-import { GameStagePowerUp } from "@/components/ui/power-up/power-up";
 import { cn } from "@/lib/cn";
 
 export const GameStage = (props: React.ComponentProps<"section">) => {
@@ -16,8 +15,6 @@ export const GameStage = (props: React.ComponentProps<"section">) => {
       )}
       data-slot="game-stage"
     >
-      <GameStagePowerUp className="absolute top-1/2 right-2 z-10 -translate-y-1/2" />
-
       {children}
     </section>
   );

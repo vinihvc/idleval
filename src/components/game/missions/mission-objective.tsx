@@ -89,19 +89,11 @@ const getMissionObjectiveIconSource = (
       return { kind: "coin" };
     case "ownUnits":
     case "unlockFactory":
-      return {
-        kind: "image",
-        src: `/images/factories/${objective.factory}.webp`,
-      };
     case "upgradeFactory":
-      return {
-        kind: "image",
-        src: `/images/factories/${objective.factory}.webp`,
-      };
     case "automateFactory":
       return {
         kind: "image",
-        src: `/images/managers/${objective.factory}.webp`,
+        src: `/images/factories/${objective.factory}.webp`,
       };
     case "invokeGod": {
       const god = GOD_DATA.find((entry) => entry.id === objective.godId);

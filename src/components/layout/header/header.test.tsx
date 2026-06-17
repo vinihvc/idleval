@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, test } from "vitest";
 import { GameSectionDialogs } from "@/components/layout/game-section-dialogs";
 import { Header } from "@/components/layout/header/header";
 import { m } from "@/i18n/messages";
+import { store } from "@/providers/store";
+import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
@@ -54,5 +56,28 @@ describe("Header", () => {
     await expect
       .element(screen.getByRole("heading", { name: m["ui.daily.title"]() }))
       .toBeInTheDocument();
+  });
+
+  test("shows power-up countdown when a relic is active", async () => {
+    store.set(inventoryAtom, {
+      ...initialInventoryState,
+      activePowerUp: {
+        powerUpId: "hasteRune",
+        tier: "common",
+        expiresAt: Date.now() + 60_000,
+      },
+    });
+
+    const screen = await renderWithProviders(<Header />);
+
+    await expect
+      .poll(() => document.querySelector('[data-slot="power-up-badge"]'))
+      .not.toBeNull();
+
+    await screen.getByRole("button", { name: /left/i }).click();
+
+    await expect
+      .poll(() => document.querySelector('[data-slot="power-up-countdown"]'))
+      .not.toBeNull();
   });
 });

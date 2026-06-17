@@ -297,6 +297,7 @@
   "ui.offline.summaryA11y": "You were away {0} and earned {1}",
   "ui.offline.welcomeBack": "Oh, you're back",
   "ui.powerUp.active": "Active",
+  "ui.powerUp.countdownLabel": "Time remaining",
   "ui.powerUp.remaining": "{duration} left",
   "ui.settings.audio": "Audio",
   "ui.settings.imageAlt": "Chiron, keeper of the realm's keys",

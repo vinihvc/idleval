@@ -3,7 +3,7 @@
 import { Popover as ArkPopover } from "@ark-ui/react/popover";
 import { Portal } from "@ark-ui/react/portal";
 import type React from "react";
-import { menuContentVariants } from "@/components/ui/menu";
+import { boxBorder } from "@/components/ui/box-border";
 import { cn } from "@/lib/cn";
 
 export const ToggleTooltip = (
@@ -44,19 +44,23 @@ export const ToggleTooltipContent = (
 
   return (
     <Portal>
-      <ArkPopover.Positioner
-        className={cn(
-          "z-100 sm:max-w-[min(20rem,calc(100vw-2rem))]",
-          fitContent
-            ? "max-sm:w-fit max-sm:max-w-[calc(100vw-1rem)]"
-            : "max-sm:fixed max-sm:inset-x-2 max-sm:max-w-[calc(100vw-1rem)]"
-        )}
-        data-slot="toggle-tooltip-positioner"
-      >
+      <ArkPopover.Positioner data-slot="toggle-tooltip-positioner">
         <ArkPopover.Content
           className={cn(
-            menuContentVariants(),
             "relative z-100",
+            "px-2.5 py-1.5",
+            "bg-popover text-muted",
+            "rounded-xl border-2 border-primary ring-1 ring-secondary",
+            boxBorder({ variant: "brown", size: "sm" }),
+            "inset-shadow-xs",
+            "origin-(--transform-origin) outline-none duration-100",
+            "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[98%] data-[state=open]:animate-in",
+            "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%] data-[state=closed]:animate-out",
+            "data-[placement=bottom]:slide-in-from-top-2",
+            "data-[placement=left]:slide-in-from-end-2",
+            "data-[placement=right]:slide-in-from-start-2",
+            "data-[placement=top]:slide-in-from-bottom-2",
+            "motion-reduce:animate-none!",
             fitContent
               ? "max-sm:w-fit max-sm:max-w-none sm:max-w-72"
               : "w-full min-w-0 max-sm:max-w-[calc(100vw-1rem)] sm:max-w-72",

@@ -1,5 +1,4 @@
 import { Clock } from "pixelarticons/react/Clock";
-import { Coin } from "@/components/icons/coin";
 import { boxBorder } from "@/components/ui/box-border";
 import { NumberText } from "@/components/ui/number-text";
 import { m } from "@/i18n/messages";
@@ -39,7 +38,7 @@ export const OfflineEarningSummary = (props: OfflineEarningSummaryProps) => {
         <div className="flex items-center justify-center gap-2">
           <Clock
             aria-hidden
-            className="size-5 shrink-0 text-popover-foreground sm:size-6"
+            className="size-5 shrink-0 text-popover-foreground"
           />
           <NumberText
             className="text-3xl text-popover-foreground sm:text-4xl"
@@ -54,27 +53,16 @@ export const OfflineEarningSummary = (props: OfflineEarningSummaryProps) => {
       <div
         className={cn(
           "flex w-full flex-col items-center gap-2.5 rounded-xl border-2 border-secondary bg-card px-4 py-4",
-          boxBorder({ variant: "cream" })
+          boxBorder({ variant: "brown" })
         )}
         data-slot="offline-earning-gold"
       >
         <p className="font-semibold tracking-wide">
           {m["ui.offline.earnedLabel"]()}
         </p>
-        <div className="flex items-center justify-center gap-2.5">
-          <Coin
-            aria-hidden
-            className="size-9 shrink-0 drop-shadow-md sm:size-10"
-            intrinsicSize={40}
-          />
-          <NumberText
-            className="text-5xl text-primary"
-            size="lg"
-            variant="cream"
-          >
-            {amount}
-          </NumberText>
-        </div>
+        <NumberText className="text-5xl text-primary" size="lg" variant="cream">
+          {amount}
+        </NumberText>
       </div>
     </div>
   );

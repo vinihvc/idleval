@@ -34,7 +34,6 @@ export const getFactoryDialogId = (
 export const DIALOG_PRIORITY: readonly DialogId[] = [
   DIALOG_IDS.welcome,
   DIALOG_IDS.offlineEarning,
-  DIALOG_IDS.dailyReward,
 ] as const;
 
 const DIALOG_NOTIFICATION_KEYS = {

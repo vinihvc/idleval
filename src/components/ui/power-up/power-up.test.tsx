@@ -1,5 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { GameStagePowerUp } from "@/components/ui/power-up/power-up";
+import { getLocalizedPowerUp } from "@/content/power-ups";
+import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { renderWithProviders } from "@/test/render-with-providers";
@@ -13,7 +15,7 @@ describe("GameStagePowerUp", () => {
       .toBeNull();
   });
 
-  test("shows countdown and status badge for timed power-up", async () => {
+  test("shows countdown inside tooltip for timed power-up", async () => {
     const expiresAt = Date.now() + 90_000;
 
     store.set(inventoryAtom, {
@@ -28,11 +30,26 @@ describe("GameStagePowerUp", () => {
     const screen = await renderWithProviders(<GameStagePowerUp />);
 
     await expect
+      .poll(() => document.querySelector('[data-slot="power-up-badge"]'))
+      .not.toBeNull();
+
+    const trigger = screen.getByRole("button", { name: /left/i });
+    await trigger.click();
+
+    await expect
       .poll(() => document.querySelector('[data-slot="power-up-countdown"]'))
       .not.toBeNull();
 
-    const statuses = screen.getByRole("status").elements();
-    expect(statuses.length).toBeGreaterThan(0);
-    expect(statuses[0]?.getAttribute("aria-label") ?? "").toContain("left");
+    await expect
+      .element(screen.getByRole("heading", { level: 3 }))
+      .toHaveTextContent(getLocalizedPowerUp("hasteRune").name);
+
+    await expect
+      .element(screen.getByText(getLocalizedPowerUp("hasteRune").description))
+      .toBeInTheDocument();
+
+    await expect
+      .element(screen.getByText(m["ui.powerUp.countdownLabel"]()))
+      .toBeInTheDocument();
   });
 });

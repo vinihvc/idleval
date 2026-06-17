@@ -1,4 +1,5 @@
 import type React from "react";
+import { GameStagePowerUp } from "@/components/ui/power-up/power-up";
 import { cn } from "@/lib/cn";
 import { HeaderActions } from "./header.actions";
 import { HeaderGold } from "./header.gold";
@@ -19,7 +20,10 @@ export const Header = (props: React.ComponentProps<"header">) => {
       data-slot="header"
       {...rest}
     >
-      <HeaderGold />
+      <div className="flex min-w-0 items-center gap-3">
+        <HeaderGold />
+        <GameStagePowerUp className="shrink-0" />
+      </div>
 
       <HeaderNavigation />
 

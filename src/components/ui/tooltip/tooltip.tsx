@@ -6,7 +6,7 @@ import {
   useTooltipContext,
 } from "@ark-ui/react/tooltip";
 import type React from "react";
-import { menuContentVariants } from "@/components/ui/menu";
+import { boxBorder } from "@/components/ui/box-border";
 import { cn } from "@/lib/cn";
 
 export const useTooltip = useTooltipContext;
@@ -52,7 +52,20 @@ export const TooltipContent = (
       <ArkTooltip.Positioner data-slot="tooltip-positioner">
         <ArkTooltip.Content
           className={cn(
-            menuContentVariants(),
+            "[--space:--spacing(1.5)]",
+            "p-(--space)",
+            "bg-popover text-muted",
+            "rounded-xl border-2 border-primary ring-1 ring-secondary",
+            boxBorder({ variant: "brown", size: "sm" }),
+            "inset-shadow-xs",
+            "origin-(--transform-origin) outline-none duration-100",
+            "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[98%] data-[state=open]:animate-in",
+            "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[98%] data-[state=closed]:animate-out",
+            "data-[placement=bottom]:slide-in-from-top-2",
+            "data-[placement=left]:slide-in-from-end-2",
+            "data-[placement=right]:slide-in-from-start-2",
+            "data-[placement=top]:slide-in-from-bottom-2",
+            "motion-reduce:animate-none!",
             "z-50 hidden w-fit sm:block",
             "not-[class*='w-']:min-w-0",
             className

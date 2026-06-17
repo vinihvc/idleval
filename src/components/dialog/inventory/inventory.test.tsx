@@ -118,4 +118,32 @@ describe("InventoryDialog", () => {
       { powerUpId: "mimirCoin", count: 1, tier: "common" },
     ]);
   });
+
+  test("disables use button while a timed power-up is active", async () => {
+    const localizedHasteRune = getLocalizedPowerUp("hasteRune");
+
+    store.set(inventoryAtom, {
+      ...initialInventoryState,
+      slots: [{ powerUpId: "hasteRune", count: 1, tier: "common" }],
+      activePowerUp: {
+        expiresAt: Date.now() + 60_000,
+        powerUpId: "lightningShard",
+        tier: "common",
+      },
+    });
+
+    const screen = await openInventory();
+
+    const useButton = screen.getByRole("button", {
+      name: m["ui.inventory.useItem"]({ 0: localizedHasteRune.name }),
+    });
+
+    await expect.element(useButton).toBeDisabled();
+
+    const card = document.querySelector('[data-slot="inventory-card"]');
+    const footer = document.querySelector('[data-slot="power-up-card-footer"]');
+
+    expect(card?.className.includes("opacity-60")).toBe(false);
+    expect(footer?.className.includes("opacity-60")).toBe(true);
+  });
 });

@@ -1,8 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { Characters } from "@/components/characters";
 import { GameStage } from "@/components/game/stage/stage";
-import { store } from "@/providers/store";
-import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { renderWithProviders } from "@/test/render-with-providers";
 
 describe("GameStage", () => {
@@ -59,22 +57,4 @@ describe("GameStage", () => {
     );
   });
 
-  test("shows power-up countdown when a relic is active", async () => {
-    store.set(inventoryAtom, {
-      ...initialInventoryState,
-      activePowerUp: {
-        powerUpId: "hasteRune",
-        tier: "common",
-        expiresAt: Date.now() + 60_000,
-      },
-    });
-
-    await renderWithProviders(<GameStage />);
-
-    const stage = document.querySelector('[data-slot="game-stage"]');
-
-    await expect
-      .poll(() => stage?.querySelector('[data-slot="power-up-countdown"]'))
-      .not.toBeNull();
-  });
 });

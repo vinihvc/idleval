@@ -45,7 +45,7 @@ export const InventoryCard = (props: InventoryCardProps) => {
   return (
     <PowerUpCard
       {...rest}
-      className={cn("h-32", !canUse && "opacity-60", className)}
+      className={cn("h-32", className)}
       data-slot="inventory-card"
     >
       <PowerUpCardMedia className="pt-6" powerUpId={item?.powerUpId} />
@@ -84,12 +84,14 @@ export const InventoryCard = (props: InventoryCardProps) => {
             </ToggleTooltipContent>
           </ToggleTooltip>
 
-          <PowerUpCardFooter className="flex items-center p-1">
+          <PowerUpCardFooter
+            className={cn("flex items-center p-1", !canUse && "opacity-60")}
+          >
             <Button
               aria-label={m["ui.inventory.useItem"]({
                 0: getLocalizedPowerUp(item.powerUpId).name,
               })}
-              className="w-full rounded-md font-bold text-sm"
+              className="w-full rounded-md font-bold text-sm disabled:opacity-100"
               disabled={!canUse}
               onClick={usePowerUp}
               size="xs"

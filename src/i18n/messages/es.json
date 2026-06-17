@@ -297,6 +297,7 @@
   "ui.offline.summaryA11y": "Estuviste fuera {0} y ganaste {1}",
   "ui.offline.welcomeBack": "Ah, volviste",
   "ui.powerUp.active": "Activo",
+  "ui.powerUp.countdownLabel": "Tiempo restante",
   "ui.powerUp.remaining": "Quedan {duration}",
   "ui.settings.audio": "Audio",
   "ui.settings.imageAlt": "Quirón, guardián de las llaves del reino",
