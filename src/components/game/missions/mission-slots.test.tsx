@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { formatMissionProgressLabel } from "@/components/game/missions/format-mission-progress";
+import { formatMissionProgressLabel } from "@/components/missions/format-mission-progress";
 import {
   getLocalizedMissionObjective,
   getMissionById,

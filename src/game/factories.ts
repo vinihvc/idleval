@@ -3,11 +3,25 @@ import {
   FACTORY_TYPES,
   type FactoryType,
 } from "@/content/factories";
+import {
+  getScaledFactoryConfig,
+  getScaledProductionValue,
+  getScaledUnlockPrice,
+} from "@/game/balance";
+import {
+  applyDifficultyCost,
+  applyDifficultyIncome,
+  getGameDifficulty,
+} from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 import { canAfford, ECONOMY, managerCost, upgradeCost } from "./economy";
 import type { FactoryPersistedState } from "./types";
 
-interface FactoryProductionValueInput {
+interface FactoryProductionOptions {
+  factoryDifficulty?: number;
+}
+
+interface FactoryProductionValueInput extends FactoryProductionOptions {
   /** Multiplier granted by invoked gods and applied to factory production. */
   godsProductionMultiplier: GameValue;
   /** Whether this factory has purchased its production upgrade. */
@@ -30,13 +44,29 @@ interface FactoryEarnInput extends FactoryProductionValueInput {
  * getFactoryProductionValue({ productionValue: 20, isUpgraded: true, godsProductionMultiplier: D(3) }).toNumber() // 120
  */
 export const getFactoryProductionValue = ({
+  factoryDifficulty = getGameDifficulty(),
   godsProductionMultiplier,
   isUpgraded,
   productionValue,
 }: FactoryProductionValueInput): GameValue =>
-  D(productionValue)
-    .times(isUpgraded ? ECONOMY.upgradeProductionMultiplier : 1)
-    .times(godsProductionMultiplier);
+  applyDifficultyIncome(
+    D(getScaledProductionValue(productionValue))
+      .times(isUpgraded ? ECONOMY.upgradeProductionMultiplier : 1)
+      .times(godsProductionMultiplier),
+    factoryDifficulty
+  );
+
+/**
+ * Returns the gold required to unlock a sealed factory after difficulty scaling.
+ *
+ * @example
+ * getFactoryUnlockPrice(55_000).toNumber() // 55000 at difficulty 1
+ */
+export const getFactoryUnlockPrice = (
+  unlockPrice: number,
+  factoryDifficulty: number = getGameDifficulty()
+): GameValue =>
+  applyDifficultyCost(getScaledUnlockPrice(unlockPrice), factoryDifficulty);
 
 /**
  * Calculates how much gold a factory earns when one production cycle finishes.
@@ -101,6 +131,8 @@ export const isFactoryProductionActive = ({
 /**
  * Whether the scheduler should tick this factory's production countdown.
  *
+ * The `factory` argument is reserved for future per-factory scheduler rules.
+ *
  * @example
  * isFactoryDrivenByScheduler("grain", { isUnlocked: true, isAutomated: true, isProducing: false }) // true
  */
@@ -108,6 +140,33 @@ export const isFactoryDrivenByScheduler = (
   _factory: FactoryType,
   factoryState: FactoryProductionState
 ): boolean => isFactoryProductionActive(factoryState);
+
+const canPurchaseAnyForFactories = (
+  factories: Record<FactoryType, FactoryPersistedState>,
+  gold: GameValue,
+  factoryDifficulty: number,
+  canPurchaseForFactory: (
+    factory: FactoryType,
+    state: FactoryPersistedState,
+    gold: GameValue,
+    factoryDifficulty: number
+  ) => boolean
+): boolean => {
+  for (const factory of FACTORY_TYPES) {
+    if (
+      canPurchaseForFactory(
+        factory,
+        factories[factory],
+        gold,
+        factoryDifficulty
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 /**
  * Whether the player can start a manual production tap.
@@ -199,17 +258,28 @@ export const createInitialFactoriesState = (): Record<
 export const getFactoryGoldPerSecond = (
   factory: FactoryType,
   state: FactoryPersistedState,
-  godsMultiplier: GameValue
+  godsMultiplier: GameValue,
+  options?: {
+    factoryDifficulty?: number;
+    godsSpeedMultiplier?: number;
+  }
 ): GameValue => {
-  const config = FACTORY_DATA[factory];
+  const config = getScaledFactoryConfig(factory);
+  const factoryDifficulty = options?.factoryDifficulty ?? getGameDifficulty();
+  const godsSpeedMultiplier = options?.godsSpeedMultiplier ?? 1;
+  const effectiveProductionTime = Math.max(
+    1,
+    Math.round(config.productionTime / godsSpeedMultiplier)
+  );
   const earnPerCycle = getFactoryEarnPerCycle({
     amount: state.amount,
+    factoryDifficulty,
     godsProductionMultiplier: godsMultiplier,
     isUpgraded: state.isUpgraded,
-    productionValue: config.productionValue,
+    productionValue: FACTORY_DATA[factory].productionValue,
   });
 
-  return earnPerCycle.div(config.productionTime);
+  return earnPerCycle.div(effectiveProductionTime);
 };
 
 /**
@@ -217,51 +287,53 @@ export const getFactoryGoldPerSecond = (
  */
 export const canPurchaseAnyUpgrade = (
   factories: Record<FactoryType, FactoryPersistedState>,
-  gold: GameValue
-): boolean => {
-  for (const factory of FACTORY_TYPES) {
-    const state = factories[factory];
-    const config = FACTORY_DATA[factory];
-    const cost = upgradeCost(config.baseBuyCost, state.amount);
+  gold: GameValue,
+  factoryDifficulty: number = getGameDifficulty()
+): boolean =>
+  canPurchaseAnyForFactories(
+    factories,
+    gold,
+    factoryDifficulty,
+    (factory, state, purchaseGold, difficulty) => {
+      const cost = upgradeCost(
+        FACTORY_DATA[factory].baseBuyCost,
+        state.amount,
+        difficulty
+      );
 
-    if (
-      canPurchaseUpgrade({
+      return canPurchaseUpgrade({
         cost,
-        gold,
+        gold: purchaseGold,
         isUnlocked: state.isUnlocked,
         isUpgraded: state.isUpgraded,
-      })
-    ) {
-      return true;
+      });
     }
-  }
-
-  return false;
-};
+  );
 
 /**
  * Whether the player can appoint a manager for any unlocked factory.
  */
 export const canPurchaseAnyManager = (
   factories: Record<FactoryType, FactoryPersistedState>,
-  gold: GameValue
-): boolean => {
-  for (const factory of FACTORY_TYPES) {
-    const state = factories[factory];
-    const config = FACTORY_DATA[factory];
-    const cost = managerCost(config.baseBuyCost, state.amount);
+  gold: GameValue,
+  factoryDifficulty: number = getGameDifficulty()
+): boolean =>
+  canPurchaseAnyForFactories(
+    factories,
+    gold,
+    factoryDifficulty,
+    (factory, state, purchaseGold, difficulty) => {
+      const cost = managerCost(
+        FACTORY_DATA[factory].baseBuyCost,
+        state.amount,
+        difficulty
+      );
 
-    if (
-      canPurchaseManager({
+      return canPurchaseManager({
         cost,
-        gold,
+        gold: purchaseGold,
         isAutomated: state.isAutomated,
         isUnlocked: state.isUnlocked,
-      })
-    ) {
-      return true;
+      });
     }
-  }
-
-  return false;
-};
+  );

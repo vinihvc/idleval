@@ -49,5 +49,3 @@ export const ManagersDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default ManagersDialog;

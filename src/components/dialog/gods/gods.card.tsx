@@ -9,7 +9,7 @@ import {
   UpgradeCardSeal,
 } from "@/components/ui/upgrade-card";
 import { useUpgradeCardAffordance } from "@/components/ui/upgrade-card/use-upgrade-card-affordance";
-import { type GodType, getGod } from "@/content/gods";
+import { type GodType, getGodIndex } from "@/content/gods";
 import {
   canInvokeGodAtIndex,
   getGodCardStatus,
@@ -35,7 +35,7 @@ export const GodsCard = (props: GodsCardProps) => {
   const { invoked } = useGods();
   const { gold } = useWallet();
 
-  const godIndex = getGod(god);
+  const godIndex = getGodIndex(god);
   const goldRequired = getGodGoldRequired(godIndex);
   const status = getGodCardStatus(godIndex, invoked);
   const canAfford = canInvokeGodAtIndex(godIndex, invoked, gold);

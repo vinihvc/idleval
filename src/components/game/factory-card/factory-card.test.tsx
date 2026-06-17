@@ -1,9 +1,15 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { FactoryCard } from "@/components/ui/factory-card";
+import { FactoryCard } from "@/components/game/factory-card";
+import { FACTORY_DATA } from "@/content/factories";
+import { getFactoryEarnPerCycle } from "@/game/factories";
 import { m } from "@/i18n/messages";
+import { getPowerUpIncomeMultiplierForEarn } from "@/store/atoms/inventory";
+import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
 import { resetGame } from "@/store/reset";
 import { seedFactory, seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
+import { D } from "@/utils/decimal";
+import { amountFormatterWithDolarSign } from "@/utils/formatters";
 
 describe("FactoryCard", () => {
   beforeEach(() => {
@@ -24,6 +30,22 @@ describe("FactoryCard", () => {
     await expect
       .element(screen.getByRole("article"))
       .toHaveAttribute("data-locked", "true");
+  });
+
+  test("shows one-unit earnings on sealed factory", async () => {
+    const expectedEarn = amountFormatterWithDolarSign(
+      getFactoryEarnPerCycle({
+        amount: 1,
+        factoryDifficulty: getFactoryProgressDifficulty(),
+        godsProductionMultiplier: D(1),
+        isUpgraded: false,
+        productionValue: FACTORY_DATA.wine.productionValue,
+      }).times(getPowerUpIncomeMultiplierForEarn())
+    );
+
+    const screen = await renderWithProviders(<FactoryCard type="wine" />);
+
+    await expect.element(screen.getByText(expectedEarn)).toBeInTheDocument();
   });
 
   test("starts production on produce click", async () => {

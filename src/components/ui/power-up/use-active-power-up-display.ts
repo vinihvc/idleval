@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React from "react";
 import {
   getActivePowerUpDisplayState,
   isTimedPowerUpActive,
@@ -7,9 +7,9 @@ import { useInventory } from "@/store/atoms/inventory";
 
 export const useActivePowerUpDisplay = () => {
   const { activePowerUp } = useInventory();
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = React.useState(() => Date.now());
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isTimedPowerUpActive(activePowerUp)) {
       return;
     }

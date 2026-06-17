@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import MissionDialog from "@/components/dialog/mission/mission";
+import { MissionDialog } from "@/components/dialog/mission/mission";
 import { getLocalizedMissionTitle, getMissionById } from "@/content/missions";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
@@ -57,7 +57,9 @@ describe("MissionDialog", () => {
       />
     );
 
-    const hero = document.querySelector('img[src="/images/characters/heracles.webp"]');
+    const hero = document.querySelector(
+      'img[src="/images/characters/heracles.webp"]'
+    );
 
     expect(hero?.getAttribute("aria-hidden")).toBe("true");
     expect(hero?.getAttribute("alt")).toBe(m["ui.missions.imageAlt"]());

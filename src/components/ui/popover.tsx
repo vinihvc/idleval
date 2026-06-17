@@ -6,7 +6,7 @@ import {
   usePopoverContext,
 } from "@ark-ui/react/popover";
 import { Portal } from "@ark-ui/react/portal";
-import { XIcon } from "lucide-react";
+import { Close } from "pixelarticons/react/Close";
 import type React from "react";
 import { boxBorder } from "@/components/ui/box-border";
 import { Button } from "@/components/ui/button";
@@ -108,7 +108,7 @@ export const PopoverContent = (props: PopoverContentProps) => {
                 size="icon-sm"
                 variant="ghost"
               >
-                <XIcon />
+                <Close className="size-6 drop-shadow-[0_1px_1px_rgba(80,0,0,0.75)]" />
               </Button>
             </PopoverClose>
           )}

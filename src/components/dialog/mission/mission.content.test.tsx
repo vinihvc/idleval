@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { MissionClaimContent } from "@/components/dialog/mission/mission.content";
-import { formatMissionProgressLabel } from "@/components/game/missions/format-mission-progress";
+import { formatMissionProgressLabel } from "@/components/missions/format-mission-progress";
 import { getMissionById } from "@/content/missions";
 import { getLocalizedPowerUp } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
@@ -141,5 +141,4 @@ describe("MissionClaimContent", () => {
         .toBeInTheDocument();
     }
   });
-
 });

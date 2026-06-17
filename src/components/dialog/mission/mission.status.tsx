@@ -32,8 +32,8 @@ export const MissionProressbar = (props: MissionProressbarProps) => {
         className={cn(
           "pointer-events-none absolute inset-0",
           "flex items-center justify-center px-1",
-          "font-medium text-sm tracking-wide text-foreground",
-          borderedText({ variant: "cream", size: "sm", truncateSafe: true })
+          "text-nowrap font-medium text-foreground text-sm tracking-wide",
+          borderedText({ variant: "cream", size: "sm" })
         )}
       >
         <span className="font-number tabular-nums">{label}</span>

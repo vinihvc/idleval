@@ -49,5 +49,3 @@ export const UpgradesDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default UpgradesDialog;

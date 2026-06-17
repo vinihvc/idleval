@@ -105,5 +105,3 @@ export const WelcomeDialog = (props: WelcomeDialogProps = {}) => {
     </ResponsiveDialog>
   );
 };
-
-export default WelcomeDialog;

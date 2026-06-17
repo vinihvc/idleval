@@ -10,8 +10,10 @@ import { m } from "@/i18n/messages";
 import { IS_DEV } from "@/lib/envs";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 
-const LazyWikiDialog = React.lazy(
-  () => import("@/components/dialog/wiki/wiki")
+const LazyWikiDialog = React.lazy(() =>
+  import("@/components/dialog/wiki/wiki").then((module) => ({
+    default: module.WikiDialog,
+  }))
 );
 
 export const HeaderWiki = () => (

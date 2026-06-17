@@ -1,19 +1,20 @@
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
-import { useMemo } from "react";
+import React from "react";
 import { FACTORY_DATA, type FactoryType } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
 import { managerCost, unitCost, upgradeCost } from "@/game/economy";
 import {
   canPurchaseAnyManager as canPurchaseAnyManagerGame,
   canPurchaseAnyUpgrade as canPurchaseAnyUpgradeGame,
-  getFactoryEarnPerCycle,
   getFactoryProductionValue,
+  getFactoryUnlockPrice,
 } from "@/game/factories";
 import type { FactoryPersistedState } from "@/game/types";
-import { useLocalizedFactory } from "@/i18n/hooks/use-localized-factory";
 import { store } from "@/providers/store";
-import { getPowerUpIncomeMultiplierForEarn } from "@/store/atoms/inventory";
-import { D, type GameValue } from "@/utils/decimal";
+import { getTotalEarnPerCycle } from "@/store/atoms/factory-earn";
+import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
+import type { GameValue } from "@/utils/decimal";
 import { factoriesAtom, useFactories } from "./factories.atom";
 import { useGodsProductionMultiplier } from "./gods";
 import { getGold, useWallet } from "./wallet";
@@ -47,7 +48,7 @@ const getFactoryConfig = (factory: FactoryType) => {
 
   return {
     ...state,
-    ...FACTORY_DATA[factory],
+    ...getScaledFactoryConfig(factory),
   };
 };
 
@@ -56,67 +57,77 @@ export const useFactoryState = (factory: FactoryType) =>
 
 export const useFactory = (factory: FactoryType) => {
   const state = useFactoryState(factory);
-  const config = FACTORY_DATA[factory];
-  const localized = useLocalizedFactory(factory);
+  const raw = FACTORY_DATA[factory];
+  const scaled = getScaledFactoryConfig(factory);
+  const factoryDifficulty = getFactoryProgressDifficulty();
 
   return {
     ...state,
-    ...config,
-    ...localized,
-    unlockPrice: D(config.unlockPrice),
-    managerCost: managerCost(config.baseBuyCost, state.amount),
-    upgradeCost: upgradeCost(config.baseBuyCost, state.amount),
-    nextUnitCost: unitCost(config.baseBuyCost, state.amount),
+    ...scaled,
+    unlockPrice: getFactoryUnlockPrice(raw.unlockPrice, factoryDifficulty),
+    managerCost: managerCost(raw.baseBuyCost, state.amount, factoryDifficulty),
+    upgradeCost: upgradeCost(raw.baseBuyCost, state.amount, factoryDifficulty),
+    nextUnitCost: unitCost(raw.baseBuyCost, state.amount, factoryDifficulty),
   };
 };
 
 export const getFactory = (factory: FactoryType) => {
   const config = getFactoryConfig(factory);
+  const raw = FACTORY_DATA[factory];
+  const factoryDifficulty = getFactoryProgressDifficulty();
 
   return {
     ...config,
-    unlockPrice: D(FACTORY_DATA[factory].unlockPrice),
-    managerCost: managerCost(config.baseBuyCost, config.amount),
-    upgradeCost: upgradeCost(config.baseBuyCost, config.amount),
-    nextUnitCost: unitCost(config.baseBuyCost, config.amount),
+    unlockPrice: getFactoryUnlockPrice(raw.unlockPrice, factoryDifficulty),
+    managerCost: managerCost(raw.baseBuyCost, config.amount, factoryDifficulty),
+    upgradeCost: upgradeCost(raw.baseBuyCost, config.amount, factoryDifficulty),
+    nextUnitCost: unitCost(raw.baseBuyCost, config.amount, factoryDifficulty),
   };
 };
 
 export const useProductionValue = (factory: FactoryType): GameValue => {
-  const { productionValue, isUpgraded } = useFactory(factory);
+  const { isUpgraded } = useFactoryState(factory);
   const godsProductionMultiplier = useGodsProductionMultiplier();
 
   return getFactoryProductionValue({
+    factoryDifficulty: getFactoryProgressDifficulty(),
     godsProductionMultiplier,
     isUpgraded,
-    productionValue,
+    productionValue: FACTORY_DATA[factory].productionValue,
   });
 };
 
 export const useTotalToEarnAfterProduce = (factory: FactoryType): GameValue => {
-  const { amount, isUpgraded, productionValue } = useFactory(factory);
-  const godsProductionMultiplier = useGodsProductionMultiplier();
+  useFactoryState(factory);
 
-  return getFactoryEarnPerCycle({
-    amount,
-    godsProductionMultiplier,
-    isUpgraded,
-    productionValue,
-  }).times(getPowerUpIncomeMultiplierForEarn());
+  return getTotalEarnPerCycle(factory);
 };
 
 export const canPurchaseAnyUpgrade = (): boolean =>
-  canPurchaseAnyUpgradeGame(store.get(factoriesAtom), getGold());
+  canPurchaseAnyUpgradeGame(
+    store.get(factoriesAtom),
+    getGold(),
+    getFactoryProgressDifficulty()
+  );
 
 export const canPurchaseAnyManager = (): boolean =>
-  canPurchaseAnyManagerGame(store.get(factoriesAtom), getGold());
+  canPurchaseAnyManagerGame(
+    store.get(factoriesAtom),
+    getGold(),
+    getFactoryProgressDifficulty()
+  );
 
 export const useCanPurchaseAnyUpgrade = (): boolean => {
   const { gold } = useWallet();
   const factories = useFactories();
 
-  return useMemo(
-    () => canPurchaseAnyUpgradeGame(factories, gold),
+  return React.useMemo(
+    () =>
+      canPurchaseAnyUpgradeGame(
+        factories,
+        gold,
+        getFactoryProgressDifficulty()
+      ),
     [factories, gold]
   );
 };
@@ -125,8 +136,13 @@ export const useCanPurchaseAnyManager = (): boolean => {
   const { gold } = useWallet();
   const factories = useFactories();
 
-  return useMemo(
-    () => canPurchaseAnyManagerGame(factories, gold),
+  return React.useMemo(
+    () =>
+      canPurchaseAnyManagerGame(
+        factories,
+        gold,
+        getFactoryProgressDifficulty()
+      ),
     [factories, gold]
   );
 };

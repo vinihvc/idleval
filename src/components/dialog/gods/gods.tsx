@@ -51,5 +51,3 @@ export const GodsDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default GodsDialog;

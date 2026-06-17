@@ -56,5 +56,4 @@ describe("GameStage", () => {
       "/images/pets/example-character/idle.png"
     );
   });
-
 });

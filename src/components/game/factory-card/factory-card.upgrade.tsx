@@ -3,7 +3,6 @@ import React from "react";
 import { tv } from "tailwind-variants";
 import { Button } from "@/components/ui/button";
 import { NumberText } from "@/components/ui/number-text";
-import { borderedTextStrokeInset } from "@/components/ui/text-border";
 import {
   Tooltip,
   TooltipContent,
@@ -19,11 +18,17 @@ import {
 import { useFactoryCard } from "./factory-card.context";
 import { useFactoryPurchase } from "./use-factory-purchase";
 
+const LazyFactoryDialog = React.lazy(() =>
+  import("@/components/dialog/factory/factory").then((module) => ({
+    default: module.FactoryDialog,
+  }))
+);
+
 const factoryCardUpgradeButtonVariants = tv({
   base: [
     "min-w-0",
     "flex-1 justify-between gap-1",
-    "px-2",
+    "px-3",
     "font-bold font-number text-base",
   ],
   variants: {
@@ -34,10 +39,6 @@ const factoryCardUpgradeButtonVariants = tv({
     },
   },
 });
-
-const LazyFactoryDialog = React.lazy(
-  () => import("@/components/dialog/factory/factory")
-);
 
 export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
   const { className, ...rest } = props;
@@ -82,7 +83,7 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
         {isUnlocked && canBuyAmount && totalGreaterThan0 && (
           <>
             <span className="flex min-w-0 shrink items-center gap-1">
-              <span className={cn("min-w-0 truncate", borderedTextStrokeInset)}>
+              <span className="min-w-0 shrink">
                 {m["ui.factoryCard.buy"]()}
               </span>
               <NumberText bordered={false} className="shrink-0 text-base">
@@ -98,9 +99,7 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {!isUnlocked && canUnlock && (
           <>
-            <span
-              className={cn("min-w-0 shrink truncate", borderedTextStrokeInset)}
-            >
+            <span className="min-w-0 shrink">
               {m["ui.factoryCard.unlock"]()}
             </span>
             <NumberText bordered={false} className="shrink-0 text-base">
@@ -111,10 +110,13 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {showEmptyCoffers && (
           <>
-            <span className="min-w-0 shrink truncate [-webkit-text-stroke-width:0]">
+            <span className="min-w-0 shrink [-webkit-text-stroke-width:0]">
               {m["ui.factoryCard.emptyCoffers"]()}
             </span>
-            <NumberText className="shrink-0 text-base [-webkit-text-stroke-width:0]">
+            <NumberText
+              bordered={false}
+              className="shrink-0 text-base [-webkit-text-stroke-width:0]"
+            >
               {amountFormatterWithDolarSign(buyPrice)}
             </NumberText>
           </>
@@ -122,10 +124,13 @@ export const FactoryCardUpgrade = (props: React.ComponentProps<"div">) => {
 
         {isLocked && (
           <>
-            <span className="min-w-0 shrink truncate [-webkit-text-stroke-width:0]">
+            <span className="min-w-0 shrink [-webkit-text-stroke-width:0]">
               {m["ui.factoryCard.underSeal"]()}
             </span>
-            <NumberText className="shrink-0 text-base [-webkit-text-stroke-width:0]">
+            <NumberText
+              bordered={false}
+              className="shrink-0 text-base [-webkit-text-stroke-width:0]"
+            >
               {amountFormatterWithDolarSign(unlockPrice)}
             </NumberText>
           </>

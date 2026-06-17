@@ -8,6 +8,8 @@ import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { renderWithProviders } from "@/test/render-with-providers";
 
+const POWER_UP_LEFT_BUTTON = /left/i;
+
 describe("Header", () => {
   beforeEach(() => {
     resetGame();
@@ -74,7 +76,7 @@ describe("Header", () => {
       .poll(() => document.querySelector('[data-slot="power-up-badge"]'))
       .not.toBeNull();
 
-    await screen.getByRole("button", { name: /left/i }).click();
+    await screen.getByRole("button", { name: POWER_UP_LEFT_BUTTON }).click();
 
     await expect
       .poll(() => document.querySelector('[data-slot="power-up-countdown"]'))

@@ -1,5 +1,6 @@
 import { useAtomValue } from "jotai";
 import { LOCAL_STORAGE } from "@/config/local-storage";
+import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import type { MissionId } from "@/content/missions";
 import {
   createInitialMissionCounters,
@@ -79,6 +80,27 @@ const normalizeProgressBaselines = (
   return Object.fromEntries(entries);
 };
 
+const normalizeOwnUnitsBaselines = (
+  value: unknown
+): MissionsPersistedState["ownUnitsBaselines"] => {
+  if (typeof value !== "object" || value === null) {
+    return {};
+  }
+
+  const raw = value as Record<string, unknown>;
+  const baselines: Partial<Record<FactoryType, number>> = {};
+
+  for (const factory of FACTORY_TYPES) {
+    const quantity = raw[factory];
+
+    if (typeof quantity === "number" && quantity >= 0) {
+      baselines[factory] = quantity;
+    }
+  }
+
+  return baselines;
+};
+
 const normalizeMissionsState = (value: unknown): MissionsPersistedState => {
   const empty = createInitialMissionsState();
 
@@ -109,6 +131,7 @@ const normalizeMissionsState = (value: unknown): MissionsPersistedState => {
       : empty.readyToClaimIds,
     counters: normalizeMissionCounters(raw.counters),
     progressBaselines: normalizeProgressBaselines(raw.progressBaselines),
+    ownUnitsBaselines: normalizeOwnUnitsBaselines(raw.ownUnitsBaselines),
     renownPercent:
       typeof raw.renownPercent === "number" && raw.renownPercent >= 0
         ? raw.renownPercent

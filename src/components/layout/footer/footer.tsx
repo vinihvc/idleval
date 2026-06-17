@@ -1,12 +1,13 @@
 import React from "react";
-
-const LazyAboutDialog = React.lazy(
-  () => import("@/components/dialog/about/about")
-);
-
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
+
+const LazyAboutDialog = React.lazy(() =>
+  import("@/components/dialog/about/about").then((module) => ({
+    default: module.AboutDialog,
+  }))
+);
 
 export const Footer = (props: React.ComponentProps<"footer">) => {
   const { className, ...rest } = props;

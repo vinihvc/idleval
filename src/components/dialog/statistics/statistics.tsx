@@ -51,5 +51,3 @@ export const StatisticsDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default StatisticsDialog;

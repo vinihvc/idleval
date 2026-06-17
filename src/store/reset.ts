@@ -12,12 +12,12 @@ import {
   initialNotificationsState,
   notificationsAtom,
 } from "@/store/atoms/notifications";
-import { sessionAtom } from "@/store/atoms/session";
-import { initialStatistics, statisticsAtom } from "@/store/atoms/statistics";
 import {
   offlineCycleProgressAtom,
   offlineSummaryAtom,
-} from "@/store/offline-earning";
+} from "@/store/atoms/offline-earning";
+import { sessionAtom } from "@/store/atoms/session";
+import { initialStatistics, statisticsAtom } from "@/store/atoms/statistics";
 import { resetRunProgress } from "@/store/reset-run-progress";
 import { D, serializeDecimal } from "@/utils/decimal";
 

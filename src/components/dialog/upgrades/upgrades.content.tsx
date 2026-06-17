@@ -1,9 +1,10 @@
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { canPurchaseUpgrade } from "@/game/factories";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
+import { useLocalizedFactoryView } from "@/hooks/use-localized-factory-view";
 import { m } from "@/i18n/messages";
 import { sound } from "@/providers/sound";
-import { upgradeFactory, useFactory } from "@/store/atoms/factories";
+import { upgradeFactory } from "@/store/atoms/factories";
 import { useWallet } from "@/store/atoms/wallet";
 import { UpgradesCard } from "./upgrades.card";
 
@@ -37,7 +38,7 @@ const UpgradesCardConnected = (props: UpgradesCardConnectedProps) => {
   const { factoryType, onPurchase } = props;
 
   const { isUpgraded, isUnlocked, upgradeCost, upgrade } =
-    useFactory(factoryType);
+    useLocalizedFactoryView(factoryType);
   const { gold } = useWallet();
 
   const complete = isUpgraded;

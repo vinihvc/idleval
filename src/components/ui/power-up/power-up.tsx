@@ -6,7 +6,7 @@ import {
   ToggleTooltipContent,
   ToggleTooltipTrigger,
 } from "@/components/ui/toggle-tooltip";
-import { POWER_UP_DATA, getLocalizedPowerUp } from "@/content/power-ups";
+import { getLocalizedPowerUp, POWER_UP_DATA } from "@/content/power-ups";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { countdownFormatter, formatElapsedDuration } from "@/utils/formatters";
@@ -14,7 +14,10 @@ import { borderedText } from "../text-border";
 import { useActivePowerUpDisplay } from "./use-active-power-up-display";
 
 export const GameStagePowerUp = (
-  props: Omit<React.ComponentProps<typeof Button>, "children" | "size" | "variant">
+  props: Omit<
+    React.ComponentProps<typeof Button>,
+    "children" | "size" | "variant"
+  >
 ) => {
   const { className, ...rest } = props;
 
@@ -57,7 +60,9 @@ export const GameStagePowerUp = (
         <h3 className="font-bold text-lg">{powerUp.name}</h3>
         <p>{powerUp.description}</p>
         <div className="flex items-center gap-2">
-          <p className="font-medium text-sm">{m["ui.powerUp.countdownLabel"]()}</p>
+          <p className="font-medium text-sm">
+            {m["ui.powerUp.countdownLabel"]()}
+          </p>
           <span
             className={cn(
               "font-number text-2xl text-muted tabular-nums",

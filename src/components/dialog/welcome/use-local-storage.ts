@@ -1,4 +1,4 @@
-import { useLocalStorage as useUsehooksLocalStorage } from "@uidotdev/usehooks";
+import { useLocalStorage as useLocalStorageBase } from "@/hooks/use-local-storage";
 
 const ensureJsonStoredValue = (
   key: string,
@@ -20,5 +20,5 @@ const ensureJsonStoredValue = (
 export const useLocalStorage = <T>(key: string, initialValue: T) => {
   ensureJsonStoredValue(key);
 
-  return useUsehooksLocalStorage<T>(key, initialValue);
+  return useLocalStorageBase<T>(key, initialValue);
 };

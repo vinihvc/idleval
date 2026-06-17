@@ -1,13 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
+import { getScaledGodGoldRequired } from "@/game/balance";
+import { applyDifficultyCost } from "@/game/difficulty";
 import {
   canInvokeGodAtIndex,
   getGodCardStatus,
   getGodGoldRequired,
   getTotalProductionMultiplier,
+  getTotalProductionSpeedMultiplier,
   hasInvokableGod,
   isGodInvocationComplete,
 } from "@/game/gods";
+import { getGodInvokeDifficulty } from "@/game/progress-ease";
 import { D } from "@/utils/decimal";
 
 describe("gods rules", () => {
@@ -63,9 +67,50 @@ describe("gods rules", () => {
     expect(hasInvokableGod(["huangdi"], D("1e18"))).toBe(true);
   });
 
-  it("getGodGoldRequired returns configured threshold", () => {
-    expect(getGodGoldRequired(0).eq(D(GOD_DATA[0].goldRequired))).toBe(true);
-    expect(getGodGoldRequired(1).eq(D(GOD_DATA[1].goldRequired))).toBe(true);
+  it("getTotalProductionSpeedMultiplier returns 1 with no invoked gods", () => {
+    expect(getTotalProductionSpeedMultiplier([])).toBe(1);
+  });
+
+  it("getTotalProductionSpeedMultiplier accumulates invoked god speed multipliers", () => {
+    expect(getTotalProductionSpeedMultiplier(["huangdi"])).toBe(
+      GOD_DATA[0].productionSpeedMultiplier
+    );
+
+    let expected = 1;
+    for (const god of GOD_DATA.slice(0, 3)) {
+      expected *= god.productionSpeedMultiplier;
+    }
+
+    expect(
+      getTotalProductionSpeedMultiplier(["huangdi", "dagda", "shango"])
+    ).toBeCloseTo(expected);
+  });
+
+  it("getTotalProductionSpeedMultiplier is order independent", () => {
+    expect(getTotalProductionSpeedMultiplier(["dagda", "huangdi"])).toBeCloseTo(
+      getTotalProductionSpeedMultiplier(["huangdi", "dagda"])
+    );
+  });
+
+  it("getGodGoldRequired returns balance- and progress-ease-adjusted threshold", () => {
+    expect(
+      getGodGoldRequired(0).eq(
+        applyDifficultyCost(
+          D(getScaledGodGoldRequired(GOD_DATA[0].goldRequired)),
+          getGodInvokeDifficulty(0)
+        )
+      )
+    ).toBe(true);
+    expect(
+      getGodGoldRequired(0).lt(
+        D(getScaledGodGoldRequired(GOD_DATA[0].goldRequired))
+      )
+    ).toBe(true);
+    expect(
+      getGodGoldRequired(GOD_COUNT - 1).gt(
+        D(getScaledGodGoldRequired(GOD_DATA[GOD_COUNT - 1].goldRequired))
+      )
+    ).toBe(true);
   });
 
   it("canInvokeGodAtIndex succeeds at exact gold threshold", () => {

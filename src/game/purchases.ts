@@ -31,6 +31,8 @@ interface PurchaseInput {
   amount: PurchaseAmount | unknown;
   /** Base price for the factory before exponential scaling. */
   baseBuyCost: number;
+  /** Factory progress difficulty for cost scaling. */
+  factoryDifficulty?: number;
   /** Current gold balance available to spend. */
   gold: GameValue;
   /** Number of factory units already owned. */
@@ -73,20 +75,26 @@ export const getPurchaseBudget = (
 export const getAffordableUnitCount = ({
   amount,
   baseBuyCost,
+  factoryDifficulty,
   gold,
   owned,
 }: PurchaseInput): number => {
   const purchaseAmount = normalizePurchaseAmount(amount);
-  const firstUnitCost = unitCost(baseBuyCost, owned);
+  const firstUnitCost = unitCost(baseBuyCost, owned, factoryDifficulty);
   const canAffordOne = gold.gte(firstUnitCost);
 
   if (purchaseAmount === "max") {
-    return maxAffordable(baseBuyCost, owned, gold);
+    return maxAffordable(baseBuyCost, owned, gold, factoryDifficulty);
   }
 
   if (purchaseAmount === 10 || purchaseAmount === 50) {
     const budget = getPurchaseBudget(purchaseAmount, gold);
-    const affordableInBudget = maxAffordable(baseBuyCost, owned, budget);
+    const affordableInBudget = maxAffordable(
+      baseBuyCost,
+      owned,
+      budget,
+      factoryDifficulty
+    );
 
     if (affordableInBudget > 0) {
       return affordableInBudget;
@@ -108,8 +116,9 @@ export const getAffordableUnitCount = ({
 export const getPurchaseTotalCost = (
   baseBuyCost: number,
   owned: number,
-  quantity: number
-): GameValue => bulkBuyCost(baseBuyCost, owned, quantity);
+  quantity: number,
+  factoryDifficulty?: number
+): GameValue => bulkBuyCost(baseBuyCost, owned, quantity, factoryDifficulty);
 
 interface PurchaseUnitsInput {
   gold: GameValue;

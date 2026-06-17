@@ -10,9 +10,10 @@ import {
 import { useUpgradeCardAffordance } from "@/components/ui/upgrade-card/use-upgrade-card-affordance";
 import type { FactoryType } from "@/content/factories";
 import { canPurchaseManager } from "@/game/factories";
+import { useLocalizedFactoryView } from "@/hooks/use-localized-factory-view";
 import { m } from "@/i18n/messages";
 import { sound } from "@/providers/sound";
-import { autoFactory, useFactory } from "@/store/atoms/factories";
+import { autoFactory } from "@/store/atoms/factories";
 import { useWallet } from "@/store/atoms/wallet";
 import { amountFormatter } from "@/utils/formatters";
 
@@ -25,7 +26,7 @@ export const ManagersCard = (props: ManagersCardProps) => {
   const { factoryType, onPurchase } = props;
 
   const { isAutomated, isUnlocked, managerCost, manager } =
-    useFactory(factoryType);
+    useLocalizedFactoryView(factoryType);
   const { gold } = useWallet();
 
   const complete = isAutomated;

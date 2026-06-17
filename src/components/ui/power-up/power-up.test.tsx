@@ -6,6 +6,8 @@ import { store } from "@/providers/store";
 import { initialInventoryState, inventoryAtom } from "@/store/atoms/inventory";
 import { renderWithProviders } from "@/test/render-with-providers";
 
+const POWER_UP_LEFT_BUTTON = /left/i;
+
 describe("GameStagePowerUp", () => {
   test("renders nothing when no power-up is active", async () => {
     await renderWithProviders(<GameStagePowerUp />);
@@ -33,7 +35,7 @@ describe("GameStagePowerUp", () => {
       .poll(() => document.querySelector('[data-slot="power-up-badge"]'))
       .not.toBeNull();
 
-    const trigger = screen.getByRole("button", { name: /left/i });
+    const trigger = screen.getByRole("button", { name: POWER_UP_LEFT_BUTTON });
     await trigger.click();
 
     await expect

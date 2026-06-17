@@ -1,4 +1,6 @@
-import { FACTORY_DATA, type FactoryType } from "@/content/factories";
+import type { FactoryType } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
+import { startCycleTick } from "@/game/factory-cycle";
 import type { FactoryTickState } from "@/store/atoms/production-ticks.atom";
 
 export interface FactoryTickSyncResult {
@@ -7,13 +9,20 @@ export interface FactoryTickSyncResult {
   tick: FactoryTickState;
 }
 
+export interface ManualCycleAnchor {
+  productionDurationSec: number;
+  productionStartedAt: number;
+}
+
 export const syncActiveFactoryTick = (
   factory: FactoryType,
   currentTick: FactoryTickState,
   offlineProgress: Partial<Record<FactoryType, number>>,
   consumedOffline: Set<FactoryType>,
-  productionTime: number = FACTORY_DATA[factory].productionTime,
-  persistedSecondsRemaining?: number | null
+  productionTime: number = getScaledFactoryConfig(factory).productionTime,
+  persistedSecondsRemaining?: number | null,
+  manualCycleAnchor?: ManualCycleAnchor | null,
+  now: number = Date.now()
 ): FactoryTickSyncResult => {
   const fromOffline = offlineProgress[factory];
 
@@ -23,24 +32,39 @@ export const syncActiveFactoryTick = (
     return {
       changed: true,
       clearOfflineProgress: true,
-      tick: {
-        cycleKey: currentTick.cycleKey + 1,
-        isRunning: true,
-        seconds: fromOffline,
-      },
+      tick: startCycleTick(currentTick, {
+        durationSec: productionTime,
+        now,
+        remainingSec: fromOffline,
+      }),
     };
   }
 
   if (!currentTick.isRunning) {
+    if (manualCycleAnchor) {
+      const { productionDurationSec, productionStartedAt } = manualCycleAnchor;
+      const cycleEndsAt = productionStartedAt + productionDurationSec * 1000;
+      const remainingSec = Math.max(0, (cycleEndsAt - now) / 1000);
+
+      return {
+        changed: true,
+        tick: startCycleTick(currentTick, {
+          durationSec: productionDurationSec,
+          now,
+          remainingSec,
+        }),
+      };
+    }
+
     const seconds = persistedSecondsRemaining ?? productionTime;
 
     return {
       changed: true,
-      tick: {
-        cycleKey: currentTick.cycleKey + 1,
-        isRunning: true,
-        seconds,
-      },
+      tick: startCycleTick(currentTick, {
+        durationSec: productionTime,
+        now,
+        remainingSec: seconds,
+      }),
     };
   }
 

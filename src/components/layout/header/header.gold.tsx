@@ -14,8 +14,10 @@ import { cn } from "@/lib/cn";
 import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { useWallet } from "@/store/atoms/wallet";
 
-const LazyStatisticsDialog = React.lazy(
-  () => import("@/components/dialog/statistics/statistics")
+const LazyStatisticsDialog = React.lazy(() =>
+  import("@/components/dialog/statistics/statistics").then((module) => ({
+    default: module.StatisticsDialog,
+  }))
 );
 
 export const HeaderGold = () => {
@@ -27,7 +29,7 @@ export const HeaderGold = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              className="min-w-32 max-w-full translate-x-2 justify-end bg-popover px-0 pr-2"
+              className="min-w-32 max-w-full translate-x-2 justify-end bg-popover px-0 pr-2 [-webkit-text-stroke-width:0]"
               clickEffect={false}
               onClick={() => toggleDialog(DIALOG_IDS.statistics)}
               size="sm"
@@ -41,8 +43,8 @@ export const HeaderGold = () => {
 
               <span
                 className={cn(
-                  "font-bold font-number text-lg text-muted tabular-nums tracking-normal sm:text-xl",
-                  borderedText({ variant: "default", truncateSafe: true })
+                  "min-w-0 font-bold font-number text-lg text-muted tabular-nums tracking-normal sm:text-xl",
+                  borderedText({ variant: "default", size: "sm" })
                 )}
               >
                 <FormattedNumber isDollar value={gold} />

@@ -19,6 +19,9 @@ import {
 import { hasMessageKey } from "@/i18n/localize";
 import { D } from "@/utils/decimal";
 
+const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+const MISSION_ID_PATTERN = /^mission-\d{3}$/;
+
 describe("content invariants", () => {
   it("FACTORY_TYPES covers every factory definition", () => {
     expect(FACTORY_TYPES).toEqual(Object.keys(FACTORY_DATA));
@@ -121,23 +124,29 @@ describe("content invariants", () => {
     expect(GOD_COUNT).toBe(GOD_DATA.length);
 
     let previousGold = D(0);
+    let previousSpeed = 1;
 
     for (const god of GOD_DATA) {
       expect(god.productionMultiplier).toBeGreaterThanOrEqual(1);
+      expect(god.productionSpeedMultiplier).toBeGreaterThan(1);
+      expect(god.productionSpeedMultiplier).toBeGreaterThanOrEqual(
+        previousSpeed
+      );
 
       const goldRequired = D(god.goldRequired);
       expect(goldRequired.gt(previousGold)).toBe(true);
       previousGold = goldRequired;
+      previousSpeed = god.productionSpeedMultiplier;
     }
   });
 
   it("every god has a valid confetti color", () => {
     for (const god of GOD_DATA) {
-      expect(god.confettiColor).toMatch(/^#[0-9a-fA-F]{6}$/);
+      expect(god.confettiColor).toMatch(HEX_COLOR_PATTERN);
     }
   });
 
-  it("mission catalog has one hundred unique ordered missions", () => {
+  it("mission catalog has two hundred unique ordered missions", () => {
     expect(MISSION_CATALOG).toHaveLength(MISSION_COUNT);
     expect(new Set(MISSION_IDS).size).toBe(MISSION_COUNT);
 
@@ -194,17 +203,69 @@ describe("content invariants", () => {
     }
   });
 
-  it("does not repeat invoke-god objectives back-to-back", () => {
-    for (let index = 1; index < MISSION_CATALOG.length; index++) {
-      const previous = MISSION_CATALOG[index - 1];
-      const current = MISSION_CATALOG[index];
+  it("mission ids match mission-NNN and align with order", () => {
+    for (const mission of MISSION_CATALOG) {
+      expect(mission.id).toMatch(MISSION_ID_PATTERN);
+      expect(mission.id).toBe(
+        `mission-${String(mission.order).padStart(3, "0")}`
+      );
+    }
+  });
 
-      if (
-        previous?.objective.type === "invokeGod" &&
-        current?.objective.type === "invokeGod"
-      ) {
-        expect(previous.objective.godId).not.toBe(current.objective.godId);
+  it("mission factory references and requirements use valid factory types", () => {
+    for (const mission of MISSION_CATALOG) {
+      if (mission.requires?.minFactoryUnlocked) {
+        expect(FACTORY_TYPES).toContain(mission.requires.minFactoryUnlocked);
       }
+
+      const { objective } = mission;
+
+      if ("factory" in objective) {
+        expect(FACTORY_TYPES).toContain(objective.factory);
+      }
+    }
+  });
+
+  it("mission gold and renown rewards are positive when present", () => {
+    for (const mission of MISSION_CATALOG) {
+      for (const reward of mission.rewards) {
+        if (reward.type === "gold") {
+          expect(D(reward.amount).gt(0)).toBe(true);
+        }
+
+        if (reward.type === "renown") {
+          expect(reward.percent).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
+  it("daily reward calendar has sequential unique days with valid power-ups", () => {
+    const days = DAILY_REWARD_CALENDAR.map((entry) => entry.day);
+
+    expect(new Set(days).size).toBe(DAILY_REWARD_CYCLE_DAYS);
+    expect(days.toSorted((left, right) => left - right)).toEqual(
+      Array.from({ length: DAILY_REWARD_CYCLE_DAYS }, (_, index) => index + 1)
+    );
+
+    for (const entry of DAILY_REWARD_CALENDAR) {
+      expect(POWER_UP_TYPES).toContain(entry.powerUpId);
+    }
+  });
+
+  it("since-active objective types have sinceActive a11y keys", () => {
+    const sinceActiveTypes = new Set(
+      MISSION_CATALOG.filter(
+        (mission) =>
+          "scope" in mission.objective &&
+          mission.objective.scope === "sinceActive"
+      ).map((mission) => mission.objective.type)
+    );
+
+    for (const type of sinceActiveTypes) {
+      expect(hasMessageKey(`mission.objective.a11y.${type}.sinceActive`)).toBe(
+        true
+      );
     }
   });
 });

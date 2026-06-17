@@ -9,13 +9,13 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import type { FactoryType } from "@/content/factories";
+import { useLocalizedFactoryView } from "@/hooks/use-localized-factory-view";
 import { m } from "@/i18n/messages";
 import {
   getFactoryDialogId,
   setDialogOpen,
   useDialogOpen,
 } from "@/store/atoms/dialogs";
-import { useFactory } from "@/store/atoms/factories";
 import { FactoryContent } from "./factory.content";
 
 interface FactoryDialogProps {
@@ -28,7 +28,7 @@ interface FactoryDialogProps {
 export const FactoryDialog = (props: FactoryDialogProps) => {
   const { factoryType } = props;
   const dialogId = getFactoryDialogId(factoryType);
-  const factory = useFactory(factoryType);
+  const factory = useLocalizedFactoryView(factoryType);
   const open = useDialogOpen(dialogId);
 
   return (
@@ -59,5 +59,3 @@ export const FactoryDialog = (props: FactoryDialogProps) => {
     </ResponsiveDialog>
   );
 };
-
-export default FactoryDialog;

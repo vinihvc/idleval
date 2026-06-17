@@ -3,6 +3,8 @@ import {
   FACTORY_TYPES,
   type FactoryType,
 } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
+import { getGameDifficulty } from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 import { getFactoryEarnPerCycle } from "./factories";
 import {
@@ -46,23 +48,27 @@ export interface OfflineEarningComputed {
   totalGold: GameValue;
 }
 
+export interface OfflineEarningOptions {
+  factoryDifficulty?: number;
+  godsSpeedMultiplier?: number;
+}
+
 /**
  * Calculates how much one automated factory earns per completed offline cycle.
  */
 const getEarnPerCycle = (
   factory: FactoryType,
   state: FactoryPersistedState,
-  godsProductionMultiplier: GameValue
-): GameValue => {
-  const config = FACTORY_DATA[factory];
-
-  return getFactoryEarnPerCycle({
+  godsProductionMultiplier: GameValue,
+  factoryDifficulty: number
+): GameValue =>
+  getFactoryEarnPerCycle({
     amount: state.amount,
+    factoryDifficulty,
     godsProductionMultiplier,
     isUpgraded: state.isUpgraded,
-    productionValue: config.productionValue,
+    productionValue: FACTORY_DATA[factory].productionValue,
   });
-};
 
 const computeFactoryOfflineResult = (
   factory: FactoryType,
@@ -71,24 +77,33 @@ const computeFactoryOfflineResult = (
   elapsedSec: number,
   lastSeenAt: number,
   now: number,
-  activePowerUp: ActivePowerUp | null
+  activePowerUp: ActivePowerUp | null,
+  factoryDifficulty: number,
+  godsSpeedMultiplier: number
 ): OfflineFactoryResult => {
-  const { productionTime: baseProductionTime } = FACTORY_DATA[factory];
+  const { productionTime: baseProductionTime } =
+    getScaledFactoryConfig(factory);
+  const normalProductionTime = getEffectiveProductionTime(
+    baseProductionTime,
+    null,
+    godsSpeedMultiplier
+  );
   const earnPerCycle = getEarnPerCycle(
     factory,
     state,
-    godsProductionMultiplier
+    godsProductionMultiplier,
+    factoryDifficulty
   );
   const buffSec = getOfflineActiveBuffSeconds(lastSeenAt, now, activePowerUp);
 
   if (buffSec <= 0) {
-    const cycles = Math.floor(elapsedSec / baseProductionTime);
+    const cycles = Math.floor(elapsedSec / normalProductionTime);
     const goldEarned = earnPerCycle.times(cycles);
-    const remainderSec = elapsedSec % baseProductionTime;
+    const remainderSec = elapsedSec % normalProductionTime;
     const secondsRemaining =
       remainderSec === 0
-        ? baseProductionTime
-        : baseProductionTime - remainderSec;
+        ? normalProductionTime
+        : normalProductionTime - remainderSec;
 
     return {
       factory,
@@ -102,6 +117,7 @@ const computeFactoryOfflineResult = (
   const buffProductionTime = getEffectiveProductionTime(
     baseProductionTime,
     activePowerUp,
+    godsSpeedMultiplier,
     lastSeenAt
   );
   const incomeMultiplier = getPowerUpIncomeMultiplier(
@@ -109,16 +125,16 @@ const computeFactoryOfflineResult = (
     lastSeenAt
   ).toNumber();
   const buffCycles = Math.floor(buffSec / buffProductionTime);
-  const normalCycles = Math.floor(normalSec / baseProductionTime);
+  const normalCycles = Math.floor(normalSec / normalProductionTime);
   const goldEarned = earnPerCycle
     .times(incomeMultiplier)
     .times(buffCycles)
     .plus(earnPerCycle.times(normalCycles));
-  const normalRemainder = normalSec % baseProductionTime;
+  const normalRemainder = normalSec % normalProductionTime;
   const secondsRemaining =
     normalRemainder === 0
-      ? baseProductionTime
-      : baseProductionTime - normalRemainder;
+      ? normalProductionTime
+      : normalProductionTime - normalRemainder;
 
   return {
     factory,
@@ -144,7 +160,8 @@ export const computeOfflineEarning = (
   lastSeenAt: number | null,
   factories: FactoriesPersistedState,
   godsProductionMultiplier: GameValue,
-  activePowerUp: ActivePowerUp | null = null
+  activePowerUp: ActivePowerUp | null = null,
+  options?: OfflineEarningOptions
 ): OfflineEarningComputed => {
   const empty: OfflineEarningComputed = {
     results: [],
@@ -162,6 +179,8 @@ export const computeOfflineEarning = (
     return empty;
   }
 
+  const factoryDifficulty = options?.factoryDifficulty ?? getGameDifficulty();
+  const godsSpeedMultiplier = options?.godsSpeedMultiplier ?? 1;
   const elapsedSec = elapsedMs / 1000;
   const results: OfflineFactoryResult[] = [];
   let totalGold = D(0);
@@ -180,7 +199,9 @@ export const computeOfflineEarning = (
       elapsedSec,
       lastSeenAt,
       now,
-      activePowerUp
+      activePowerUp,
+      factoryDifficulty,
+      godsSpeedMultiplier
     );
 
     results.push(result);

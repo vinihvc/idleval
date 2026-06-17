@@ -1,14 +1,20 @@
-import path from "node:path";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import { VitePWA } from "vite-plugin-pwa";
+import { VitePWA, type VitePWAOptions } from "vite-plugin-pwa";
 import { paraglidePluginOptions } from "./src/i18n/paraglide.vite";
+import { pwaPluginOptions } from "./src/pwa/pwa.vite";
+import { srcAlias } from "./vite.shared";
+
+const VENDOR_REACT_PATTERN = /node_modules\/(react|react-dom|scheduler)\//;
+const VENDOR_ARK_PATTERN = /node_modules\/@ark-ui\//;
+const VENDOR_PATTERN = /node_modules/;
+const CSS_SIDE_EFFECTS_PATTERN = /\.css$/;
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
     react(),
     paraglideVitePlugin(paraglidePluginOptions),
@@ -16,97 +22,42 @@ export default defineConfig({
       presets: [reactCompilerPreset()],
     }),
     tailwindcss(),
-    VitePWA({
-      includeAssets: [
-        "apple-touch-icon.png",
-        "favicon-16x16.png",
-        "favicon-32x32.png",
-        "favicon.ico",
-      ],
-      workbox: {
-        globPatterns: [
-          "**/*.{css,html,ico,js,png,wav,webmanifest,webp,woff,woff2}",
-        ],
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
-        navigateFallback: "index.html",
-        navigateFallbackDenylist: [/^\/api\//],
-        skipWaiting: true,
-        clientsClaim: true,
-      },
-      manifest: {
-        id: "/",
-        name: "Idleval",
-        short_name: "Idleval",
-        description:
-          "Step into a medieval realm where you build, expand, and defend.",
-        lang: "en",
-        theme_color: "#2a2418",
-        background_color: "#2a2418",
-        display: "standalone",
-        display_override: ["standalone", "browser"],
-        orientation: "any",
-        categories: ["games"],
-        scope: ".",
-        start_url: "./",
-        icons: [
-          {
-            src: "icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-        ],
-      },
-      devOptions: {
-        enabled: true,
-        suppressWarnings: true,
-      },
-      registerType: "autoUpdate",
-    }),
+    VitePWA(pwaPluginOptions as Partial<VitePWAOptions>),
   ],
   base: "",
   resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "./src"),
-    },
+    alias: srcAlias,
+    dedupe: ["react", "react-dom"],
   },
   build: {
     target: "es2022",
-    minify: "oxc",
+    minify: "oxc" as const,
     rolldownOptions: {
       treeshake: {
         annotations: true,
-        manualPureFunctions: ["clsx", "cn", "tv"],
-        moduleSideEffects: [{ test: /\.css$/, sideEffects: true }],
+        manualPureFunctions: ["clsx", "cn", "tv", "twMerge"],
+        moduleSideEffects: [
+          { test: CSS_SIDE_EFFECTS_PATTERN, sideEffects: true },
+        ],
       },
       output: {
         codeSplitting: {
           groups: [
             {
               name: "vendor-react",
-              test: /node_modules\/(react|react-dom|scheduler)\//,
+              test: VENDOR_REACT_PATTERN,
             },
             {
               name: "vendor-ark",
-              test: /node_modules\/@ark-ui\//,
+              test: VENDOR_ARK_PATTERN,
             },
             {
               name: "vendor",
-              test: /node_modules/,
+              test: VENDOR_PATTERN,
             },
           ],
         },
       },
     },
   },
-});
+}));

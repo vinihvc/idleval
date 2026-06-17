@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
+import { getScaledBaseBuyCost } from "@/game/balance";
 import {
   bulkBuyCost,
   canAfford,
@@ -12,10 +14,11 @@ import { D } from "@/utils/decimal";
 describe("economy", () => {
   it("unitCost scales with owned units", () => {
     const base = 10;
+    const scaledBase = getScaledBaseBuyCost(base);
     const first = unitCost(base, 0);
     const second = unitCost(base, 1);
 
-    expect(first.toNumber()).toBe(10);
+    expect(first.toNumber()).toBe(scaledBase);
     expect(second.gt(first)).toBe(true);
   });
 
@@ -62,7 +65,7 @@ describe("economy", () => {
   });
 
   it("maxAffordable returns at least one when gold covers first unit", () => {
-    expect(maxAffordable(10, 0, D(10))).toBe(1);
+    expect(maxAffordable(10, 0, D(getScaledBaseBuyCost(10)))).toBe(1);
     expect(maxAffordable(10, 0, D(100))).toBeGreaterThan(1);
   });
 
@@ -85,10 +88,25 @@ describe("economy", () => {
 
   it("managerCost and upgradeCost scale base buy cost", () => {
     const base = 75;
+    const scaledBase = getScaledBaseBuyCost(base);
 
-    expect(managerCost(base, 0).toNumber()).toBe(base * 220);
-    expect(upgradeCost(base, 0).toNumber()).toBe(base * 1000);
+    expect(managerCost(base, 0).toNumber()).toBe(
+      scaledBase * GAME_BALANCE.managerCostFactor
+    );
+    expect(upgradeCost(base, 0).toNumber()).toBe(
+      scaledBase * GAME_BALANCE.upgradeCostFactor
+    );
     expect(managerCost(base, 10).eq(managerCost(base, 0))).toBe(true);
     expect(upgradeCost(base, 10).eq(upgradeCost(base, 0))).toBe(true);
+  });
+
+  it("maxAffordable stays consistent with bulkBuyCost when difficulty is applied", () => {
+    const base = 10;
+    const owned = 3;
+    const gold = D(500);
+    const affordable = maxAffordable(base, owned, gold);
+
+    expect(bulkBuyCost(base, owned, affordable).lte(gold)).toBe(true);
+    expect(bulkBuyCost(base, owned, affordable + 1).gt(gold)).toBe(true);
   });
 });

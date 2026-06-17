@@ -76,6 +76,7 @@ export interface MissionsPersistedState {
   activeSlotIds: MissionId[];
   claimedIds: MissionId[];
   counters: MissionCounters;
+  ownUnitsBaselines: Partial<Record<FactoryType, number>>;
   progressBaselines: Partial<Record<MissionId, MissionProgressBaseline>>;
   readyToClaimIds: MissionId[];
   renownPercent: number;
@@ -87,6 +88,7 @@ export const createInitialMissionsState = (): MissionsPersistedState => ({
   readyToClaimIds: [],
   counters: createInitialMissionCounters(),
   progressBaselines: {},
+  ownUnitsBaselines: {},
   renownPercent: 0,
 });
 

@@ -72,6 +72,8 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 
 ## Evolution
 
+- 2026-06-17 — `progress-ease.ts` atom: live `getFactoryProgressDifficulty()` from save for economy wiring
+- 2026-06-17 — `gods.ts`: `getGodsProductionSpeedMultiplier` for effective production time
 - 2026-06-15 — Removed legacy localStorage migration (`persistedAtomWithNormalizeAndLegacy`); stable keys + `normalize` only
 - 2026-06-15 — `reconcileManualProduction` in `offline-earning.ts`
 - 2026-06-14 — Dedup notifications map; merged `power-ups.selectors` into `inventory`; effects atom in `gods.ts`

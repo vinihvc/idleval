@@ -1,4 +1,7 @@
 import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
+import { getScaledGodGoldRequired } from "@/game/balance";
+import { applyDifficultyCost } from "@/game/difficulty";
+import { getGodInvokeDifficulty } from "@/game/progress-ease";
 import { D, type GameValue } from "@/utils/decimal";
 
 /**
@@ -9,7 +12,10 @@ import { D, type GameValue } from "@/utils/decimal";
  * getGodGoldRequired(1).toString() // "1e18"
  */
 export const getGodGoldRequired = (index: number): GameValue =>
-  D(GOD_DATA[index].goldRequired);
+  applyDifficultyCost(
+    D(getScaledGodGoldRequired(GOD_DATA[index].goldRequired)),
+    getGodInvokeDifficulty(index)
+  );
 
 /**
  * Returns the cumulative production multiplier from all invoked gods.
@@ -25,6 +31,26 @@ export const getTotalProductionMultiplier = (invoked: GodId[]): GameValue => {
   for (const god of GOD_DATA) {
     if (invoked.includes(god.id)) {
       total = total.times(god.productionMultiplier);
+    }
+  }
+
+  return total;
+};
+
+/**
+ * Returns the cumulative production speed multiplier from all invoked gods.
+ *
+ * @example
+ * getTotalProductionSpeedMultiplier([]) // 1
+ * getTotalProductionSpeedMultiplier(["huangdi"]) // 1.15
+ * getTotalProductionSpeedMultiplier(["huangdi", "dagda"]) // 1.4375
+ */
+export const getTotalProductionSpeedMultiplier = (invoked: GodId[]): number => {
+  let total = 1;
+
+  for (const god of GOD_DATA) {
+    if (invoked.includes(god.id)) {
+      total *= god.productionSpeedMultiplier;
     }
   }
 

@@ -1,7 +1,7 @@
 # src/
 
 > Parent: [AGENTS.md](../AGENTS.md) (Ultracite) · Stack: Vite + React 19 + Jotai + Paraglide + Ark UI  
-> Architecture and recipes: [docs/CONTEXT.md](../docs/CONTEXT.md) · Visual design: [docs/DESIGN.md](../docs/DESIGN.md)
+> Architecture and recipes: [docs/CONTEXT.md](../docs/CONTEXT.md) · Visual design: [docs/DESIGN.md](../docs/DESIGN.md) · **Progression/difficulty:** [docs/PROGRESSION.md](../docs/PROGRESSION.md)
 
 ## Purpose
 
@@ -31,7 +31,7 @@ Application source for Idleval — a Viking idle game with separated layers (con
 
 | Folder | May import | Must not import |
 |--------|------------|-----------------|
-| `content/` | `i18n/localize` | `game/`, `store/`, React |
+| `content/` | `i18n/localize`, `@/config/balance` (power-up effect constants only) | `game/`, `store/`, React |
 | `game/` | `content/`, `utils/`, `store/atoms/settings` | `i18n/`, React |
 | `store/` | `game/`, `content/`, `utils/` | `components/` |
 | `components/` | all above + `hooks/`, `providers/` | inline business logic |

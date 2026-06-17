@@ -1,6 +1,13 @@
-import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
+import { FACTORY_TYPES } from "@/content/factories";
 import type { PowerUpId, PowerUpTier } from "@/content/power-ups";
+import { getScaledFactoryConfig } from "@/game/balance";
 import { isFactoryProductionActive } from "@/game/factories";
+import {
+  advanceCycleBySeconds,
+  isCycleComplete,
+  startCycleTick,
+  syncCycleSeconds,
+} from "@/game/factory-cycle";
 import {
   type ActivePowerUp,
   canActivatePowerUp,
@@ -75,10 +82,11 @@ const createTimedActivePowerUp = (
   };
 };
 
-const advanceFactoryTicksBySeconds = (seconds: number) => {
+const advanceFactoryTicksBySeconds = (advanceSeconds: number) => {
   const factories = store.get(factoriesAtom);
   const ticks = store.get(productionTicksAtom);
   const nextTicks = { ...ticks };
+  const now = Date.now();
 
   for (const factory of FACTORY_TYPES) {
     const tick = ticks[factory];
@@ -89,21 +97,41 @@ const advanceFactoryTicksBySeconds = (seconds: number) => {
       continue;
     }
 
-    let remainingSeconds = tick.seconds - seconds;
+    let advancedTick = advanceCycleBySeconds(tick, advanceSeconds);
 
-    while (remainingSeconds <= 0) {
+    while (isCycleComplete(advancedTick, now)) {
       completeProductionCycle(factory);
-      const effectiveProductionTime =
-        getEffectiveProductionTimeForActivePowerUp(
-          FACTORY_DATA[factory].productionTime
-        );
-      remainingSeconds += effectiveProductionTime;
+
+      const updatedFactory = store.get(factoriesAtom)[factory];
+      const keepsRunning =
+        updatedFactory.isUnlocked && updatedFactory.isAutomated;
+      const productionTime = getEffectiveProductionTimeForActivePowerUp(
+        getScaledFactoryConfig(factory).productionTime
+      );
+
+      if (!keepsRunning) {
+        advancedTick = {
+          ...advancedTick,
+          cycleDurationSec: productionTime,
+          cycleEndsAt: 0,
+          isRunning: false,
+          seconds: productionTime,
+        };
+        break;
+      }
+
+      const overflowSec = Math.max(0, (now - advancedTick.cycleEndsAt) / 1000);
+      advancedTick = startCycleTick(advancedTick, {
+        durationSec: productionTime,
+        now,
+      });
+
+      if (overflowSec > 0) {
+        advancedTick = advanceCycleBySeconds(advancedTick, overflowSec);
+      }
     }
 
-    nextTicks[factory] = {
-      ...tick,
-      seconds: remainingSeconds,
-    };
+    nextTicks[factory] = syncCycleSeconds(advancedTick, now);
   }
 
   store.set(productionTicksAtom, nextTicks);

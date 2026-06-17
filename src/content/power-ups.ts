@@ -1,3 +1,4 @@
+import { GAME_BALANCE } from "@/config/balance";
 import { translate, translateParams } from "@/i18n/localize";
 
 export const POWER_UP_TYPES = [
@@ -22,7 +23,6 @@ export const POWER_UP_DATA: Record<PowerUpId, PowerUpData> = {
   yggdrasilTear: { image: "/images/power-ups/yggdrasil-tear.webp" },
 };
 
-/** Relic altar slots (compact array) + ritual circles (2×5 grid). */
 export const RELIC_SLOT_COUNT = 6;
 export const RITUAL_SLOT_COUNT = 4;
 export const INVENTORY_GRID_SIZE = RELIC_SLOT_COUNT + RITUAL_SLOT_COUNT;
@@ -36,8 +36,14 @@ export const POWER_UP_EFFECTS = {
       epic: { min: 240, max: 360 },
     },
   },
-  hasteRune: { timeMultiplier: 0.6, durationMs: 1_200_000 },
-  lightningShard: { incomeMultiplier: 2, durationMs: 900_000 },
+  hasteRune: {
+    timeMultiplier: GAME_BALANCE.powerUpTimeMultiplier,
+    durationMs: 1_200_000,
+  },
+  lightningShard: {
+    incomeMultiplier: GAME_BALANCE.powerUpIncomeMultiplier,
+    durationMs: 900_000,
+  },
   yggdrasilTear: { advanceSeconds: 1800 },
 } as const;
 
@@ -85,8 +91,9 @@ const getMimirCoinWikiParams = (): Record<string, string> => {
   };
 };
 
-const getPowerUpDescriptionParams = (
-  powerUpId: PowerUpId
+const getPowerUpInterpolationParams = (
+  powerUpId: PowerUpId,
+  options: { includeMimirRollRanges: boolean }
 ): Record<string, string> => {
   switch (powerUpId) {
     case "hasteRune":
@@ -96,7 +103,7 @@ const getPowerUpDescriptionParams = (
     case "yggdrasilTear":
       return getYggdrasilTearParams();
     case "mimirCoin":
-      return {};
+      return options.includeMimirRollRanges ? getMimirCoinWikiParams() : {};
     default: {
       const _exhaustive: never = powerUpId;
       return _exhaustive;
@@ -104,24 +111,17 @@ const getPowerUpDescriptionParams = (
   }
 };
 
+const getPowerUpDescriptionParams = (
+  powerUpId: PowerUpId
+): Record<string, string> =>
+  getPowerUpInterpolationParams(powerUpId, {
+    includeMimirRollRanges: false,
+  });
+
 const getPowerUpWikiMechanicsParams = (
   powerUpId: PowerUpId
-): Record<string, string> => {
-  switch (powerUpId) {
-    case "hasteRune":
-      return getHasteRuneParams();
-    case "lightningShard":
-      return getLightningShardParams();
-    case "yggdrasilTear":
-      return getYggdrasilTearParams();
-    case "mimirCoin":
-      return getMimirCoinWikiParams();
-    default: {
-      const _exhaustive: never = powerUpId;
-      return _exhaustive;
-    }
-  }
-};
+): Record<string, string> =>
+  getPowerUpInterpolationParams(powerUpId, { includeMimirRollRanges: true });
 
 export const getLocalizedPowerUp = (powerUpId: PowerUpId) => ({
   name: translate(`powerup.${powerUpId}.name`),

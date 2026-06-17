@@ -20,7 +20,7 @@ import {
 import {
   clearOfflineSummary,
   type OfflineSummary,
-} from "@/store/offline-earning";
+} from "@/store/atoms/offline-earning";
 import { OfflineEarningActions } from "./offline-earning.actions";
 import { OfflineEarningSummary } from "./offline-earning.summary";
 
@@ -91,5 +91,3 @@ export const OfflineEarningDialog = (props: OfflineEarningDialogProps) => {
     </ResponsiveDialog>
   );
 };
-
-export default OfflineEarningDialog;

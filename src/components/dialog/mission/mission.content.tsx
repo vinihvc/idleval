@@ -1,9 +1,14 @@
-import { useId } from "react";
-import { formatMissionProgressLabel } from "@/components/game/missions/format-mission-progress";
-import { MissionObjectiveLabel } from "@/components/game/missions/mission-objective";
+import React from "react";
+import { formatMissionProgressLabel } from "@/components/missions/format-mission-progress";
+import { MissionObjectiveLabel } from "@/components/missions/mission-objective";
 import type { MissionDefinition } from "@/content/missions";
+import {
+  getScaledMissionObjective,
+  getScaledMissionRewards,
+} from "@/game/missions";
 import type { MissionProgress, MissionSlotStatus } from "@/game/types";
 import { m } from "@/i18n/messages";
+import { useGods } from "@/store/atoms/gods";
 import { MissionRewardItem } from "./mission.reward-item";
 import { MissionProressbar } from "./mission.status";
 
@@ -16,13 +21,21 @@ export interface MissionClaimContentProps {
 export const MissionClaimContent = (props: MissionClaimContentProps) => {
   const { mission, progress, status } = props;
 
-  const rewardsHeadingId = useId();
+  const rewardsHeadingId = React.useId();
+
+  const { count: godsInvoked } = useGods();
+
   const isReady = status === "ready";
-  const progressLabel = formatMissionProgressLabel(mission.objective, progress);
+  const scaledObjective = getScaledMissionObjective(
+    mission.objective,
+    godsInvoked
+  );
+  const scaledRewards = getScaledMissionRewards(mission.rewards, godsInvoked);
+  const progressLabel = formatMissionProgressLabel(scaledObjective, progress);
 
   return (
     <div className="flex flex-col gap-4" data-slot="mission-claim-content">
-      <MissionObjectiveLabel objective={mission.objective} size="dialog" />
+      <MissionObjectiveLabel objective={scaledObjective} size="dialog" />
 
       <div className="space-y-2 text-left">
         <div className="flex items-center justify-between gap-3">
@@ -43,7 +56,7 @@ export const MissionClaimContent = (props: MissionClaimContentProps) => {
           aria-labelledby={rewardsHeadingId}
           className="flex min-w-0 list-none flex-col gap-2 font-number text-xl tabular-nums"
         >
-          {mission.rewards.map((reward) => (
+          {scaledRewards.map((reward) => (
             <MissionRewardItem
               key={`${reward.type}-${JSON.stringify(reward)}`}
               reward={reward}

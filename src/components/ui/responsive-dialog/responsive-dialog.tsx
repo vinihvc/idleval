@@ -1,4 +1,3 @@
-import { useMediaQuery } from "@uidotdev/usehooks";
 import { InfoBox } from "pixelarticons/react/InfoBox";
 import React from "react";
 import {
@@ -27,6 +26,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/cn";
 import { Button } from "../button";
 import {

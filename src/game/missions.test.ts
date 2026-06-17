@@ -1,16 +1,21 @@
 import { assert, describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
 import { FACTORY_TYPES } from "@/content/factories";
 import { getMissionById, MISSION_CATALOG } from "@/content/missions";
 import {
   canClaimMission,
   captureMissionBaselines,
   findNewlyReadyMissionIds,
+  getMissionGodCycleMultiplier,
   getMissionProgress,
   getRenownProductionMultiplier,
+  getScaledMissionObjective,
+  getScaledMissionRewards,
   getVisibleMissionSlots,
   isMissionReadyToClaim,
   meetsMissionRequirements,
   replaceActiveSlotAfterClaim,
+  resetMissionsOnGodInvoke,
   resolveActiveSlotIds,
   summarizeMissionRewards,
 } from "@/game/missions";
@@ -234,9 +239,204 @@ describe("missions", () => {
       },
     ]);
 
-    expect(summary.gold.eq(1000)).toBe(true);
+    expect(summary.gold.eq(1000 * GAME_BALANCE.missionGoldReward)).toBe(true);
     expect(summary.renownPercent).toBe(1.5);
     expect(summary.powerUps).toHaveLength(1);
     expect(getRenownProductionMultiplier(10).eq(1.1)).toBe(true);
+  });
+
+  it("scales mission cycle multiplier by invoked god count", () => {
+    expect(getMissionGodCycleMultiplier(0)).toBe(1);
+    expect(getMissionGodCycleMultiplier(1)).toBe(2);
+    expect(getMissionGodCycleMultiplier(2)).toBe(4);
+  });
+
+  it("scales gold objectives and rewards for the current god cycle", () => {
+    const mission = getMissionById("mission-003");
+    assert(mission);
+
+    const scaledObjective = getScaledMissionObjective(mission.objective, 1);
+    expect(scaledObjective).toMatchObject({
+      type: "earnGold",
+      target: "3000",
+    });
+
+    const scaledRewards = getScaledMissionRewards(mission.rewards, 1);
+    const goldReward = scaledRewards.find((reward) => reward.type === "gold");
+    expect(goldReward).toMatchObject({ type: "gold", amount: "1500" });
+
+    const catalogGold = mission.rewards.find(
+      (reward) => reward.type === "gold"
+    );
+    assert(catalogGold?.type === "gold");
+    const summary = summarizeMissionRewards(mission.rewards, 1);
+    expect(
+      summary.gold.eq(
+        D(catalogGold.amount).times(GAME_BALANCE.missionGoldReward).times(2)
+      )
+    ).toBe(true);
+  });
+
+  it("tracks own-units progress from cycle baseline after prestige", () => {
+    const mission = getMissionById("mission-004");
+    assert(mission);
+    const state = {
+      ...createInitialMissionsState(),
+      ownUnitsBaselines: { grain: 10 },
+    };
+    const snapshot = createSnapshot({
+      gods: { invoked: ["huangdi"] },
+      statistics: {
+        ...createSnapshot().statistics,
+        factories: {
+          ...createSnapshot().statistics.factories,
+          grain: { goldEarned: "0", goldSpent: "0", quantity: 12 },
+        },
+      },
+    });
+
+    const progress = getMissionProgress(
+      mission.objective,
+      snapshot,
+      state,
+      mission.id
+    );
+
+    expect(progress.current).toBe(2);
+    expect(progress.target).toBe(8);
+    expect(progress.ratio).toBe(0.25);
+  });
+
+  it("resets missions on god invoke while capturing own-units baselines", () => {
+    const snapshot = createSnapshot({
+      statistics: {
+        ...createSnapshot().statistics,
+        factories: {
+          ...createSnapshot().statistics.factories,
+          grain: { goldEarned: "0", goldSpent: "0", quantity: 15 },
+        },
+      },
+    });
+    const next = resetMissionsOnGodInvoke(snapshot);
+
+    expect(next.claimedIds).toEqual([]);
+    expect(next.renownPercent).toBe(0);
+    expect(next.readyToClaimIds).toEqual([]);
+    expect(next.ownUnitsBaselines.grain).toBe(15);
+  });
+
+  it("tracks large gold progress with decimal ratio accuracy", () => {
+    const objective = {
+      type: "earnGold" as const,
+      scope: "lifetime" as const,
+      target: "1e18",
+    };
+    const snapshot = createSnapshot({
+      statistics: {
+        ...createSnapshot().statistics,
+        goldEarned: "5e17",
+      },
+    });
+
+    const progress = getMissionProgress(objective, snapshot);
+
+    expect(progress.ratio).toBe(0.5);
+    expect(progress.current).toBe(5e17);
+    expect(progress.target).toBe(1e18);
+
+    const mission001 = getMissionById("mission-001");
+    if (!mission001) {
+      throw new Error("mission-001 should exist");
+    }
+
+    expect(
+      isMissionReadyToClaim(
+        { ...mission001, objective },
+        snapshot,
+        createInitialMissionsState()
+      )
+    ).toBe(false);
+
+    const completeSnapshot = createSnapshot({
+      statistics: {
+        ...createSnapshot().statistics,
+        goldEarned: "1e18",
+      },
+    });
+
+    expect(getMissionProgress(objective, completeSnapshot).ratio).toBe(1);
+  });
+
+  it("tracks gold objectives across run, lifetime, and since-active scopes", () => {
+    const earnRun = {
+      type: "earnGold" as const,
+      scope: "run" as const,
+      target: "100",
+    };
+    const earnLifetime = {
+      type: "earnGold" as const,
+      scope: "lifetime" as const,
+      target: "1000",
+    };
+    const spendSinceActive = {
+      type: "spendGold" as const,
+      scope: "sinceActive" as const,
+      target: "50",
+    };
+    const state = createInitialMissionsState();
+    state.progressBaselines = {
+      "mission-099": {
+        goldEarned: "0",
+        goldSpent: "100",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 0,
+        dailyRewardsClaimed: 0,
+      },
+    };
+    const snapshot = createSnapshot({
+      counters: {
+        ...createInitialMissionCounters(),
+        runGoldEarned: "100",
+        runGoldSpent: "0",
+      },
+      statistics: {
+        ...createSnapshot().statistics,
+        goldEarned: "1000",
+        goldSpent: "150",
+      },
+      walletGold: D("2500"),
+    });
+
+    expect(getMissionProgress(earnRun, snapshot).ratio).toBe(1);
+    expect(getMissionProgress(earnLifetime, snapshot).ratio).toBe(1);
+    expect(
+      getMissionProgress(spendSinceActive, snapshot, state, "mission-099").ratio
+    ).toBe(1);
+    expect(
+      getMissionProgress(
+        { type: "holdGold", scope: "run", target: "2500" },
+        snapshot
+      ).ratio
+    ).toBe(1);
+  });
+
+  it("gates missions until minimum gods are invoked", () => {
+    const mission001 = getMissionById("mission-001");
+    if (!mission001) {
+      throw new Error("mission-001 should exist");
+    }
+
+    const mission = {
+      ...mission001,
+      requires: { minGodsInvoked: 1 },
+    };
+
+    expect(meetsMissionRequirements(mission, createSnapshot())).toBe(false);
+    expect(
+      meetsMissionRequirements(
+        mission,
+        createSnapshot({ gods: { invoked: ["huangdi"] } })
+      )
+    ).toBe(true);
   });
 });

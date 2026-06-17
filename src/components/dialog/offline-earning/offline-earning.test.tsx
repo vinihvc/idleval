@@ -4,7 +4,7 @@ import { OfflineEarningDialog } from "@/components/dialog/offline-earning/offlin
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
 import { DIALOG_IDS, openDialog, toggleDialog } from "@/store/atoms/dialogs";
-import { offlineSummaryAtom } from "@/store/offline-earning";
+import { offlineSummaryAtom } from "@/store/atoms/offline-earning";
 import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
 import { D } from "@/utils/decimal";
@@ -34,19 +34,17 @@ describe("OfflineEarningDialog", () => {
       )
       .toBeGreaterThan(0);
     await expect
-      .poll(
-        () =>
-          document
-            .querySelector('[data-slot="offline-earning-duration"]')
-            ?.textContent?.includes("1h")
+      .poll(() =>
+        document
+          .querySelector('[data-slot="offline-earning-duration"]')
+          ?.textContent?.includes("1h")
       )
       .toBe(true);
     await expect
-      .poll(
-        () =>
-          document
-            .querySelector('[data-slot="offline-earning-gold"]')
-            ?.textContent?.includes("$500")
+      .poll(() =>
+        document
+          .querySelector('[data-slot="offline-earning-gold"]')
+          ?.textContent?.includes("$500")
       )
       .toBe(true);
     await expect

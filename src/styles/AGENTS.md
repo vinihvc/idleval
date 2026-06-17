@@ -26,7 +26,7 @@ Global CSS — theme tokens, fonts, and Tailwind v4 variables.
 ## Patterns
 
 - Single file: `globals.css`
-- Fonts: Jersey 10 (numbers), Almendra (display), Grenze Gotisch (sans)
+- Fonts: Jersey 10 (numbers), Almendra (display), Grenze Gotisch (sans — weights 400/500/600/700 only)
 - Dark mode via `.dark` class on an ancestor
 
 ## Key files

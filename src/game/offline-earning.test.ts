@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
 import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
 import {
   createInitialFactoriesState,
   getFactoryEarnPerCycle,
@@ -86,7 +88,7 @@ describe("offline-earning", () => {
       amount: 2,
     };
 
-    const productionTime = FACTORY_DATA.grain.productionTime;
+    const productionTime = getScaledFactoryConfig("grain").productionTime;
     const cycles = 3;
     const elapsedMs = productionTime * cycles * 1000;
     const lastSeenAt = 0;
@@ -156,7 +158,7 @@ describe("offline-earning", () => {
       amount: 1,
     };
 
-    const productionTime = FACTORY_DATA.grain.productionTime;
+    const productionTime = getScaledFactoryConfig("grain").productionTime;
     const partialElapsedMs = (productionTime + 1) * 1000;
     const partial = computeOfflineEarning(partialElapsedMs, 0, factories, D(1));
     const grainPartial = partial.results.find(
@@ -191,7 +193,7 @@ describe("offline-earning", () => {
       amount: 1,
     };
 
-    const elapsedMs = FACTORY_DATA.grain.productionTime * 1000;
+    const elapsedMs = getScaledFactoryConfig("grain").productionTime * 1000;
     const base = computeOfflineEarning(elapsedMs, 0, factories, D(1));
     const boosted = computeOfflineEarning(elapsedMs, 0, factories, D(3));
 
@@ -225,12 +227,12 @@ describe("offline-earning", () => {
       powerUpId: "lightningShard",
       tier: "rare",
     };
-    const productionTime = FACTORY_DATA.grain.productionTime;
+    const productionTime = getScaledFactoryConfig("grain").productionTime;
     const earnPerCycle = grainEarnPerCycle();
     const buffSec = 5 * 60;
     const normalSec = 15 * 60;
     const expectedGold = earnPerCycle
-      .times(2)
+      .times(GAME_BALANCE.powerUpIncomeMultiplier)
       .times(Math.floor(buffSec / productionTime))
       .plus(earnPerCycle.times(Math.floor(normalSec / productionTime)));
 
@@ -256,10 +258,10 @@ describe("offline-earning", () => {
       powerUpId: "hasteRune",
       tier: "uncommon",
     };
-    const baseProductionTime = FACTORY_DATA.grain.productionTime;
+    const baseProductionTime = getScaledFactoryConfig("grain").productionTime;
     const buffProductionTime = Math.max(
       1,
-      Math.round(baseProductionTime * 0.6)
+      Math.round(baseProductionTime * GAME_BALANCE.powerUpTimeMultiplier)
     );
     const earnPerCycle = grainEarnPerCycle();
     const expectedGold = earnPerCycle

@@ -1,10 +1,6 @@
 import { atom, useAtomValue } from "jotai";
-import {
-  FACTORY_DATA,
-  FACTORY_TYPES,
-  type FactoryType,
-} from "@/content/factories";
-import { getFactoryEarnPerCycle } from "@/game/factories";
+import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
 import {
   clearManualProductionFields,
   reconcileManualCycle,
@@ -18,15 +14,15 @@ import {
 import { store } from "@/providers/store";
 import { completeProductionCycle } from "@/store/atoms/factories.actions";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
-import { getFactory } from "@/store/atoms/factories.selectors";
-import { getGodsProductionMultiplier } from "@/store/atoms/gods";
+import { getTotalEarnPerCycle } from "@/store/atoms/factory-earn";
 import {
-  getActivePowerUp,
-  getPowerUpIncomeMultiplierForEarn,
-} from "@/store/atoms/inventory";
+  getGodsProductionMultiplier,
+  getGodsProductionSpeedMultiplier,
+} from "@/store/atoms/gods";
+import { getActivePowerUp } from "@/store/atoms/inventory";
 import { syncMissionProgress } from "@/store/atoms/missions.actions";
-import { getMissionRenownProductionMultiplier } from "@/store/atoms/missions.selectors";
 import { refreshExpiredPowerUps } from "@/store/atoms/power-ups.actions";
+import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
 import { getLastSeenAt, touchLastSeen } from "@/store/atoms/session";
 import { bulkIncreaseGold } from "@/store/atoms/wallet";
 import { D, type GameValue } from "@/utils/decimal";
@@ -53,18 +49,8 @@ export const clearOfflineSummary = () => {
   store.set(offlineSummaryAtom, null);
 };
 
-const getManualCycleGoldEarned = (factory: FactoryType): GameValue => {
-  const { amount, isUpgraded, productionValue } = getFactory(factory);
-
-  return getFactoryEarnPerCycle({
-    amount,
-    godsProductionMultiplier: getGodsProductionMultiplier(),
-    isUpgraded,
-    productionValue,
-  })
-    .times(getPowerUpIncomeMultiplierForEarn())
-    .times(getMissionRenownProductionMultiplier());
-};
+const getManualCycleGoldEarned = (factory: FactoryType): GameValue =>
+  getTotalEarnPerCycle(factory);
 
 const mergeOfflineCycleProgress = (results: OfflineFactoryResult[]) => {
   if (results.length === 0) {
@@ -111,7 +97,8 @@ export const reconcileManualProduction = (
     if (reconcileResult.kind === "complete") {
       const goldEarned = getManualCycleGoldEarned(factory);
       const durationSec =
-        state.productionDurationSec ?? FACTORY_DATA[factory].productionTime;
+        state.productionDurationSec ??
+        getScaledFactoryConfig(factory).productionTime;
 
       completeProductionCycle(factory);
 
@@ -155,7 +142,11 @@ export const applyOfflineEarning = (
     lastSeenAt,
     factories,
     getGodsProductionMultiplier(),
-    getActivePowerUp()
+    getActivePowerUp(),
+    {
+      factoryDifficulty: getFactoryProgressDifficulty(),
+      godsSpeedMultiplier: getGodsProductionSpeedMultiplier(),
+    }
   );
 
   if (!meetsMinimumOfflineDuration(computed.elapsedMs)) {

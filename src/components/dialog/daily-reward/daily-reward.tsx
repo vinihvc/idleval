@@ -55,5 +55,3 @@ export const DailyRewardDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default DailyRewardDialog;

@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { FACTORY_DATA } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
 import { store } from "@/providers/store";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
 import { inventoryAtom } from "@/store/atoms/inventory";
-import { getLastSeenAt, sessionAtom } from "@/store/atoms/session";
-import { getGold } from "@/store/atoms/wallet";
 import {
   applyOfflineEarning,
   offlineCycleProgressAtom,
   offlineSummaryAtom,
   reconcileManualProduction,
-} from "@/store/offline-earning";
+} from "@/store/atoms/offline-earning";
+import { getLastSeenAt, sessionAtom } from "@/store/atoms/session";
+import { getGold } from "@/store/atoms/wallet";
 import { resetGame } from "@/store/reset";
 import { seedFactory } from "@/store/test-utils";
 import { D } from "@/utils/decimal";
@@ -80,7 +80,7 @@ describe("applyOfflineEarning", () => {
   });
 
   it("completes manual production offline and includes gold in summary", () => {
-    const productionTime = FACTORY_DATA.wine.productionTime;
+    const productionTime = getScaledFactoryConfig("wine").productionTime;
     const now = 120_000;
     const lastSeenAt = 0;
     const startedAt = now - productionTime * 1000;
@@ -192,7 +192,7 @@ describe("reconcileManualProduction", () => {
   });
 
   it("syncs partial manual progress without completing the cycle", () => {
-    const productionTime = FACTORY_DATA.reliquary.productionTime;
+    const productionTime = getScaledFactoryConfig("reliquary").productionTime;
     const now = 50_000;
     const startedAt = now - 30_000;
 
@@ -215,7 +215,7 @@ describe("reconcileManualProduction", () => {
   });
 
   it("completes manual cycle and credits gold before offline threshold", () => {
-    const productionTime = FACTORY_DATA.grain.productionTime;
+    const productionTime = getScaledFactoryConfig("grain").productionTime;
     const now = 10_000;
     const startedAt = now - productionTime * 1000;
 

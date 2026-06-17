@@ -1,11 +1,13 @@
-import Decimal from "break_infinity.js";
+import { GAME_BALANCE } from "@/config/balance";
+import { getScaledBaseBuyCost } from "@/game/balance";
+import { applyDifficultyCost, getGameDifficulty } from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 
 export const ECONOMY = {
-  unitCostMultiplier: 1.15,
-  managerBaseFactor: 220,
-  upgradeBaseFactor: 1000,
-  upgradeProductionMultiplier: 2,
+  unitCostMultiplier: GAME_BALANCE.unitCostGrowth,
+  managerBaseFactor: GAME_BALANCE.managerCostFactor,
+  upgradeBaseFactor: GAME_BALANCE.upgradeCostFactor,
+  upgradeProductionMultiplier: GAME_BALANCE.upgradeProductionMultiplier,
 } as const;
 
 const UNIT_COST_RATE = D(ECONOMY.unitCostMultiplier);
@@ -18,8 +20,18 @@ const UNIT_COST_RATE = D(ECONOMY.unitCostMultiplier);
  * unitCost(10, 0).toNumber() // 10
  * unitCost(10, 1).toNumber() // 11.5
  */
-export const unitCost = (baseBuyCost: number, owned: number): GameValue =>
-  D(baseBuyCost).times(Decimal.pow(UNIT_COST_RATE, owned));
+export const unitCost = (
+  baseBuyCost: number,
+  owned: number,
+  difficulty: number = getGameDifficulty()
+): GameValue => {
+  const scaledBase = getScaledBaseBuyCost(baseBuyCost);
+
+  return applyDifficultyCost(
+    D(scaledBase).times(UNIT_COST_RATE.pow(owned)),
+    difficulty
+  );
+};
 
 /**
  * Total cost to buy `quantity` units starting from `owned` units.
@@ -31,18 +43,21 @@ export const unitCost = (baseBuyCost: number, owned: number): GameValue =>
 export const bulkBuyCost = (
   baseBuyCost: number,
   owned: number,
-  quantity: number
+  quantity: number,
+  difficulty: number = getGameDifficulty()
 ): GameValue => {
   if (quantity <= 0) {
     return D(0);
   }
 
-  const firstUnitCost = D(baseBuyCost).times(
-    Decimal.pow(UNIT_COST_RATE, owned)
-  );
-  const growth = Decimal.pow(UNIT_COST_RATE, quantity).minus(1);
+  const scaledBase = getScaledBaseBuyCost(baseBuyCost);
+  const firstUnitCost = D(scaledBase).times(UNIT_COST_RATE.pow(owned));
+  const growth = UNIT_COST_RATE.pow(quantity).minus(1);
 
-  return firstUnitCost.times(growth).div(UNIT_COST_RATE.minus(1)).floor();
+  return applyDifficultyCost(
+    firstUnitCost.times(growth).div(UNIT_COST_RATE.minus(1)).floor(),
+    difficulty
+  );
 };
 
 /**
@@ -56,21 +71,24 @@ export const bulkBuyCost = (
 export const maxAffordable = (
   baseBuyCost: number,
   owned: number,
-  gold: GameValue
+  gold: GameValue,
+  difficulty: number = getGameDifficulty()
 ): number => {
   if (gold.lte(0)) {
     return 0;
   }
 
-  const firstUnitCost = unitCost(baseBuyCost, owned);
+  const firstUnitCost = unitCost(baseBuyCost, owned, difficulty);
 
   if (gold.lt(firstUnitCost)) {
     return 0;
   }
 
-  const unitCostSumFactor = D(baseBuyCost)
-    .times(Decimal.pow(UNIT_COST_RATE, owned))
-    .div(UNIT_COST_RATE.minus(1));
+  const scaledBase = getScaledBaseBuyCost(baseBuyCost);
+  const unitCostSumFactor = applyDifficultyCost(
+    D(scaledBase).times(UNIT_COST_RATE.pow(owned)).div(UNIT_COST_RATE.minus(1)),
+    difficulty
+  );
 
   const affordable = gold
     .div(unitCostSumFactor)
@@ -86,17 +104,31 @@ export const maxAffordable = (
  * @example
  * managerCost(75, 0).toNumber() // 16500
  */
-export const managerCost = (baseBuyCost: number, _owned: number): GameValue =>
-  D(baseBuyCost).times(ECONOMY.managerBaseFactor);
+export const managerCost = (
+  baseBuyCost: number,
+  _owned: number,
+  difficulty: number = getGameDifficulty()
+): GameValue =>
+  applyDifficultyCost(
+    D(getScaledBaseBuyCost(baseBuyCost)).times(ECONOMY.managerBaseFactor),
+    difficulty
+  );
 
 /**
- * Upgrade cost is a fixed milestone per factory tier (base × 1000).
+ * Upgrade cost is a fixed milestone per factory tier (base × upgrade factor).
  *
  * @example
- * upgradeCost(75, 0).toNumber() // 75000
+ * upgradeCost(75, 0).toNumber() // 54400 at mild balance
  */
-export const upgradeCost = (baseBuyCost: number, _owned: number): GameValue =>
-  D(baseBuyCost).times(ECONOMY.upgradeBaseFactor);
+export const upgradeCost = (
+  baseBuyCost: number,
+  _owned: number,
+  difficulty: number = getGameDifficulty()
+): GameValue =>
+  applyDifficultyCost(
+    D(getScaledBaseBuyCost(baseBuyCost)).times(ECONOMY.upgradeBaseFactor),
+    difficulty
+  );
 
 /**
  * Whether the player has enough gold to pay a given price.

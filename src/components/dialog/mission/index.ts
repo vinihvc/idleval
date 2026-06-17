@@ -1,1 +1,1 @@
-export * from "./mission";
+export { MissionDialog } from "./mission";

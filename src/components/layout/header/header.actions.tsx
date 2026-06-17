@@ -14,12 +14,16 @@ import { DIALOG_IDS, toggleDialog } from "@/store/atoms/dialogs";
 import { useNotifications } from "@/store/atoms/notifications";
 import { AmountToBuy } from "./header.amount";
 
-const LazySettingsDialog = React.lazy(
-  () => import("@/components/dialog/settings/settings")
+const LazySettingsDialog = React.lazy(() =>
+  import("@/components/dialog/settings/settings").then((module) => ({
+    default: module.SettingsDialog,
+  }))
 );
 
-const LazyDailyRewardDialog = React.lazy(
-  () => import("@/components/dialog/daily-reward/daily-reward")
+const LazyDailyRewardDialog = React.lazy(() =>
+  import("@/components/dialog/daily-reward/daily-reward").then((module) => ({
+    default: module.DailyRewardDialog,
+  }))
 );
 
 export const HeaderActions = () => {

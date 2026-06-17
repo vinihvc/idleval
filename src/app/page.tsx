@@ -1,6 +1,4 @@
 import React from "react";
-import { ActionTools } from "@/components/debug/action-tools";
-import { MediaQuery } from "@/components/debug/media-query";
 import { FallingLeaves } from "@/components/effects/falling-leaves";
 import { FactoryGrid } from "@/components/game/factory-grid";
 import { Missions } from "@/components/game/missions/missions";
@@ -18,8 +16,18 @@ import { m } from "@/i18n/messages";
 import { Providers } from "./providers";
 import { useDisableContextMenu } from "./use-context-menu";
 
-const LazyWelcomeDialog = React.lazy(
-  () => import("@/components/dialog/welcome/welcome")
+const LazyDevTools = import.meta.env.DEV
+  ? React.lazy(() =>
+      import("@/components/debug/dev-tools").then((module) => ({
+        default: module.DevTools,
+      }))
+    )
+  : null;
+
+const LazyWelcomeDialog = React.lazy(() =>
+  import("@/components/dialog/welcome/welcome").then((module) => ({
+    default: module.WelcomeDialog,
+  }))
 );
 
 export const HomePage = () => {
@@ -62,9 +70,11 @@ export const HomePage = () => {
 
       <GameSectionDialogs />
 
-      <ActionTools />
-
-      <MediaQuery />
+      {LazyDevTools ? (
+        <React.Suspense fallback={null}>
+          <LazyDevTools />
+        </React.Suspense>
+      ) : null}
     </Providers>
   );
 };

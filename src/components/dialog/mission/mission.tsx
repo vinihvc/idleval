@@ -1,3 +1,4 @@
+import type React from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -25,7 +26,7 @@ export interface MissionDialogProps
   status: MissionSlotStatus;
 }
 
-const MissionDialog = (props: MissionDialogProps) => {
+export const MissionDialog = (props: MissionDialogProps) => {
   const {
     children,
     mission,
@@ -89,5 +90,3 @@ const MissionDialog = (props: MissionDialogProps) => {
     </ResponsiveDialog>
   );
 };
-
-export default MissionDialog;

@@ -1,5 +1,5 @@
 import type React from "react";
-import MissionClaimDialog from "@/components/dialog/mission/mission";
+import { MissionDialog } from "@/components/dialog/mission/mission";
 import { getMissionById } from "@/content/missions";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
 import { m } from "@/i18n/messages";
@@ -32,7 +32,7 @@ export const Missions = (props: React.ComponentProps<"div">) => {
 
           return (
             <div className="min-w-0" key={slot.id}>
-              <MissionClaimDialog
+              <MissionDialog
                 mission={mission}
                 progress={slot.progress}
                 status={slot.status}
@@ -42,7 +42,7 @@ export const Missions = (props: React.ComponentProps<"div">) => {
                   onClaim={() => announce(m["ui.a11y.missionClaimed"]())}
                   slot={slot}
                 />
-              </MissionClaimDialog>
+              </MissionDialog>
             </div>
           );
         })}

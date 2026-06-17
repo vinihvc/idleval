@@ -38,6 +38,9 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 ## Fixed decisions
 
 - **Decimals:** `GameValue` / `D` from `@/utils/decimal` — never `number` for scaled gold.
+- **Difficulty:** `GAME_DIFFICULTY` in `@/config/game.ts` (`1` = baseline; `>1` easier, `<1` harder). Applied in `game/difficulty.ts` to costs and income — not persisted, not player-facing.
+- **Balance:** `GAME_BALANCE` in `@/config/balance.ts` tunes production, costs, unlocks, gods, missions, and power-ups. Runtime values use `game/balance.ts` helpers; `content/` catalogs stay as design baselines.
+- **Progress ease:** `PROGRESS_EASE` in `@/config/progress-ease.ts` — early factory boost until 1st god; god invoke cost curve by index; see `game/progress-ease.ts`. Document pacing in [PROGRESSION.md](./PROGRESSION.md) whenever these knobs change.
 - **Persistence:** `persistedAtom` / `persistedAtomWithNormalize` from `store/storage.ts`; stable keys in `@/config/local-storage` (`LOCAL_STORAGE`); evolve schema via `normalize` on read — never version-bump keys.
 - **Mutations:** imperative functions (`store.get` / `store.set`), not write-only atoms.
 - **Single-consumer hooks:** colocate in component or provider folder (`factory-card/use-*.ts`, `providers/offline-earning/`).
@@ -54,7 +57,7 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 2. **`game/`** — pure functions + `*.test.ts` (Vitest node); shapes in `types.ts` if persisted.
 3. **`store/atoms/`** — `{domain}.atom.ts`, `.actions.ts`, `.selectors.ts`, barrel `{domain}.ts`; key in `LOCAL_STORAGE`.
 4. **`components/`** or **`providers/`** — UI/effects; browser tests with `renderWithProviders`; follow [DESIGN.md](./DESIGN.md).
-5. **Docs** — update `AGENTS.md` in each touched folder (Evolution section, max 5 entries).
+5. **Docs** — update `AGENTS.md` in each touched folder (Evolution section, max 5 entries); update [PROGRESSION.md](./PROGRESSION.md) when pacing/difficulty tuning changes.
 
 Verify: `pnpm test` on touched files, `pnpm i18n:check` for new keys, `pnpm dlx ultracite fix`.
 
@@ -112,9 +115,8 @@ See [src/components/AGENTS.md](../src/components/AGENTS.md) and [DESIGN.md](./DE
 Global effects live in **`providers/offline-earning/`** (not root `hooks/`):
 
 - `use-offline-earning.ts` — session heartbeat, tab visibility, apply offline
-- `use-production-scheduler.ts` — production tick
+- `use-production-scheduler.ts` — production tick; calls `refreshExpiredPowerUps` each interval
 - `production-scheduler-sync.ts` — testable pure logic
-- `use-power-up-bootstrap.ts`, `use-notification-sync.ts`
 
 Pure rules in `game/offline-earning.ts`; apply in `store/offline-earning.ts`.
 

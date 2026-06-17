@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { formatMissionProgressLabel } from "@/components/game/missions/format-mission-progress";
 import type { MissionObjective } from "@/content/missions";
 import type { MissionProgress } from "@/game/types";
+import { formatMissionProgressLabel } from "./format-mission-progress";
 
 const progress = (
   current: number,

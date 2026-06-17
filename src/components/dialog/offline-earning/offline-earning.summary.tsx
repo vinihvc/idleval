@@ -3,7 +3,7 @@ import { boxBorder } from "@/components/ui/box-border";
 import { NumberText } from "@/components/ui/number-text";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
-import type { OfflineSummary } from "@/store/offline-earning";
+import type { OfflineSummary } from "@/store/atoms/offline-earning";
 import {
   amountFormatterWithDolarSign,
   formatElapsedDuration,

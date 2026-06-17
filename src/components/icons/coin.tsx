@@ -1,12 +1,12 @@
 import { Image } from "@unpic/react";
-import type { HTMLAttributes } from "react";
+import type React from "react";
 import { cn } from "@/lib/cn";
 
 export const COIN_IMAGE_SRC = "/images/icons/coin.webp" as const;
 
 const DEFAULT_INTRINSIC_SIZE = 40;
 
-export interface CoinProps extends HTMLAttributes<HTMLImageElement> {
+export interface CoinProps extends React.HTMLAttributes<HTMLImageElement> {
   intrinsicSize?: number;
 }
 

@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useMemo } from "react";
+import React from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { getHasClaimableMission } from "@/game/missions";
 import { store } from "@/providers/store";
@@ -139,7 +139,7 @@ export const useNotificationActiveMap = (): NotificationActiveMap => {
   const missionsState = useMissionsState();
   const missionsActive = getHasClaimableMission(missionsState);
 
-  return useMemo(
+  return React.useMemo(
     () =>
       buildNotificationActiveMap({
         upgrades: upgradesActive,
@@ -164,7 +164,7 @@ export const useNotifications = (): NotificationActiveMap => {
   const activeByKey = useNotificationActiveMap();
   const { dismissed } = useNotificationsState();
 
-  return useMemo(
+  return React.useMemo(
     () => applyNotificationDismissals(activeByKey, dismissed),
     [activeByKey, dismissed]
   );

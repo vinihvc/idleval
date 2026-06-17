@@ -49,5 +49,3 @@ export const InventoryDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default InventoryDialog;

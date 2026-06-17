@@ -1,5 +1,9 @@
 import type React from "react";
-import { Progress, ProgressTrack } from "@/components/ui/progress";
+import {
+  Progress,
+  ProgressRange,
+  ProgressTrack,
+} from "@/components/ui/progress";
 import { borderedText } from "@/components/ui/text-border";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
@@ -15,22 +19,13 @@ export const FactoryCardProgress = (
 ) => {
   const { className, ...rest } = props;
 
-  const {
-    factoryType,
-    cycleKey,
-    seconds,
-    productionTime,
-    isRunning,
-    isUnlocked,
-    isAutomated,
-  } = useFactoryCard();
+  const { factoryType, progress, productionTime, remainingSec, isAutomated } =
+    useFactoryCard();
 
   const totalEarn = useTotalToEarnAfterProduce(factoryType);
-  const isAnimating = isUnlocked && isRunning;
-  const remainingTime = isAnimating ? seconds : productionTime;
-  const animationDuration = `${productionTime}s`;
+  const progressValue = progress * productionTime;
   const ariaValueText = m["ui.factoryCard.remainingEarns"]({
-    "0": timeFormatter(remainingTime),
+    "0": timeFormatter(remainingSec),
     "1": amountFormatterWithDolarSign(totalEarn),
   });
 
@@ -45,21 +40,16 @@ export const FactoryCardProgress = (
       data-slot="factory-card-progress"
       max={productionTime}
       min={0}
-      value={productionTime - seconds}
+      value={progressValue}
       {...rest}
     >
       <ProgressTrack
         className="absolute inset-0 min-h-0 overflow-hidden bg-transparent"
         data-slot="factory-card-progress-track"
       >
-        <div
-          aria-hidden
-          className={cn(
-            "h-full w-0 bg-primary",
-            isAnimating && "animate-progress-fill"
-          )}
-          key={cycleKey}
-          style={{ animationDuration }}
+        <ProgressRange
+          className="transition-none motion-reduce:transition-none!"
+          data-slot="factory-card-progress-range"
         />
       </ProgressTrack>
 
@@ -79,12 +69,12 @@ export const FactoryCardProgress = (
             borderedText({ variant: "cream" })
           )}
         >
-          {timeFormatter(remainingTime)}
+          {timeFormatter(remainingSec)}
         </span>
         <span
           className={cn(
-            "min-w-0 text-right font-number tabular-nums",
-            borderedText({ variant: "cream", truncateSafe: true })
+            "min-w-0 shrink text-right font-number tabular-nums",
+            borderedText({ variant: "cream" })
           )}
         >
           {amountFormatterWithDolarSign(totalEarn)}

@@ -1,41 +1,5 @@
 import { tv } from "tailwind-variants";
 
-const clipSafePadding = [
-  {
-    clipSafe: true,
-    size: "sm",
-    class: "p-0.5",
-  },
-  {
-    clipSafe: true,
-    size: "md",
-    class: "p-[3px]",
-  },
-  {
-    clipSafe: true,
-    size: "lg",
-    class: "p-1",
-  },
-  {
-    truncateSafe: true,
-    size: "sm",
-    class: "p-0.5",
-  },
-  {
-    truncateSafe: true,
-    size: "md",
-    class: "p-[3px]",
-  },
-  {
-    truncateSafe: true,
-    size: "lg",
-    class: "p-1",
-  },
-] as const;
-
-/** Extra inset when truncating text that inherits a parent lg stroke (e.g. Button). */
-export const borderedTextStrokeInset = "px-1" as const;
-
 export const borderedText = tv({
   base: "[paint-order:stroke_fill]",
   variants: {
@@ -60,20 +24,9 @@ export const borderedText = tv({
       md: ["[-webkit-text-stroke-width:3px]"],
       lg: ["[-webkit-text-stroke-width:4px]"],
     },
-    clipSafe: {
-      true: "",
-      false: "",
-    },
-    truncateSafe: {
-      true: "min-w-0 truncate",
-      false: "",
-    },
   },
-  compoundVariants: [...clipSafePadding],
   defaultVariants: {
     variant: "brown",
     size: "lg",
-    clipSafe: false,
-    truncateSafe: false,
   },
 });

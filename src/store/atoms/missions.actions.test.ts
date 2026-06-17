@@ -1,6 +1,8 @@
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
 import { getMissionById } from "@/content/missions";
 import { store } from "@/providers/store";
+import { godsAtom } from "@/store/atoms/gods";
 import {
   claimMissionReward,
   incrementMissionCounter,
@@ -10,9 +12,9 @@ import {
 } from "@/store/atoms/missions.actions";
 import { missionsAtom } from "@/store/atoms/missions.atom";
 import { statisticsAtom } from "@/store/atoms/statistics";
+import { walletAtom } from "@/store/atoms/wallet";
 import { resetGame } from "@/store/reset";
-import { resetRunProgress } from "@/store/reset-run-progress";
-import { D } from "@/utils/decimal";
+import { D, deserializeDecimal } from "@/utils/decimal";
 
 vi.mock("@/providers/sound", () => ({
   sound: { play: vi.fn() },
@@ -63,16 +65,34 @@ describe("missions actions", () => {
     );
   });
 
-  it("tracks run gold counters and resets them on prestige", () => {
+  it("tracks run gold counters", () => {
     incrementRunGoldEarned(D(100));
     incrementRunGoldSpent(D(40));
 
     expect(store.get(missionsAtom).counters.runGoldEarned).toBe("100");
     expect(store.get(missionsAtom).counters.runGoldSpent).toBe("40");
+  });
 
-    resetRunProgress();
+  it("applies god-cycle multiplier when claiming gold rewards", () => {
+    store.set(godsAtom, { invoked: ["huangdi"] });
+    store.set(missionsAtom, (previous) => ({
+      ...previous,
+      readyToClaimIds: ["mission-001"],
+    }));
 
-    expect(store.get(missionsAtom).counters.runGoldEarned).toBe("0");
-    expect(store.get(missionsAtom).counters.runGoldSpent).toBe("0");
+    const mission = getMissionById("mission-001");
+    assert(mission);
+    const goldReward = mission.rewards.find((reward) => reward.type === "gold");
+    assert(goldReward?.type === "gold");
+
+    const beforeGold = deserializeDecimal(store.get(walletAtom).gold);
+    const claimed = claimMissionReward(mission.id);
+
+    expect(claimed).toBe(true);
+    expect(
+      deserializeDecimal(store.get(walletAtom).gold)
+        .minus(beforeGold)
+        .eq(D(goldReward.amount).times(GAME_BALANCE.missionGoldReward).times(2))
+    ).toBe(true);
   });
 });

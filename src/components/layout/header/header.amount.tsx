@@ -9,13 +9,12 @@ import {
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import {
+  type PurchaseModeValue,
   toggleAmountToBuy,
   usePurchaseMode,
 } from "@/store/atoms/purchase-mode";
 
-const getPurchaseLabel = (
-  value: ReturnType<typeof usePurchaseMode>["value"]
-): string => {
+const getPurchaseLabel = (value: PurchaseModeValue): string => {
   if (value === 1) {
     return m["purchase.mode.1"]();
   }
@@ -31,14 +30,22 @@ const getPurchaseLabel = (
   return m["purchase.mode.max"]();
 };
 
-export const AmountToBuy = () => {
-  const amount = usePurchaseMode();
-
-  if (!amount) {
-    return null;
+const getPurchaseSymbol = (value: PurchaseModeValue): string => {
+  if (value === 1) {
+    return "x";
   }
 
-  const label = getPurchaseLabel(amount.value);
+  if (value === 10 || value === 50) {
+    return "%";
+  }
+
+  return "";
+};
+
+export const AmountToBuy = () => {
+  const value = usePurchaseMode();
+  const label = getPurchaseLabel(value);
+  const symbol = getPurchaseSymbol(value);
 
   return (
     <Tooltip>
@@ -56,7 +63,7 @@ export const AmountToBuy = () => {
                 borderedText({ variant: "default" })
               )}
             >
-              {`${amount.value}${amount.symbol}`}
+              {`${value}${symbol}`}
             </NumberText>
           </span>
 

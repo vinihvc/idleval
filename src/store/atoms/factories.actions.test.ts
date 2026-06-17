@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FACTORY_DATA } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
 import {
@@ -61,7 +61,9 @@ describe("factories.actions", () => {
 
     expect(grain.isProducing).toBe(true);
     expect(grain.productionStartedAt).toBeGreaterThanOrEqual(before);
-    expect(grain.productionDurationSec).toBe(FACTORY_DATA.grain.productionTime);
+    expect(grain.productionDurationSec).toBe(
+      getScaledFactoryConfig("grain").productionTime
+    );
   });
 
   it("startProducing is blocked for automated factories", () => {
@@ -77,7 +79,7 @@ describe("factories.actions", () => {
       isProducing: true,
       amount: 2,
       productionStartedAt: 0,
-      productionDurationSec: FACTORY_DATA.grain.productionTime,
+      productionDurationSec: getScaledFactoryConfig("grain").productionTime,
     });
     const goldBefore = getGold();
 
@@ -105,19 +107,19 @@ describe("factories.actions", () => {
   });
 
   it("unlockFactory unlocks sealed factory and sets amount to 1", () => {
-    seedGold(FACTORY_DATA.wine.unlockPrice);
-    const unlockPrice = FACTORY_DATA.wine.unlockPrice;
+    const unlockPrice = getFactory("wine").unlockPrice;
+    seedGold(unlockPrice);
 
     unlockFactory("wine");
 
+    const spent = deserializeDecimal(
+      store.get(statisticsAtom).factories.wine.goldSpent
+    );
+
     expect(store.get(factoriesAtom).wine.isUnlocked).toBe(true);
     expect(store.get(factoriesAtom).wine.amount).toBe(1);
-    expect(getGold().toNumber()).toBe(0);
-    expect(
-      deserializeDecimal(store.get(statisticsAtom).factories.wine.goldSpent).eq(
-        D(unlockPrice)
-      )
-    ).toBe(true);
+    expect(getGold().eq(D(0))).toBe(true);
+    expect(spent.minus(unlockPrice).eq(D(0))).toBe(true);
   });
 
   it("autoFactory appoints manager when affordable", () => {

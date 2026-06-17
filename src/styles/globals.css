@@ -1,6 +1,9 @@
 @import "@fontsource/jersey-10/latin.css";
 @import "@fontsource/almendra/latin.css";
-@import "@fontsource/grenze-gotisch/latin.css";
+@import "@fontsource/grenze-gotisch/latin-400.css";
+@import "@fontsource/grenze-gotisch/latin-500.css";
+@import "@fontsource/grenze-gotisch/latin-600.css";
+@import "@fontsource/grenze-gotisch/latin-700.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./hitbox.css";

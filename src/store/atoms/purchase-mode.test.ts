@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { getScaledBaseBuyCost } from "@/game/balance";
+import { getPurchaseTotalCost } from "@/game/purchases";
 import { store } from "@/providers/store";
+import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
 import { resetGame } from "@/store/reset";
 import { seedGold } from "@/store/test-utils";
 import { D } from "@/utils/decimal";
@@ -33,10 +36,18 @@ describe("purchase-mode", () => {
   });
 
   it("computePurchaseTotals returns affordable count and total cost", () => {
-    const totals = computePurchaseTotals(1, D(1000), 0, 75);
+    const baseBuyCost = getScaledBaseBuyCost(75);
+    const factoryDifficulty = getFactoryProgressDifficulty();
+    const totals = computePurchaseTotals(1, D(1000), 0, baseBuyCost);
+    const expectedTotal = getPurchaseTotalCost(
+      baseBuyCost,
+      0,
+      totals.totalCanBuy,
+      factoryDifficulty
+    );
 
     expect(totals.totalCanBuy).toBe(1);
-    expect(totals.totalToPay.toNumber()).toBe(75);
+    expect(totals.totalToPay.toNumber()).toBe(expectedTotal.toNumber());
   });
 
   it("totalCanBuyByAmount and totalToPayByAmount use current wallet and factory", () => {

@@ -1,6 +1,5 @@
 "use client";
 
-import { useMediaQuery } from "@uidotdev/usehooks";
 import React from "react";
 import {
   ToggleTooltip,
@@ -14,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface ResponsiveTooltipProps extends React.PropsWithChildren {
   onOpenChange?: (open: boolean) => void;

@@ -32,6 +32,9 @@ Shared React hooks used by multiple modules. Hooks with a single consumer live n
 | `use-install-prompt.ts` | PWA install prompt + iOS Safari instructions (`main.tsx` + settings) |
 | `use-hold-press.ts` | Hold-to-confirm input (`hold-button`, domain cards) |
 | `use-live-announcer.tsx` | Screen-reader claim/purchase announcements (multiple dialogs) |
+| `use-media-query.ts` | `matchMedia` wrapper for responsive dialog/tooltip |
+| `use-visibility-change.ts` | Document visibility for offline earning resume |
+| `use-local-storage.ts` | JSON `localStorage` state with cross-tab sync |
 
 ## Neighbors
 
@@ -40,6 +43,7 @@ Shared React hooks used by multiple modules. Hooks with a single consumer live n
 
 ## Evolution
 
+- 2026-06-17 — Replaced `@uidotdev/usehooks` with local `use-media-query`, `use-visibility-change`, `use-local-storage`
 - 2026-06-14 — Single-consumer hooks colocated with components, `providers/offline-earning/`, and `app/`
 - 2026-06-14 — `use-install-prompt` adds iOS Safari install instructions and test reset helpers
 - 2026-06-08 — Renamed offline modules to singular `use-offline-earning` (now under `providers/offline-earning/`)

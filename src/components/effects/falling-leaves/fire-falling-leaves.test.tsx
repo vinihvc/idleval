@@ -31,10 +31,10 @@ describe("fireFallingLeaves", () => {
     vi.useRealTimers();
   });
 
-  test("spawns continuous top-down rain without burst physics", () => {
+  test("spawns continuous top-down rain without burst physics", async () => {
     fireFallingLeaves("#f8c808");
 
-    expect(confettiMock).toHaveBeenCalledTimes(1);
+    await expect.poll(() => confettiMock.mock.calls.length).toBe(1);
 
     vi.advanceTimersByTime(CONFETTI_RAIN_DURATION_MS);
 
@@ -66,8 +66,10 @@ describe("fireFallingLeaves", () => {
     }
   });
 
-  test("stops spawning after the rain duration", () => {
+  test("stops spawning after the rain duration", async () => {
     fireFallingLeaves("#f8c808");
+
+    await expect.poll(() => confettiMock.mock.calls.length).toBeGreaterThan(0);
 
     vi.advanceTimersByTime(CONFETTI_RAIN_DURATION_MS);
     const spawnCount = confettiMock.mock.calls.length;

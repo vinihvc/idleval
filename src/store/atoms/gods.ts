@@ -1,14 +1,18 @@
 import { atom, useAtomValue } from "jotai";
-import { useMemo } from "react";
+import React from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { GOD_DATA, type GodId } from "@/content/gods";
 import {
   canInvokeGodAtIndex,
   getTotalProductionMultiplier,
+  getTotalProductionSpeedMultiplier,
   hasInvokableGod,
 } from "@/game/gods";
+import { resetMissionsOnGodInvoke } from "@/game/missions";
 import { store } from "@/providers/store";
 import { syncMissionProgress } from "@/store/atoms/missions.actions";
+import { missionsAtom } from "@/store/atoms/missions.atom";
+import { buildMissionGameSnapshot } from "@/store/atoms/missions.selectors";
 import { resetRunProgress } from "@/store/reset-run-progress";
 import { persistedAtom } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
@@ -57,10 +61,19 @@ export const getInvokedGods = (): GodId[] => store.get(godsAtom).invoked;
 export const getGodsProductionMultiplier = (): GameValue =>
   getTotalProductionMultiplier(getInvokedGods());
 
+export const getGodsProductionSpeedMultiplier = (): number =>
+  getTotalProductionSpeedMultiplier(getInvokedGods());
+
 export const useGodsProductionMultiplier = (): GameValue => {
   const { invoked } = useGods();
 
   return getTotalProductionMultiplier(invoked);
+};
+
+export const useGodsProductionSpeedMultiplier = (): number => {
+  const { invoked } = useGods();
+
+  return getTotalProductionSpeedMultiplier(invoked);
 };
 
 export const canInvokeGod = (): boolean =>
@@ -70,7 +83,7 @@ export const useCanInvokeGod = (): boolean => {
   const { gold } = useWallet();
   const { invoked } = useGods();
 
-  return useMemo(() => hasInvokableGod(invoked, gold), [gold, invoked]);
+  return React.useMemo(() => hasInvokableGod(invoked, gold), [gold, invoked]);
 };
 
 export const invokeGod = (godIndex: number): boolean => {
@@ -98,6 +111,10 @@ export const invokeGod = (godIndex: number): boolean => {
     });
 
     resetRunProgress();
+    store.set(
+      missionsAtom,
+      resetMissionsOnGodInvoke(buildMissionGameSnapshot())
+    );
     syncMissionProgress();
 
     return true;

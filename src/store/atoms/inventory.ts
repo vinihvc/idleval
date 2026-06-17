@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useMemo } from "react";
+import React from "react";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import {
   type ActivePowerUp,
@@ -11,6 +11,7 @@ import {
   isTimedPowerUpActive,
 } from "@/game/power-ups";
 import { store } from "@/providers/store";
+import { getGodsProductionSpeedMultiplier } from "@/store/atoms/gods";
 import { persistedAtomWithNormalize } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 
@@ -102,7 +103,12 @@ export const getEffectiveProductionTimeForActivePowerUp = (
   baseProductionTime: number,
   now = Date.now()
 ): number =>
-  getEffectiveProductionTime(baseProductionTime, getActivePowerUp(), now);
+  getEffectiveProductionTime(
+    baseProductionTime,
+    getActivePowerUp(),
+    getGodsProductionSpeedMultiplier(),
+    now
+  );
 
 export const getHasActivatablePowerUp = (): boolean => {
   const state = getInventoryState();
@@ -124,7 +130,7 @@ export const useInventory = () => {
 export const useHasActivatablePowerUp = (): boolean => {
   const state = useInventoryState();
 
-  return useMemo(
+  return React.useMemo(
     () => hasActivatablePowerUp(state.activePowerUp, state.slots),
     [state.activePowerUp, state.slots]
   );

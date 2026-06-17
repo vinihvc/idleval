@@ -5,6 +5,7 @@ export const GOD_DATA = [
     id: "huangdi",
     goldRequired: "1e12",
     productionMultiplier: 2,
+    productionSpeedMultiplier: 1.15,
     confettiColor: "#f8c808",
     image: "/images/gods/huangdi.webp",
     icon: "/images/gods/icons/huangdi.webp",
@@ -13,6 +14,7 @@ export const GOD_DATA = [
     id: "dagda",
     goldRequired: "1e18",
     productionMultiplier: 3,
+    productionSpeedMultiplier: 1.25,
     confettiColor: "#46820a",
     image: "/images/gods/dagda.webp",
     icon: "/images/gods/icons/dagda.webp",
@@ -21,6 +23,7 @@ export const GOD_DATA = [
     id: "shango",
     goldRequired: "1e24",
     productionMultiplier: 4,
+    productionSpeedMultiplier: 1.35,
     confettiColor: "#d82808",
     image: "/images/gods/shango.webp",
     icon: "/images/gods/icons/shango.webp",
@@ -29,6 +32,7 @@ export const GOD_DATA = [
     id: "indra",
     goldRequired: "1e30",
     productionMultiplier: 5,
+    productionSpeedMultiplier: 1.5,
     confettiColor: "#f8a838",
     image: "/images/gods/indra.webp",
     icon: "/images/gods/icons/indra.webp",
@@ -37,6 +41,7 @@ export const GOD_DATA = [
     id: "tangaroa",
     goldRequired: "1e36",
     productionMultiplier: 8,
+    productionSpeedMultiplier: 1.65,
     confettiColor: "#c87828",
     image: "/images/gods/tangaroa.webp",
     icon: "/images/gods/icons/tangaroa.webp",
@@ -45,6 +50,7 @@ export const GOD_DATA = [
     id: "inti",
     goldRequired: "1e42",
     productionMultiplier: 10,
+    productionSpeedMultiplier: 1.8,
     confettiColor: "#d89808",
     image: "/images/gods/inti.webp",
     icon: "/images/gods/icons/inti.webp",
@@ -57,7 +63,7 @@ export type GodType = (typeof GOD_DATA)[number];
 
 export type GodId = (typeof GOD_DATA)[number]["id"];
 
-export const getGod = (god: Pick<GodType, "id">): number =>
+export const getGodIndex = (god: Pick<GodType, "id">): number =>
   GOD_DATA.findIndex((entry) => entry.id === god.id);
 
 export const getGodConfettiColor = (godId: GodId): string =>

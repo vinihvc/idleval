@@ -1,5 +1,5 @@
 import type React from "react";
-import { FactoryCard } from "@/components/ui/factory-card";
+import { FactoryCard } from "@/components/game/factory-card";
 import { FACTORY_TYPES } from "@/content/factories";
 import { m } from "@/i18n/messages";
 

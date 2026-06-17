@@ -37,8 +37,10 @@ import {
 } from "@/store/debug";
 import FactoryState from "./factory-state";
 
-const LazyWelcomeDialog = React.lazy(
-  () => import("@/components/dialog/welcome/welcome")
+const LazyWelcomeDialog = React.lazy(() =>
+  import("@/components/dialog/welcome/welcome").then((module) => ({
+    default: module.WelcomeDialog,
+  }))
 );
 
 export const ActionTools = () => {

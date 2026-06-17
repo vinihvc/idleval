@@ -1,10 +1,18 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
+import { getScaledProductionValue, getScaledUnlockPrice } from "@/game/balance";
+import { applyDifficultyCost } from "@/game/difficulty";
 import {
+  canPurchaseAnyManager,
+  canPurchaseAnyUpgrade,
   canPurchaseManager,
   canPurchaseUpgrade,
   canStartManualProduction,
+  createInitialFactoriesState,
   getFactoryEarnPerCycle,
+  getFactoryGoldPerSecond,
   getFactoryProductionValue,
+  getFactoryUnlockPrice,
   getFactoryYieldPerHour,
   isFactoryProductionActive,
 } from "@/game/factories";
@@ -26,10 +34,22 @@ describe("factories rules", () => {
 
     expect(
       getFactoryProductionValue({ ...base, isUpgraded: false }).toNumber()
-    ).toBe(60);
+    ).toBe(getScaledProductionValue(20) * 3);
     expect(
       getFactoryProductionValue({ ...base, isUpgraded: true }).toNumber()
-    ).toBe(120);
+    ).toBe(
+      getScaledProductionValue(20) *
+        GAME_BALANCE.upgradeProductionMultiplier *
+        3
+    );
+  });
+
+  it("getFactoryUnlockPrice returns balance- and difficulty-scaled unlock cost", () => {
+    expect(
+      getFactoryUnlockPrice(55_000).eq(
+        applyDifficultyCost(getScaledUnlockPrice(55_000), 1)
+      )
+    ).toBe(true);
   });
 
   it("getFactoryEarnPerCycle scales by owned amount", () => {
@@ -183,5 +203,40 @@ describe("factories rules", () => {
         cost: D(50),
       })
     ).toBe(false);
+  });
+
+  it("getFactoryGoldPerSecond scales automated production by amount and gods", () => {
+    const state = {
+      amount: 2,
+      isAutomated: true,
+      isProducing: false,
+      isUnlocked: true,
+      isUpgraded: false,
+      productionStartedAt: null,
+      productionDurationSec: null,
+    };
+
+    const baseRate = getFactoryGoldPerSecond("grain", state, D(1)).toNumber();
+    const boostedRate = getFactoryGoldPerSecond(
+      "grain",
+      state,
+      D(2)
+    ).toNumber();
+
+    expect(boostedRate).toBe(baseRate * 2);
+  });
+
+  it("canPurchaseAnyUpgrade returns true when any factory can upgrade", () => {
+    const factories = createInitialFactoriesState();
+
+    expect(canPurchaseAnyUpgrade(factories, D(0))).toBe(false);
+    expect(canPurchaseAnyUpgrade(factories, D(1_000_000))).toBe(true);
+  });
+
+  it("canPurchaseAnyManager returns true when any factory can hire a manager", () => {
+    const factories = createInitialFactoriesState();
+
+    expect(canPurchaseAnyManager(factories, D(0))).toBe(false);
+    expect(canPurchaseAnyManager(factories, D(1_000_000))).toBe(true);
   });
 });

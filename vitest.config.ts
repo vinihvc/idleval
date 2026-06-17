@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 import { paraglidePluginOptions } from "./src/i18n/paraglide.vite";
+import { srcAlias } from "./vite.shared";
 
 export default defineConfig({
   optimizeDeps: {
@@ -52,7 +53,7 @@ export default defineConfig({
   plugins: [react(), paraglideVitePlugin(paraglidePluginOptions)],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "./src"),
+      ...srcAlias,
       "virtual:pwa-register": path.resolve(
         import.meta.dirname,
         "./src/test/pwa-register-mock.ts"

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { MissionObjectiveLabel } from "@/components/game/missions/mission-objective";
 import { COIN_IMAGE_SRC } from "@/components/icons/coin";
+import { MissionObjectiveLabel } from "@/components/missions/mission-objective";
 import type { MissionObjective } from "@/content/missions";
 import { translate, translateParams } from "@/i18n/localize";
 import { renderWithProviders } from "@/test/render-with-providers";

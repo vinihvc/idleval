@@ -31,11 +31,7 @@ export const DailyRewardClaimButton = () => {
         size="lg"
         variant={isPending ? "green" : "brown"}
       >
-        {isPending ? (
-          <span className="truncate">{m["ui.daily.claim"]()}</span>
-        ) : (
-          <span className="truncate">{m["ui.daily.claimed"]()}</span>
-        )}
+        {isPending ? m["ui.daily.claim"]() : m["ui.daily.claimed"]()}
       </Button>
     </>
   );

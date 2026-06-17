@@ -1,17 +1,17 @@
-import { useVisibilityChange } from "@uidotdev/usehooks";
 import { useSetAtom } from "jotai";
 import React from "react";
-import {
-  getLastSeenAt,
-  touchLastSeen,
-  touchLastSeenIfVisible,
-} from "@/store/atoms/session";
+import { useVisibilityChange } from "@/hooks/use-visibility-change";
 import {
   applyOfflineEarning,
   type OfflineSummary,
   offlineSummaryAtom,
   useOfflineSummary,
-} from "@/store/offline-earning";
+} from "@/store/atoms/offline-earning";
+import {
+  getLastSeenAt,
+  touchLastSeen,
+  touchLastSeenIfVisible,
+} from "@/store/atoms/session";
 
 const HEARTBEAT_MS = 60_000;
 const RESUME_GAP_MS = HEARTBEAT_MS * 1.5;

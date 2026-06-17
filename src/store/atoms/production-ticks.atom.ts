@@ -1,30 +1,30 @@
 import { atom, useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
-import {
-  FACTORY_DATA,
-  FACTORY_TYPES,
-  type FactoryType,
-} from "@/content/factories";
+import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
+import { getScaledFactoryConfig } from "@/game/balance";
+import type { FactoryCycleTick } from "@/game/factory-cycle";
 
-export interface FactoryTickState {
-  cycleKey: number;
-  isRunning: boolean;
-  seconds: number;
-}
+export type FactoryTickState = FactoryCycleTick;
 
 export const createInitialProductionTicks = (): Record<
   FactoryType,
   FactoryTickState
 > =>
   Object.fromEntries(
-    FACTORY_TYPES.map((factory) => [
-      factory,
-      {
-        cycleKey: 0,
-        isRunning: false,
-        seconds: FACTORY_DATA[factory].productionTime,
-      },
-    ])
+    FACTORY_TYPES.map((factory) => {
+      const productionTime = getScaledFactoryConfig(factory).productionTime;
+
+      return [
+        factory,
+        {
+          cycleDurationSec: productionTime,
+          cycleEndsAt: 0,
+          cycleKey: 0,
+          isRunning: false,
+          seconds: productionTime,
+        },
+      ];
+    })
   ) as Record<FactoryType, FactoryTickState>;
 
 export const productionTicksAtom = atom<Record<FactoryType, FactoryTickState>>(

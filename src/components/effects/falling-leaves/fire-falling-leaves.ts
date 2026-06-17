@@ -1,4 +1,4 @@
-import confetti from "canvas-confetti";
+import type { Options as ConfettiOptions } from "canvas-confetti";
 
 export const CONFETTI_RAIN_INTERVAL_MS = 80;
 export const CONFETTI_RAIN_DURATION_MS = 3500;
@@ -9,17 +9,25 @@ export const FALLING_LEAVES_Z_INDEX = 9999;
 export const getConfettiRainSpawnCount = (): number =>
   Math.floor(CONFETTI_RAIN_DURATION_MS / CONFETTI_RAIN_INTERVAL_MS) + 1;
 
-type ConfettiLauncher = (options?: confetti.Options) => void;
+type ConfettiLauncher = (options?: ConfettiOptions) => void;
 
 const pendingRainIntervals = new Set<number>();
 const pendingRainTimeouts = new Set<number>();
 
 let confettiLauncher: ConfettiLauncher | null = null;
+let defaultLauncherPromise: Promise<ConfettiLauncher> | null = null;
 
 export const setFallingLeavesConfettiLauncher = (
   launcher: ConfettiLauncher | null
 ): void => {
   confettiLauncher = launcher;
+};
+
+const loadDefaultLauncher = (): Promise<ConfettiLauncher> => {
+  defaultLauncherPromise ??= import("canvas-confetti").then(
+    (module) => module.default
+  );
+  return defaultLauncherPromise;
 };
 
 const randomInRange = (min: number, max: number): number =>
@@ -28,10 +36,8 @@ const randomInRange = (min: number, max: number): number =>
 const randomIntInclusive = (min: number, max: number): number =>
   Math.floor(randomInRange(min, max + 1));
 
-const getLauncher = (): ConfettiLauncher => confettiLauncher ?? confetti;
-
-const spawnRainTick = (color: string): void => {
-  getLauncher()({
+const spawnRainTick = (launcher: ConfettiLauncher, color: string): void => {
+  launcher({
     angle: 270,
     colors: [color],
     decay: 1,
@@ -54,11 +60,11 @@ const spawnRainTick = (color: string): void => {
   });
 };
 
-export const fireFallingLeaves = (color: string): void => {
-  spawnRainTick(color);
+const startRain = (launcher: ConfettiLauncher, color: string): void => {
+  spawnRainTick(launcher, color);
 
   const intervalId = window.setInterval(() => {
-    spawnRainTick(color);
+    spawnRainTick(launcher, color);
   }, CONFETTI_RAIN_INTERVAL_MS);
 
   pendingRainIntervals.add(intervalId);
@@ -70,6 +76,17 @@ export const fireFallingLeaves = (color: string): void => {
   }, CONFETTI_RAIN_DURATION_MS);
 
   pendingRainTimeouts.add(stopTimeoutId);
+};
+
+export const fireFallingLeaves = (color: string): void => {
+  if (confettiLauncher) {
+    startRain(confettiLauncher, color);
+    return;
+  }
+
+  loadDefaultLauncher().then((launcher) => {
+    startRain(launcher, color);
+  });
 };
 
 export const resetFallingLeavesForTests = (): void => {
@@ -84,4 +101,5 @@ export const resetFallingLeavesForTests = (): void => {
   pendingRainIntervals.clear();
   pendingRainTimeouts.clear();
   confettiLauncher = null;
+  defaultLauncherPromise = null;
 };

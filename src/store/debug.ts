@@ -2,14 +2,14 @@ import { FACTORY_TYPES } from "@/content/factories";
 import { POWER_UP_TYPES } from "@/content/power-ups";
 import { addInventorySlot } from "@/game/power-ups";
 import { store } from "@/providers/store";
-import { offlineSummaryAtom } from "@/store/offline-earning";
+import { offlineSummaryAtom } from "@/store/atoms/offline-earning";
 import { resetGame } from "@/store/reset";
 import { D, deserializeDecimal, serializeDecimal } from "@/utils/decimal";
 import { factoriesAtom } from "./atoms/factories";
 import { inventoryAtom } from "./atoms/inventory";
 import { walletAtom } from "./atoms/wallet";
 
-export const DEBUG_GOLD_AMOUNT = D(100_000_000_000);
+export const DEBUG_GOLD_AMOUNT = D("1e20");
 export const DEBUG_POWER_UP_AMOUNT = 1;
 export const GOD_MODE_GOLD_AMOUNT = D("1e100");
 

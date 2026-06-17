@@ -11,20 +11,13 @@ interface NumberTextProps
 }
 
 export const NumberText = (props: NumberTextProps) => {
-  const {
-    variant,
-    size,
-    truncateSafe,
-    bordered = true,
-    className,
-    ...rest
-  } = props;
+  const { variant, size, bordered = true, className, ...rest } = props;
 
   return (
     <span
       className={cn(
         "font-number text-lg tabular-nums",
-        bordered && borderedText({ variant, size, truncateSafe }),
+        bordered && borderedText({ variant, size }),
         className
       )}
       {...rest}

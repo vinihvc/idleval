@@ -30,24 +30,30 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 | File | Role |
 |------|------|
 | `economy.ts` | Costs, price scaling |
+| `balance.ts` | `GAME_BALANCE` scaling helpers for factories, gods |
+| `difficulty.ts` | `GAME_DIFFICULTY` scaling for costs and income |
 | `factories.ts` | Yield, eligibility, initial factory state, gold/s rate |
 | `gods.ts` | Multipliers, invocation rules, `hasInvokableGod` |
 | `power-ups.ts` | Buffs, daily rewards, inventory slots, realm economy |
 | `purchases.ts` | Buy modes (1, 10%, 50%, max) |
 | `offline-earning.ts` | Offline earnings simulation |
 | `manual-production.ts` | Manual cycle reconcile by wall-clock timestamp |
-| `missions.ts` | Quest progress, slots, renown multiplier |
+| `factory-cycle.ts` | Wall-clock cycle anchors (`cycleEndsAt`) for scheduler + progress UI |
+| `missions.ts` | Barrel: progress, slots, scaling, rewards |
+| `mission-progression.ts` | Catalog-order wallet simulation for balance checks |
+| `progress-ease.ts` | Dynamic factory ease + god invoke difficulty by index |
+| `progression-estimates.ts` | Milestone timing estimates for docs/PROGRESSION.md |
 | `types.ts` | Persisted state shapes |
 
 ## Neighbors
 
-- Reads from: `content/`, `utils/decimal`
+- Reads from: `content/`, `config/game`, `config/balance`, `utils/decimal`
 - Consumed by: `store/` (actions), `components/` (can* checks)
 
 ## Evolution
 
-- 2026-06-15 — `manual-production.ts`: persisted cycle timestamps, offline reconcile (max 1 cycle)
-- 2026-06-14 — `createInitialFactoriesState`, `canPurchaseAny*`, `getFactoryGoldPerSecond`, `hasInvokableGod` centralized in game layer
-- 2026-06-14 — `missions.ts` pure rules for quest progress, slots, and renown
+- 2026-06-17 — `factory-cycle.ts`: wall-clock cycle anchors shared by scheduler and progress bar
+- 2026-06-17 — Quality pass: decimal-safe gold progress, `canPurchaseAny*` helper, architecture ban on `@/i18n/` imports
+- 2026-06-17 — `missions.ts`: god-cycle reset; `2^godsInvoked` scaling; `progress-ease.ts`, `mission-progression.ts`
+- 2026-06-14 — `createInitialFactoriesState`, `canPurchaseAny*`, `getFactoryGoldPerSecond`, `hasInvokableGod`
 - 2026-06-08 — Removed difficulty system; game layer no longer imports store
-- 2026-06-07 — Initial docs: pure logic + colocated tests

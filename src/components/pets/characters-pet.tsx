@@ -1,14 +1,5 @@
-"use client";
+import React from "react";
 
-import type React from "react";
-import {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import { cn } from "@/lib/cn";
 
 type Direction = "left" | "right" | "up" | "down";
@@ -152,22 +143,22 @@ export const CharactersPet = (props: CharactersPetProps) => {
     sprites: customSprites,
   } = props;
 
-  const sprites = useMemo(
+  const sprites = React.useMemo(
     () => ({ ...getSprites(imagePath), ...customSprites }),
     [customSprites, imagePath]
   );
-  const hostRef = useRef<HTMLDivElement>(null);
-  const spriteRef = useRef<HTMLDivElement>(null);
-  const queueRef = useRef<CharacterInstruction[]>([...instructions]);
-  const activeInstructionRef = useRef<ActiveInstruction | null>(null);
-  const positionRef = useRef({ ...defaultPosition });
-  const visualRef = useRef<VisualState>({ frame: 0, state: "idle" });
-  const frameElapsedRef = useRef(0);
-  const lastFacingRef = useRef<SpriteState>("right");
-  const lastTimeRef = useRef(0);
-  const [visual, setVisual] = useState<VisualState>(visualRef.current);
+  const hostRef = React.useRef<HTMLDivElement>(null);
+  const spriteRef = React.useRef<HTMLDivElement>(null);
+  const queueRef = React.useRef<CharacterInstruction[]>([...instructions]);
+  const activeInstructionRef = React.useRef<ActiveInstruction | null>(null);
+  const positionRef = React.useRef({ ...defaultPosition });
+  const visualRef = React.useRef<VisualState>({ frame: 0, state: "idle" });
+  const frameElapsedRef = React.useRef(0);
+  const lastFacingRef = React.useRef<SpriteState>("right");
+  const lastTimeRef = React.useRef(0);
+  const [visual, setVisual] = React.useState<VisualState>(visualRef.current);
 
-  const clampPosition = useCallback(
+  const clampPosition = React.useCallback(
     (position: { x: number; y: number }) => {
       const host = hostRef.current;
 
@@ -189,7 +180,7 @@ export const CharactersPet = (props: CharactersPetProps) => {
     [size]
   );
 
-  const setPosition = useCallback(
+  const setPosition = React.useCallback(
     (nextPosition: { x: number; y: number }) => {
       const clamped = clampPosition(nextPosition);
       positionRef.current = clamped;
@@ -201,7 +192,7 @@ export const CharactersPet = (props: CharactersPetProps) => {
     [clampPosition]
   );
 
-  const setSpriteState = useCallback((nextState: SpriteState) => {
+  const setSpriteState = React.useCallback((nextState: SpriteState) => {
     if (visualRef.current.state === nextState) {
       return;
     }
@@ -211,7 +202,7 @@ export const CharactersPet = (props: CharactersPetProps) => {
     setVisual(visualRef.current);
   }, []);
 
-  const enqueue = useCallback(
+  const enqueue = React.useCallback(
     (nextInstructions: CharacterInstruction | CharacterInstruction[]) => {
       queueRef.current.push(
         ...(Array.isArray(nextInstructions)
@@ -222,13 +213,13 @@ export const CharactersPet = (props: CharactersPetProps) => {
     []
   );
 
-  const clear = useCallback(() => {
+  const clear = React.useCallback(() => {
     queueRef.current = [];
     activeInstructionRef.current = null;
     setSpriteState("idle");
   }, [setSpriteState]);
 
-  useImperativeHandle(
+  React.useImperativeHandle(
     ref,
     () => ({
       clear,
@@ -247,16 +238,16 @@ export const CharactersPet = (props: CharactersPetProps) => {
     [clear, enqueue]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     queueRef.current = [...instructions];
     activeInstructionRef.current = null;
   }, [instructions]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setPosition(defaultPosition);
   }, [defaultPosition, setPosition]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let animationFrame = 0;
 
     const completeInstruction = () => {

@@ -199,7 +199,6 @@ export const Button = (props: ButtonProps) => {
           borderedText({
             variant: borderedVariant,
             size: "lg",
-            clipSafe: true,
           }),
         className
       )}

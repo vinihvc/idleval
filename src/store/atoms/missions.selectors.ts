@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React from "react";
 import { MISSION_CATALOG } from "@/content/missions";
 import {
   getRenownProductionMultiplier,
@@ -35,7 +35,7 @@ export const getMissionRenownProductionMultiplier = () =>
 export const useVisibleMissionSlots = () => {
   const state = useMissionsState();
 
-  return useMemo(
+  return React.useMemo(
     () =>
       getVisibleMissionSlots(
         MISSION_CATALOG,

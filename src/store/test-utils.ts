@@ -3,10 +3,10 @@ import type { FactoryPersistedState } from "@/game/types";
 import { store } from "@/providers/store";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
 import { resetGame } from "@/store/reset";
-import { D, serializeDecimal } from "@/utils/decimal";
+import { D, type GameValue, serializeDecimal } from "@/utils/decimal";
 import { walletAtom } from "./atoms/wallet";
 
-export const seedGold = (amount: number | string) => {
+export const seedGold = (amount: number | string | GameValue) => {
   store.set(walletAtom, { gold: serializeDecimal(D(amount)) });
 };
 

@@ -22,7 +22,7 @@ export const useFactoryPurchase = (model: FactoryCardModel) => {
     isLocked,
   } = model;
   const { gold } = useWallet();
-  const { value: amountToBuy } = usePurchaseMode();
+  const amountToBuy = usePurchaseMode();
 
   const { totalCanBuy, totalToPay } = React.useMemo(
     () => computePurchaseTotals(amountToBuy, gold, amount, baseBuyCost),

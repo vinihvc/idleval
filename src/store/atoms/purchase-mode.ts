@@ -8,39 +8,17 @@ import {
 } from "@/game/purchases";
 import { store } from "@/providers/store";
 import { getFactory } from "@/store/atoms/factories";
+import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
 import { persistedAtom } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold } from "./wallet";
 
-export const AMOUNT_TO_BUY = [
-  {
-    name: "1",
-    symbol: "x",
-    description: "1",
-    value: 1,
-  },
-  {
-    name: "10",
-    symbol: "%",
-    description: "10%",
-    value: 10,
-  },
-  {
-    name: "50",
-    symbol: "%",
-    description: "50%",
-    value: 50,
-  },
-  {
-    name: "max",
-    symbol: "",
-    description: "max affordable",
-    value: "max",
-  },
-] as const;
+export const PURCHASE_MODE_VALUES = [1, 10, 50, "max"] as const;
+
+export type PurchaseModeValue = (typeof PURCHASE_MODE_VALUES)[number];
 
 export interface PurchaseModeState {
-  amountToBuy: (typeof AMOUNT_TO_BUY)[number]["value"];
+  amountToBuy: PurchaseModeValue;
 }
 
 export const purchaseModeAtom = persistedAtom<PurchaseModeState>(
@@ -52,16 +30,10 @@ export const purchaseModeAtom = persistedAtom<PurchaseModeState>(
 
 export const usePurchaseModeState = () => useAtomValue(purchaseModeAtom);
 
-export const usePurchaseMode = () => {
+export const usePurchaseMode = (): PurchaseModeValue => {
   const { amountToBuy } = usePurchaseModeState();
-  const normalizedAmount = normalizePurchaseAmount(amountToBuy);
-  const found = AMOUNT_TO_BUY.find((a) => a.value === normalizedAmount);
 
-  if (!found) {
-    return AMOUNT_TO_BUY[0];
-  }
-
-  return found;
+  return normalizePurchaseAmount(amountToBuy);
 };
 
 const getNextAmountToBuy = (
@@ -96,13 +68,20 @@ export const computePurchaseTotals = (
   owned: number,
   baseBuyCost: number
 ) => {
+  const factoryDifficulty = getFactoryProgressDifficulty();
   const totalCanBuy = getAffordableUnitCount({
     amount,
     baseBuyCost,
+    factoryDifficulty,
     gold,
     owned,
   });
-  const totalToPay = getPurchaseTotalCost(baseBuyCost, owned, totalCanBuy);
+  const totalToPay = getPurchaseTotalCost(
+    baseBuyCost,
+    owned,
+    totalCanBuy,
+    factoryDifficulty
+  );
 
   return { totalCanBuy, totalToPay };
 };
@@ -117,6 +96,7 @@ export const totalCanBuyByAmount = (
   return getAffordableUnitCount({
     amount,
     baseBuyCost,
+    factoryDifficulty: getFactoryProgressDifficulty(),
     gold,
     owned,
   });

@@ -2,6 +2,11 @@ import { useSetAtom } from "jotai";
 import React from "react";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { isFactoryDrivenByScheduler } from "@/game/factories";
+import {
+  isCycleComplete,
+  startCycleTick,
+  syncCycleSeconds,
+} from "@/game/factory-cycle";
 import { reconcileManualCycle } from "@/game/manual-production";
 import type { FactoryPersistedState } from "@/game/types";
 import { store } from "@/providers/store";
@@ -11,16 +16,17 @@ import {
   useFactories,
 } from "@/store/atoms/factories";
 import { getEffectiveProductionTimeForActivePowerUp } from "@/store/atoms/inventory";
+import {
+  offlineCycleProgressAtom,
+  useOfflineCycleProgress,
+} from "@/store/atoms/offline-earning";
 import { refreshExpiredPowerUps } from "@/store/atoms/power-ups.actions";
 import {
   type FactoryTickState,
   productionTicksAtom,
 } from "@/store/atoms/production-ticks.atom";
 import {
-  offlineCycleProgressAtom,
-  useOfflineCycleProgress,
-} from "@/store/offline-earning";
-import {
+  type ManualCycleAnchor,
   syncActiveFactoryTick,
   syncInactiveFactoryTick,
 } from "./production-scheduler-sync";
@@ -28,7 +34,8 @@ import { useInterval } from "./use-interval";
 
 const tickRunningFactory = (
   factory: FactoryType,
-  currentTick: FactoryTickState
+  currentTick: FactoryTickState,
+  now: number
 ): { changed: boolean; tick: FactoryTickState } => {
   const factoryState = getFactory(factory);
   const { isAutomated, isUnlocked } = factoryState;
@@ -36,15 +43,25 @@ const tickRunningFactory = (
     factoryState.productionTime
   );
   const keepsRunning = isUnlocked && isAutomated;
+  const syncedTick = syncCycleSeconds(currentTick, now);
 
-  if (currentTick.seconds <= 1) {
-    completeProductionCycle(factory);
+  if (!isCycleComplete(syncedTick, now)) {
+    return {
+      changed: syncedTick.seconds !== currentTick.seconds,
+      tick: syncedTick,
+    };
+  }
 
+  completeProductionCycle(factory);
+
+  if (!keepsRunning) {
     return {
       changed: true,
       tick: {
-        cycleKey: currentTick.cycleKey + 1,
-        isRunning: keepsRunning,
+        ...syncedTick,
+        cycleDurationSec: productionTime,
+        cycleEndsAt: 0,
+        isRunning: false,
         seconds: productionTime,
       },
     };
@@ -52,10 +69,35 @@ const tickRunningFactory = (
 
   return {
     changed: true,
-    tick: {
-      ...currentTick,
-      seconds: currentTick.seconds - 1,
-    },
+    tick: startCycleTick(syncedTick, {
+      durationSec: productionTime,
+      now,
+    }),
+  };
+};
+
+const getManualCycleAnchor = (
+  state: FactoryPersistedState,
+  now: number
+): ManualCycleAnchor | null => {
+  if (
+    !state.isProducing ||
+    state.isAutomated ||
+    state.productionStartedAt == null ||
+    state.productionDurationSec == null
+  ) {
+    return null;
+  }
+
+  const reconcileResult = reconcileManualCycle(state, now);
+
+  if (reconcileResult.kind !== "in_progress") {
+    return null;
+  }
+
+  return {
+    productionDurationSec: state.productionDurationSec,
+    productionStartedAt: state.productionStartedAt,
   };
 };
 
@@ -86,8 +128,9 @@ const syncFactoryTicks = (
     const state = factories[factory];
     const isActive = isFactoryDrivenByScheduler(factory, state);
     const currentTick = previousTicks[factory];
+    const manualCycleAnchor = getManualCycleAnchor(state, now);
     const persistedSecondsRemaining =
-      state.isProducing && !state.isAutomated
+      state.isProducing && !state.isAutomated && !manualCycleAnchor
         ? getPersistedManualSecondsRemaining(state, now)
         : null;
     const syncResult = isActive
@@ -99,7 +142,9 @@ const syncFactoryTicks = (
           getEffectiveProductionTimeForActivePowerUp(
             getFactory(factory).productionTime
           ),
-          persistedSecondsRemaining
+          persistedSecondsRemaining,
+          manualCycleAnchor,
+          now
         )
       : syncInactiveFactoryTick(factory, currentTick, consumedOffline);
 
@@ -159,6 +204,8 @@ export const useProductionScheduler = () => {
     () => {
       refreshExpiredPowerUps();
 
+      const now = Date.now();
+
       setTicks((previousTicks) => {
         let changed = false;
         const nextTicks = { ...previousTicks };
@@ -170,7 +217,7 @@ export const useProductionScheduler = () => {
             continue;
           }
 
-          const tickResult = tickRunningFactory(factory, currentTick);
+          const tickResult = tickRunningFactory(factory, currentTick, now);
 
           if (tickResult.changed) {
             nextTicks[factory] = tickResult.tick;

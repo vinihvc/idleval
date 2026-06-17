@@ -1,7 +1,7 @@
-import { useMediaQuery } from "@uidotdev/usehooks";
 import { InventoryCard } from "@/components/dialog/inventory/inventory.card";
 import { getLocalizedPowerUp } from "@/content/power-ups";
 import { LiveAnnouncer, useLiveAnnouncer } from "@/hooks/use-live-announcer";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { m } from "@/i18n/messages";
 import { type InventorySlot, useInventory } from "@/store/atoms/inventory";
 import { activatePowerUpAtSlot } from "@/store/atoms/power-ups.actions";

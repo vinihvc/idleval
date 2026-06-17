@@ -1,5 +1,7 @@
 import type React from "react";
 import { tv } from "tailwind-variants";
+import { MissionObjectiveLabel } from "@/components/missions/mission-objective";
+import { useMissionSlotView } from "@/components/missions/use-mission-slot-view";
 import { boxBorder } from "@/components/ui/box-border";
 import {
   Progress,
@@ -7,16 +9,10 @@ import {
   ProgressTrack,
 } from "@/components/ui/progress";
 import { borderedText } from "@/components/ui/text-border";
-import {
-  getLocalizedMissionObjective,
-  getMissionById,
-} from "@/content/missions";
 import type { MissionSlotView } from "@/game/types";
 import { m } from "@/i18n/messages";
 import { cn } from "@/lib/cn";
 import { claimMissionReward } from "@/store/atoms/missions";
-import { formatMissionProgressLabel } from "./format-mission-progress";
-import { MissionObjectiveLabel } from "./mission-objective";
 
 const missionSlotVariants = tv({
   base: [
@@ -54,9 +50,7 @@ interface MissionsCardProps
 }
 
 const MissionObjectiveContent = (props: {
-  objective:
-    | NonNullable<ReturnType<typeof getMissionById>>["objective"]
-    | undefined;
+  objective: ReturnType<typeof useMissionSlotView>["scaledObjective"];
   objectiveLabel: string;
 }) => {
   const { objective, objectiveLabel } = props;
@@ -72,9 +66,6 @@ const MissionObjectiveContent = (props: {
   );
 };
 
-const missionSlotFooterClassName =
-  "inset-shadow-xs h-4 max-h-4 min-h-4 w-full shrink-0 overflow-hidden rounded-sm border-2 px-0.5 py-0 leading-none";
-
 const MissionSlotProgress = (props: {
   progressLabel: string;
   ratio: number;
@@ -85,7 +76,7 @@ const MissionSlotProgress = (props: {
     <Progress
       aria-hidden
       className={cn(
-        missionSlotFooterClassName,
+        "inset-shadow-xs h-4 max-h-4 min-h-4 w-full shrink-0 overflow-hidden rounded-sm border-2 px-0.5 py-0 leading-none",
         "gap-0 border-primary/40 bg-muted px-0"
       )}
       value={Math.round(ratio * 100)}
@@ -98,8 +89,8 @@ const MissionSlotProgress = (props: {
         className={cn(
           "pointer-events-none absolute inset-0",
           "flex items-center justify-center px-0.5",
-          "font-medium font-number text-foreground text-xs tabular-nums tracking-wide",
-          borderedText({ variant: "cream", size: "sm", truncateSafe: true })
+          "text-nowrap font-medium font-number text-foreground text-xs tabular-nums tracking-wide",
+          borderedText({ variant: "cream", size: "sm" })
         )}
       >
         {progressLabel}
@@ -112,15 +103,15 @@ const MissionSlotClaimFooter = () => (
   <div
     aria-hidden
     className={cn(
-      missionSlotFooterClassName,
+      "inset-shadow-xs h-4 max-h-4 min-h-4 w-full shrink-0 overflow-hidden rounded-sm border-2 px-0.5 py-0 leading-none",
       "flex items-center justify-center border-success-foreground/40 bg-success text-white",
       "font-medium text-xs tracking-wide"
     )}
   >
     <span
       className={cn(
-        "block w-full text-center",
-        borderedText({ variant: "green", size: "sm", truncateSafe: true })
+        "block w-full text-nowrap text-center",
+        borderedText({ variant: "green", size: "sm" })
       )}
     >
       {m["ui.missions.claim"]()}
@@ -130,28 +121,25 @@ const MissionSlotClaimFooter = () => (
 
 export const MissionsCard = (props: MissionsCardProps) => {
   const { slot, onClaim, className, ref, onClick, ...rest } = props;
+  const {
+    missionId,
+    status,
+    order,
+    progress,
+    scaledObjective,
+    objectiveLabel,
+    progressLabel,
+  } = useMissionSlotView(slot);
 
-  const { id: missionId, status } = slot;
-  const missionDefinition = getMissionById(missionId);
-  const objective = missionDefinition?.objective;
-  const objectiveLabel = objective
-    ? getLocalizedMissionObjective(objective)
-    : missionId;
-  const progressLabel = objective
-    ? formatMissionProgressLabel(objective, slot.progress)
-    : m["ui.missions.progress"]({
-        current: String(slot.progress.current),
-        target: String(slot.progress.target),
-      });
   const slotClassName = cn(missionSlotVariants({ status }), className);
   const isReady = status === "ready";
   const ariaLabel = isReady
     ? m["ui.missions.slot.claimable"]({
-        order: String(slot.order),
+        order: String(order),
         title: objectiveLabel,
       })
     : m["ui.missions.slot.inProgress"]({
-        order: String(slot.order),
+        order: String(order),
         title: objectiveLabel,
         progress: progressLabel,
       });
@@ -181,7 +169,7 @@ export const MissionsCard = (props: MissionsCardProps) => {
     >
       <div className="flex min-h-0 flex-1 items-start">
         <MissionObjectiveContent
-          objective={objective}
+          objective={scaledObjective}
           objectiveLabel={objectiveLabel}
         />
       </div>
@@ -190,7 +178,7 @@ export const MissionsCard = (props: MissionsCardProps) => {
       ) : (
         <MissionSlotProgress
           progressLabel={progressLabel}
-          ratio={slot.progress.ratio}
+          ratio={progress.ratio}
         />
       )}
     </button>

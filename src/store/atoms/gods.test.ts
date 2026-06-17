@@ -9,6 +9,7 @@ import {
   godsAtom,
   invokeGod,
 } from "@/store/atoms/gods";
+import { missionsAtom } from "@/store/atoms/missions.atom";
 import { statisticsAtom } from "@/store/atoms/statistics";
 import { walletAtom } from "@/store/atoms/wallet";
 import { resetGame } from "@/store/reset";
@@ -52,6 +53,19 @@ describe("gods store", () => {
     store.set(statisticsAtom, (previous) => ({
       ...previous,
       goldEarned: "5000",
+      factories: {
+        ...previous.factories,
+        grain: {
+          ...previous.factories.grain,
+          quantity: 12,
+        },
+      },
+    }));
+    store.set(missionsAtom, (previous) => ({
+      ...previous,
+      claimedIds: ["mission-001"],
+      renownPercent: 8,
+      readyToClaimIds: ["mission-002"],
     }));
     store.set(factoriesAtom, (previous) => ({
       ...previous,
@@ -64,6 +78,9 @@ describe("gods store", () => {
     expect(store.get(factoriesAtom)).toEqual(initialData);
     expect(deserializeDecimal(store.get(walletAtom).gold).toNumber()).toBe(0);
     expect(store.get(statisticsAtom).goldEarned).toBe("5000");
+    expect(store.get(missionsAtom).claimedIds).toEqual([]);
+    expect(store.get(missionsAtom).renownPercent).toBe(0);
+    expect(store.get(missionsAtom).ownUnitsBaselines.grain).toBe(12);
     expect(vi.mocked(sound.play)).not.toHaveBeenCalled();
     expect(getGodsProductionMultiplier().toNumber()).toBe(
       GOD_DATA[0].productionMultiplier

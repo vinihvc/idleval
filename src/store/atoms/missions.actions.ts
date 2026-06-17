@@ -15,6 +15,7 @@ import { addInventorySlot } from "@/game/power-ups";
 import type { MissionCounters, MissionsPersistedState } from "@/game/types";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
+import { getInvokedGods } from "@/store/atoms/gods";
 import { inventoryAtom } from "@/store/atoms/inventory";
 import { missionsAtom } from "@/store/atoms/missions.atom";
 import { buildMissionGameSnapshot } from "@/store/atoms/missions.selectors";
@@ -150,7 +151,10 @@ export const claimMissionReward = (id: MissionId): boolean => {
     return false;
   }
 
-  const rewards = summarizeMissionRewards(mission.rewards);
+  const rewards = summarizeMissionRewards(
+    mission.rewards,
+    getInvokedGods().length
+  );
 
   if (rewards.gold.gt(0)) {
     increaseGoldByAmount("grain", rewards.gold);

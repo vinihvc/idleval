@@ -47,5 +47,3 @@ export const WikiDialog = () => {
     </ResponsiveDialog>
   );
 };
-
-export default WikiDialog;

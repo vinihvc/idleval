@@ -2,6 +2,10 @@ import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
+import type {
+  MissionFactoryStatistics,
+  MissionStatisticsSnapshot,
+} from "@/game/types";
 import { store } from "@/providers/store";
 import { persistedAtomWithNormalize } from "@/store/storage";
 import {
@@ -11,17 +15,9 @@ import {
   serializeDecimal,
 } from "@/utils/decimal";
 
-interface FactoryStatistics {
-  goldEarned: string;
-  goldSpent: string;
-  quantity: number;
-}
+export type FactoryStatistics = MissionFactoryStatistics;
 
-export interface StatisticsState {
-  factories: Record<FactoryType, FactoryStatistics>;
-  goldEarned: string;
-  goldSpent: string;
-}
+export type StatisticsState = MissionStatisticsSnapshot;
 
 export const createInitialStatistics = (): Record<
   FactoryType,

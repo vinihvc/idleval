@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
+import type { PowerUpId } from "@/content/power-ups";
+import { RELIC_SLOT_COUNT } from "@/content/power-ups";
 import { createInitialFactoriesState } from "@/game/factories";
 import {
   addInventorySlot,
@@ -7,11 +10,14 @@ import {
   getActivePowerUpDisplayState,
   getActivePowerUpProgress,
   getActivePowerUpRemainingMs,
+  getEffectiveProductionTime,
   getOfflineActiveBuffSeconds,
   getPowerUpIncomeMultiplier,
+  getPowerUpTimeMultiplier,
   getRealmGoldPerSecond,
   getYggdrasilAdvanceSeconds,
   hasActivatablePowerUp,
+  type InventorySlot,
   isTimedPowerUpActive,
   rollMimirCoinGold,
 } from "@/game/power-ups";
@@ -95,7 +101,7 @@ describe("power-ups", () => {
         powerUpId: "lightningShard",
         tier: "common",
       }).toNumber()
-    ).toBe(2);
+    ).toBe(GAME_BALANCE.powerUpIncomeMultiplier);
   });
 
   it("returns remaining ms for timed power-ups", () => {
@@ -180,7 +186,7 @@ describe("power-ups", () => {
 
     expect(
       getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber()
-    ).toBe(10);
+    ).toBe(12);
   });
 
   it("falls back to unlocked factories when none are automated", () => {
@@ -188,7 +194,7 @@ describe("power-ups", () => {
 
     expect(
       getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber()
-    ).toBe(10);
+    ).toBe(12);
   });
 
   it("applies mission renown to mimir coin realm rate", () => {
@@ -215,13 +221,56 @@ describe("power-ups", () => {
 
     expect(
       rollMimirCoinGold("common", input, () => 0).toNumber()
-    ).toBeGreaterThanOrEqual(450);
+    ).toBeGreaterThanOrEqual(450 * GAME_BALANCE.productionValue);
     expect(
       rollMimirCoinGold("common", input, () => 0.999).toNumber()
-    ).toBeLessThanOrEqual(900);
+    ).toBeLessThanOrEqual(900 * GAME_BALANCE.productionValue);
   });
 
   it("advances yggdrasil tear by thirty minutes for every tier", () => {
     expect(getYggdrasilAdvanceSeconds()).toBe(1800);
+  });
+
+  it("drops new relic types when the altar is full", () => {
+    const fullSlots: InventorySlot[] = Array.from(
+      { length: RELIC_SLOT_COUNT },
+      (_, index) => ({
+        powerUpId: `slot-${index}` as PowerUpId,
+        count: 1,
+        tier: "common" as const,
+      })
+    );
+
+    expect(
+      addInventorySlot(fullSlots, {
+        powerUpId: "yggdrasilTear",
+        tier: "epic",
+      })
+    ).toBe(fullSlots);
+  });
+
+  it("ignores consumeInventorySlot for invalid indices", () => {
+    const slots = [
+      { powerUpId: "mimirCoin" as const, count: 1, tier: "common" as const },
+    ];
+
+    expect(consumeInventorySlot(slots, -1)).toBe(slots);
+    expect(consumeInventorySlot(slots, 5)).toBe(slots);
+  });
+
+  it("applies haste and god speed to effective production time", () => {
+    const activePowerUp = {
+      expiresAt: Date.now() + 60_000,
+      powerUpId: "hasteRune" as const,
+      tier: "common" as const,
+    };
+
+    expect(getPowerUpTimeMultiplier(activePowerUp)).toBe(
+      GAME_BALANCE.powerUpTimeMultiplier
+    );
+    expect(getEffectiveProductionTime(120, activePowerUp, 2)).toBe(
+      Math.max(1, Math.round((120 * GAME_BALANCE.powerUpTimeMultiplier) / 2))
+    );
+    expect(getEffectiveProductionTime(120, null, 1)).toBe(120);
   });
 });

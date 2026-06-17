@@ -1,8 +1,11 @@
-import confetti from "canvas-confetti";
 import { useAtomValue } from "jotai";
 import React from "react";
 import { getGodConfettiColor } from "@/content/gods";
-import { fallingLeavesTriggerAtom } from "@/store/atoms/gods";
+import { store } from "@/providers/store";
+import {
+  type FallingLeavesTrigger,
+  fallingLeavesTriggerAtom,
+} from "@/store/atoms/gods";
 import {
   FALLING_LEAVES_Z_INDEX,
   fireFallingLeaves,
@@ -13,31 +16,25 @@ let lastProcessedFallingLeavesSeq = 0;
 
 export const resetFallingLeavesTriggerForTests = (): void => {
   lastProcessedFallingLeavesSeq = 0;
+  store.set(fallingLeavesTriggerAtom, {
+    seq: 0,
+    godId: "huangdi",
+  } satisfies FallingLeavesTrigger);
 };
 
 export const FallingLeaves = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const trigger = useAtomValue(fallingLeavesTriggerAtom);
+  const launcherRef = React.useRef<{ reset: () => void } | null>(null);
 
-  React.useEffect(() => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) {
-      return;
-    }
-
-    const launcher = confetti.create(canvas, {
-      disableForReducedMotion: true,
-      resize: true,
-    });
-
-    setFallingLeavesConfettiLauncher(launcher);
-
-    return () => {
-      launcher.reset();
+  React.useEffect(
+    () => () => {
+      launcherRef.current?.reset();
+      launcherRef.current = null;
       setFallingLeavesConfettiLauncher(null);
-    };
-  }, []);
+    },
+    []
+  );
 
   React.useEffect(() => {
     if (trigger.seq <= lastProcessedFallingLeavesSeq) {
@@ -45,7 +42,28 @@ export const FallingLeaves = () => {
     }
 
     lastProcessedFallingLeavesSeq = trigger.seq;
-    fireFallingLeaves(getGodConfettiColor(trigger.godId));
+
+    const launchFallingLeaves = async (): Promise<void> => {
+      if (!launcherRef.current) {
+        const confettiModule = await import("canvas-confetti");
+        const canvas = canvasRef.current;
+
+        if (!canvas) {
+          return;
+        }
+
+        const launcher = confettiModule.default.create(canvas, {
+          disableForReducedMotion: true,
+          resize: true,
+        });
+        launcherRef.current = launcher;
+        setFallingLeavesConfettiLauncher(launcher);
+      }
+
+      fireFallingLeaves(getGodConfettiColor(trigger.godId));
+    };
+
+    launchFallingLeaves().catch(() => undefined);
   }, [trigger]);
 
   return (

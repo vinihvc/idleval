@@ -16,14 +16,9 @@ const { useMediaQueryMock } = vi.hoisted(() => ({
   useMediaQueryMock: vi.fn<(query: string) => boolean>(),
 }));
 
-vi.mock("@uidotdev/usehooks", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@uidotdev/usehooks")>();
-
-  return {
-    ...actual,
-    useMediaQuery: useMediaQueryMock,
-  };
-});
+vi.mock("@/hooks/use-media-query", () => ({
+  useMediaQuery: useMediaQueryMock,
+}));
 
 const localizedMimirCoin = getLocalizedPowerUp("mimirCoin");
 const localizedUseMimirCoin = m["ui.inventory.useItem"]({

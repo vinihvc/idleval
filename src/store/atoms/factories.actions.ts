@@ -3,26 +3,21 @@ import {
   canPurchaseManager,
   canPurchaseUpgrade,
   canStartManualProduction,
-  getFactoryEarnPerCycle,
 } from "@/game/factories";
 import { clearManualProductionFields } from "@/game/manual-production";
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
-import {
-  getEffectiveProductionTimeForActivePowerUp,
-  getPowerUpIncomeMultiplierForEarn,
-} from "@/store/atoms/inventory";
+import { getEffectiveProductionTimeForActivePowerUp } from "@/store/atoms/inventory";
 import {
   incrementMissionCounter,
   incrementRunGoldSpent,
   syncMissionProgress,
 } from "@/store/atoms/missions.actions";
-import { getMissionRenownProductionMultiplier } from "@/store/atoms/missions.selectors";
 import { D } from "@/utils/decimal";
 import { factoriesAtom } from "./factories.atom";
 import { getFactory } from "./factories.selectors";
-import { getGodsProductionMultiplier } from "./gods";
+import { getTotalEarnPerCycle } from "./factory-earn";
 import {
   type PurchaseModeState,
   totalCanBuyByAmount,
@@ -88,22 +83,14 @@ export const startProducing = (factory: FactoryType) => {
 };
 
 export const completeProductionCycle = (factory: FactoryType) => {
-  const { amount, isAutomated, isUpgraded, productionValue } =
-    getFactory(factory);
+  const { isAutomated } = getFactory(factory);
 
   store.set(factoriesAtom, (prev) => ({
     ...prev,
     [factory]: clearManualProductionFields(prev[factory]),
   }));
 
-  const goldEarned = getFactoryEarnPerCycle({
-    amount,
-    godsProductionMultiplier: getGodsProductionMultiplier(),
-    isUpgraded,
-    productionValue,
-  })
-    .times(getPowerUpIncomeMultiplierForEarn())
-    .times(getMissionRenownProductionMultiplier());
+  const goldEarned = getTotalEarnPerCycle(factory);
 
   increaseGoldByAmount(factory, goldEarned);
   incrementMissionCounter("productionCyclesCompleted");
