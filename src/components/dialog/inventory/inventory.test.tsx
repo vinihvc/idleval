@@ -73,7 +73,7 @@ describe("InventoryDialog", () => {
     expect(countInventoryCards()).toBe(8);
   });
 
-  test("renders nine inventory cards on mobile", async () => {
+  test("renders six inventory cards on mobile", async () => {
     useMediaQueryMock.mockReturnValue(true);
     const screen = await openInventory();
 
@@ -81,7 +81,7 @@ describe("InventoryDialog", () => {
       .element(screen.getByRole("heading", { name: m["ui.inventory.title"]() }))
       .toBeInTheDocument();
 
-    expect(countInventoryCards()).toBe(9);
+    expect(countInventoryCards()).toBe(6);
   });
 
   test("shows use and info buttons for filled relic slot", async () => {
