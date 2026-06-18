@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import React from "react";
 import { FallingLeaves } from "@/components/effects/falling-leaves";
 import { FactoryGrid } from "@/components/game/factory-grid";
@@ -70,11 +71,13 @@ export const HomePage = () => {
 
       <GameSectionDialogs />
 
-      {LazyDevTools ? (
+      <Analytics />
+
+      {LazyDevTools && (
         <React.Suspense fallback={null}>
           <LazyDevTools />
         </React.Suspense>
-      ) : null}
+      )}
     </Providers>
   );
 };

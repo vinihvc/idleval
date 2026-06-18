@@ -32,6 +32,7 @@
     "@inlang/paraglide-js-react": "^1.0.2",
     "@tailwindcss/vite": "^4.3.0",
     "@unpic/react": "^1.0.2",
+    "@vercel/analytics": "^2.0.1",
     "break_infinity.js": "^2.2.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
