@@ -11,6 +11,7 @@ export default defineConfig({
     entries: ["src/**/*.test.tsx"],
     include: [
       "@inlang/paraglide-js-react",
+      "@vercel/analytics/react",
       "@ark-ui/react",
       "@ark-ui/react/menu",
       "@unpic/react",
