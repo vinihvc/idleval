@@ -4,7 +4,7 @@ Architecture guide and feature recipes for agents. Code conventions (Ultracite, 
 
 ## What it is
 
-Viking idle game (Vite + React 19). Global state in **Jotai** persisted to **localStorage**. Pure business rules in **`game/`**; static catalog in **`content/`**; UI in **`components/`**.
+Fantasy idle game (Vite + React 19). Global state in **Jotai** persisted to **localStorage**. Pure business rules in **`game/`**; static catalog in **`content/`**; UI in **`components/`**.
 
 ## Layers and imports
 

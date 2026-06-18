@@ -4,7 +4,7 @@ Normative UI guide for agents and contributors. Source of truth for tokens: [`sr
 
 ## Visual identity
 
-Idleval is a **Viking medieval idle game** with a dark, warm forest backdrop and **parchment-like UI panels**. Gold (`primary`) accents signal value and interactivity. **Pixel art sprites** render crisp via `pixel-crisp`; the UI itself is stylized medieval (elevated borders, outlined text), not flat Material defaults.
+Idleval is a **fantasy medieval idle game** with a dark, warm forest backdrop and **parchment-like UI panels**. Gold (`primary`) accents signal value and interactivity. **Pixel art sprites** render crisp via `pixel-crisp`; the UI itself is stylized medieval (elevated borders, outlined text), not flat Material defaults.
 
 - **Do:** reuse `boxBorder`, `borderedText`, and semantic tokens.
 - **Don't:** introduce generic gray Tailwind (`zinc-500`) or raw hex/OKLCH in components.

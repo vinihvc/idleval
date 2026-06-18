@@ -17,7 +17,7 @@ describe("Input", () => {
     const screen = await renderWithProviders(<Input aria-label="Search" />);
 
     const input = screen.getByRole("textbox", { name: "Search" });
-    await input.fill("viking");
-    await expect.element(input).toHaveValue("viking");
+    await input.fill("realm");
+    await expect.element(input).toHaveValue("realm");
   });
 });

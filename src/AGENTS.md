@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Application source for Idleval — a Viking idle game with separated layers (content → game → store → components).
+Application source for Idleval — a fantasy idle game with separated layers (content → game → store → components).
 
 ## Folder map
 

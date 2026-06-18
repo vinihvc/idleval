@@ -1,45 +1,46 @@
-# Idleval
+<p align="center">
+  <img src="media/idleval.webp" alt="Idleval royal seal" width="160">
+</p>
 
-Raise a tiny realm, hire strange helpers, court impossible powers, and watch your coffers grow while you are away.
+<h1 align="center">Idleval</h1>
 
-### Preview
+<p align="center">
+  Raise a tiny realm, hire strange helpers, court impossible powers, and watch your coffers grow while you are away.
+</p>
 
-<img width="1437" alt="image" src="https://github.com/user-attachments/assets/45586ff5-49a3-48ba-b4a6-0e19d160da9b" />
+<p align="center">
+  <a href="https://idleval.vini.one"><strong>Play now →</strong></a>
+</p>
 
-## Getting Started
+---
 
-1. Clone the repository
-2. Install dependencies with `pnpm install`
-3. Start the development server with `pnpm dev`
-4. Open your browser and navigate to `http://localhost:5173`
+## About
 
-## Architecture
+**Idleval** is a fantasy idle game. Build factories, invoke gods from mythologies around the world, complete missions, collect relics, and let your realm earn gold even when the game is closed.
 
-Layered source under `src/` — see [docs/CONTEXT.md](docs/CONTEXT.md) for data flow, domain map, and feature recipes; [docs/DESIGN.md](docs/DESIGN.md) for visual tokens and UI patterns. Per-folder conventions live in [src/AGENTS.md](src/AGENTS.md) and each `src/{folder}/AGENTS.md`.
+Available in **English**, **Spanish**, and **Portuguese**. Runs in the browser and as an installable PWA.
 
-## Technologies
+## Features
 
-- Vite 8 (Rolldown + Oxc) + React Compiler
-- TypeScript
-- Tailwind CSS
-- Jotai
-- Pixelarticons
-- Shark UI (Ark UI)
+- **Factories** — grain, iron, wine, longships, and more; each with a manager and upgrades
+- **Gods** — invoke deities to multiply realm production
+- **Missions** — objectives with renown rewards
+- **Power-ups** — runes, relics, and temporary boosts in your inventory
+- **Daily ritual** — reward streak for consecutive logins
+- **Offline earnings** — production accrued while you were away
+- **Accessibility** — keyboard support, screen readers, and `prefers-reduced-motion`
 
-### Installation
+## Stack
 
-```bash
-git clone https://github.com/vinihvc/idleval
-```
+- [React](https://react.dev/)
+- [Jotai](https://jotai.org/)
+- [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Shark UI](https://shark.vini.one/)
+- [Vitest](https://vitest.dev/)
 
-### Installing dependencies
+---
 
-```bash
-pnpm install
-```
-
-### Running Locally
-
-```bash
-pnpm dev
-```
+<p align="center">
+  <sub>Idleval is a fantasy parody. No god, saint, manager, or cosmic accountant here is real.</sub>
+</p>
