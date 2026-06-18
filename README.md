@@ -28,7 +28,6 @@ Available in **English**, **Spanish**, and **Portuguese**. Runs in the browser a
 - **Power-ups** — runes, relics, and temporary boosts in your inventory
 - **Daily ritual** — reward streak for consecutive logins
 - **Offline earnings** — production accrued while you were away
-- **Accessibility** — keyboard support, screen readers, and `prefers-reduced-motion`
 
 ## Stack
 
