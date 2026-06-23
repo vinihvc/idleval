@@ -52,8 +52,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Evolution
 
+- 2026-06-18 — Factory payback rebalance: `unitCostGrowth` 1.04, income-aligned `baseBuyCost`, purchase-mode uses raw catalog costs
+- 2026-06-18 — Factory economy rebalance: `GAME_BALANCE` income/cost knobs, softer `FACTORY_DATA` tier costs (~11×), `startDifficulty` 1.30
 - 2026-06-17 — `factory-cycle.ts`: wall-clock cycle anchors shared by scheduler and progress bar
 - 2026-06-17 — Quality pass: decimal-safe gold progress, `canPurchaseAny*` helper, architecture ban on `@/i18n/` imports
 - 2026-06-17 — `missions.ts`: god-cycle reset; `2^godsInvoked` scaling; `progress-ease.ts`, `mission-progression.ts`
-- 2026-06-14 — `createInitialFactoriesState`, `canPurchaseAny*`, `getFactoryGoldPerSecond`, `hasInvokableGod`
-- 2026-06-08 — Removed difficulty system; game layer no longer imports store

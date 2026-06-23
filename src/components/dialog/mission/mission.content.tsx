@@ -1,5 +1,8 @@
 import React from "react";
-import { formatMissionProgressLabel } from "@/components/missions/format-mission-progress";
+import {
+  formatMissionProgressLabel,
+  getMissionProgressBarPercent,
+} from "@/components/missions/format-mission-progress";
 import { MissionObjectiveLabel } from "@/components/missions/mission-objective";
 import type { MissionDefinition } from "@/content/missions";
 import {
@@ -48,7 +51,7 @@ export const MissionClaimContent = (props: MissionClaimContentProps) => {
           {isReady ? null : (
             <MissionProressbar
               label={progressLabel}
-              value={Math.round(progress.ratio * 100)}
+              value={getMissionProgressBarPercent(progress.ratio)}
             />
           )}
         </div>

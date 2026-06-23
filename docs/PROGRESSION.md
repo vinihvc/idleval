@@ -18,7 +18,7 @@ Idleval layers difficulty so early play hooks the player and later god invokes s
 
 **Factories (before 1st god invoked):**
 
-- `factoryDifficulty` starts at **1.25** (+25% income, ~20% lower costs) when no factory milestones are recorded.
+- `factoryDifficulty` starts at **1.30** (+30% income, ~23% lower costs) when no factory milestones are recorded.
 - Decays linearly with factory milestones (unlock / upgrade / automate) and reaches **1.0** at ~45% of max factory progress score.
 - **Immediately 1.0** after the first god is invoked.
 
@@ -60,19 +60,19 @@ From [`getFactoryReferenceMetrics(1)`](../src/game/progression-estimates.ts):
 
 | Factory | Cycle (s) | Value / unit / cycle | Unlock gold | Manager | Upgrade | Gold/s (1 unit) |
 |---------|-----------|----------------------|-------------|---------|---------|-----------------|
-| Grain | 2 | 24 | — | 11 968 | 54 400 | 12.0 |
-| Wine | 5 | 192 | 41 250 | 179 438 | 821 250 | 38.4 |
-| Iron | 10 | 1 024 | 618 750 | 2 691 563 | 12 318 750 | 102.4 |
-| Crossbow | 20 | 8 192 | 9 375 000 | 40 373 438 | 184 781 250 | 409.6 |
-| Longship | 40 | 65 536 | 140 625 000 | 605 601 563 | 2 771 718 750 | 1 638.4 |
-| Reliquary | 80 | 524 288 | 2 109 375 000 | 9 084 023 438 | 41 587 031 250 | 6 553.6 |
+| Grain | 2 | 30 | — | 5 610 | 25 500 | 15.0 |
+| Wine | 5 | 240 | 15 000 | 44 880 | 204 000 | 48.0 |
+| Iron | 9 | 1 920 | 150 000 | 374 000 | 1 700 000 | 213.3 |
+| Crossbow | 18 | 15 360 | 1 000 000 | 2 992 000 | 13 600 000 | 853.3 |
+| Longship | 36 | 122 880 | 12 500 000 | 29 920 000 | 136 000 000 | 3 413.3 |
+| Reliquary | 72 | 983 040 | 125 000 000 | 306 680 000 | 1 394 000 000 | 13 653.3 |
 
-### Early ease (`factoryDifficulty = 1.25`, first run)
+### Early ease (`factoryDifficulty = 1.30`, first run)
 
 | Factory | Value / cycle | Unlock | Manager | Gold/s (1 unit) |
 |---------|---------------|--------|---------|-----------------|
-| Grain | 30 | — | 9 574 | 15.0 |
-| Wine | 240 | 33 000 | 143 550 | 48.0 |
+| Grain | 39 | — | 4 315 | 19.5 |
+| Wine | 312 | 11 538 | 34 523 | 62.4 |
 
 ## God invoke thresholds
 
@@ -102,8 +102,8 @@ From [`estimateMilestoneMinutes()`](../src/game/progression-estimates.ts). Conse
 
 | Milestone | Approx. active time |
 |-----------|---------------------|
-| Grain manager | ~10–14 min |
-| Unlock wine | ~15–28 min |
+| Grain manager | ~4–6 min |
+| Unlock wine | ~6–10 min |
 | **1st god (Huangdi)** | **2–3.5 h** |
 | 2nd → 6th gods | Each run longer (higher threshold, stacked bonuses help rebuild) |
 | **All six gods** | **~1–2 weeks** focused active play |

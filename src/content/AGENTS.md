@@ -45,8 +45,8 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 
 ## Evolution
 
+- 2026-06-18 — `FACTORY_DATA` costs aligned to ~2 min first-unit payback; tier escalation ~8× production
 - 2026-06-17 — Quality pass: `getGodIndex`, mission invariant coverage, power-up param dedup; `@reserved` on unused mission schema fields
 - 2026-06-17 — `GOD_DATA.productionSpeedMultiplier`; `power-ups.ts` reads `GAME_BALANCE`; 200-mission catalog
 - 2026-06-14 — `missions.ts` hardcoded `MISSION_DATA` catalog (100 quests)
 - 2026-06-08 — `power-ups.ts` catalog with fixed daily calendar and altar grid
-- 2026-06-07 — Initial docs: catalog + localize bridge + invariants

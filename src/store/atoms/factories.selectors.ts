@@ -98,9 +98,14 @@ export const useProductionValue = (factory: FactoryType): GameValue => {
 };
 
 export const useTotalToEarnAfterProduce = (factory: FactoryType): GameValue => {
-  useFactoryState(factory);
+  const { amount, isUpgraded } = useFactoryState(factory);
+  const godsProductionMultiplier = useGodsProductionMultiplier();
 
-  return getTotalEarnPerCycle(factory);
+  return getTotalEarnPerCycle(factory, {
+    amount,
+    isUpgraded,
+    godsProductionMultiplier,
+  });
 };
 
 export const canPurchaseAnyUpgrade = (): boolean =>

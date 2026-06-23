@@ -3,6 +3,7 @@ import { getScaledFactoryConfig } from "@/game/balance";
 import { store } from "@/providers/store";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
 import { inventoryAtom } from "@/store/atoms/inventory";
+import { missionsAtom } from "@/store/atoms/missions.atom";
 import {
   applyOfflineEarning,
   offlineCycleProgressAtom,
@@ -103,6 +104,59 @@ describe("applyOfflineEarning", () => {
     );
     expect(store.get(factoriesAtom).wine.isProducing).toBe(false);
     expect(getGold().gt(0)).toBe(true);
+    expect(store.get(missionsAtom).counters.productionCyclesCompleted).toBe(1);
+  });
+
+  it("increments production cycle counter for automated offline cycles", () => {
+    const productionTime = getScaledFactoryConfig("grain").productionTime;
+    const elapsedSec = 120;
+    const now = elapsedSec * 1000;
+    const expectedCycles = Math.floor(elapsedSec / productionTime);
+
+    seedFactory("grain", {
+      isAutomated: true,
+      isUnlocked: true,
+      amount: 1,
+    });
+    store.set(sessionAtom, { lastSeenAt: 0 });
+
+    applyOfflineEarning(now);
+
+    expect(store.get(missionsAtom).counters.productionCyclesCompleted).toBe(
+      expectedCycles
+    );
+  });
+
+  it("counts automated and manual offline cycles without double counting manual", () => {
+    const grainProductionTime = getScaledFactoryConfig("grain").productionTime;
+    const wineProductionTime = getScaledFactoryConfig("wine").productionTime;
+    const elapsedSec = 120;
+    const now = elapsedSec * 1000;
+    const wineStartedAt = now - wineProductionTime * 1000;
+    const expectedAutomatedCycles = Math.floor(
+      elapsedSec / grainProductionTime
+    );
+
+    seedFactory("grain", {
+      isAutomated: true,
+      isUnlocked: true,
+      amount: 1,
+    });
+    seedFactory("wine", {
+      isUnlocked: true,
+      isAutomated: false,
+      isProducing: true,
+      amount: 1,
+      productionStartedAt: wineStartedAt,
+      productionDurationSec: wineProductionTime,
+    });
+    store.set(sessionAtom, { lastSeenAt: 0 });
+
+    applyOfflineEarning(now);
+
+    expect(store.get(missionsAtom).counters.productionCyclesCompleted).toBe(
+      expectedAutomatedCycles + 1
+    );
   });
 
   it("returns null when total offline gold is zero", () => {

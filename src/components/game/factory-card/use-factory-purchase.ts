@@ -1,4 +1,5 @@
 import React from "react";
+import { FACTORY_DATA } from "@/content/factories";
 import { canPurchaseUnits, canUnlockFactory } from "@/game/purchases";
 import {
   setAmountBySelectedAmount,
@@ -12,21 +13,16 @@ import { useWallet } from "@/store/atoms/wallet";
 import type { FactoryCardModel } from "./use-factory-card";
 
 export const useFactoryPurchase = (model: FactoryCardModel) => {
-  const {
-    factoryType,
-    amount,
-    baseBuyCost,
-    isUnlocked,
-    unlockPrice,
-    nextUnitCost,
-    isLocked,
-  } = model;
+  const { factoryType, amount, isUnlocked, unlockPrice, nextUnitCost, isLocked } =
+    model;
   const { gold } = useWallet();
   const amountToBuy = usePurchaseMode();
+  const catalogBaseBuyCost = FACTORY_DATA[factoryType].baseBuyCost;
 
   const { totalCanBuy, totalToPay } = React.useMemo(
-    () => computePurchaseTotals(amountToBuy, gold, amount, baseBuyCost),
-    [amountToBuy, gold, amount, baseBuyCost]
+    () =>
+      computePurchaseTotals(amountToBuy, gold, amount, catalogBaseBuyCost),
+    [amountToBuy, gold, amount, catalogBaseBuyCost]
   );
 
   const totalGreaterThan0 = totalCanBuy > 0;

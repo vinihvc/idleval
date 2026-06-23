@@ -6,14 +6,15 @@ import {
 } from "@/game/missions";
 import type { MissionGameSnapshot } from "@/game/types";
 import { store } from "@/providers/store";
+import { useFactories } from "@/store/atoms/factories";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
-import { getInvokedGods } from "@/store/atoms/gods";
+import { getInvokedGods, useGods } from "@/store/atoms/gods";
 import {
   getMissionsState,
   useMissionsState,
 } from "@/store/atoms/missions.atom";
-import { statisticsAtom } from "@/store/atoms/statistics";
-import { getGold } from "@/store/atoms/wallet";
+import { statisticsAtom, useStatistics } from "@/store/atoms/statistics";
+import { getGold, useWallet } from "@/store/atoms/wallet";
 
 export const buildMissionGameSnapshot = (): MissionGameSnapshot => {
   const statistics = store.get(statisticsAtom);
@@ -34,14 +35,20 @@ export const getMissionRenownProductionMultiplier = () =>
 
 export const useVisibleMissionSlots = () => {
   const state = useMissionsState();
+  const { gold } = useWallet();
+  const factories = useFactories();
+  const statistics = useStatistics();
+  const { invoked: godsInvoked } = useGods();
 
-  return React.useMemo(
-    () =>
-      getVisibleMissionSlots(
-        MISSION_CATALOG,
-        state,
-        buildMissionGameSnapshot()
-      ),
-    [state]
-  );
+  return React.useMemo(() => {
+    const snapshot: MissionGameSnapshot = {
+      statistics,
+      factories,
+      gods: { invoked: godsInvoked },
+      walletGold: gold,
+      counters: state.counters,
+    };
+
+    return getVisibleMissionSlots(MISSION_CATALOG, state, snapshot);
+  }, [state, gold, factories, statistics, godsInvoked]);
 };

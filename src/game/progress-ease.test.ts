@@ -15,7 +15,7 @@ describe("progress ease", () => {
     expect(getMaxFactoryProgressScore()).toBe(FACTORY_TYPES.length * 3);
   });
 
-  it("getFactoryProgressDifficulty starts at 1.25 with no factory milestones", () => {
+  it("getFactoryProgressDifficulty starts at startDifficulty with no factory milestones", () => {
     expect(
       getFactoryProgressDifficulty({
         factories: {},

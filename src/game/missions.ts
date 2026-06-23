@@ -29,4 +29,5 @@ export {
   getVisibleMissionSlots,
   replaceActiveSlotAfterClaim,
   resolveActiveSlotIds,
+  resolveMissionSlotStatus,
 } from "./missions/slots";

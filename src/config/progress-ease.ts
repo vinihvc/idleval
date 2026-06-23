@@ -5,7 +5,7 @@ export const PROGRESS_EASE = {
     factoryAutomated: 1,
   },
   factory: {
-    startDifficulty: 1.25,
+    startDifficulty: 1.3,
     endDifficulty: 1,
     decayByProgressRatio: 0.45,
   },

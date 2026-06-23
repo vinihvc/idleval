@@ -47,6 +47,28 @@ export const getMissionSlotStatus = (
   return "in_progress";
 };
 
+/**
+ * Resolves slot status from persisted state and live snapshot progress.
+ */
+export const resolveMissionSlotStatus = (
+  mission: MissionDefinition,
+  state: MissionsPersistedState,
+  snapshot: MissionGameSnapshot
+): MissionSlotStatus => {
+  if (state.claimedIds.includes(mission.id)) {
+    return "claimed";
+  }
+
+  if (
+    state.readyToClaimIds.includes(mission.id) ||
+    isMissionReadyToClaim(mission, snapshot, state)
+  ) {
+    return "ready";
+  }
+
+  return "in_progress";
+};
+
 export const canClaimMission = (
   id: MissionId,
   state: MissionsPersistedState
@@ -200,7 +222,7 @@ export const getVisibleMissionSlots = (
     slots.push({
       id,
       order: mission.order,
-      status: getMissionSlotStatus(id, state),
+      status: resolveMissionSlotStatus(mission, state, snapshot),
       progress: getMissionProgress(mission.objective, snapshot, state, id),
     });
   }

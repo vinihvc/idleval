@@ -89,7 +89,7 @@ export const getNormalizedFactoryProgress = (score: number): number => {
  * Early-game factory ease: boosted until the first god is invoked.
  *
  * @example
- * getFactoryProgressDifficulty({ factories: {}, godsInvokedCount: 0 }) // 1.25
+ * getFactoryProgressDifficulty({ factories: {}, godsInvokedCount: 0 }) // 1.3
  * getFactoryProgressDifficulty({ factories: {}, godsInvokedCount: 1 }) // 1
  */
 export const getFactoryProgressDifficulty = (

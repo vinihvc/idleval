@@ -439,4 +439,132 @@ describe("missions", () => {
       )
     ).toBe(true);
   });
+
+  it("does not mark holdGold ready when wallet is slightly below billion-scale target", () => {
+    const mission = getMissionById("mission-103");
+    assert(mission);
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-103"];
+    const snapshot = createSnapshot({
+      walletGold: D("62099500000"),
+      factories: {
+        grain: createSnapshot().factories.grain,
+        reliquary: {
+          amount: 1,
+          isAutomated: false,
+          isProducing: false,
+          isUnlocked: true,
+          isUpgraded: false,
+          productionStartedAt: null,
+          productionDurationSec: null,
+        },
+      },
+    });
+
+    expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(false);
+    expect(
+      getMissionProgress(mission.objective, snapshot, state, mission.id).ratio
+    ).toBeLessThan(1);
+  });
+
+  it("marks holdGold ready at exact billion-scale target", () => {
+    const mission = getMissionById("mission-103");
+    assert(mission);
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-103"];
+    const snapshot = createSnapshot({
+      walletGold: D("62100000000"),
+      factories: {
+        grain: createSnapshot().factories.grain,
+        reliquary: {
+          amount: 1,
+          isAutomated: false,
+          isProducing: false,
+          isUnlocked: true,
+          isUpgraded: false,
+          productionStartedAt: null,
+          productionDurationSec: null,
+        },
+      },
+    });
+
+    expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(true);
+    expect(
+      findNewlyReadyMissionIds(MISSION_CATALOG, state, snapshot)
+    ).toContain("mission-103");
+  });
+
+  it("shows live ready status before sync persists readyToClaimIds", () => {
+    const mission = getMissionById("mission-103");
+    assert(mission);
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-103"];
+    const snapshot = createSnapshot({
+      walletGold: D("62100000000"),
+      factories: {
+        grain: createSnapshot().factories.grain,
+        reliquary: {
+          amount: 1,
+          isAutomated: false,
+          isProducing: false,
+          isUnlocked: true,
+          isUpgraded: false,
+          productionStartedAt: null,
+          productionDurationSec: null,
+        },
+      },
+    });
+
+    const slots = getVisibleMissionSlots(MISSION_CATALOG, state, snapshot);
+    const slot = slots.find((entry) => entry.id === "mission-103");
+
+    expect(slot?.status).toBe("ready");
+    expect(state.readyToClaimIds).not.toContain("mission-103");
+  });
+
+  it("tracks sinceActive earnGold progress for mission-102", () => {
+    const mission = getMissionById("mission-102");
+    assert(mission);
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-102"];
+    state.progressBaselines = {
+      "mission-102": {
+        goldEarned: "0",
+        goldSpent: "0",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 0,
+        dailyRewardsClaimed: 0,
+      },
+    };
+    const snapshot = createSnapshot({
+      statistics: {
+        ...createSnapshot().statistics,
+        goldEarned: "54999500000",
+      },
+      factories: {
+        grain: createSnapshot().factories.grain,
+        reliquary: {
+          amount: 1,
+          isAutomated: false,
+          isProducing: false,
+          isUnlocked: true,
+          isUpgraded: false,
+          productionStartedAt: null,
+          productionDurationSec: null,
+        },
+      },
+    });
+
+    expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(false);
+
+    const completeSnapshot = createSnapshot({
+      statistics: {
+        ...createSnapshot().statistics,
+        goldEarned: "55000000000",
+      },
+      factories: snapshot.factories,
+    });
+
+    expect(isMissionReadyToClaim(mission, completeSnapshot, state)).toBe(true);
+  });
 });

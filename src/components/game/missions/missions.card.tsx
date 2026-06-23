@@ -1,5 +1,6 @@
 import type React from "react";
 import { tv } from "tailwind-variants";
+import { getMissionProgressBarPercent } from "@/components/missions/format-mission-progress";
 import { MissionObjectiveLabel } from "@/components/missions/mission-objective";
 import { useMissionSlotView } from "@/components/missions/use-mission-slot-view";
 import { boxBorder } from "@/components/ui/box-border";
@@ -79,7 +80,7 @@ const MissionSlotProgress = (props: {
         "inset-shadow-xs h-4 max-h-4 min-h-4 w-full shrink-0 overflow-hidden rounded-sm border-2 px-0.5 py-0 leading-none",
         "gap-0 border-primary/40 bg-muted px-0"
       )}
-      value={Math.round(ratio * 100)}
+      value={getMissionProgressBarPercent(ratio)}
     >
       <ProgressTrack className="absolute inset-0 min-h-0 overflow-hidden bg-transparent">
         <ProgressRange className="h-full bg-primary" />

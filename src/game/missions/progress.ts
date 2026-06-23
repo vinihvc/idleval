@@ -33,11 +33,12 @@ const getDecimalProgress = (
   target: GameValue
 ): MissionProgress => {
   const safeTarget = target.lte(0) ? D(1) : target;
-  const clampedCurrent = current.max(0).min(safeTarget);
-  const ratio = Math.min(
-    1,
-    Math.max(0, clampedCurrent.div(safeTarget).toNumber())
-  );
+  const safeCurrent = current.max(0);
+  const isComplete = safeCurrent.gte(safeTarget);
+  const clampedCurrent = isComplete ? safeTarget : safeCurrent;
+  const ratio = isComplete
+    ? 1
+    : Math.min(1, Math.max(0, safeCurrent.div(safeTarget).toNumber()));
 
   return {
     current: clampedCurrent.toNumber(),

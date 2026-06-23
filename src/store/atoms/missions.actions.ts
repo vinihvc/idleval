@@ -139,6 +139,8 @@ export const syncMissionProgress = (): void => {
 };
 
 export const claimMissionReward = (id: MissionId): boolean => {
+  syncMissionProgress();
+
   const state = store.get(missionsAtom);
 
   if (!canClaimMission(id, state)) {

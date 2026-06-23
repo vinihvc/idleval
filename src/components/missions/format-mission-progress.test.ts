@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { MissionObjective } from "@/content/missions";
 import type { MissionProgress } from "@/game/types";
-import { formatMissionProgressLabel } from "./format-mission-progress";
+import {
+  formatMissionProgressLabel,
+  getMissionProgressBarPercent,
+} from "./format-mission-progress";
 
 const progress = (
   current: number,
@@ -50,5 +53,25 @@ describe("formatMissionProgressLabel", () => {
     expect(formatMissionProgressLabel(objective, progress(1, 1, 1))).toBe(
       "100%"
     );
+  });
+
+  it("does not show equal gold labels when slightly below target at billion scale", () => {
+    const objective: MissionObjective = {
+      type: "holdGold",
+      target: "62100000000",
+      scope: "run",
+    };
+
+    const label = formatMissionProgressLabel(
+      objective,
+      progress(62_099_500_000, 62_100_000_000, 62_099_500_000 / 62_100_000_000)
+    );
+
+    expect(label).toBe("62.09 B / 62.1 B");
+  });
+
+  it("floors progress bar percent below completion", () => {
+    expect(getMissionProgressBarPercent(0.999_99)).toBe(99);
+    expect(getMissionProgressBarPercent(1)).toBe(100);
   });
 });

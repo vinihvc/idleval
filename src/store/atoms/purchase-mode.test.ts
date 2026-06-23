@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { getScaledBaseBuyCost } from "@/game/balance";
 import { getPurchaseTotalCost } from "@/game/purchases";
 import { store } from "@/providers/store";
 import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
@@ -36,7 +35,7 @@ describe("purchase-mode", () => {
   });
 
   it("computePurchaseTotals returns affordable count and total cost", () => {
-    const baseBuyCost = getScaledBaseBuyCost(75);
+    const baseBuyCost = 75;
     const factoryDifficulty = getFactoryProgressDifficulty();
     const totals = computePurchaseTotals(1, D(1000), 0, baseBuyCost);
     const expectedTotal = getPurchaseTotalCost(

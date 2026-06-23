@@ -14,7 +14,7 @@ const UNIT_COST_RATE = D(ECONOMY.unitCostMultiplier);
 
 /**
  * Cost of the next single unit given how many are already owned.
- * Scales exponentially by 1.15x per owned unit.
+ * Scales exponentially by unitCostGrowth per owned unit.
  *
  * @example
  * unitCost(10, 0).toNumber() // 10

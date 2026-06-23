@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { FACTORY_DATA } from "@/content/factories";
 import { GAME_BALANCE } from "@/config/balance";
 import { getScaledBaseBuyCost } from "@/game/balance";
 import {
@@ -9,6 +10,10 @@ import {
   unitCost,
   upgradeCost,
 } from "@/game/economy";
+import {
+  createInitialFactoryState,
+  getFactoryGoldPerSecond,
+} from "@/game/factories";
 import { D } from "@/utils/decimal";
 
 describe("economy", () => {
@@ -61,7 +66,7 @@ describe("economy", () => {
 
   it("maxAffordable returns zero when gold is insufficient", () => {
     expect(maxAffordable(10, 0, D(0))).toBe(0);
-    expect(maxAffordable(10, 0, D(5))).toBe(0);
+    expect(maxAffordable(10, 0, D(3))).toBe(0);
   });
 
   it("maxAffordable returns at least one when gold covers first unit", () => {
@@ -108,5 +113,24 @@ describe("economy", () => {
 
     expect(bulkBuyCost(base, owned, affordable).lte(gold)).toBe(true);
     expect(bulkBuyCost(base, owned, affordable + 1).gt(gold)).toBe(true);
+  });
+
+  it("reliquary next-unit payback stays under ten minutes at fifty units", () => {
+    const owned = 50;
+    const state = {
+      ...createInitialFactoryState("reliquary", { amount: owned }),
+      isUnlocked: true,
+      isAutomated: true,
+    };
+    const nextCost = unitCost(FACTORY_DATA.reliquary.baseBuyCost, owned);
+    const incomePerSecond = getFactoryGoldPerSecond(
+      "reliquary",
+      state,
+      D(1),
+      { factoryDifficulty: 1 }
+    );
+    const paybackSeconds = nextCost.div(incomePerSecond).toNumber();
+
+    expect(paybackSeconds).toBeLessThan(10 * 60);
   });
 });

@@ -9,6 +9,8 @@ import { getFactoryProgressDifficulty } from "./progress-ease";
 
 interface TotalEarnPerCycleOptions {
   amount?: number;
+  godsProductionMultiplier?: GameValue;
+  isUpgraded?: boolean;
 }
 
 /**
@@ -24,8 +26,9 @@ export const getTotalEarnPerCycle = (
   return getFactoryEarnPerCycle({
     amount: effectiveAmount > 0 ? effectiveAmount : 1,
     factoryDifficulty: getFactoryProgressDifficulty(),
-    godsProductionMultiplier: getGodsProductionMultiplier(),
-    isUpgraded,
+    godsProductionMultiplier:
+      options.godsProductionMultiplier ?? getGodsProductionMultiplier(),
+    isUpgraded: options.isUpgraded ?? isUpgraded,
     productionValue,
   })
     .times(getPowerUpIncomeMultiplierForEarn())

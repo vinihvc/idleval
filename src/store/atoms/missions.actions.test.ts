@@ -2,6 +2,7 @@ import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { GAME_BALANCE } from "@/config/balance";
 import { getMissionById } from "@/content/missions";
 import { store } from "@/providers/store";
+import { factoriesAtom } from "@/store/atoms/factories.atom";
 import { godsAtom } from "@/store/atoms/gods";
 import {
   claimMissionReward,
@@ -94,5 +95,40 @@ describe("missions actions", () => {
         .minus(beforeGold)
         .eq(D(goldReward.amount).times(GAME_BALANCE.missionGoldReward).times(2))
     ).toBe(true);
+  });
+
+  it("syncs and marks holdGold ready when claiming after wallet meets target", () => {
+    const mission = getMissionById("mission-103");
+    assert(mission);
+
+    store.set(walletAtom, {
+      gold: D("62100000000").toString(),
+    });
+    store.set(factoriesAtom, (previous) => ({
+      ...previous,
+      reliquary: {
+        ...previous.reliquary,
+        amount: 1,
+        isUnlocked: true,
+      },
+    }));
+    store.set(missionsAtom, (previous) => ({
+      ...previous,
+      activeSlotIds: ["mission-103"],
+      progressBaselines: {
+        "mission-103": {
+          goldEarned: "0",
+          goldSpent: "0",
+          productionCyclesCompleted: 0,
+          powerUpsActivated: 0,
+          dailyRewardsClaimed: 0,
+        },
+      },
+    }));
+
+    const claimed = claimMissionReward(mission.id);
+
+    expect(claimed).toBe(true);
+    expect(store.get(missionsAtom).claimedIds).toContain("mission-103");
   });
 });

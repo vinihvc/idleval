@@ -1,5 +1,3 @@
-// biome-ignore-all lint/performance/noBarrelFile: Re-exports keep @/content/missions import path stable after module split.
-
 export { MISSION_DATA } from "./missions/catalog";
 export {
   getMissionById,

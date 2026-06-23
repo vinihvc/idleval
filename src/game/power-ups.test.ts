@@ -186,7 +186,7 @@ describe("power-ups", () => {
 
     expect(
       getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber()
-    ).toBe(12);
+    ).toBe(15);
   });
 
   it("falls back to unlocked factories when none are automated", () => {
@@ -194,7 +194,7 @@ describe("power-ups", () => {
 
     expect(
       getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber()
-    ).toBe(12);
+    ).toBe(15);
   });
 
   it("applies mission renown to mimir coin realm rate", () => {

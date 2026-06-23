@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { LOCAL_STORAGE } from "@/config/local-storage";
-import type { FactoryType } from "@/content/factories";
+import { FACTORY_DATA, type FactoryType } from "@/content/factories";
 import {
   getAffordableUnitCount,
   getPurchaseTotalCost,
@@ -91,11 +91,11 @@ export const totalCanBuyByAmount = (
   amount: PurchaseModeState["amountToBuy"]
 ) => {
   const gold = getGold();
-  const { baseBuyCost, amount: owned } = getFactory(factory);
+  const { amount: owned } = getFactory(factory);
 
   return getAffordableUnitCount({
     amount,
-    baseBuyCost,
+    baseBuyCost: FACTORY_DATA[factory].baseBuyCost,
     factoryDifficulty: getFactoryProgressDifficulty(),
     gold,
     owned,
@@ -107,7 +107,12 @@ export const totalToPayByAmount = (
   amount: PurchaseModeState["amountToBuy"]
 ) => {
   const gold = getGold();
-  const { baseBuyCost, amount: owned } = getFactory(factory);
+  const { amount: owned } = getFactory(factory);
 
-  return computePurchaseTotals(amount, gold, owned, baseBuyCost).totalToPay;
+  return computePurchaseTotals(
+    amount,
+    gold,
+    owned,
+    FACTORY_DATA[factory].baseBuyCost
+  ).totalToPay;
 };

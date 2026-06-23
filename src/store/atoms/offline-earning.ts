@@ -20,7 +20,10 @@ import {
   getGodsProductionSpeedMultiplier,
 } from "@/store/atoms/gods";
 import { getActivePowerUp } from "@/store/atoms/inventory";
-import { syncMissionProgress } from "@/store/atoms/missions.actions";
+import {
+  incrementMissionCounter,
+  syncMissionProgress,
+} from "@/store/atoms/missions.actions";
 import { refreshExpiredPowerUps } from "@/store/atoms/power-ups.actions";
 import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
 import { getLastSeenAt, touchLastSeen } from "@/store/atoms/session";
@@ -163,6 +166,15 @@ export const applyOfflineEarning = (
 
   bulkIncreaseGold(entries);
   mergeOfflineCycleProgress(computed.results);
+
+  const automatedCycleCount = computed.results.reduce(
+    (sum, result) => sum + result.cycles,
+    0
+  );
+
+  if (automatedCycleCount > 0) {
+    incrementMissionCounter("productionCyclesCompleted", automatedCycleCount);
+  }
 
   touchLastSeen(now);
   refreshExpiredPowerUps(now);

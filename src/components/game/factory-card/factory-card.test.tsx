@@ -3,6 +3,7 @@ import { FactoryCard } from "@/components/game/factory-card";
 import { FACTORY_DATA } from "@/content/factories";
 import { getFactoryEarnPerCycle } from "@/game/factories";
 import { m } from "@/i18n/messages";
+import { getTotalEarnPerCycle } from "@/store/atoms/factory-earn";
 import { getPowerUpIncomeMultiplierForEarn } from "@/store/atoms/inventory";
 import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
 import { resetGame } from "@/store/reset";
@@ -72,6 +73,31 @@ describe("FactoryCard", () => {
         })
       )
       .not.toBeDisabled();
+  });
+
+  test("updates progress bar earnings after buying a unit", async () => {
+    seedGold(1_000_000);
+    seedFactory("grain", { isUnlocked: true, amount: 2 });
+
+    const earnBefore = amountFormatterWithDolarSign(
+      getTotalEarnPerCycle("grain", { amount: 2 })
+    );
+    const earnAfter = amountFormatterWithDolarSign(
+      getTotalEarnPerCycle("grain", { amount: 3 })
+    );
+
+    const screen = await renderWithProviders(<FactoryCard type="grain" />);
+
+    await expect.element(screen.getByText(earnBefore)).toBeInTheDocument();
+
+    await screen
+      .getByRole("button", {
+        name: new RegExp(m["ui.factoryCard.buy"]()),
+      })
+      .click();
+
+    await expect.element(screen.getByText(earnAfter)).toBeInTheDocument();
+    expect(screen.getByText(earnBefore).elements()).toHaveLength(0);
   });
 
   test("opens factory ledger dialog", async () => {

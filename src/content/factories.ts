@@ -10,32 +10,32 @@ export const FACTORY_DATA = {
   wine: {
     productionTime: 5,
     productionValue: 160,
-    baseBuyCost: 1125,
-    unlockPrice: 55_000,
+    baseBuyCost: 600,
+    unlockPrice: 30_000,
   },
   iron: {
     productionTime: 10,
     productionValue: 1280,
-    baseBuyCost: 16_875,
-    unlockPrice: 825_000,
+    baseBuyCost: 5000,
+    unlockPrice: 300_000,
   },
   crossbow: {
     productionTime: 20,
     productionValue: 10_240,
-    baseBuyCost: 253_125,
-    unlockPrice: 12_500_000,
+    baseBuyCost: 40_000,
+    unlockPrice: 2_000_000,
   },
   longship: {
     productionTime: 40,
     productionValue: 81_920,
-    baseBuyCost: 3_796_875,
-    unlockPrice: 187_500_000,
+    baseBuyCost: 400_000,
+    unlockPrice: 25_000_000,
   },
   reliquary: {
     productionTime: 80,
     productionValue: 655_360,
-    baseBuyCost: 56_953_125,
-    unlockPrice: 2_812_500_000,
+    baseBuyCost: 4_100_000,
+    unlockPrice: 250_000_000,
   },
 } as const;
 
