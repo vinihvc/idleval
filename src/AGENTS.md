@@ -25,7 +25,7 @@ Application source for Idleval — a fantasy idle game with separated layers (co
 | [styles/](styles/AGENTS.md) | Global CSS, Tailwind v4 tokens |
 | [utils/](utils/AGENTS.md) | Decimals and formatters |
 
-**No AGENTS.md:** `test/` (shared Vitest helpers: `render-with-providers`, `browser-setup`).
+**No AGENTS.md:** `tests/` (Vitest suites mirroring `src/`); `tests/setup/` (shared helpers: `render-with-providers`, `browser-setup`).
 
 ## Layer rules
 
@@ -61,6 +61,7 @@ Sprites under `public/images/` are produced with a **magenta chroma-key pipeline
 
 ## Evolution
 
+- 2026-06-23 — Tests live in root `tests/` (mirrors `src/`); shared setup in `tests/setup/` (`@/test/*` alias)
 - 2026-06-15 — [docs/CONTEXT.md](../docs/CONTEXT.md) and [docs/DESIGN.md](../docs/DESIGN.md) for AI architecture and visual system
 - 2026-06-08 — `config/local-storage-keys.ts` centralizes all localStorage key strings
 - 2026-06-08 — Link to root AGENTS.md magenta chroma-key pipeline for `public/images/` sprites

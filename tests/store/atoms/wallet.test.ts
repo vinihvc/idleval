@@ -9,7 +9,7 @@ import {
   getGold,
   increaseGoldByAmount,
   walletAtom,
-} from "./wallet";
+} from "@/store/atoms/wallet";
 
 describe("wallet", () => {
   beforeEach(() => {

@@ -11,7 +11,7 @@ Cross-cutting pure functions — large-decimal arithmetic and display formatting
 - Keep functions pure with no side effects
 - Use `break_infinity.js` via `D` wrapper in `decimal.ts`
 - Serialize/deserialize for persistence (`serializeDecimal`, `deserializeDecimal`)
-- Colocate tests `*.test.ts` for all non-trivial logic
+- Tests in `tests/utils/*.test.ts` for all non-trivial logic
 - Put number formatting for UI in `formatters.ts`
 
 ## Don't
@@ -33,8 +33,8 @@ Cross-cutting pure functions — large-decimal arithmetic and display formatting
 |------|------|
 | `decimal.ts` | Break Infinity wrapper, serialize, operations |
 | `formatters.ts` | Value formatting for UI |
-| `decimal.test.ts` | Arithmetic tests |
-| `formatters.test.ts` | Formatting tests |
+| `tests/utils/decimal.test.ts` | Arithmetic tests |
+| `tests/utils/formatters.test.ts` | Formatting tests |
 
 ## Neighbors
 

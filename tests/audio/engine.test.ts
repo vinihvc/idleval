@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SoundEngine } from "./engine";
-import type { SoundId } from "./types";
+import { SoundEngine } from "@/audio/engine";
+import type { SoundId } from "@/audio/types";
 
 interface MockGainNode {
   connect: ReturnType<typeof vi.fn>;

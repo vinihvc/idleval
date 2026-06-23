@@ -35,7 +35,7 @@ Global Jotai state — persistence, mutations, and selectors; orchestrates `game
 - Atoms: `{domain}Atom`; hooks: `use{Domain}`; getters: `get{Thing}`
 - Raw atom reads: `use{Domain}State = () => useAtomValue({domain}Atom)`; derived hooks call the accessor
 - Reset: `resetRunProgress()` (run) vs `resetGame()` (full wipe)
-- Colocated tests `*.test.ts`; `vi.mock("@/providers/sound")` when actions trigger audio
+- Tests in `tests/store/**/*.test.ts`; `vi.mock("@/providers/sound")` when actions trigger audio
 - Explicit imports: `@/store/atoms/factories`, `@/store/reset`
 
 ### Persistence / migration

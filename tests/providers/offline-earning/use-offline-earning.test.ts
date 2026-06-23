@@ -3,7 +3,7 @@ import {
   getVisibleResumeAction,
   shouldHeartbeatTouchLastSeen,
   shouldRunOnTabVisible,
-} from "./use-offline-earning";
+} from "@/providers/offline-earning/use-offline-earning";
 
 describe("shouldRunOnTabVisible", () => {
   it("returns false on first render (null → true)", () => {

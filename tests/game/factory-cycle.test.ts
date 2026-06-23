@@ -7,7 +7,7 @@ import {
   isCycleComplete,
   startCycleTick,
   syncCycleSeconds,
-} from "./factory-cycle";
+} from "@/game/factory-cycle";
 
 const baseTick = (): FactoryCycleTick => ({
   cycleKey: 1,

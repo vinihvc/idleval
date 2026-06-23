@@ -11,7 +11,7 @@ import {
   toggleAmountToBuy,
   totalCanBuyByAmount,
   totalToPayByAmount,
-} from "./purchase-mode";
+} from "@/store/atoms/purchase-mode";
 
 describe("purchase-mode", () => {
   beforeEach(() => {

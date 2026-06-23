@@ -5,7 +5,7 @@ import { getCycleProgress } from "@/game/factory-cycle";
 import {
   syncActiveFactoryTick,
   syncInactiveFactoryTick,
-} from "./production-scheduler-sync";
+} from "@/providers/offline-earning/production-scheduler-sync";
 
 describe("production-scheduler-sync", () => {
   const grainProductionTime = getScaledFactoryConfig("grain").productionTime;

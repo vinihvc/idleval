@@ -24,8 +24,9 @@
 
     /* Paths (relative to this config file in TS 6+) */
     "paths": {
+      "@/test/*": ["./tests/setup/*"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

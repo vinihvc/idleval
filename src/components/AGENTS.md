@@ -41,7 +41,7 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 - Props via `interface XxxProps`
 - `ResponsiveDialog` for content only (Dialog ≥768px, Drawer below); avoid `ResponsiveDialogTrigger` and trigger-as-children in domain dialogs
 - `sr-only` on icon-only buttons; labels on inputs
-- Component tests: `component-name.test.tsx` colocated in `component-name/` with `vitest-browser-react` + `renderWithProviders` from `@/test/render-with-providers`
+- Component tests: `tests/components/.../component-name.test.tsx` with `vitest-browser-react` + `renderWithProviders` from `@/test/render-with-providers`
 - One folder per component: `button/button.tsx` + `button/index.ts` exporting the public API
 - Colocate `use-*.ts` in the component folder when only that component (or its subfiles) consumes the hook — e.g. `factory-card/use-factory-card.ts`, `upgrade-card/use-upgrade-card-affordance.ts`
 
@@ -76,6 +76,7 @@ For **future** A/B/C/D comparisons of new UI, use [`@/providers/variant-tools`](
 
 ## Evolution
 
+- 2026-06-23 — Component tests in `tests/components/` (not colocated in `src/components/`)
 - 2026-06-15 — `factories-state-dialog` dev JSON inspector for `factoriesAtom`
 - 2026-06-15 — `game/missions/` consolidated to `mission-objective.tsx` + `mission-slots.tsx`
 - 2026-06-15 — Ban module-level Tailwind class string variables; inline on className or use tv()/helpers

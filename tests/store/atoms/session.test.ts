@@ -7,7 +7,7 @@ import {
   sessionAtom,
   touchLastSeen,
   touchLastSeenIfVisible,
-} from "./session";
+} from "@/store/atoms/session";
 
 describe("session", () => {
   beforeEach(() => {

@@ -1,5 +1,8 @@
 import path from "node:path";
 
+const rootDir = import.meta.dirname;
+
 export const srcAlias = {
-  "@": path.resolve(import.meta.dirname, "./src"),
+  "@/test": path.resolve(rootDir, "./tests/setup"),
+  "@": path.resolve(rootDir, "./src"),
 } as const;

@@ -26,7 +26,7 @@ Internationalization — Paraglide, JSON sources, locale runtime, and localized 
 - Flat dot-notation keys: `ui.nav.upgrades`, `factory.grain.name`
 - `localize.ts`: `translate()`, `hasMessageKey()`, `localizeLore()`
 - Hooks: `useLocalizedFactory`, `useLocalizedGod` in `hooks/`
-- Tests: locale pinned to `en` in `src/test/paraglide-test-setup.ts`; structural validation via `i18n:check`
+- Tests: locale pinned to `en` in `tests/setup/paraglide-test-setup.ts`; structural validation via `i18n:check`
 - Shared Paraglide Vite options: `paraglide.vite.ts` (used by `vite.config.ts` and `vitest.config.ts`)
 
 ## Key files

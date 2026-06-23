@@ -17,7 +17,7 @@ import {
   getConfettiRainSpawnCount,
   resetFallingLeavesForTests,
   setFallingLeavesConfettiLauncher,
-} from "./fire-falling-leaves";
+} from "@/components/effects/falling-leaves/fire-falling-leaves";
 
 describe("fireFallingLeaves", () => {
   beforeEach(() => {

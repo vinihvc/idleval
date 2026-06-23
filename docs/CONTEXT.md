@@ -53,8 +53,8 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 
 ### New cross-layer feature (template)
 
-1. **`content/`** — `as const` constant, derived types, localized getters, i18n keys, extend `content.invariants.test.ts`.
-2. **`game/`** — pure functions + `*.test.ts` (Vitest node); shapes in `types.ts` if persisted.
+1. **`content/`** — `as const` constant, derived types, localized getters, i18n keys, extend `tests/content/content.invariants.test.ts`.
+2. **`game/`** — pure functions + tests in `tests/game/` (Vitest node); shapes in `types.ts` if persisted.
 3. **`store/atoms/`** — `{domain}.atom.ts`, `.actions.ts`, `.selectors.ts`, barrel `{domain}.ts`; key in `LOCAL_STORAGE`.
 4. **`components/`** or **`providers/`** — UI/effects; browser tests with `renderWithProviders`; follow [DESIGN.md](./DESIGN.md).
 5. **Docs** — update `AGENTS.md` in each touched folder (Evolution section, max 5 entries); update [PROGRESSION.md](./PROGRESSION.md) when pacing/difficulty tuning changes.
@@ -92,7 +92,7 @@ See [src/components/AGENTS.md](../src/components/AGENTS.md) and [DESIGN.md](./DE
 2. `game/factories.ts` — yield, unlock, upgrade rules.
 3. Store already covers via `factories.*` — extend actions/selectors if needed.
 4. UI: `factory-card` composes existing data; grid in `game/factory-grid/`.
-5. `content.invariants.test.ts` — monotonic prices, i18n keys.
+5. `tests/content/content.invariants.test.ts` — monotonic prices, i18n keys.
 
 ### New power-up
 
@@ -100,7 +100,7 @@ See [src/components/AGENTS.md](../src/components/AGENTS.md) and [DESIGN.md](./DE
 2. `game/power-ups.ts` — effects, duration, eligibility.
 3. `store/atoms/power-ups.*` + `inventory.ts` for slots/altars.
 4. UI: `ui/power-up/`, wiki tab in `dialog/wiki/`, sprite in `public/images/power-ups/` (magenta pipeline — see root AGENTS.md).
-5. Tests: `game/power-ups.test.ts`, `store/atoms/power-ups.actions.test.ts`.
+5. Tests: `tests/game/power-ups.test.ts`, `tests/store/atoms/power-ups.actions.test.ts`.
 
 ### Daily ritual reward
 
@@ -108,7 +108,7 @@ See [src/components/AGENTS.md](../src/components/AGENTS.md) and [DESIGN.md](./DE
 2. `game/daily-reward.ts` — streak, pending, offer.
 3. `store/atoms/daily-reward.*` — persisted streak (separate from inventory).
 4. UI: `dialog/daily-reward/`; claim grants power-ups via `addInventorySlot`.
-5. Tests: `game/daily-reward.test.ts`, `store/atoms/daily-reward.actions.test.ts`.
+5. Tests: `tests/game/daily-reward.test.ts`, `tests/store/atoms/daily-reward.actions.test.ts`.
 
 ### Offline / scheduler
 
@@ -125,7 +125,7 @@ Pure rules in `game/offline-earning.ts`; apply in `store/offline-earning.ts`.
 ```bash
 pnpm dev
 pnpm test
-pnpm test src/game/missions.test.ts
+pnpm test tests/game/missions.test.ts
 pnpm i18n:check
 pnpm dlx ultracite fix
 pnpm dlx ultracite check

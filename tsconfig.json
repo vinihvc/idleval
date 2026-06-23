@@ -6,6 +6,7 @@
   ],
   "compilerOptions": {
     "paths": {
+      "@/test/*": ["./tests/setup/*"],
       "@/*": ["./src/*"]
     },
     "strictNullChecks": true

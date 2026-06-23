@@ -9,7 +9,7 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 ## Do
 
 - Write pure functions that take state + data from `content/`
-- Colocate tests `*.test.ts` with Vitest (`environment: node`)
+- Add tests in `tests/game/*.test.ts` (Vitest `environment: node`)
 - Add `@example` JSDoc on public exports
 - Use `D` / `GameValue` from `@/utils/decimal` for large numbers
 
@@ -52,6 +52,7 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Evolution
 
+- 2026-06-23 — Tests in `tests/game/` (not colocated in `src/game/`)
 - 2026-06-18 — Factory payback rebalance: `unitCostGrowth` 1.04, income-aligned `baseBuyCost`, purchase-mode uses raw catalog costs
 - 2026-06-18 — Factory economy rebalance: `GAME_BALANCE` income/cost knobs, softer `FACTORY_DATA` tier costs (~11×), `startDifficulty` 1.30
 - 2026-06-17 — `factory-cycle.ts`: wall-clock cycle anchors shared by scheduler and progress bar

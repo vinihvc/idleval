@@ -11,7 +11,7 @@ Pure audio engine — SFX and music playback, no React.
 - Register sounds in `registry.ts` with typed IDs (`SfxId`)
 - Expose API via `engine.ts` (`play`, `stop`, `playMusic`, volumes)
 - Keep types in `types.ts` (`PlayOptions`, `SfxId`)
-- Test logic in `engine.test.ts` (Vitest, node)
+- Test logic in `tests/audio/engine.test.ts` (Vitest, node)
 
 ## Don't
 
@@ -24,7 +24,7 @@ Pure audio engine — SFX and music playback, no React.
 
 - Singleton `soundEngine` exported from `engine.ts`
 - Sound IDs as union type, not loose strings
-- Colocated tests `*.test.ts`
+- Tests in `tests/audio/*.test.ts`
 
 ## Key files
 

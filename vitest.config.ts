@@ -8,7 +8,7 @@ import { srcAlias } from "./vite.shared";
 
 export default defineConfig({
   optimizeDeps: {
-    entries: ["src/**/*.test.tsx"],
+    entries: ["tests/**/*.test.tsx"],
     include: [
       "@inlang/paraglide-js-react",
       "@vercel/analytics/react",
@@ -57,7 +57,7 @@ export default defineConfig({
       ...srcAlias,
       "virtual:pwa-register": path.resolve(
         import.meta.dirname,
-        "./src/test/pwa-register-mock.ts"
+        "./tests/setup/pwa-register-mock.ts"
       ),
     },
     dedupe: ["react", "react-dom"],
@@ -69,8 +69,8 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
-          include: ["src/**/*.test.ts"],
-          setupFiles: ["src/test/paraglide-test-setup.ts"],
+          include: ["tests/**/*.test.ts"],
+          setupFiles: ["tests/setup/paraglide-test-setup.ts"],
         },
       },
       {
@@ -78,10 +78,10 @@ export default defineConfig({
         test: {
           name: "browser",
           fileParallelism: false,
-          include: ["src/**/*.test.tsx"],
+          include: ["tests/**/*.test.tsx"],
           setupFiles: [
-            "src/test/paraglide-test-setup.ts",
-            "src/test/browser-setup.ts",
+            "tests/setup/paraglide-test-setup.ts",
+            "tests/setup/browser-setup.ts",
           ],
           browser: {
             enabled: true,

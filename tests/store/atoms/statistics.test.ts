@@ -7,7 +7,7 @@ import {
   recordQuantity,
   setStatistics,
   statisticsAtom,
-} from "./statistics";
+} from "@/store/atoms/statistics";
 
 describe("statistics", () => {
   beforeEach(() => {

@@ -4,7 +4,7 @@ import type { MissionProgress } from "@/game/types";
 import {
   formatMissionProgressLabel,
   getMissionProgressBarPercent,
-} from "./format-mission-progress";
+} from "@/components/missions/format-mission-progress";
 
 const progress = (
   current: number,

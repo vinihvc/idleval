@@ -12,7 +12,7 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 - Export derived types (`FactoryType`, `GodId`, `FACTORY_TYPES`)
 - Resolve strings via `getLocalizedFactory()` / `getLocalizedGod()` using `@/i18n/localize`
 - Add i18n keys in all locales when creating a new entity
-- Extend `content.invariants.test.ts` for new entities
+- Extend `tests/content/content.invariants.test.ts` for new entities
 
 ## Don't
 
@@ -25,7 +25,7 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 
 - i18n keys: `{entity}.{id}.{field}` (e.g. `factory.grain.name`)
 - Mission module: `missions/types.ts`, `missions/catalog.ts`, `missions/catalog-helpers.ts`, `missions/localize.ts` — barrel `missions.ts`
-- Tests: `content.invariants.test.ts`, `missions.localization.test.ts`
+- Tests: `tests/content/content.invariants.test.ts`, `tests/content/missions.localization.test.ts`
 
 ## Key files
 
@@ -36,7 +36,7 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 | `power-ups.ts` | Relic catalog, `POWER_UP_EFFECTS`, localized getters |
 | `daily-reward.ts` | Fixed daily reward calendar |
 | `missions.ts` | Barrel for mission catalog + localization |
-| `content.invariants.test.ts` | Structural invariants + i18n key coverage |
+| `tests/content/content.invariants.test.ts` | Structural invariants + i18n key coverage |
 
 ## Neighbors
 

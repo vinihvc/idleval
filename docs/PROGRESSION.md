@@ -1,6 +1,6 @@
 # Progression and difficulty
 
-> **Maintenance:** Update this file whenever you change progression-related tuning: `GAME_DIFFICULTY`, `GAME_BALANCE`, `PROGRESS_EASE`, `GOD_DATA` (costs, `productionMultiplier`, `productionSpeedMultiplier`), `FACTORY_DATA`, mission gold rewards, or offline/production timing. After code changes, refresh tables using [`src/game/progression-estimates.ts`](../src/game/progression-estimates.ts) and `pnpm test src/game/progression-estimates.test.ts`.
+> **Maintenance:** Update this file whenever you change progression-related tuning: `GAME_DIFFICULTY`, `GAME_BALANCE`, `PROGRESS_EASE`, `GOD_DATA` (costs, `productionMultiplier`, `productionSpeedMultiplier`), `FACTORY_DATA`, mission gold rewards, or offline/production timing. After code changes, refresh tables using [`src/game/progression-estimates.ts`](../src/game/progression-estimates.ts) and `pnpm test tests/game/progression-estimates.test.ts`.
 
 Idleval layers difficulty so early play hooks the player and later god invokes stay challenging.
 
@@ -114,7 +114,7 @@ God invoke pacing accelerates rebuild via stacked gold **and** speed, but later 
 
 1. Adjust constants in `config/` or `content/`.
 2. Update [`src/game/progression-estimates.ts`](../src/game/progression-estimates.ts) if simulation logic changed.
-3. Run `pnpm test src/game/progression-estimates.test.ts` and refresh tables in this doc.
+3. Run `pnpm test tests/game/progression-estimates.test.ts` and refresh tables in this doc.
 4. Note the change in [`src/game/AGENTS.md`](../src/game/AGENTS.md) Evolution.
 
 ## Related code

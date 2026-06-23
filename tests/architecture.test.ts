@@ -21,7 +21,7 @@ const collectSourceFiles = (directory: string): string[] => {
       continue;
     }
 
-    if (TS_FILE_PATTERN.test(entry.name) && !entry.name.endsWith(".test.ts")) {
+    if (TS_FILE_PATTERN.test(entry.name)) {
       files.push(fullPath);
     }
   }
@@ -50,10 +50,6 @@ describe("architecture import boundaries", () => {
     const violations: string[] = [];
 
     for (const file of filesUnder("content")) {
-      if (file.endsWith(".test.ts")) {
-        continue;
-      }
-
       const source = readFileSync(join(SRC_ROOT, file), "utf8");
 
       for (const importPath of getImportPaths(source)) {
@@ -74,10 +70,6 @@ describe("architecture import boundaries", () => {
     const violations: string[] = [];
 
     for (const file of filesUnder("game")) {
-      if (file.endsWith(".test.ts")) {
-        continue;
-      }
-
       const source = readFileSync(join(SRC_ROOT, file), "utf8");
 
       for (const importPath of getImportPaths(source)) {
@@ -100,10 +92,6 @@ describe("architecture import boundaries", () => {
     const violations: string[] = [];
 
     for (const file of filesUnder("store")) {
-      if (file.endsWith(".test.ts")) {
-        continue;
-      }
-
       const source = readFileSync(join(SRC_ROOT, file), "utf8");
 
       for (const importPath of getImportPaths(source)) {

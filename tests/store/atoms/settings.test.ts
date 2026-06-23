@@ -6,7 +6,7 @@ import {
   resolveInitialLocale,
   setLocale,
   settingsAtom,
-} from "./settings";
+} from "@/store/atoms/settings";
 
 describe("settings", () => {
   beforeEach(() => {
