@@ -97,7 +97,6 @@ describe("missions", () => {
             goldSpent: "0",
             productionCyclesCompleted: 20,
             powerUpsActivated: 0,
-            dailyRewardsClaimed: 0,
           },
         },
       },
@@ -152,21 +151,18 @@ describe("missions", () => {
         goldSpent: "0",
         productionCyclesCompleted: 0,
         powerUpsActivated: 0,
-        dailyRewardsClaimed: 0,
       },
       "mission-002": {
         goldEarned: "0",
         goldSpent: "0",
         productionCyclesCompleted: 0,
         powerUpsActivated: 0,
-        dailyRewardsClaimed: 0,
       },
       "mission-003": {
         goldEarned: "0",
         goldSpent: "0",
         productionCyclesCompleted: 0,
         powerUpsActivated: 0,
-        dailyRewardsClaimed: 0,
       },
     };
     const snapshot = createSnapshot();
@@ -207,7 +203,6 @@ describe("missions", () => {
         goldSpent: "0",
         productionCyclesCompleted: 0,
         powerUpsActivated: 0,
-        dailyRewardsClaimed: 0,
       },
     };
     const snapshot = createSnapshot({
@@ -390,7 +385,6 @@ describe("missions", () => {
         goldSpent: "100",
         productionCyclesCompleted: 0,
         powerUpsActivated: 0,
-        dailyRewardsClaimed: 0,
       },
     };
     const snapshot = createSnapshot({
@@ -533,7 +527,6 @@ describe("missions", () => {
         goldSpent: "0",
         productionCyclesCompleted: 0,
         powerUpsActivated: 0,
-        dailyRewardsClaimed: 0,
       },
     };
     const snapshot = createSnapshot({

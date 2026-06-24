@@ -201,15 +201,6 @@ const getSinceActivePowerUps = (
     snapshot.counters.powerUpsActivated - (baseline?.powerUpsActivated ?? 0)
   );
 
-const getSinceActiveDailyRewards = (
-  snapshot: MissionGameSnapshot,
-  baseline: MissionProgressBaseline | undefined
-): number =>
-  Math.max(
-    0,
-    snapshot.counters.dailyRewardsClaimed - (baseline?.dailyRewardsClaimed ?? 0)
-  );
-
 const getScopedGoldProgress = (
   scope: MissionObjective["scope"],
   target: string,
@@ -305,13 +296,6 @@ export const getMissionProgress = (
         scaled.target,
         snapshot.counters.productionCyclesCompleted,
         getSinceActiveCycles(snapshot, baseline)
-      );
-    case "claimDailyRewards":
-      return getScopedCountProgress(
-        scaled.scope,
-        scaled.target,
-        snapshot.counters.dailyRewardsClaimed,
-        getSinceActiveDailyRewards(snapshot, baseline)
       );
     case "activatePowerUps":
       return getScopedCountProgress(

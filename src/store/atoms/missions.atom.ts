@@ -30,10 +30,6 @@ const normalizeMissionCounters = (
       typeof raw.powerUpsActivated === "number"
         ? raw.powerUpsActivated
         : empty.powerUpsActivated,
-    dailyRewardsClaimed:
-      typeof raw.dailyRewardsClaimed === "number"
-        ? raw.dailyRewardsClaimed
-        : empty.dailyRewardsClaimed,
     runGoldEarned:
       typeof raw.runGoldEarned === "string"
         ? raw.runGoldEarned
@@ -57,9 +53,7 @@ const isMissionProgressBaseline = (
   "productionCyclesCompleted" in value &&
   typeof value.productionCyclesCompleted === "number" &&
   "powerUpsActivated" in value &&
-  typeof value.powerUpsActivated === "number" &&
-  "dailyRewardsClaimed" in value &&
-  typeof value.dailyRewardsClaimed === "number";
+  typeof value.powerUpsActivated === "number";
 
 const normalizeProgressBaselines = (
   value: unknown

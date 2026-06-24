@@ -28,7 +28,7 @@ import {
 
 type MissionCounterKey = keyof Pick<
   MissionCounters,
-  "dailyRewardsClaimed" | "powerUpsActivated" | "productionCyclesCompleted"
+  "powerUpsActivated" | "productionCyclesCompleted"
 >;
 
 const setMissions = (

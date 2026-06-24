@@ -39,7 +39,6 @@ export interface MissionStatisticsSnapshot {
 }
 
 export interface MissionCounters {
-  dailyRewardsClaimed: number;
   powerUpsActivated: number;
   productionCyclesCompleted: number;
   runGoldEarned: string;
@@ -49,13 +48,11 @@ export interface MissionCounters {
 export const createInitialMissionCounters = (): MissionCounters => ({
   productionCyclesCompleted: 0,
   powerUpsActivated: 0,
-  dailyRewardsClaimed: 0,
   runGoldEarned: "0",
   runGoldSpent: "0",
 });
 
 export interface MissionProgressBaseline {
-  dailyRewardsClaimed: number;
   goldEarned: string;
   goldSpent: string;
   powerUpsActivated: number;
@@ -69,7 +66,6 @@ export const createMissionProgressBaseline = (
   goldSpent: snapshot.statistics.goldSpent,
   productionCyclesCompleted: snapshot.counters.productionCyclesCompleted,
   powerUpsActivated: snapshot.counters.powerUpsActivated,
-  dailyRewardsClaimed: snapshot.counters.dailyRewardsClaimed,
 });
 
 export interface MissionsPersistedState {

@@ -37,7 +37,6 @@ const sampleObjectives: MissionObjective[] = [
     scope: "lifetime",
   },
   { type: "completeCycles", target: 5, scope: "sinceActive" },
-  { type: "claimDailyRewards", target: 2, scope: "sinceActive" },
   { type: "activatePowerUps", target: 1, scope: "sinceActive" },
 ];
 

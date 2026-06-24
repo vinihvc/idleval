@@ -121,7 +121,6 @@ describe("missions actions", () => {
           goldSpent: "0",
           productionCyclesCompleted: 0,
           powerUpsActivated: 0,
-          dailyRewardsClaimed: 0,
         },
       },
     }));

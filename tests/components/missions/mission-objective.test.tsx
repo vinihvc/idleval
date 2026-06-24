@@ -164,22 +164,6 @@ describe("MissionObjectiveLabel", () => {
     ).not.toBeNull();
   });
 
-  test("renders a power-ups image for claimDailyRewards objectives", async () => {
-    await renderWithProviders(
-      <MissionObjectiveLabel
-        objective={{
-          type: "claimDailyRewards",
-          target: 3,
-          scope: "lifetime",
-        }}
-      />
-    );
-
-    expect(
-      document.querySelector('img[src="/images/characters/fizzwick.webp"]')
-    ).not.toBeNull();
-  });
-
   test("renders an inventory image for activatePowerUps objectives", async () => {
     await renderWithProviders(
       <MissionObjectiveLabel

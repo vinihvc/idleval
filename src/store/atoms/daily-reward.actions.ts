@@ -12,10 +12,6 @@ import {
   getDailyRewardState,
 } from "@/store/atoms/daily-reward.atom";
 import { getInventoryState, inventoryAtom } from "@/store/atoms/inventory";
-import {
-  incrementMissionCounter,
-  syncMissionProgress,
-} from "@/store/atoms/missions.actions";
 
 const setDailyReward = (
   updater: (
@@ -65,8 +61,6 @@ export const claimDailyReward = (): boolean => {
     lastClaimLocalDate: today,
   }));
 
-  incrementMissionCounter("dailyRewardsClaimed");
-  syncMissionProgress();
   sound.play("upgrade");
 
   return true;

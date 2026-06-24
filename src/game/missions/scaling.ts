@@ -56,7 +56,6 @@ export const getScaledMissionObjective = (
         target: scaleMissionCountTarget(objective.target, multiplier),
       };
     case "completeCycles":
-    case "claimDailyRewards":
     case "activatePowerUps":
       return {
         ...objective,

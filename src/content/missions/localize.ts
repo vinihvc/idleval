@@ -78,7 +78,6 @@ const formatMissionObjectiveA11y = (
         god: translate(`god.${objective.godId}.name`),
       });
     case "completeCycles":
-    case "claimDailyRewards":
     case "activatePowerUps":
       return translateParams(key, {
         amount: String(objective.target),

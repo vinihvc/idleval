@@ -14,7 +14,6 @@ export type MissionObjectiveType =
   | "invokeGod"
   | "holdGold"
   | "completeCycles"
-  | "claimDailyRewards"
   | "activatePowerUps";
 
 export type MissionObjectiveScope = "lifetime" | "run" | "sinceActive";
@@ -35,7 +34,6 @@ export type MissionObjective =
   | { type: "invokeGod"; godId: GodId; scope: "lifetime" }
   | { type: "holdGold"; target: string; scope: "run" }
   | { type: "completeCycles"; target: number; scope: MissionObjectiveScope }
-  | { type: "claimDailyRewards"; target: number; scope: MissionObjectiveScope }
   | { type: "activatePowerUps"; target: number; scope: MissionObjectiveScope };
 
 export type MissionReward =

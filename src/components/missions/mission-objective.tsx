@@ -69,7 +69,6 @@ const renderMissionObjectiveText = (
         god: translate(`god.${objective.godId}.name`),
       });
     case "completeCycles":
-    case "claimDailyRewards":
     case "activatePowerUps":
       return translate(`mission.objective.${objective.type}`);
     default: {
@@ -105,8 +104,6 @@ const getMissionObjectiveIconSource = (
     }
     case "completeCycles":
       return { kind: "image", src: "/images/factories/grain.webp" };
-    case "claimDailyRewards":
-      return { kind: "image", src: "/images/characters/fizzwick.webp" };
     case "activatePowerUps":
       return { kind: "image", src: "/images/characters/grimbold.webp" };
     default: {
