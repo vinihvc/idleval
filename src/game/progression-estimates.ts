@@ -54,7 +54,7 @@ export const REFERENCE_MANUAL_EFFICIENCY = 0.85;
  * Balance-adjusted factory metrics at a given factory difficulty.
  */
 export const getFactoryReferenceMetrics = (
-  factoryDifficulty: number = PROGRESS_EASE.factory.startDifficulty
+  factoryDifficulty: number = PROGRESS_EASE.factory.difficulty
 ): FactoryReferenceMetrics[] =>
   FACTORY_TYPES.map((factory) => {
     const raw = FACTORY_DATA[factory];
@@ -116,7 +116,7 @@ export const estimateMinutesToTarget = (
  * Reference milestone pacing for docs/PROGRESSION.md (active play, no missions).
  */
 export const estimateMilestoneMinutes = (): ProgressionMilestoneEstimate[] => {
-  const earlyDifficulty = PROGRESS_EASE.factory.startDifficulty;
+  const earlyDifficulty = PROGRESS_EASE.factory.difficulty;
   const grain = getFactoryReferenceMetrics(earlyDifficulty)[0];
   const manualGrainRate =
     grain.goldPerSecondOneUnit * REFERENCE_MANUAL_EFFICIENCY;
@@ -140,14 +140,14 @@ export const estimateMilestoneMinutes = (): ProgressionMilestoneEstimate[] => {
     {
       id: "first-god",
       label: "First god (Huangdi)",
-      minutesMin: 120,
-      minutesMax: 210,
+      minutesMin: 100,
+      minutesMax: 180,
     },
     {
       id: "all-gods",
       label: "All six gods",
-      minutesMin: 10_080,
-      minutesMax: 20_160,
+      minutesMin: 6720,
+      minutesMax: 13_440,
     },
   ];
 };

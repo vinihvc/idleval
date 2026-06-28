@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
 import { PROGRESS_EASE } from "@/config/progress-ease";
 import { FACTORY_TYPES } from "@/content/factories";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
@@ -20,11 +21,9 @@ describe("progression estimates", () => {
 
   it("early grain income is boosted by factory ease", () => {
     const eased = getFactoryReferenceMetrics(
-      PROGRESS_EASE.factory.startDifficulty
+      PROGRESS_EASE.factory.difficulty
     )[0];
-    const neutral = getFactoryReferenceMetrics(
-      PROGRESS_EASE.factory.endDifficulty
-    )[0];
+    const neutral = getFactoryReferenceMetrics(1)[0];
 
     expect(eased.valuePerUnitPerCycle).toBeGreaterThan(
       neutral.valuePerUnitPerCycle
@@ -41,19 +40,21 @@ describe("progression estimates", () => {
     }
   });
 
-  it("first god costs less than balance-only scaled threshold", () => {
+  it("first god costs match balance-only scaled threshold", () => {
     const firstEffective = getGodGoldRequired(0).toNumber();
-    const balanceOnly = Number(GOD_DATA[0].goldRequired) * 0.8;
+    const balanceOnly =
+      Number(GOD_DATA[0].goldRequired) * GAME_BALANCE.godGoldRequired;
 
-    expect(firstEffective).toBeLessThan(balanceOnly);
+    expect(firstEffective).toBe(balanceOnly);
   });
 
-  it("last god costs more than balance-only scaled threshold", () => {
+  it("last god costs match balance-only scaled threshold", () => {
     const lastIndex = GOD_COUNT - 1;
     const lastEffective = getGodGoldRequired(lastIndex).toNumber();
-    const balanceOnly = Number(GOD_DATA[lastIndex].goldRequired) * 0.8;
+    const balanceOnly =
+      Number(GOD_DATA[lastIndex].goldRequired) * GAME_BALANCE.godGoldRequired;
 
-    expect(lastEffective).toBeGreaterThan(balanceOnly);
+    expect(lastEffective).toBe(balanceOnly);
   });
 
   it("getGodBonusAfterCount accumulates speed multiplicatively", () => {

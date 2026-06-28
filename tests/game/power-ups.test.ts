@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { GAME_BALANCE } from "@/config/balance";
+import { POWER_UP_EFFECTS } from "@/content/power-ups";
 import type { PowerUpId } from "@/content/power-ups";
 import { RELIC_SLOT_COUNT } from "@/content/power-ups";
-import { createInitialFactoriesState } from "@/game/factories";
+import { getGameDifficulty } from "@/game/difficulty";
+import { createInitialFactoriesState, getFactoryGoldPerSecond } from "@/game/factories";
 import {
   addInventorySlot,
   canActivatePowerUp,
@@ -21,6 +23,15 @@ import {
   isTimedPowerUpActive,
   rollMimirCoinGold,
 } from "@/game/power-ups";
+import { D } from "@/utils/decimal";
+
+const grainGoldPerSecond = (): number =>
+  getFactoryGoldPerSecond(
+    "grain",
+    createInitialFactoriesState().grain,
+    D(1),
+    { factoryDifficulty: getGameDifficulty() }
+  ).toNumber();
 
 describe("power-ups", () => {
   it("detects activatable inventory power-ups", () => {
@@ -186,7 +197,7 @@ describe("power-ups", () => {
 
     expect(
       getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber()
-    ).toBe(15);
+    ).toBe(grainGoldPerSecond());
   });
 
   it("falls back to unlocked factories when none are automated", () => {
@@ -194,7 +205,7 @@ describe("power-ups", () => {
 
     expect(
       getRealmGoldPerSecond({ factories, godsInvoked: [] }).toNumber()
-    ).toBe(15);
+    ).toBe(grainGoldPerSecond());
   });
 
   it("applies mission renown to mimir coin realm rate", () => {
@@ -218,13 +229,15 @@ describe("power-ups", () => {
     const factories = structuredClone(createInitialFactoriesState());
     factories.grain.isAutomated = true;
     const input = { factories, godsInvoked: [] };
+    const rate = getRealmGoldPerSecond(input);
+    const { min, max } = POWER_UP_EFFECTS.mimirCoin.rollSecondsByTier.common;
 
     expect(
       rollMimirCoinGold("common", input, () => 0).toNumber()
-    ).toBeGreaterThanOrEqual(450 * GAME_BALANCE.productionValue);
+    ).toBeGreaterThanOrEqual(rate.times(min).floor().toNumber());
     expect(
       rollMimirCoinGold("common", input, () => 0.999).toNumber()
-    ).toBeLessThanOrEqual(900 * GAME_BALANCE.productionValue);
+    ).toBeLessThanOrEqual(rate.times(max).floor().toNumber());
   });
 
   it("advances yggdrasil tear by thirty minutes for every tier", () => {

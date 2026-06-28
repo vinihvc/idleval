@@ -10,23 +10,19 @@ Idleval layers difficulty so early play hooks the player and later god invokes s
 |-------|------|----------------|
 | **Global** | [`src/config/game.ts`](../src/config/game.ts) `GAME_DIFFICULTY` | Scales all costs (`1/d`) and income (`d`). `1` = baseline. Not persisted. |
 | **Static balance** | [`src/config/balance.ts`](../src/config/balance.ts) `GAME_BALANCE` | Mild rebalance on catalog baselines (production, costs, god thresholds, missions). |
-| **Dynamic progress** | [`src/config/progress-ease.ts`](../src/config/progress-ease.ts) `PROGRESS_EASE` | Early factory boost until 1st god; per-god invoke cost curve. |
+| **Dynamic progress** | [`src/config/progress-ease.ts`](../src/config/progress-ease.ts) `PROGRESS_EASE` | Flat factory income/cost boost; mission god-cycle scaling. |
 
 **Scaling order:** `content/` baseline → `GAME_BALANCE` → `applyDifficulty(...)` (global and/or progress ease).
 
-### Progress ease (dynamic)
+### Progress ease
 
-**Factories (before 1st god invoked):**
+**Factories:**
 
-- `factoryDifficulty` starts at **1.30** (+30% income, ~23% lower costs) when no factory milestones are recorded.
-- Decays linearly with factory milestones (unlock / upgrade / automate) and reaches **1.0** at ~45% of max factory progress score.
-- **Immediately 1.0** after the first god is invoked.
+- `PROGRESS_EASE.factory.difficulty` (**1.30**) — flat +30% income and ~23% lower factory costs for the whole run (no milestone decay, no change after invoking gods).
 
-**God invoke cost (by god index):**
+**God invoke thresholds:**
 
-- Index `0` (Huangdi): difficulty **1.15** → ~13% cheaper than balance-adjusted baseline.
-- Index `5` (Inti): difficulty **0.70** → ~43% more expensive than baseline.
-- Curve: `log₂(1 + index)` normalized across `GOD_COUNT`.
+- Scaled only by `GAME_BALANCE.godGoldRequired` (1.05) — same multiplier for every god index (no per-god discount curve).
 
 **God permanent bonuses (after invoke, stack multiplicatively):**
 
@@ -60,32 +56,32 @@ From [`getFactoryReferenceMetrics(1)`](../src/game/progression-estimates.ts):
 
 | Factory | Cycle (s) | Value / unit / cycle | Unlock gold | Manager | Upgrade | Gold/s (1 unit) |
 |---------|-----------|----------------------|-------------|---------|---------|-----------------|
-| Grain | 2 | 30 | — | 5 610 | 25 500 | 15.0 |
-| Wine | 5 | 240 | 15 000 | 44 880 | 204 000 | 48.0 |
-| Iron | 9 | 1 920 | 150 000 | 374 000 | 1 700 000 | 213.3 |
-| Crossbow | 18 | 15 360 | 1 000 000 | 2 992 000 | 13 600 000 | 853.3 |
-| Longship | 36 | 122 880 | 12 500 000 | 29 920 000 | 136 000 000 | 3 413.3 |
-| Reliquary | 72 | 983 040 | 125 000 000 | 306 680 000 | 1 394 000 000 | 13 653.3 |
+| Grain | 2 | 45 | — | 5 610 | 25 500 | 22.5 |
+| Wine | 4 | 360 | 15 000 | 44 880 | 204 000 | 90.0 |
+| Iron | 8 | 2 880 | 150 000 | 374 000 | 1 700 000 | 360.0 |
+| Crossbow | 16 | 23 040 | 1 000 000 | 2 992 000 | 13 600 000 | 1 440.0 |
+| Longship | 32 | 184 320 | 12 500 000 | 29 920 000 | 136 000 000 | 5 760.0 |
+| Reliquary | 65 | 1 474 560 | 125 000 000 | 306 680 000 | 1 394 000 000 | 22 670.8 |
 
-### Early ease (`factoryDifficulty = 1.30`, first run)
+### Early ease (`factoryDifficulty = 1.30`)
 
 | Factory | Value / cycle | Unlock | Manager | Gold/s (1 unit) |
 |---------|---------------|--------|---------|-----------------|
-| Grain | 39 | — | 4 315 | 19.5 |
-| Wine | 312 | 11 538 | 34 523 | 62.4 |
+| Grain | 58.5 | — | 4 315 | 29.3 |
+| Wine | 468 | 11 538 | 34 523 | 117.0 |
 
 ## God invoke thresholds
 
-From [`getGodInvokeThresholds()`](../src/game/progression-estimates.ts) — balance × `godGoldRequired` (0.8) × `getGodInvokeDifficulty(index)`:
+From [`getGodInvokeThresholds()`](../src/game/progression-estimates.ts) — balance × `godGoldRequired` (1.05):
 
-| God | Balance only (×0.8) | Invoke difficulty | **Effective threshold** |
-|-----|---------------------|-------------------|-------------------------|
-| Huangdi | 8.0e11 | 1.15 | **~6.96e11** |
-| Dagda | 8.0e17 | ~0.97 | **~8.25e17** |
-| Shango | 8.0e23 | ~0.88 | **~9.09e23** |
-| Indra | 8.0e29 | ~0.81 | **~9.88e29** |
-| Tangaroa | 8.0e35 | ~0.75 | **~1.07e36** |
-| Inti | 8.0e41 | 0.70 | **~1.14e42** |
+| God | **Effective threshold** |
+|-----|-------------------------|
+| Huangdi | **1.05×10¹²** |
+| Dagda | **1.05×10¹⁸** |
+| Shango | **1.05×10²⁴** |
+| Indra | **1.05×10³⁰** |
+| Tangaroa | **1.05×10³⁶** |
+| Inti | **1.05×10⁴²** |
 
 ### Cumulative god bonuses (in order)
 
@@ -102,11 +98,11 @@ From [`estimateMilestoneMinutes()`](../src/game/progression-estimates.ts). Conse
 
 | Milestone | Approx. active time |
 |-----------|---------------------|
-| Grain manager | ~4–6 min |
-| Unlock wine | ~6–10 min |
-| **1st god (Huangdi)** | **2–3.5 h** |
+| Grain manager | ~3–4 min |
+| Unlock wine | ~4–7 min |
+| **1st god (Huangdi)** | **1.7–3 h** |
 | 2nd → 6th gods | Each run longer (higher threshold, stacked bonuses help rebuild) |
-| **All six gods** | **~1–2 weeks** focused active play |
+| **All six gods** | **~5–9 days** focused active play |
 
 God invoke pacing accelerates rebuild via stacked gold **and** speed, but later invoke costs (log curve) require larger economy jumps.
 
@@ -121,9 +117,9 @@ God invoke pacing accelerates rebuild via stacked gold **and** speed, but later 
 
 | Module | Role |
 |--------|------|
-| [`game/progress-ease.ts`](../src/game/progress-ease.ts) | Factory ease + god invoke difficulty |
+| [`game/progress-ease.ts`](../src/game/progress-ease.ts) | Flat factory difficulty boost |
 | [`game/gods.ts`](../src/game/gods.ts) | Gold/speed multipliers, invoke thresholds |
 | [`game/factories.ts`](../src/game/factories.ts) | Yield, unlock prices, gold/s |
 | [`game/economy.ts`](../src/game/economy.ts) | Unit/manager/upgrade costs |
 | [`game/missions.ts`](../src/game/missions.ts) | Quest progress, slots, renown, god-cycle scaling |
-| [`store/atoms/progress-ease.ts`](../src/store/atoms/progress-ease.ts) | Live factory difficulty from save |
+| [`store/atoms/progress-ease.ts`](../src/store/atoms/progress-ease.ts) | Re-exports factory difficulty for store |

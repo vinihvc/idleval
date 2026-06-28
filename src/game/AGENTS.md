@@ -41,7 +41,7 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 | `factory-cycle.ts` | Wall-clock cycle anchors (`cycleEndsAt`) for scheduler + progress UI |
 | `missions.ts` | Barrel: progress, slots, scaling, rewards |
 | `mission-progression.ts` | Catalog-order wallet simulation for balance checks |
-| `progress-ease.ts` | Dynamic factory ease + god invoke difficulty by index |
+| `progress-ease.ts` | Flat factory difficulty boost |
 | `progression-estimates.ts` | Milestone timing estimates for docs/PROGRESSION.md |
 | `types.ts` | Persisted state shapes |
 
@@ -52,9 +52,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Evolution
 
+- 2026-06-27 — Simplified progress ease: flat `factory.difficulty` 1.3; removed milestone decay and per-god invoke cost curve
+- 2026-06-27 — Pre-god engagement: `unitCostGrowth` 1.03; `godGoldRequired` 1.05
+- 2026-06-27 — Aggressive factory income rebalance: `productionValue` 2.25, `productionTime` 0.81
 - 2026-06-23 — Tests in `tests/game/` (not colocated in `src/game/`)
-- 2026-06-18 — Factory payback rebalance: `unitCostGrowth` 1.04, income-aligned `baseBuyCost`, purchase-mode uses raw catalog costs
-- 2026-06-18 — Factory economy rebalance: `GAME_BALANCE` income/cost knobs, softer `FACTORY_DATA` tier costs (~11×), `startDifficulty` 1.30
-- 2026-06-17 — `factory-cycle.ts`: wall-clock cycle anchors shared by scheduler and progress bar
-- 2026-06-17 — Quality pass: decimal-safe gold progress, `canPurchaseAny*` helper, architecture ban on `@/i18n/` imports
-- 2026-06-17 — `missions.ts`: god-cycle reset; `2^godsInvoked` scaling; `progress-ease.ts`, `mission-progression.ts`
+- 2026-06-18 — Factory payback rebalance: `unitCostGrowth` 1.04, income-aligned `baseBuyCost`

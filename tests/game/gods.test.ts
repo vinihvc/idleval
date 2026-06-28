@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
 import { getScaledGodGoldRequired } from "@/game/balance";
-import { applyDifficultyCost } from "@/game/difficulty";
 import {
   canInvokeGodAtIndex,
   getGodCardStatus,
@@ -11,7 +11,6 @@ import {
   hasInvokableGod,
   isGodInvocationComplete,
 } from "@/game/gods";
-import { getGodInvokeDifficulty } from "@/game/progress-ease";
 import { D } from "@/utils/decimal";
 
 describe("gods rules", () => {
@@ -29,17 +28,19 @@ describe("gods rules", () => {
   });
 
   it("canInvokeGodAtIndex allows any uninvoked god with enough gold", () => {
-    expect(canInvokeGodAtIndex(0, [], D("1e12"))).toBe(true);
-    expect(canInvokeGodAtIndex(1, [], D("1e18"))).toBe(true);
+    expect(canInvokeGodAtIndex(0, [], getGodGoldRequired(0))).toBe(true);
+    expect(canInvokeGodAtIndex(1, [], getGodGoldRequired(1))).toBe(true);
     expect(canInvokeGodAtIndex(0, [], D(1))).toBe(false);
     expect(
       canInvokeGodAtIndex(
         0,
         GOD_DATA.map((god) => god.id),
-        D("1e12")
+        getGodGoldRequired(0)
       )
     ).toBe(false);
-    expect(canInvokeGodAtIndex(0, ["huangdi"], D("1e12"))).toBe(false);
+    expect(canInvokeGodAtIndex(0, ["huangdi"], getGodGoldRequired(0))).toBe(
+      false
+    );
   });
 
   it("getTotalProductionMultiplier returns 1 with no invoked gods", () => {
@@ -62,9 +63,9 @@ describe("gods rules", () => {
   });
 
   it("hasInvokableGod is true when any god can be invoked", () => {
-    expect(hasInvokableGod([], D("1e12"))).toBe(true);
+    expect(hasInvokableGod([], getGodGoldRequired(0))).toBe(true);
     expect(hasInvokableGod([], D(1))).toBe(false);
-    expect(hasInvokableGod(["huangdi"], D("1e18"))).toBe(true);
+    expect(hasInvokableGod(["huangdi"], getGodGoldRequired(1))).toBe(true);
   });
 
   it("getTotalProductionSpeedMultiplier returns 1 with no invoked gods", () => {
@@ -92,25 +93,19 @@ describe("gods rules", () => {
     );
   });
 
-  it("getGodGoldRequired returns balance- and progress-ease-adjusted threshold", () => {
+  it("getGodGoldRequired returns balance-adjusted threshold", () => {
     expect(
       getGodGoldRequired(0).eq(
-        applyDifficultyCost(
-          D(getScaledGodGoldRequired(GOD_DATA[0].goldRequired)),
-          getGodInvokeDifficulty(0)
-        )
-      )
-    ).toBe(true);
-    expect(
-      getGodGoldRequired(0).lt(
         D(getScaledGodGoldRequired(GOD_DATA[0].goldRequired))
       )
     ).toBe(true);
-    expect(
-      getGodGoldRequired(GOD_COUNT - 1).gt(
-        D(getScaledGodGoldRequired(GOD_DATA[GOD_COUNT - 1].goldRequired))
-      )
-    ).toBe(true);
+    expect(getGodGoldRequired(0).toNumber()).toBe(
+      Number(GOD_DATA[0].goldRequired) * GAME_BALANCE.godGoldRequired
+    );
+    expect(getGodGoldRequired(GOD_COUNT - 1).toNumber()).toBe(
+      Number(GOD_DATA[GOD_COUNT - 1].goldRequired) *
+        GAME_BALANCE.godGoldRequired
+    );
   });
 
   it("canInvokeGodAtIndex succeeds at exact gold threshold", () => {

@@ -1,20 +1,19 @@
 import { GOD_COUNT, GOD_DATA, type GodId } from "@/content/gods";
 import { getScaledGodGoldRequired } from "@/game/balance";
-import { applyDifficultyCost } from "@/game/difficulty";
-import { getGodInvokeDifficulty } from "@/game/progress-ease";
+import { applyDifficultyCost, getGameDifficulty } from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 
 /**
  * Returns the gold threshold required to invoke a god by index.
  *
  * @example
- * getGodGoldRequired(0).toString() // "1e12"
- * getGodGoldRequired(1).toString() // "1e18"
+ * getGodGoldRequired(0).toString() // "1.05e12"
+ * getGodGoldRequired(1).toString() // "1.05e18"
  */
 export const getGodGoldRequired = (index: number): GameValue =>
   applyDifficultyCost(
     D(getScaledGodGoldRequired(GOD_DATA[index].goldRequired)),
-    getGodInvokeDifficulty(index)
+    getGameDifficulty()
   );
 
 /**

@@ -40,7 +40,7 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 - **Decimals:** `GameValue` / `D` from `@/utils/decimal` — never `number` for scaled gold.
 - **Difficulty:** `GAME_DIFFICULTY` in `@/config/game.ts` (`1` = baseline; `>1` easier, `<1` harder). Applied in `game/difficulty.ts` to costs and income — not persisted, not player-facing.
 - **Balance:** `GAME_BALANCE` in `@/config/balance.ts` tunes production, costs, unlocks, gods, missions, and power-ups. Runtime values use `game/balance.ts` helpers; `content/` catalogs stay as design baselines.
-- **Progress ease:** `PROGRESS_EASE` in `@/config/progress-ease.ts` — early factory boost until 1st god; god invoke cost curve by index; see `game/progress-ease.ts`. Document pacing in [PROGRESSION.md](./PROGRESSION.md) whenever these knobs change.
+- **Progress ease:** `PROGRESS_EASE` in `@/config/progress-ease.ts` — flat factory difficulty boost; mission god-cycle scaling; see `game/progress-ease.ts`. Document pacing in [PROGRESSION.md](./PROGRESSION.md) whenever these knobs change.
 - **Persistence:** `persistedAtom` / `persistedAtomWithNormalize` from `store/storage.ts`; stable keys in `@/config/local-storage` (`LOCAL_STORAGE`); evolve schema via `normalize` on read — never version-bump keys.
 - **Mutations:** imperative functions (`store.get` / `store.set`), not write-only atoms.
 - **Single-consumer hooks:** colocate in component or provider folder (`factory-card/use-*.ts`, `providers/offline-earning/`).
