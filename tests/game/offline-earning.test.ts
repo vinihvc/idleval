@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { FACTORY_DATA, FACTORY_TYPES } from "@/content/factories";
 import { getScaledFactoryConfig } from "@/game/balance";
+import { getGameDifficulty } from "@/game/difficulty";
 import {
   createInitialFactoriesState,
   getFactoryEarnPerCycle,
@@ -12,6 +13,7 @@ import {
   meetsMinimumOfflineDuration,
 } from "@/game/offline-earning";
 import type { ActivePowerUp } from "@/game/power-ups";
+import { getPowerUpTimeMultiplier } from "@/game/power-ups/effects";
 import { D } from "@/utils/decimal";
 
 const grainFactory = () => {
@@ -151,22 +153,22 @@ describe("offline-earning", () => {
 
   it("calculates secondsRemaining for partial and complete cycles", () => {
     const factories = structuredClone(createInitialFactoriesState());
-    factories.grain = {
-      ...factories.grain,
+    factories.iron = {
+      ...factories.iron,
       isAutomated: true,
       isUnlocked: true,
       amount: 1,
     };
 
-    const productionTime = getScaledFactoryConfig("grain").productionTime;
+    const productionTime = getScaledFactoryConfig("iron").productionTime;
     const partialElapsedMs = (productionTime + 1) * 1000;
     const partial = computeOfflineEarning(partialElapsedMs, 0, factories, D(1));
-    const grainPartial = partial.results.find(
-      (entry) => entry.factory === "grain"
+    const ironPartial = partial.results.find(
+      (entry) => entry.factory === "iron"
     );
 
-    expect(grainPartial?.cycles).toBe(1);
-    expect(grainPartial?.secondsRemaining).toBe(productionTime - 1);
+    expect(ironPartial?.cycles).toBe(1);
+    expect(ironPartial?.secondsRemaining).toBe(productionTime - 1);
 
     const completeElapsedMs = productionTime * 2 * 1000;
     const complete = computeOfflineEarning(
@@ -175,12 +177,12 @@ describe("offline-earning", () => {
       factories,
       D(1)
     );
-    const grainComplete = complete.results.find(
-      (entry) => entry.factory === "grain"
+    const ironComplete = complete.results.find(
+      (entry) => entry.factory === "iron"
     );
 
-    expect(grainComplete?.cycles).toBe(2);
-    expect(grainComplete?.secondsRemaining).toBe(productionTime);
+    expect(ironComplete?.cycles).toBe(2);
+    expect(ironComplete?.secondsRemaining).toBe(productionTime);
   });
 
   it("applies upgrade and god multipliers to offline earnings", () => {
@@ -232,7 +234,7 @@ describe("offline-earning", () => {
     const buffSec = 5 * 60;
     const normalSec = 15 * 60;
     const expectedGold = earnPerCycle
-      .times(GAME_BALANCE.powerUpIncomeMultiplier)
+      .times(BALANCE_BASELINE.powerUpIncomeMultiplier * getGameDifficulty())
       .times(Math.floor(buffSec / productionTime))
       .plus(earnPerCycle.times(Math.floor(normalSec / productionTime)));
 
@@ -250,7 +252,13 @@ describe("offline-earning", () => {
   });
 
   it("prorates haste rune production speed for the buff window only", () => {
-    const factories = grainFactory();
+    const factories = structuredClone(createInitialFactoriesState());
+    factories.iron = {
+      ...factories.iron,
+      isAutomated: true,
+      isUnlocked: true,
+      amount: 1,
+    };
     const lastSeenAt = 0;
     const now = 20 * 60 * 1000;
     const activePowerUp: ActivePowerUp = {
@@ -258,12 +266,20 @@ describe("offline-earning", () => {
       powerUpId: "hasteRune",
       tier: "uncommon",
     };
-    const baseProductionTime = getScaledFactoryConfig("grain").productionTime;
+    const baseProductionTime = getScaledFactoryConfig("iron").productionTime;
     const buffProductionTime = Math.max(
       1,
-      Math.round(baseProductionTime * GAME_BALANCE.powerUpTimeMultiplier)
+      Math.round(
+        baseProductionTime *
+          getPowerUpTimeMultiplier(activePowerUp, lastSeenAt)
+      )
     );
-    const earnPerCycle = grainEarnPerCycle();
+    const earnPerCycle = getFactoryEarnPerCycle({
+      amount: 1,
+      godsProductionMultiplier: D(1),
+      isUpgraded: false,
+      productionValue: FACTORY_DATA.iron.productionValue,
+    });
     const expectedGold = earnPerCycle
       .times(Math.floor((5 * 60) / buffProductionTime))
       .plus(earnPerCycle.times(Math.floor((15 * 60) / baseProductionTime)));

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { Missions } from "@/components/game/missions/missions";
 import { formatMissionProgressLabel } from "@/components/missions/format-mission-progress";
 import {
   getLocalizedMissionObjective,
@@ -9,7 +10,6 @@ import { store } from "@/providers/store";
 import { missionsAtom } from "@/store/atoms/missions";
 import { statisticsAtom } from "@/store/atoms/statistics";
 import { renderWithProviders } from "@/test/render-with-providers";
-import { Missions } from "@/components/game/missions/missions";
 
 const missionId = "mission-001";
 const mission = getMissionById(missionId);

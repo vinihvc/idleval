@@ -1,6 +1,7 @@
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { getMissionById } from "@/content/missions";
+import { getGameDifficulty } from "@/game/difficulty";
 import { store } from "@/providers/store";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
 import { godsAtom } from "@/store/atoms/gods";
@@ -93,7 +94,12 @@ describe("missions actions", () => {
     expect(
       deserializeDecimal(store.get(walletAtom).gold)
         .minus(beforeGold)
-        .eq(D(goldReward.amount).times(GAME_BALANCE.missionGoldReward).times(2))
+        .eq(
+          D(goldReward.amount)
+            .times(BALANCE_BASELINE.missionGoldReward)
+            .times(getGameDifficulty())
+            .times(2)
+        )
     ).toBe(true);
   });
 

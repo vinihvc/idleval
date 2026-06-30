@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { store } from "@/providers/store";
-import { resetGame } from "@/store/reset";
-import { D, deserializeDecimal } from "@/utils/decimal";
 import {
   recordGoldSpent,
   recordQuantity,
   setStatistics,
   statisticsAtom,
 } from "@/store/atoms/statistics";
+import { resetGame } from "@/store/reset";
+import { D, deserializeDecimal } from "@/utils/decimal";
 
 describe("statistics", () => {
   beforeEach(() => {

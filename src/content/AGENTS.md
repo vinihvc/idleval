@@ -8,7 +8,7 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 
 ## Do
 
-- Define data in constants (`FACTORY_DATA`, `GOD_DATA`, `MISSION_DATA`) with `as const` where applicable — numbers are **design baselines**; runtime tuning is `GAME_BALANCE` in `@/config/balance.ts` via `game/balance.ts`
+- Define data in constants (`FACTORY_DATA`, `GOD_DATA`, `MISSION_DATA`) with `as const` where applicable — numbers are **design baselines**; runtime tuning is `BALANCE_BASELINE` + `GAME_BALANCE` in `@/config/balance.ts` via `game/balance.ts`
 - Export derived types (`FactoryType`, `GodId`, `FACTORY_TYPES`)
 - Resolve strings via `getLocalizedFactory()` / `getLocalizedGod()` using `@/i18n/localize`
 - Add i18n keys in all locales when creating a new entity
@@ -40,13 +40,13 @@ Declarative game catalog — IDs, numeric balance, assets, and localization brid
 
 ## Neighbors
 
-- Reads from: `i18n/localize`, `@/config/balance` (power-up effect constants only)
+- Reads from: `i18n/localize`, `@/config/balance` (`BALANCE_BASELINE` for power-up display baselines)
 - Consumed by: `game/`, `store/`, `i18n/hooks/`, `components/`
 
 ## Evolution
 
+- 2026-06-30 — `power-ups.ts` uses `BALANCE_BASELINE` for wiki/description baselines at `GAME_BALANCE = 1`
 - 2026-06-18 — `FACTORY_DATA` costs aligned to ~2 min first-unit payback; tier escalation ~8× production
 - 2026-06-17 — Quality pass: `getGodIndex`, mission invariant coverage, power-up param dedup; `@reserved` on unused mission schema fields
-- 2026-06-17 — `GOD_DATA.productionSpeedMultiplier`; `power-ups.ts` reads `GAME_BALANCE`; 200-mission catalog
+- 2026-06-17 — `GOD_DATA.productionSpeedMultiplier`; `power-ups.ts` reads balance baseline; 200-mission catalog
 - 2026-06-14 — `missions.ts` hardcoded `MISSION_DATA` catalog (100 quests)
-- 2026-06-08 — `power-ups.ts` catalog with fixed daily calendar and altar grid

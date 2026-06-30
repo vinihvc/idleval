@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { PROGRESS_EASE } from "@/config/progress-ease";
 import { FACTORY_DATA } from "@/content/factories";
-import { createInitialFactoryState, getFactoryGoldPerSecond } from "@/game/factories";
 import { unitCost } from "@/game/economy";
+import {
+  createInitialFactoryState,
+  getFactoryGoldPerSecond,
+} from "@/game/factories";
 import { D } from "@/utils/decimal";
 
 const PRE_GOD_DIFFICULTY = PROGRESS_EASE.factory.difficulty;
@@ -21,12 +24,9 @@ const getNextUnitPaybackSeconds = (
     owned,
     PRE_GOD_DIFFICULTY
   );
-  const incomePerSecond = getFactoryGoldPerSecond(
-    factory,
-    state,
-    D(1),
-    { factoryDifficulty: PRE_GOD_DIFFICULTY }
-  );
+  const incomePerSecond = getFactoryGoldPerSecond(factory, state, D(1), {
+    factoryDifficulty: PRE_GOD_DIFFICULTY,
+  });
 
   return nextCost.div(incomePerSecond).toNumber();
 };

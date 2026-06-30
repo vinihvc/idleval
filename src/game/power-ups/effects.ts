@@ -1,9 +1,10 @@
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import {
   POWER_UP_EFFECTS,
   type PowerUpId,
   type PowerUpTier,
 } from "@/content/power-ups";
+import { getGameDifficulty } from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 import type { ActivePowerUp } from "./inventory";
 
@@ -58,7 +59,7 @@ export const getPowerUpIncomeMultiplier = (
     isTimedPowerUpActive(activePowerUp, now) &&
     activePowerUp?.powerUpId === "lightningShard"
   ) {
-    return D(GAME_BALANCE.powerUpIncomeMultiplier);
+    return D(BALANCE_BASELINE.powerUpIncomeMultiplier * getGameDifficulty());
   }
 
   return D(1);
@@ -75,7 +76,7 @@ export const getPowerUpTimeMultiplier = (
     isTimedPowerUpActive(activePowerUp, now) &&
     activePowerUp?.powerUpId === "hasteRune"
   ) {
-    return GAME_BALANCE.powerUpTimeMultiplier;
+    return BALANCE_BASELINE.powerUpTimeMultiplier / getGameDifficulty();
   }
 
   return 1;

@@ -1,4 +1,4 @@
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import {
   FACTORY_DATA,
   FACTORY_TYPES,
@@ -10,11 +10,13 @@ import {
   type MissionObjective,
 } from "@/content/missions";
 import { getScaledFactoryConfig } from "@/game/balance";
+import { getGameDifficulty } from "@/game/difficulty";
 import { getFactoryUnlockPrice } from "@/game/factories";
 import { D, type GameValue } from "@/utils/decimal";
 
-const UPGRADE_MULTIPLIER = GAME_BALANCE.upgradeProductionMultiplier;
-const MISSION_REWARD_MULTIPLIER = GAME_BALANCE.missionGoldReward;
+const UPGRADE_MULTIPLIER = BALANCE_BASELINE.upgradeProductionMultiplier;
+const MISSION_REWARD_MULTIPLIER =
+  BALANCE_BASELINE.missionGoldReward * getGameDifficulty();
 const CAPACITY_BUFFER_SECONDS = 86_400;
 const GOLD_TOLERANCE = 1.5;
 

@@ -1,13 +1,13 @@
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { getScaledBaseBuyCost } from "@/game/balance";
 import { applyDifficultyCost, getGameDifficulty } from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 
 export const ECONOMY = {
-  unitCostMultiplier: GAME_BALANCE.unitCostGrowth,
-  managerBaseFactor: GAME_BALANCE.managerCostFactor,
-  upgradeBaseFactor: GAME_BALANCE.upgradeCostFactor,
-  upgradeProductionMultiplier: GAME_BALANCE.upgradeProductionMultiplier,
+  unitCostMultiplier: BALANCE_BASELINE.unitCostGrowth,
+  managerBaseFactor: BALANCE_BASELINE.managerCostFactor,
+  upgradeBaseFactor: BALANCE_BASELINE.upgradeCostFactor,
+  upgradeProductionMultiplier: BALANCE_BASELINE.upgradeProductionMultiplier,
 } as const;
 
 const UNIT_COST_RATE = D(ECONOMY.unitCostMultiplier);

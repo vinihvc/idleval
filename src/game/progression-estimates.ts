@@ -140,14 +140,14 @@ export const estimateMilestoneMinutes = (): ProgressionMilestoneEstimate[] => {
     {
       id: "first-god",
       label: "First god (Huangdi)",
-      minutesMin: 100,
-      minutesMax: 180,
+      minutesMin: 45,
+      minutesMax: 90,
     },
     {
       id: "all-gods",
       label: "All six gods",
-      minutesMin: 6720,
-      minutesMax: 13_440,
+      minutesMin: 2880,
+      minutesMax: 5760,
     },
   ];
 };

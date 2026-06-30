@@ -2,9 +2,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { getPurchaseTotalCost } from "@/game/purchases";
 import { store } from "@/providers/store";
 import { getFactoryProgressDifficulty } from "@/store/atoms/progress-ease";
-import { resetGame } from "@/store/reset";
-import { seedGold } from "@/store/test-utils";
-import { D } from "@/utils/decimal";
 import {
   computePurchaseTotals,
   purchaseModeAtom,
@@ -12,6 +9,9 @@ import {
   totalCanBuyByAmount,
   totalToPayByAmount,
 } from "@/store/atoms/purchase-mode";
+import { resetGame } from "@/store/reset";
+import { seedGold } from "@/store/test-utils";
+import { D } from "@/utils/decimal";
 
 describe("purchase-mode", () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { getScaledProductionValue, getScaledUnlockPrice } from "@/game/balance";
-import { applyDifficultyCost } from "@/game/difficulty";
+import { applyDifficultyCost, getGameDifficulty } from "@/game/difficulty";
 import {
   canPurchaseAnyManager,
   canPurchaseAnyUpgrade,
@@ -34,20 +34,24 @@ describe("factories rules", () => {
 
     expect(
       getFactoryProductionValue({ ...base, isUpgraded: false }).toNumber()
-    ).toBe(getScaledProductionValue(20) * 3);
+    ).toBeCloseTo(getScaledProductionValue(20) * 3 * getGameDifficulty());
     expect(
       getFactoryProductionValue({ ...base, isUpgraded: true }).toNumber()
-    ).toBe(
+    ).toBeCloseTo(
       getScaledProductionValue(20) *
-        GAME_BALANCE.upgradeProductionMultiplier *
-        3
+        BALANCE_BASELINE.upgradeProductionMultiplier *
+        3 *
+        getGameDifficulty()
     );
   });
 
   it("getFactoryUnlockPrice returns balance- and difficulty-scaled unlock cost", () => {
     expect(
       getFactoryUnlockPrice(55_000).eq(
-        applyDifficultyCost(getScaledUnlockPrice(55_000), 1)
+        applyDifficultyCost(
+          getScaledUnlockPrice(55_000),
+          getGameDifficulty()
+        )
       )
     ).toBe(true);
   });

@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
-import { POWER_UP_EFFECTS } from "@/content/power-ups";
+import { BALANCE_BASELINE } from "@/config/balance";
 import type { PowerUpId } from "@/content/power-ups";
-import { RELIC_SLOT_COUNT } from "@/content/power-ups";
+import { POWER_UP_EFFECTS, RELIC_SLOT_COUNT } from "@/content/power-ups";
 import { getGameDifficulty } from "@/game/difficulty";
-import { createInitialFactoriesState, getFactoryGoldPerSecond } from "@/game/factories";
+import {
+  createInitialFactoriesState,
+  getFactoryGoldPerSecond,
+} from "@/game/factories";
 import {
   addInventorySlot,
   canActivatePowerUp,
@@ -26,12 +28,9 @@ import {
 import { D } from "@/utils/decimal";
 
 const grainGoldPerSecond = (): number =>
-  getFactoryGoldPerSecond(
-    "grain",
-    createInitialFactoriesState().grain,
-    D(1),
-    { factoryDifficulty: getGameDifficulty() }
-  ).toNumber();
+  getFactoryGoldPerSecond("grain", createInitialFactoriesState().grain, D(1), {
+    factoryDifficulty: getGameDifficulty(),
+  }).toNumber();
 
 describe("power-ups", () => {
   it("detects activatable inventory power-ups", () => {
@@ -112,7 +111,7 @@ describe("power-ups", () => {
         powerUpId: "lightningShard",
         tier: "common",
       }).toNumber()
-    ).toBe(GAME_BALANCE.powerUpIncomeMultiplier);
+    ).toBe(BALANCE_BASELINE.powerUpIncomeMultiplier * getGameDifficulty());
   });
 
   it("returns remaining ms for timed power-ups", () => {
@@ -279,10 +278,16 @@ describe("power-ups", () => {
     };
 
     expect(getPowerUpTimeMultiplier(activePowerUp)).toBe(
-      GAME_BALANCE.powerUpTimeMultiplier
+      BALANCE_BASELINE.powerUpTimeMultiplier / getGameDifficulty()
     );
     expect(getEffectiveProductionTime(120, activePowerUp, 2)).toBe(
-      Math.max(1, Math.round((120 * GAME_BALANCE.powerUpTimeMultiplier) / 2))
+      Math.max(
+        1,
+        Math.round(
+          (120 * (BALANCE_BASELINE.powerUpTimeMultiplier / getGameDifficulty())) /
+            2
+        )
+      )
     );
     expect(getEffectiveProductionTime(120, null, 1)).toBe(120);
   });

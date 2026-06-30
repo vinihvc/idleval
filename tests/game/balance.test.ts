@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { FACTORY_DATA } from "@/content/factories";
 import {
   getScaledBaseBuyCost,
@@ -26,15 +26,21 @@ describe("balance", () => {
     expect(scaled.unlockPrice).toBe(getScaledUnlockPrice(raw.unlockPrice));
   });
 
-  it("scales wine unlock price by balance multiplier", () => {
+  it("scales wine unlock price by baseline multiplier", () => {
     expect(getScaledUnlockPrice(55_000)).toBe(
-      Math.round(55_000 * GAME_BALANCE.unlockPrice)
+      Math.round(55_000 * BALANCE_BASELINE.unlockPrice)
     );
   });
 
   it("scales god gold thresholds", () => {
     expect(getScaledGodGoldRequired("1e12")).toBe(
-      D("1e12").times(GAME_BALANCE.godGoldRequired).toString()
+      D("1e12").times(BALANCE_BASELINE.godGoldRequired).toString()
+    );
+  });
+
+  it("scales production time inversely with difficulty", () => {
+    expect(getScaledProductionTime(10, 1.2)).toBe(
+      Math.max(1, Math.round((10 * BALANCE_BASELINE.productionTime) / 1.2))
     );
   });
 });

@@ -1,5 +1,6 @@
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import type { MissionReward } from "@/content/missions";
+import { getGameDifficulty } from "@/game/difficulty";
 import { D, type GameValue } from "@/utils/decimal";
 import { getMissionGodCycleMultiplier } from "./scaling";
 
@@ -19,7 +20,7 @@ export interface AppliedMissionRewards {
 /**
  * Aggregates catalog mission rewards for the store layer to apply.
  *
- * Applies `GAME_BALANCE.missionGoldReward` and the god-cycle multiplier
+ * Applies mission gold baseline × difficulty and the god-cycle multiplier
  * (`2^godsInvoked`). Pass rewards from `MISSION_CATALOG` only — not values
  * already scaled by `getScaledMissionRewards`, or gold will be doubled.
  *
@@ -40,7 +41,8 @@ export const summarizeMissionRewards = (
       case "gold":
         gold = gold.plus(
           D(reward.amount)
-            .times(GAME_BALANCE.missionGoldReward)
+            .times(BALANCE_BASELINE.missionGoldReward)
+            .times(getGameDifficulty())
             .times(cycleMultiplier)
         );
         break;

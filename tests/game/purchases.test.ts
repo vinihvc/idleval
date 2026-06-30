@@ -48,7 +48,7 @@ describe("purchases", () => {
       getAffordableUnitCount({
         amount: 10,
         baseBuyCost: 75,
-        gold: D(500),
+        gold: D(150),
         owned: 0,
       })
     ).toBe(1);

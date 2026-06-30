@@ -1,4 +1,4 @@
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { translate, translateParams } from "@/i18n/localize";
 
 export const POWER_UP_TYPES = [
@@ -37,11 +37,11 @@ export const POWER_UP_EFFECTS = {
     },
   },
   hasteRune: {
-    timeMultiplier: GAME_BALANCE.powerUpTimeMultiplier,
+    timeMultiplier: BALANCE_BASELINE.powerUpTimeMultiplier,
     durationMs: 1_200_000,
   },
   lightningShard: {
-    incomeMultiplier: GAME_BALANCE.powerUpIncomeMultiplier,
+    incomeMultiplier: BALANCE_BASELINE.powerUpIncomeMultiplier,
     durationMs: 900_000,
   },
   yggdrasilTear: { advanceSeconds: 1800 },

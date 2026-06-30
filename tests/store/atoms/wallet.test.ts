@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { store } from "@/providers/store";
-import { resetGame } from "@/store/reset";
-import { seedGold } from "@/store/test-utils";
-import { D, deserializeDecimal } from "@/utils/decimal";
 import {
   bulkIncreaseGold,
   decreaseGold,
@@ -10,6 +7,9 @@ import {
   increaseGoldByAmount,
   walletAtom,
 } from "@/store/atoms/wallet";
+import { resetGame } from "@/store/reset";
+import { seedGold } from "@/store/test-utils";
+import { D, deserializeDecimal } from "@/utils/decimal";
 
 describe("wallet", () => {
   beforeEach(() => {

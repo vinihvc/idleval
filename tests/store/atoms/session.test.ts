@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { store } from "@/providers/store";
-import { resetGame } from "@/store/reset";
 import {
   getLastSeenAt,
   isDocumentVisible,
@@ -8,6 +7,7 @@ import {
   touchLastSeen,
   touchLastSeenIfVisible,
 } from "@/store/atoms/session";
+import { resetGame } from "@/store/reset";
 
 describe("session", () => {
   beforeEach(() => {

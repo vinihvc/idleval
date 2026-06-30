@@ -7,7 +7,7 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 Domain-specific conventions live in [`src/AGENTS.md`](src/AGENTS.md) and each `src/{folder}/AGENTS.md`.
 Architecture and feature recipes: [`docs/CONTEXT.md`](docs/CONTEXT.md).
 Visual design system: [`docs/DESIGN.md`](docs/DESIGN.md).
-**Progression and difficulty tuning:** [`docs/PROGRESSION.md`](docs/PROGRESSION.md) — update whenever factory/god pacing, `GAME_BALANCE`, `GAME_DIFFICULTY`, or `PROGRESS_EASE` changes.
+**Progression and difficulty tuning:** [`docs/PROGRESSION.md`](docs/PROGRESSION.md) — update whenever factory/god pacing, `GAME_BALANCE`, `BALANCE_BASELINE`, or `PROGRESS_EASE` changes.
 Read the folder's AGENTS.md before editing files in it.
 
 ## Quick Reference

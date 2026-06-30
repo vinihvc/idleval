@@ -1,7 +1,8 @@
 import { assert, describe, expect, it } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { FACTORY_TYPES } from "@/content/factories";
 import { getMissionById, MISSION_CATALOG } from "@/content/missions";
+import { getGameDifficulty } from "@/game/difficulty";
 import {
   canClaimMission,
   captureMissionBaselines,
@@ -234,7 +235,13 @@ describe("missions", () => {
       },
     ]);
 
-    expect(summary.gold.eq(1000 * GAME_BALANCE.missionGoldReward)).toBe(true);
+    expect(
+      summary.gold.eq(
+        D(1000)
+          .times(BALANCE_BASELINE.missionGoldReward)
+          .times(getGameDifficulty())
+      )
+    ).toBe(true);
     expect(summary.renownPercent).toBe(1.5);
     expect(summary.powerUps).toHaveLength(1);
     expect(getRenownProductionMultiplier(10).eq(1.1)).toBe(true);
@@ -267,7 +274,10 @@ describe("missions", () => {
     const summary = summarizeMissionRewards(mission.rewards, 1);
     expect(
       summary.gold.eq(
-        D(catalogGold.amount).times(GAME_BALANCE.missionGoldReward).times(2)
+        D(catalogGold.amount)
+          .times(BALANCE_BASELINE.missionGoldReward)
+          .times(getGameDifficulty())
+          .times(2)
       )
     ).toBe(true);
   });

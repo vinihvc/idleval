@@ -30,8 +30,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 | File | Role |
 |------|------|
 | `economy.ts` | Costs, price scaling |
-| `balance.ts` | `GAME_BALANCE` scaling helpers for factories, gods |
-| `difficulty.ts` | `GAME_DIFFICULTY` scaling for costs and income |
+| `balance.ts` | `BALANCE_BASELINE` scaling helpers for factories, gods |
+| `difficulty.ts` | `GAME_BALANCE` scaling for costs and income |
 | `factories.ts` | Yield, eligibility, initial factory state, gold/s rate |
 | `gods.ts` | Multipliers, invocation rules, `hasInvokableGod` |
 | `power-ups.ts` | Buffs, daily rewards, inventory slots, realm economy |
@@ -47,13 +47,13 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Neighbors
 
-- Reads from: `content/`, `config/game`, `config/balance`, `utils/decimal`
+- Reads from: `content/`, `config/balance`, `utils/decimal`
 - Consumed by: `store/` (actions), `components/` (can* checks)
 
 ## Evolution
 
+- 2026-06-30 — Aggressive ease rebalance: `GAME_BALANCE` 1.5; `productionValue` 2.85; `unitCostGrowth` 1.024; `godGoldRequired` 0.60; progress ease 1.55
+- 2026-06-30 — `GAME_BALANCE` is a single difficulty number; tuned constants moved to `BALANCE_BASELINE`; removed `GAME_DIFFICULTY`
 - 2026-06-27 — Simplified progress ease: flat `factory.difficulty` 1.3; removed milestone decay and per-god invoke cost curve
 - 2026-06-27 — Pre-god engagement: `unitCostGrowth` 1.03; `godGoldRequired` 1.05
 - 2026-06-27 — Aggressive factory income rebalance: `productionValue` 2.25, `productionTime` 0.81
-- 2026-06-23 — Tests in `tests/game/` (not colocated in `src/game/`)
-- 2026-06-18 — Factory payback rebalance: `unitCostGrowth` 1.04, income-aligned `baseBuyCost`

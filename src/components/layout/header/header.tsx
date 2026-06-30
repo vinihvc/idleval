@@ -20,7 +20,7 @@ export const Header = (props: React.ComponentProps<"header">) => {
       data-slot="header"
       {...rest}
     >
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 items-center gap-4">
         <HeaderGold />
         <GameStagePowerUp className="shrink-0" />
       </div>

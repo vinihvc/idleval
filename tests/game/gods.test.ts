@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { GAME_BALANCE } from "@/config/balance";
+import { BALANCE_BASELINE } from "@/config/balance";
 import { GOD_COUNT, GOD_DATA } from "@/content/gods";
 import { getScaledGodGoldRequired } from "@/game/balance";
+import { applyDifficultyCost, getGameDifficulty } from "@/game/difficulty";
 import {
   canInvokeGodAtIndex,
   getGodCardStatus,
@@ -96,16 +97,24 @@ describe("gods rules", () => {
   it("getGodGoldRequired returns balance-adjusted threshold", () => {
     expect(
       getGodGoldRequired(0).eq(
-        D(getScaledGodGoldRequired(GOD_DATA[0].goldRequired))
+        applyDifficultyCost(
+          D(getScaledGodGoldRequired(GOD_DATA[0].goldRequired)),
+          getGameDifficulty()
+        )
       )
     ).toBe(true);
-    expect(getGodGoldRequired(0).toNumber()).toBe(
-      Number(GOD_DATA[0].goldRequired) * GAME_BALANCE.godGoldRequired
+    expect(getGodGoldRequired(0).toNumber()).toBeCloseTo(
+      (Number(GOD_DATA[0].goldRequired) * BALANCE_BASELINE.godGoldRequired) /
+        getGameDifficulty()
     );
-    expect(getGodGoldRequired(GOD_COUNT - 1).toNumber()).toBe(
-      Number(GOD_DATA[GOD_COUNT - 1].goldRequired) *
-        GAME_BALANCE.godGoldRequired
-    );
+    expect(
+      getGodGoldRequired(GOD_COUNT - 1).eq(
+        applyDifficultyCost(
+          D(getScaledGodGoldRequired(GOD_DATA[GOD_COUNT - 1].goldRequired)),
+          getGameDifficulty()
+        )
+      )
+    ).toBe(true);
   });
 
   it("canInvokeGodAtIndex succeeds at exact gold threshold", () => {

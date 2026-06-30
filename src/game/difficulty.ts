@@ -1,4 +1,4 @@
-import { GAME_DIFFICULTY } from "@/config/game";
+import { GAME_BALANCE } from "@/config/balance";
 import { D, type GameValue } from "@/utils/decimal";
 
 /**
@@ -7,7 +7,7 @@ import { D, type GameValue } from "@/utils/decimal";
  * @example
  * getGameDifficulty() // 1
  */
-export const getGameDifficulty = (): number => GAME_DIFFICULTY;
+export const getGameDifficulty = (): number => GAME_BALANCE;
 
 /**
  * Cost multiplier for a given difficulty.

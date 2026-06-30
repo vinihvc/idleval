@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { MissionObjective } from "@/content/missions";
-import type { MissionProgress } from "@/game/types";
 import {
   formatMissionProgressLabel,
   getMissionProgressBarPercent,
 } from "@/components/missions/format-mission-progress";
+import type { MissionObjective } from "@/content/missions";
+import type { MissionProgress } from "@/game/types";
 
 const progress = (
   current: number,

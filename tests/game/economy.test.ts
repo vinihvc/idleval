@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { BALANCE_BASELINE } from "@/config/balance";
+import { PROGRESS_EASE } from "@/config/progress-ease";
 import { FACTORY_DATA } from "@/content/factories";
-import { GAME_BALANCE } from "@/config/balance";
 import { getScaledBaseBuyCost } from "@/game/balance";
+import { getGameDifficulty } from "@/game/difficulty";
 import {
   bulkBuyCost,
   canAfford,
@@ -23,7 +25,7 @@ describe("economy", () => {
     const first = unitCost(base, 0);
     const second = unitCost(base, 1);
 
-    expect(first.toNumber()).toBe(scaledBase);
+    expect(first.toNumber()).toBe(scaledBase / getGameDifficulty());
     expect(second.gt(first)).toBe(true);
   });
 
@@ -66,7 +68,7 @@ describe("economy", () => {
 
   it("maxAffordable returns zero when gold is insufficient", () => {
     expect(maxAffordable(10, 0, D(0))).toBe(0);
-    expect(maxAffordable(10, 0, D(3))).toBe(0);
+    expect(maxAffordable(10, 0, D(1))).toBe(0);
   });
 
   it("maxAffordable returns at least one when gold covers first unit", () => {
@@ -95,11 +97,11 @@ describe("economy", () => {
     const base = 75;
     const scaledBase = getScaledBaseBuyCost(base);
 
-    expect(managerCost(base, 0).toNumber()).toBe(
-      scaledBase * GAME_BALANCE.managerCostFactor
+    expect(managerCost(base, 0).toNumber()).toBeCloseTo(
+      (scaledBase * BALANCE_BASELINE.managerCostFactor) / getGameDifficulty()
     );
-    expect(upgradeCost(base, 0).toNumber()).toBe(
-      scaledBase * GAME_BALANCE.upgradeCostFactor
+    expect(upgradeCost(base, 0).toNumber()).toBeCloseTo(
+      (scaledBase * BALANCE_BASELINE.upgradeCostFactor) / getGameDifficulty()
     );
     expect(managerCost(base, 10).eq(managerCost(base, 0))).toBe(true);
     expect(upgradeCost(base, 10).eq(upgradeCost(base, 0))).toBe(true);
@@ -123,14 +125,32 @@ describe("economy", () => {
       isAutomated: true,
     };
     const nextCost = unitCost(FACTORY_DATA.reliquary.baseBuyCost, owned);
-    const incomePerSecond = getFactoryGoldPerSecond(
-      "reliquary",
-      state,
-      D(1),
-      { factoryDifficulty: 1 }
-    );
+    const incomePerSecond = getFactoryGoldPerSecond("reliquary", state, D(1), {
+      factoryDifficulty: 1,
+    });
     const paybackSeconds = nextCost.div(incomePerSecond).toNumber();
 
     expect(paybackSeconds).toBeLessThan(10 * 60);
+  });
+
+  it("reliquary next-unit payback stays under eight minutes at three hundred ninety-three units", () => {
+    const owned = 393;
+    const factoryDifficulty = PROGRESS_EASE.factory.difficulty;
+    const state = {
+      ...createInitialFactoryState("reliquary", { amount: owned }),
+      isUnlocked: true,
+      isAutomated: true,
+    };
+    const nextCost = unitCost(
+      FACTORY_DATA.reliquary.baseBuyCost,
+      owned,
+      factoryDifficulty
+    );
+    const incomePerSecond = getFactoryGoldPerSecond("reliquary", state, D(1), {
+      factoryDifficulty,
+    });
+    const paybackSeconds = nextCost.div(incomePerSecond).toNumber();
+
+    expect(paybackSeconds).toBeLessThan(8 * 60);
   });
 });

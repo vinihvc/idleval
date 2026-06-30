@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GAME_BALANCE } from "@/config/balance";
 import {
   applyDifficultyCost,
   applyDifficultyIncome,
@@ -9,8 +10,8 @@ import {
 import { D } from "@/utils/decimal";
 
 describe("difficulty", () => {
-  it("defaults to baseline difficulty of 1", () => {
-    expect(getGameDifficulty()).toBe(1);
+  it("returns configured GAME_BALANCE as active difficulty", () => {
+    expect(getGameDifficulty()).toBe(GAME_BALANCE);
     expect(getDifficultyCostMultiplier(1)).toBe(1);
     expect(getDifficultyIncomeMultiplier(1)).toBe(1);
   });
