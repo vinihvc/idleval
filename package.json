@@ -17,6 +17,7 @@
     "compress-image": "python3 scripts/compress-image.py",
     "normalize-sounds": "python3 scripts/normalize_sounds.py",
     "i18n:check": "python3 scripts/check-i18n.py",
+    "typecheck": "tsc -b --pretty",
     "lint:check": "ultracite check",
     "lint:fix": "ultracite fix",
     "test": "vitest run",

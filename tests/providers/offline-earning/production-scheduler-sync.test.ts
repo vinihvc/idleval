@@ -116,7 +116,7 @@ describe("production-scheduler-sync", () => {
     expect(first.tick.seconds).toBe(1.5);
     expect(first.tick.cycleEndsAt).toBe(now + 1500);
     expect(getCycleProgress(first.tick, now).progress).toBeCloseTo(
-      1 - 1.5 / grainProductionTime,
+      Math.max(0, 1 - 1.5 / grainProductionTime),
       5
     );
     expect(second.changed).toBe(false);

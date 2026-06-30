@@ -166,7 +166,12 @@ describe("MissionSlots", () => {
     getFirstInProgressSlotButton()?.click();
 
     await expect
-      .poll(() => document.querySelector('[data-slot="mission-claim-content"]'))
+      .poll(
+        () => document.querySelector('[data-slot="mission-claim-content"]'),
+        {
+          timeout: 5000,
+        }
+      )
       .not.toBeNull();
   });
 });

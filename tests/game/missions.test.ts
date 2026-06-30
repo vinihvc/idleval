@@ -7,25 +7,31 @@ import {
   canClaimMission,
   captureMissionBaselines,
   findNewlyReadyMissionIds,
-  getMissionGodCycleMultiplier,
+  getMissionGoldRewardLevelMultiplier,
+  getMissionObjectiveLevelMultiplier,
+  getMissionPowerUpRewardCount,
   getMissionProgress,
   getRenownProductionMultiplier,
   getScaledMissionObjective,
   getScaledMissionRewards,
   getVisibleMissionSlots,
   isMissionReadyToClaim,
+  isMissionReplay,
   meetsMissionRequirements,
   replaceActiveSlotAfterClaim,
   resetMissionsOnGodInvoke,
   resolveActiveSlotIds,
+  resolveMissionSlotStatus,
+  scaleMissionCountTarget,
   summarizeMissionRewards,
 } from "@/game/missions";
+import { getPlayerLevel } from "@/game/player-level";
 import {
   createInitialMissionCounters,
   createInitialMissionsState,
   type MissionGameSnapshot,
 } from "@/game/types";
-import { D } from "@/utils/decimal";
+import { D, type GameValue } from "@/utils/decimal";
 
 const createSnapshot = (
   overrides: Partial<MissionGameSnapshot> = {}
@@ -56,6 +62,65 @@ const createSnapshot = (
   counters: createInitialMissionCounters(),
   ...overrides,
 });
+
+const createReliquaryHoldGoldFactories =
+  (): MissionGameSnapshot["factories"] => ({
+    grain: createSnapshot().factories.grain,
+    reliquary: {
+      amount: 1,
+      isAutomated: false,
+      isProducing: false,
+      isUnlocked: true,
+      isUpgraded: false,
+      productionStartedAt: null,
+      productionDurationSec: null,
+    },
+  });
+
+const findHoldGoldReadyWallet = (
+  mission: NonNullable<ReturnType<typeof getMissionById>>,
+  factories: MissionGameSnapshot["factories"]
+): GameValue => {
+  const state = createInitialMissionsState();
+  state.activeSlotIds = [mission.id];
+  let wallet = D(
+    mission.objective.type === "holdGold" ? mission.objective.target : "1e9"
+  );
+
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const snapshot = createSnapshot({ walletGold: wallet, factories });
+
+    if (isMissionReadyToClaim(mission, snapshot, state)) {
+      return wallet;
+    }
+
+    wallet = wallet.times(1.25);
+  }
+
+  throw new Error(`Could not find holdGold ready wallet for ${mission.id}`);
+};
+
+const findHoldGoldWalletJustBelowTarget = (
+  mission: NonNullable<ReturnType<typeof getMissionById>>,
+  factories: MissionGameSnapshot["factories"]
+): GameValue => {
+  const state = createInitialMissionsState();
+  state.activeSlotIds = [mission.id];
+  let wallet = findHoldGoldReadyWallet(mission, factories);
+
+  while (wallet.gt(0)) {
+    wallet = wallet.times(0.999);
+    const snapshot = createSnapshot({ walletGold: wallet, factories });
+
+    if (!isMissionReadyToClaim(mission, snapshot, state)) {
+      return wallet;
+    }
+  }
+
+  throw new Error(
+    `Could not find holdGold below-target wallet for ${mission.id}`
+  );
+};
 
 describe("missions", () => {
   it("tracks own-units progress from statistics", () => {
@@ -221,19 +286,22 @@ describe("missions", () => {
     ).toContain(mission.id);
 
     state.readyToClaimIds = [mission.id];
-    expect(canClaimMission(mission.id, state)).toBe(true);
+    expect(canClaimMission(mission.id, state, snapshot)).toBe(true);
   });
 
   it("summarizes rewards and renown multiplier", () => {
-    const summary = summarizeMissionRewards([
-      { type: "gold", amount: "1000" },
-      { type: "renown", percent: 1.5 },
-      {
-        type: "powerUp",
-        powerUpId: "mimirCoin",
-        tier: "common",
-      },
-    ]);
+    const summary = summarizeMissionRewards(
+      [
+        { type: "gold", amount: "1000" },
+        { type: "renown", percent: 1.5 },
+        {
+          type: "powerUp",
+          powerUpId: "mimirCoin",
+          tier: "common",
+        },
+      ],
+      1
+    );
 
     expect(
       summary.gold.eq(
@@ -247,37 +315,49 @@ describe("missions", () => {
     expect(getRenownProductionMultiplier(10).eq(1.1)).toBe(true);
   });
 
-  it("scales mission cycle multiplier by invoked god count", () => {
-    expect(getMissionGodCycleMultiplier(0)).toBe(1);
-    expect(getMissionGodCycleMultiplier(1)).toBe(2);
-    expect(getMissionGodCycleMultiplier(2)).toBe(4);
+  it("scales mission multipliers by player level", () => {
+    expect(getMissionObjectiveLevelMultiplier(1)).toBe(1);
+    expect(getMissionGoldRewardLevelMultiplier(1)).toBe(1);
+    expect(getMissionGoldRewardLevelMultiplier(50)).toBeGreaterThan(
+      getMissionObjectiveLevelMultiplier(50)
+    );
+    expect(getMissionPowerUpRewardCount(1, 40)).toBe(3);
   });
 
-  it("scales gold objectives and rewards for the current god cycle", () => {
+  it("scales gold objectives and rewards for the current player level", () => {
     const mission = getMissionById("mission-003");
     assert(mission);
+    const playerLevel = 50;
+    const objectiveMultiplier = getMissionObjectiveLevelMultiplier(playerLevel);
+    const goldMultiplier = getMissionGoldRewardLevelMultiplier(playerLevel);
 
-    const scaledObjective = getScaledMissionObjective(mission.objective, 1);
+    const scaledObjective = getScaledMissionObjective(
+      mission.objective,
+      playerLevel
+    );
     expect(scaledObjective).toMatchObject({
       type: "earnGold",
-      target: "3000",
+      target: D("1500").times(objectiveMultiplier).round().toString(),
     });
 
-    const scaledRewards = getScaledMissionRewards(mission.rewards, 1);
+    const scaledRewards = getScaledMissionRewards(mission.rewards, playerLevel);
     const goldReward = scaledRewards.find((reward) => reward.type === "gold");
-    expect(goldReward).toMatchObject({ type: "gold", amount: "1500" });
+    expect(goldReward).toMatchObject({
+      type: "gold",
+      amount: D("750").times(goldMultiplier).round().toString(),
+    });
 
     const catalogGold = mission.rewards.find(
       (reward) => reward.type === "gold"
     );
     assert(catalogGold?.type === "gold");
-    const summary = summarizeMissionRewards(mission.rewards, 1);
+    const summary = summarizeMissionRewards(mission.rewards, playerLevel);
     expect(
       summary.gold.eq(
         D(catalogGold.amount)
           .times(BALANCE_BASELINE.missionGoldReward)
           .times(getGameDifficulty())
-          .times(2)
+          .times(goldMultiplier)
       )
     ).toBe(true);
   });
@@ -306,10 +386,16 @@ describe("missions", () => {
       state,
       mission.id
     );
+    const playerLevel = getPlayerLevel(snapshot);
+    assert(mission.objective.type === "ownUnits");
+    const expectedTarget = scaleMissionCountTarget(
+      mission.objective.target,
+      getMissionObjectiveLevelMultiplier(playerLevel)
+    );
 
     expect(progress.current).toBe(2);
-    expect(progress.target).toBe(8);
-    expect(progress.ratio).toBe(0.25);
+    expect(progress.target).toBe(expectedTarget);
+    expect(progress.ratio).toBeCloseTo(2 / expectedTarget);
   });
 
   it("resets missions on god invoke while capturing own-units baselines", () => {
@@ -449,20 +535,10 @@ describe("missions", () => {
     assert(mission);
     const state = createInitialMissionsState();
     state.activeSlotIds = ["mission-103"];
+    const factories = createReliquaryHoldGoldFactories();
     const snapshot = createSnapshot({
-      walletGold: D("62099500000"),
-      factories: {
-        grain: createSnapshot().factories.grain,
-        reliquary: {
-          amount: 1,
-          isAutomated: false,
-          isProducing: false,
-          isUnlocked: true,
-          isUpgraded: false,
-          productionStartedAt: null,
-          productionDurationSec: null,
-        },
-      },
+      walletGold: findHoldGoldWalletJustBelowTarget(mission, factories),
+      factories,
     });
 
     expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(false);
@@ -476,20 +552,10 @@ describe("missions", () => {
     assert(mission);
     const state = createInitialMissionsState();
     state.activeSlotIds = ["mission-103"];
+    const factories = createReliquaryHoldGoldFactories();
     const snapshot = createSnapshot({
-      walletGold: D("62100000000"),
-      factories: {
-        grain: createSnapshot().factories.grain,
-        reliquary: {
-          amount: 1,
-          isAutomated: false,
-          isProducing: false,
-          isUnlocked: true,
-          isUpgraded: false,
-          productionStartedAt: null,
-          productionDurationSec: null,
-        },
-      },
+      walletGold: findHoldGoldReadyWallet(mission, factories),
+      factories,
     });
 
     expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(true);
@@ -503,20 +569,10 @@ describe("missions", () => {
     assert(mission);
     const state = createInitialMissionsState();
     state.activeSlotIds = ["mission-103"];
+    const factories = createReliquaryHoldGoldFactories();
     const snapshot = createSnapshot({
-      walletGold: D("62100000000"),
-      factories: {
-        grain: createSnapshot().factories.grain,
-        reliquary: {
-          amount: 1,
-          isAutomated: false,
-          isProducing: false,
-          isUnlocked: true,
-          isUpgraded: false,
-          productionStartedAt: null,
-          productionDurationSec: null,
-        },
-      },
+      walletGold: findHoldGoldReadyWallet(mission, factories),
+      factories,
     });
 
     const slots = getVisibleMissionSlots(MISSION_CATALOG, state, snapshot);
@@ -569,5 +625,102 @@ describe("missions", () => {
     });
 
     expect(isMissionReadyToClaim(mission, completeSnapshot, state)).toBe(true);
+  });
+
+  it("wraps the catalog after the last mission when claiming near the end", () => {
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-198", "mission-199", "mission-200"];
+    state.claimedIds = MISSION_CATALOG.slice(0, 197).map(
+      (mission) => mission.id
+    );
+    state.claimedIds.push("mission-198");
+    const snapshot = createSnapshot({
+      factories: createReliquaryHoldGoldFactories(),
+    });
+
+    const nextSlots = replaceActiveSlotAfterClaim(
+      MISSION_CATALOG,
+      state,
+      "mission-198",
+      snapshot
+    );
+
+    expect(nextSlots).toEqual(["mission-001", "mission-199", "mission-200"]);
+  });
+
+  it("treats replay missions in active slots as in progress, not claimed", () => {
+    const mission = getMissionById("mission-001");
+    assert(mission);
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-001"];
+    state.claimedIds = ["mission-001"];
+    const snapshot = createSnapshot();
+
+    expect(resolveMissionSlotStatus(mission, state, snapshot)).not.toBe(
+      "claimed"
+    );
+    expect(isMissionReplay(state, "mission-001")).toBe(true);
+  });
+
+  it("requires new lifetime progress when a mission is replayed", () => {
+    const mission = getMissionById("mission-198");
+    assert(mission);
+    const state = createInitialMissionsState();
+    state.activeSlotIds = ["mission-198"];
+    state.claimedIds = ["mission-198"];
+    state.progressBaselines = {
+      "mission-198": {
+        goldEarned: "0",
+        goldSpent: "0",
+        productionCyclesCompleted: 0,
+        powerUpsActivated: 12,
+      },
+    };
+    const snapshot = createSnapshot({
+      counters: {
+        ...createInitialMissionCounters(),
+        powerUpsActivated: 12,
+      },
+      factories: createReliquaryHoldGoldFactories(),
+    });
+
+    expect(
+      getMissionProgress(mission.objective, snapshot, state, mission.id).ratio
+    ).toBe(0);
+    expect(isMissionReadyToClaim(mission, snapshot, state)).toBe(false);
+  });
+
+  it("recaptures baselines when a claimed mission becomes active again", () => {
+    const snapshot = createSnapshot({
+      statistics: {
+        ...createSnapshot().statistics,
+        goldEarned: "1000",
+      },
+      counters: {
+        ...createInitialMissionCounters(),
+        productionCyclesCompleted: 50,
+      },
+    });
+    const state = captureMissionBaselines(
+      {
+        ...createInitialMissionsState(),
+        activeSlotIds: ["mission-002"],
+        claimedIds: ["mission-002"],
+        progressBaselines: {
+          "mission-002": {
+            goldEarned: "0",
+            goldSpent: "0",
+            productionCyclesCompleted: 0,
+            powerUpsActivated: 0,
+          },
+        },
+      },
+      snapshot,
+      ["mission-002"]
+    );
+
+    expect(
+      state.progressBaselines["mission-002"]?.productionCyclesCompleted
+    ).toBe(50);
   });
 });

@@ -28,6 +28,18 @@ const getServerSnapshot = () => {
   throw new Error("useLocalStorage is a client-only hook");
 };
 
+const parseStoredValue = <T>(raw: string | null, initialValue: T): T => {
+  if (!raw) {
+    return initialValue;
+  }
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return initialValue;
+  }
+};
+
 export const useLocalStorage = <T>(key: string, initialValue: T) => {
   const getSnapshot = () => getLocalStorageItem(key);
 
@@ -43,7 +55,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
         const nextState =
           typeof value === "function"
             ? (value as (previous: T) => T)(
-                store ? (JSON.parse(store) as T) : initialValue
+                parseStoredValue(store, initialValue)
               )
             : value;
 
@@ -68,5 +80,5 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
     }
   }, [initialValue, key]);
 
-  return [store ? (JSON.parse(store) as T) : initialValue, setState] as const;
+  return [parseStoredValue(store, initialValue), setState] as const;
 };

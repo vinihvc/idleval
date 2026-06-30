@@ -270,8 +270,7 @@ describe("offline-earning", () => {
     const buffProductionTime = Math.max(
       1,
       Math.round(
-        baseProductionTime *
-          getPowerUpTimeMultiplier(activePowerUp, lastSeenAt)
+        baseProductionTime * getPowerUpTimeMultiplier(activePowerUp, lastSeenAt)
       )
     );
     const earnPerCycle = getFactoryEarnPerCycle({

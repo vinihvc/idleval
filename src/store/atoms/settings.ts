@@ -6,7 +6,7 @@ import {
   normalizeLocale,
 } from "@/i18n/locale";
 import { store } from "@/providers/store";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 
 const clampVolume = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -16,10 +16,40 @@ export interface Settings {
   sfxVolume: number;
 }
 
-export const settingsAtom = persistedAtom<Settings>(LOCAL_STORAGE.settings, {
+const defaultSettings = (): Settings => ({
   musicVolume: 0.8,
   sfxVolume: 0.8,
 });
+
+export const normalizeSettings = (value: unknown): Settings => {
+  if (typeof value !== "object" || value === null) {
+    return defaultSettings();
+  }
+
+  const raw = value as Record<string, unknown>;
+  const locale =
+    typeof raw.locale === "string"
+      ? normalizeLocale(raw.locale as AppLocale)
+      : undefined;
+
+  return {
+    locale,
+    musicVolume:
+      typeof raw.musicVolume === "number"
+        ? clampVolume(raw.musicVolume)
+        : defaultSettings().musicVolume,
+    sfxVolume:
+      typeof raw.sfxVolume === "number"
+        ? clampVolume(raw.sfxVolume)
+        : defaultSettings().sfxVolume,
+  };
+};
+
+export const settingsAtom = persistedAtomWithNormalize<Settings>(
+  LOCAL_STORAGE.settings,
+  defaultSettings(),
+  normalizeSettings
+);
 
 export const getSettings = (): Settings => {
   const settings = store.get(settingsAtom);

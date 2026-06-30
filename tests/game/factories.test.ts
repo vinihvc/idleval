@@ -48,10 +48,7 @@ describe("factories rules", () => {
   it("getFactoryUnlockPrice returns balance- and difficulty-scaled unlock cost", () => {
     expect(
       getFactoryUnlockPrice(55_000).eq(
-        applyDifficultyCost(
-          getScaledUnlockPrice(55_000),
-          getGameDifficulty()
-        )
+        applyDifficultyCost(getScaledUnlockPrice(55_000), getGameDifficulty())
       )
     ).toBe(true);
   });

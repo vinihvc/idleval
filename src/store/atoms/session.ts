@@ -1,14 +1,34 @@
 import { LOCAL_STORAGE } from "@/config/local-storage";
 import { store } from "@/providers/store";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 
 export interface SessionState {
   lastSeenAt: number | null;
 }
 
-export const sessionAtom = persistedAtom<SessionState>(LOCAL_STORAGE.session, {
+const defaultSessionState = (): SessionState => ({
   lastSeenAt: null,
 });
+
+export const normalizeSessionState = (value: unknown): SessionState => {
+  if (typeof value !== "object" || value === null) {
+    return defaultSessionState();
+  }
+
+  const raw = value as Record<string, unknown>;
+  const lastSeenAt =
+    typeof raw.lastSeenAt === "number" && Number.isFinite(raw.lastSeenAt)
+      ? raw.lastSeenAt
+      : null;
+
+  return { lastSeenAt };
+};
+
+export const sessionAtom = persistedAtomWithNormalize<SessionState>(
+  LOCAL_STORAGE.session,
+  defaultSessionState(),
+  normalizeSessionState
+);
 
 export const getLastSeenAt = (): number | null =>
   store.get(sessionAtom).lastSeenAt;

@@ -3,7 +3,7 @@ import { LOCAL_STORAGE } from "@/config/local-storage";
 import type { FactoryType } from "@/content/factories";
 import { store } from "@/providers/store";
 import { incrementRunGoldEarned } from "@/store/atoms/missions.actions";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 import {
   D,
   deserializeDecimal,
@@ -16,9 +16,40 @@ interface WalletState {
   gold: string;
 }
 
-export const walletAtom = persistedAtom(LOCAL_STORAGE.wallet, {
+const defaultWalletState = (): WalletState => ({
   gold: serializeDecimal(D(0)),
-} satisfies WalletState);
+});
+
+export const normalizeWalletState = (value: unknown): WalletState => {
+  if (typeof value !== "object" || value === null) {
+    return defaultWalletState();
+  }
+
+  const raw = value as Record<string, unknown>;
+
+  if (typeof raw.gold !== "string") {
+    return defaultWalletState();
+  }
+
+  try {
+    const decimal = deserializeDecimal(raw.gold);
+    const numeric = Number(decimal.toString());
+
+    if (!Number.isFinite(numeric)) {
+      return defaultWalletState();
+    }
+
+    return { gold: raw.gold };
+  } catch {
+    return defaultWalletState();
+  }
+};
+
+export const walletAtom = persistedAtomWithNormalize(
+  LOCAL_STORAGE.wallet,
+  defaultWalletState(),
+  normalizeWalletState
+);
 
 export const getGold = (): GameValue =>
   deserializeDecimal(store.get(walletAtom).gold);

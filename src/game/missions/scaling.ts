@@ -1,20 +1,13 @@
-import { PROGRESS_EASE } from "@/config/progress-ease";
 import type { MissionObjective, MissionReward } from "@/content/missions";
+import {
+  getMissionGoldRewardLevelMultiplier,
+  getMissionObjectiveLevelMultiplier,
+  getMissionPowerUpRewardCount,
+} from "@/game/missions/level-scaling";
 import { D } from "@/utils/decimal";
 
 /**
- * Mission difficulty/reward multiplier by invoked god count: cycleBase^godsInvoked.
- *
- * @example
- * getMissionGodCycleMultiplier(0) // 1
- * getMissionGodCycleMultiplier(1) // 2
- * getMissionGodCycleMultiplier(2) // 4
- */
-export const getMissionGodCycleMultiplier = (godsInvoked: number): number =>
-  PROGRESS_EASE.mission.cycleBase ** godsInvoked;
-
-/**
- * Scales a catalog gold target for the current god cycle.
+ * Scales a catalog gold target for the current player level.
  */
 export const scaleMissionGoldTarget = (
   raw: string,
@@ -22,7 +15,7 @@ export const scaleMissionGoldTarget = (
 ): string => D(raw).times(multiplier).round().toString();
 
 /**
- * Scales a catalog count target for the current god cycle.
+ * Scales a catalog count target for the current player level.
  */
 export const scaleMissionCountTarget = (
   raw: number,
@@ -30,13 +23,13 @@ export const scaleMissionCountTarget = (
 ): number => Math.ceil(raw * multiplier);
 
 /**
- * Returns catalog objective with scaled numeric targets for the current god cycle.
+ * Returns catalog objective with scaled numeric targets for the current player level.
  */
 export const getScaledMissionObjective = (
   objective: MissionObjective,
-  godsInvoked: number
+  playerLevel: number
 ): MissionObjective => {
-  const multiplier = getMissionGodCycleMultiplier(godsInvoked);
+  const multiplier = getMissionObjectiveLevelMultiplier(playerLevel);
 
   if (multiplier === 1) {
     return objective;
@@ -74,27 +67,30 @@ export const getScaledMissionObjective = (
 };
 
 /**
- * Returns catalog rewards with scaled gold amounts for the current god cycle.
+ * Returns catalog rewards scaled for the current player level.
  * Pass rewards from `MISSION_CATALOG` only — not values already scaled.
  */
 export const getScaledMissionRewards = (
   rewards: MissionReward[],
-  godsInvoked: number
+  playerLevel: number
 ): MissionReward[] => {
-  const multiplier = getMissionGodCycleMultiplier(godsInvoked);
-
-  if (multiplier === 1) {
-    return rewards;
-  }
+  const goldMultiplier = getMissionGoldRewardLevelMultiplier(playerLevel);
 
   return rewards.map((reward) => {
-    if (reward.type !== "gold") {
-      return reward;
+    if (reward.type === "gold") {
+      return {
+        ...reward,
+        amount: scaleMissionGoldTarget(reward.amount, goldMultiplier),
+      };
     }
 
-    return {
-      ...reward,
-      amount: scaleMissionGoldTarget(reward.amount, multiplier),
-    };
+    if (reward.type === "powerUp") {
+      return {
+        ...reward,
+        count: getMissionPowerUpRewardCount(reward.count ?? 1, playerLevel),
+      };
+    }
+
+    return reward;
   });
 };

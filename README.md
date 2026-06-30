@@ -29,6 +29,24 @@ Available in **English**, **Spanish**, and **Portuguese**. Runs in the browser a
 - **Daily ritual** — reward streak for consecutive logins
 - **Offline earnings** — production accrued while you were away
 
+## Development
+
+Requires **Node.js 24+** and [pnpm](https://pnpm.io/) 11.
+
+```bash
+pnpm install
+pnpm dev          # local dev server
+pnpm test         # unit + browser tests
+pnpm typecheck    # TypeScript project references
+pnpm lint:check   # Ultracite / Biome
+pnpm i18n:check   # locale key parity
+pnpm build        # production build
+```
+
+Python 3 is optional for asset scripts (`pnpm remove-bg`, `pnpm i18n:check`).
+
+Architecture and feature recipes: [docs/CONTEXT.md](docs/CONTEXT.md).
+
 ## Stack
 
 - [React](https://react.dev/)

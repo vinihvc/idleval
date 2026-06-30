@@ -1,4 +1,5 @@
 import { Image } from "@unpic/react";
+import { Crown } from "pixelarticons/react/Crown";
 import { Coin } from "@/components/icons/coin";
 import { FormattedNumber } from "@/components/ui/formatted-number";
 import { StatTile } from "@/components/ui/stats";
@@ -6,6 +7,7 @@ import { FACTORY_TYPES, type FactoryType } from "@/content/factories";
 import { useLocalizedFactoryName } from "@/i18n/hooks/use-localized-factory";
 import { m } from "@/i18n/messages";
 import { useGods } from "@/store/atoms/gods";
+import { useMissionsState } from "@/store/atoms/missions.atom";
 import {
   useGoldEarnedByFactory,
   useTotalGoldEarned,
@@ -14,6 +16,7 @@ import {
 export const StatisticsContent = () => {
   const totalGold = useTotalGoldEarned();
   const { count: godsInvoked } = useGods();
+  const { renownPercent } = useMissionsState();
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
@@ -41,6 +44,13 @@ export const StatisticsContent = () => {
         label={m["ui.nav.gods"]()}
       >
         <FormattedNumber value={godsInvoked} />
+      </StatTile>
+
+      <StatTile
+        icon={<Crown aria-hidden className="size-6 shrink-0 text-primary" />}
+        label={m["ui.statistics.renown"]()}
+      >
+        {m["ui.statistics.renownValue"]({ percent: String(renownPercent) })}
       </StatTile>
 
       {FACTORY_TYPES.map((factory) => (

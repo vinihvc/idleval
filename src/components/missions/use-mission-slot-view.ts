@@ -3,10 +3,10 @@ import {
   getMissionById,
   type MissionDefinition,
 } from "@/content/missions";
-import { getScaledMissionObjective } from "@/game/missions";
+import { buildMissionSlotPresentation } from "@/game/missions";
 import type { MissionProgress, MissionSlotView } from "@/game/types";
 import { m } from "@/i18n/messages";
-import { useGods } from "@/store/atoms/gods";
+import { usePlayerLevel } from "@/store/atoms/missions.selectors";
 import { formatMissionProgressLabel } from "./format-mission-progress";
 
 export interface MissionSlotViewModel {
@@ -22,13 +22,13 @@ export interface MissionSlotViewModel {
 export const useMissionSlotView = (
   slot: MissionSlotView
 ): MissionSlotViewModel => {
-  const { count: godsInvoked } = useGods();
+  const playerLevel = usePlayerLevel();
   const { id: missionId, status, order, progress } = slot;
   const missionDefinition = getMissionById(missionId);
-  const objective = missionDefinition?.objective;
-  const scaledObjective = objective
-    ? getScaledMissionObjective(objective, godsInvoked)
+  const presentation = missionDefinition
+    ? buildMissionSlotPresentation(missionDefinition, playerLevel)
     : undefined;
+  const scaledObjective = presentation?.scaledObjective;
   const objectiveLabel = scaledObjective
     ? getLocalizedMissionObjective(scaledObjective)
     : missionId;

@@ -9,6 +9,7 @@ import {
 } from "@/game/factory-cycle";
 import { reconcileManualCycle } from "@/game/manual-production";
 import type { FactoryPersistedState } from "@/game/types";
+import { useVisibilityChange } from "@/hooks/use-visibility-change";
 import { store } from "@/providers/store";
 import {
   completeProductionCycle,
@@ -173,6 +174,7 @@ const syncFactoryTicks = (
 export const useProductionScheduler = () => {
   const factories = useFactories();
   const offlineProgress = useOfflineCycleProgress();
+  const isVisible = useVisibilityChange();
   const setTicks = useSetAtom(productionTicksAtom);
   const consumedOfflineRef = React.useRef(new Set<FactoryType>());
 
@@ -183,6 +185,16 @@ export const useProductionScheduler = () => {
       ),
     [factories]
   );
+
+  React.useEffect(() => {
+    const consumed = consumedOfflineRef.current;
+
+    for (const factory of FACTORY_TYPES) {
+      if (offlineProgress[factory] != null) {
+        consumed.delete(factory);
+      }
+    }
+  }, [offlineProgress]);
 
   React.useEffect(() => {
     const now = Date.now();
@@ -228,6 +240,6 @@ export const useProductionScheduler = () => {
         return changed ? nextTicks : previousTicks;
       });
     },
-    hasRunningFactory ? 1000 : undefined
+    hasRunningFactory && isVisible ? 1000 : undefined
   );
 };

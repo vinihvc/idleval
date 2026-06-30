@@ -100,7 +100,7 @@ export const useOfflineEarning = (): OfflineSummary | null => {
     }
 
     if (shouldRunOnTabVisible(prevVisibleRef.current, isVisible)) {
-      applyAndShowSummary(setSummary);
+      handleVisibleResume(setSummary);
     }
 
     prevVisibleRef.current = isVisible;

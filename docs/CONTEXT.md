@@ -31,7 +31,7 @@ content (IDs, numbers) → game (rules) → store (state) → components (UI)
 | Factories | `factories.ts` | `factories.ts`, `economy.ts`, `purchases.ts` | `atoms/factories.*` | `ui/factory-card/`, `game/factory-grid/` |
 | Gods | `gods.ts` | `gods.ts` | `atoms/gods.*` | `dialog/gods/` |
 | Power-ups | `power-ups.ts` | `power-ups.ts` | `atoms/power-ups.*`, `atoms/inventory.ts` | `ui/power-up/`, `dialog/inventory/`, `dialog/wiki/` |
-| Missions | `missions.ts` | `missions.ts` | `atoms/missions.*` | `game/stage/mission-slots`, `dialog/missions/` |
+| Missions | `missions.ts` | `missions.ts` | `atoms/missions.*` | `game/missions/`, `dialog/mission/` |
 | Offline | — | `offline-earning.ts` | `offline-earning.ts`, `atoms/session.ts` | `providers/offline-earning/`, `dialog/offline-earning/` |
 | Settings | — | — | `atoms/settings.ts` | `dialog/settings/` |
 
@@ -69,8 +69,8 @@ End-to-end flow already implemented — use as a model for progress + reward fea
 | content | `missions.ts` | `MISSION_DATA`, types, `getLocalizedMission` |
 | game | `missions.ts`, `types.ts` | snapshot, slots, progress, renown multiplier |
 | store | `missions.atom/actions/selectors.ts`, `missions.ts` | persist `missions`, claim, sync, selectors |
-| UI stage | `game/stage/mission-slots.tsx`, `mission-slot.tsx` | visible slots on stage |
-| UI dialog | `dialog/missions/missions.claim-dialog.tsx`, `missions.claim-content.tsx` | claim flow |
+| UI stage | `game/missions/missions.tsx`, `missions.card.tsx` | visible slots on stage |
+| UI dialog | `dialog/mission/mission.tsx`, `mission.content.tsx` | claim flow |
 
 Key actions: `syncMissionProgress`, `claimMissionReward`, `incrementMissionCounter`. Selectors: `useVisibleMissionSlots`, `getHasClaimableMission`.
 
@@ -124,6 +124,7 @@ Pure rules in `game/offline-earning.ts`; apply in `store/offline-earning.ts`.
 ```bash
 pnpm dev
 pnpm test
+pnpm typecheck
 pnpm test tests/game/missions.test.ts
 pnpm i18n:check
 pnpm dlx ultracite fix

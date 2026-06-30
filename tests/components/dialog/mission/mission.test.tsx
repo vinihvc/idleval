@@ -3,7 +3,8 @@ import { MissionDialog } from "@/components/dialog/mission/mission";
 import { getLocalizedMissionTitle, getMissionById } from "@/content/missions";
 import { m } from "@/i18n/messages";
 import { store } from "@/providers/store";
-import { missionsAtom } from "@/store/atoms/missions.atom";
+import { syncMissionProgress } from "@/store/atoms/missions.actions";
+import { statisticsAtom } from "@/store/atoms/statistics";
 import { resetGame } from "@/store/reset";
 import { renderWithProviders } from "@/test/render-with-providers";
 
@@ -82,10 +83,17 @@ describe("MissionDialog", () => {
   });
 
   test("announces claim and calls onOpenChange when claim succeeds", async () => {
-    store.set(missionsAtom, (previous) => ({
+    store.set(statisticsAtom, (previous) => ({
       ...previous,
-      readyToClaimIds: ["mission-001"],
+      factories: {
+        ...previous.factories,
+        grain: {
+          ...previous.factories.grain,
+          quantity: 1,
+        },
+      },
     }));
+    syncMissionProgress();
 
     const onOpenChange = vi.fn();
 

@@ -63,6 +63,16 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
   },
   test: {
+    coverage: {
+      provider: "v8",
+      include: ["src/game/**", "src/store/**"],
+      thresholds: {
+        lines: 85,
+        functions: 85,
+        branches: 75,
+        statements: 85,
+      },
+    },
     projects: [
       {
         extends: true,

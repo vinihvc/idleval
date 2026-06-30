@@ -12,6 +12,7 @@ import {
 } from "@/store/atoms/factories.actions";
 import { factoriesAtom } from "@/store/atoms/factories.atom";
 import { getFactory } from "@/store/atoms/factories.selectors";
+import { getTotalEarnPerCycle } from "@/store/atoms/factory-earn";
 import { statisticsAtom } from "@/store/atoms/statistics";
 import { getGold } from "@/store/atoms/wallet";
 import { resetGame } from "@/store/reset";
@@ -82,6 +83,7 @@ describe("factories.actions", () => {
       productionDurationSec: getScaledFactoryConfig("grain").productionTime,
     });
     const goldBefore = getGold();
+    const expectedEarned = getTotalEarnPerCycle("grain");
 
     completeProductionCycle("grain");
 
@@ -90,7 +92,7 @@ describe("factories.actions", () => {
     expect(grain.isProducing).toBe(false);
     expect(grain.productionStartedAt).toBeNull();
     expect(grain.productionDurationSec).toBeNull();
-    expect(getGold().gt(goldBefore)).toBe(true);
+    expect(getGold().minus(goldBefore).eq(expectedEarned)).toBe(true);
     expect(vi.mocked(sound.play)).toHaveBeenCalledWith("coin");
   });
 

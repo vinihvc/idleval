@@ -1,6 +1,6 @@
 # Progression and difficulty
 
-> **Maintenance:** Update this file whenever you change progression-related tuning: `GAME_BALANCE`, `PROGRESS_EASE`, `BALANCE_BASELINE`, `GOD_DATA` (costs, `productionMultiplier`, `productionSpeedMultiplier`), `FACTORY_DATA`, mission gold rewards, or offline/production timing. After code changes, refresh tables using [`src/game/progression-estimates.ts`](../src/game/progression-estimates.ts) and `pnpm test tests/game/progression-estimates.test.ts`.
+> **Maintenance:** Update this file whenever you change progression-related tuning: `GAME_BALANCE`, `PROGRESS_EASE`, `BALANCE_BASELINE`, `PLAYER_LEVEL`, `GOD_DATA` (costs, `productionMultiplier`, `productionSpeedMultiplier`), `FACTORY_DATA`, mission gold rewards, or offline/production timing. After code changes, refresh tables using [`src/game/progression-estimates.ts`](../src/game/progression-estimates.ts) and `pnpm test tests/game/progression-estimates.test.ts`.
 
 Idleval layers difficulty so early play hooks the player and later god invokes stay challenging.
 
@@ -9,7 +9,8 @@ Idleval layers difficulty so early play hooks the player and later god invokes s
 | Layer | File | What it does |
 |-------|------|----------------|
 | **Global balance** | [`src/config/balance.ts`](../src/config/balance.ts) `GAME_BALANCE` | Single difficulty number: `1` = normal, `>1` easier (more income, lower costs, faster cycles), `<1` harder. `BALANCE_BASELINE` holds tuned constants at `GAME_BALANCE = 1`. Not persisted. |
-| **Dynamic progress** | [`src/config/progress-ease.ts`](../src/config/progress-ease.ts) `PROGRESS_EASE` | Flat factory income/cost boost; mission god-cycle scaling. |
+| **Dynamic progress** | [`src/config/progress-ease.ts`](../src/config/progress-ease.ts) `PROGRESS_EASE` | Flat factory income/cost boost. |
+| **Player level** | [`src/config/player-level.ts`](../src/config/player-level.ts) `PLAYER_LEVEL` | Derived level 1–100 from wallet + gods; scales mission objectives and rewards. |
 
 **Scaling order:** `content/` baseline → `BALANCE_BASELINE` → `applyDifficulty(...)` via `GAME_BALANCE` (and/or progress ease).
 
@@ -34,18 +35,42 @@ Idleval layers difficulty so early play hooks the player and later god invokes s
 | Tangaroa | ×8 | ×1.65 |
 | Inti | ×10 | ×1.80 |
 
-Speed and gold bonuses **accumulate** across all invoked gods. Invoking a god **resets** gold, factory units, and **missions** (including renown). Mission objectives and gold rewards scale by `PROGRESS_EASE.mission.cycleBase ** godsInvoked` (default ×2 per invoked god).
+Speed and gold bonuses **accumulate** across all invoked gods. Invoking a god **resets** gold, factory units, and **missions** (including renown). Mission objectives and rewards scale by **player level** (see below), not by a separate god-cycle multiplier.
 
-### Mission god-cycle scaling
+### Player level (1–100)
 
-| Gods invoked | Cycle multiplier | Example: earn 1 500 gold objective | Example: 750 gold reward (before baseline × balance) |
-|--------------|------------------|-------------------------------------|--------------------------------------------------|
-| 0 | ×1 | 1 500 | 750 |
-| 1 | ×2 | 3 000 | 1 500 |
-| 2 | ×4 | 6 000 | 3 000 |
-| 6 | ×64 | 96 000 | 48 000 |
+Derived at runtime from [`getPlayerLevel(snapshot)`](../src/game/player-level.ts) — **not persisted**.
 
-Scaled at runtime in [`game/missions.ts`](../src/game/missions.ts) — catalog baselines unchanged. `ownUnits` progress counts units purchased **since the last god invoke** (baseline captured in `ownUnitsBaselines`). Binary objectives (unlock/upgrade/automate factory) are not scaled.
+| Signal | Weight | Range |
+|--------|--------|-------|
+| Invoked gods | 0–6 → linear | up to **45** points |
+| Wallet gold | log₁₀ from 1e3..1e18 | up to **55** points |
+
+**Level** = clamp(round(god points + wallet points), 1, 100).
+
+After a god invoke, wallet resets to 0 but invoked gods increase — level drops on the wallet portion yet keeps a **prestige floor** (~7–8 levels per god).
+
+**Mission scaling** ([`game/missions/level-scaling.ts`](../src/game/missions/level-scaling.ts)):
+
+| Target | Formula (level L) |
+|--------|-------------------|
+| Objectives (gold/count) | × `1.012^(L-1)` |
+| Gold rewards (catalog + claim) | × `1.035^(L-1)` × `missionGoldReward` × `GAME_BALANCE` |
+| Power-up rewards | `count + floor(L / 20)` |
+| Renown | unchanged |
+
+Example multipliers:
+
+| Level | Objective mult | Gold reward mult |
+|-------|----------------|------------------|
+| 1 | ×1 | ×1 |
+| 25 | ×1.31 | ×2.28 |
+| 50 | ×1.81 | ×5.58 |
+| 100 | ×3.27 | ×31.0 |
+
+Shown in the header as `Lv. {level}`; used by mission slots, claim dialog, and `claimMissionReward`.
+
+**Catalog loop:** the 200 missions run in a continuous loop (`mission-200` → `mission-001`). Claimed missions can reappear in active slots; `renownPercent` is preserved across replays. Replay progress uses fresh baselines so lifetime objectives require new progress.
 
 Effective cycle time: `(baseTime × hasteRune) / cumulativeGodSpeed`.
 

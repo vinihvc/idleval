@@ -284,7 +284,8 @@ describe("power-ups", () => {
       Math.max(
         1,
         Math.round(
-          (120 * (BALANCE_BASELINE.powerUpTimeMultiplier / getGameDifficulty())) /
+          (120 *
+            (BALANCE_BASELINE.powerUpTimeMultiplier / getGameDifficulty())) /
             2
         )
       )

@@ -1,5 +1,5 @@
 import type { MissionDefinition, MissionId } from "@/content/missions";
-import { ACTIVE_MISSION_SLOTS } from "@/content/missions";
+import { ACTIVE_MISSION_SLOTS, getMissionById } from "@/content/missions";
 import {
   createMissionProgressBaseline,
   type MissionGameSnapshot,
@@ -12,39 +12,52 @@ import {
   isMissionReadyToClaim,
   meetsMissionRequirements,
 } from "./progress";
+import { isMissionReplay } from "./replay";
 
 const getEligibleMissions = (
   catalog: MissionDefinition[],
-  state: MissionsPersistedState,
+  _state: MissionsPersistedState,
   snapshot: MissionGameSnapshot
-): MissionDefinition[] => {
-  const claimed = new Set(state.claimedIds);
+): MissionDefinition[] =>
+  catalog.filter((mission) => meetsMissionRequirements(mission, snapshot));
 
-  return catalog.filter(
-    (mission) =>
-      !claimed.has(mission.id) && meetsMissionRequirements(mission, snapshot)
-  );
-};
-
-const getNextMissionCandidates = (
+const findNextMissionAfterClaim = (
   catalog: MissionDefinition[],
-  state: MissionsPersistedState,
-  snapshot: MissionGameSnapshot
-): MissionDefinition[] => getEligibleMissions(catalog, state, snapshot);
+  candidates: MissionDefinition[],
+  claimedId: MissionId,
+  usedIds: Set<MissionId>
+): MissionDefinition | null => {
+  const candidateIds = new Set(candidates.map((mission) => mission.id));
+  const claimedIndex = catalog.findIndex((mission) => mission.id === claimedId);
+
+  if (claimedIndex === -1) {
+    return null;
+  }
+
+  for (let offset = 1; offset <= catalog.length; offset++) {
+    const mission = catalog[(claimedIndex + offset) % catalog.length];
+
+    if (candidateIds.has(mission.id) && !usedIds.has(mission.id)) {
+      return mission;
+    }
+  }
+
+  return null;
+};
 
 export const getMissionSlotStatus = (
   id: MissionId,
   state: MissionsPersistedState
 ): MissionSlotStatus => {
-  if (state.claimedIds.includes(id)) {
-    return "claimed";
+  if (state.activeSlotIds.includes(id) || !state.claimedIds.includes(id)) {
+    if (state.readyToClaimIds.includes(id)) {
+      return "ready";
+    }
+
+    return "in_progress";
   }
 
-  if (state.readyToClaimIds.includes(id)) {
-    return "ready";
-  }
-
-  return "in_progress";
+  return "claimed";
 };
 
 /**
@@ -55,7 +68,10 @@ export const resolveMissionSlotStatus = (
   state: MissionsPersistedState,
   snapshot: MissionGameSnapshot
 ): MissionSlotStatus => {
-  if (state.claimedIds.includes(mission.id)) {
+  if (
+    !state.activeSlotIds.includes(mission.id) &&
+    state.claimedIds.includes(mission.id)
+  ) {
     return "claimed";
   }
 
@@ -71,11 +87,20 @@ export const resolveMissionSlotStatus = (
 
 export const canClaimMission = (
   id: MissionId,
-  state: MissionsPersistedState
-): boolean => state.readyToClaimIds.includes(id);
+  state: MissionsPersistedState,
+  snapshot: MissionGameSnapshot
+): boolean => {
+  if (!state.readyToClaimIds.includes(id)) {
+    return false;
+  }
+
+  const mission = getMissionById(id);
+
+  return mission ? isMissionReadyToClaim(mission, snapshot, state) : false;
+};
 
 /**
- * Captures baselines for active missions that do not have one yet.
+ * Captures baselines for active missions. Replays overwrite existing baselines.
  */
 export const captureMissionBaselines = (
   state: MissionsPersistedState,
@@ -83,10 +108,14 @@ export const captureMissionBaselines = (
   activeSlotIds: MissionId[]
 ): MissionsPersistedState => {
   let progressBaselines = state.progressBaselines;
+  let ownUnitsBaselines = state.ownUnitsBaselines;
   let changed = false;
 
   for (const id of activeSlotIds) {
-    if (progressBaselines[id]) {
+    const replay = isMissionReplay(state, id);
+    const mission = getMissionById(id);
+
+    if (!replay && progressBaselines[id]) {
       continue;
     }
 
@@ -95,6 +124,17 @@ export const captureMissionBaselines = (
       [id]: createMissionProgressBaseline(snapshot),
     };
     changed = true;
+
+    if (replay && mission?.objective.type === "ownUnits") {
+      const factory = mission.objective.factory;
+
+      if (state.ownUnitsBaselines[factory] === undefined) {
+        ownUnitsBaselines = {
+          ...ownUnitsBaselines,
+          [factory]: snapshot.statistics.factories[factory]?.quantity ?? 0,
+        };
+      }
+    }
   }
 
   if (!changed) {
@@ -104,27 +144,25 @@ export const captureMissionBaselines = (
   return {
     ...state,
     progressBaselines,
+    ownUnitsBaselines,
   };
 };
 
 /**
  * Keeps the three visible slot ids stable. Existing positions are preserved;
- * empty slots are filled with the next unclaimed missions in catalog order.
+ * empty slots are filled with the next eligible missions in catalog order.
  */
 export const resolveActiveSlotIds = (
   catalog: MissionDefinition[],
   state: MissionsPersistedState,
   snapshot: MissionGameSnapshot
 ): MissionId[] => {
-  const claimed = new Set(state.claimedIds);
   const eligible = new Set(
     getEligibleMissions(catalog, state, snapshot).map((mission) => mission.id)
   );
 
   const isVisibleMission = (id: MissionId): boolean =>
-    catalog.some((mission) => mission.id === id) &&
-    !claimed.has(id) &&
-    eligible.has(id);
+    catalog.some((mission) => mission.id === id) && eligible.has(id);
 
   const slots: MissionId[] = [];
   const used = new Set<MissionId>();
@@ -147,11 +185,7 @@ export const resolveActiveSlotIds = (
       break;
     }
 
-    if (
-      claimed.has(mission.id) ||
-      used.has(mission.id) ||
-      !eligible.has(mission.id)
-    ) {
+    if (used.has(mission.id) || !eligible.has(mission.id)) {
       continue;
     }
 
@@ -163,7 +197,7 @@ export const resolveActiveSlotIds = (
 };
 
 /**
- * Replaces only the claimed mission's slot with the next unclaimed mission.
+ * Replaces only the claimed mission's slot with the next eligible mission.
  */
 export const replaceActiveSlotAfterClaim = (
   catalog: MissionDefinition[],
@@ -181,8 +215,12 @@ export const replaceActiveSlotAfterClaim = (
   const usedIds = new Set(
     nextSlots.filter((id, index) => index !== slotIndex && id !== claimedId)
   );
-  const nextMission = getNextMissionCandidates(catalog, state, snapshot).find(
-    (mission) => !usedIds.has(mission.id)
+  const candidates = getEligibleMissions(catalog, state, snapshot);
+  const nextMission = findNextMissionAfterClaim(
+    catalog,
+    candidates,
+    claimedId,
+    usedIds
   );
 
   if (nextMission) {
@@ -239,17 +277,12 @@ export const findNewlyReadyMissionIds = (
   snapshot: MissionGameSnapshot
 ): MissionId[] => {
   const ready = new Set(state.readyToClaimIds);
-  const claimed = new Set(state.claimedIds);
   const activeSlotIds = resolveActiveSlotIds(catalog, state, snapshot);
   const active = new Set(activeSlotIds);
   const newlyReady: MissionId[] = [];
 
   for (const mission of catalog) {
-    if (
-      ready.has(mission.id) ||
-      claimed.has(mission.id) ||
-      !active.has(mission.id)
-    ) {
+    if (ready.has(mission.id) || !active.has(mission.id)) {
       continue;
     }
 
@@ -268,3 +301,5 @@ export const findNewlyReadyMissionIds = (
 export const getHasClaimableMission = (
   state: MissionsPersistedState
 ): boolean => state.readyToClaimIds.length > 0;
+
+export { isMissionReplay } from "./replay";

@@ -101,7 +101,7 @@ Common props: `size: 'sm' | 'md' | 'lg'`, `soft: true` (drop shadow), `interacti
 
 ### Progress
 
-Inset track pattern (see [missions.claim-content.tsx](../src/components/dialog/missions/missions.claim-content.tsx)):
+Inset track pattern (see [mission.content.tsx](../src/components/dialog/mission/mission.content.tsx)):
 
 `inset-shadow-xs h-4 rounded-sm border-2 border-primary/40 bg-muted` + `ProgressRange` with `bg-primary`.
 
@@ -140,7 +140,7 @@ Full pipeline: [AGENTS.md § Game asset images](../AGENTS.md#game-asset-images).
 |--------|-----------------|
 | Factory grid | `game/factory-grid/`, `ui/factory-card/` |
 | Upgrade / god cards | `ui/upgrade-card/`, `dialog/gods/`, `dialog/upgrades/` |
-| Mission board + claim | `game/stage/mission-slots.tsx`, `dialog/missions/` |
+| Mission board + claim | `game/missions/`, `dialog/mission/` |
 | Settings | `dialog/settings/` |
 
 ## Anti-patterns

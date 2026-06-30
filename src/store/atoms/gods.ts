@@ -14,7 +14,7 @@ import { syncMissionProgress } from "@/store/atoms/missions.actions";
 import { missionsAtom } from "@/store/atoms/missions.atom";
 import { buildMissionGameSnapshot } from "@/store/atoms/missions.selectors";
 import { resetRunProgress } from "@/store/reset-run-progress";
-import { persistedAtom } from "@/store/storage";
+import { persistedAtomWithNormalize } from "@/store/storage";
 import type { GameValue } from "@/utils/decimal";
 import { getGold, useWallet } from "./wallet";
 
@@ -39,9 +39,33 @@ export interface GodsState {
   invoked: GodId[];
 }
 
-export const godsAtom = persistedAtom<GodsState>(LOCAL_STORAGE.gods, {
+const validGodIds = new Set<GodId>(GOD_DATA.map((god) => god.id));
+
+const defaultGodsState = (): GodsState => ({
   invoked: [],
 });
+
+export const normalizeGodsState = (value: unknown): GodsState => {
+  if (typeof value !== "object" || value === null) {
+    return defaultGodsState();
+  }
+
+  const raw = value as Record<string, unknown>;
+  const invoked = Array.isArray(raw.invoked)
+    ? raw.invoked.filter(
+        (id): id is GodId =>
+          typeof id === "string" && validGodIds.has(id as GodId)
+      )
+    : [];
+
+  return { invoked };
+};
+
+export const godsAtom = persistedAtomWithNormalize<GodsState>(
+  LOCAL_STORAGE.gods,
+  defaultGodsState(),
+  normalizeGodsState
+);
 
 export const useGodsState = () => useAtomValue(godsAtom);
 

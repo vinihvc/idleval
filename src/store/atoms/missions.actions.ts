@@ -11,14 +11,17 @@ import {
   resolveActiveSlotIds,
   summarizeMissionRewards,
 } from "@/game/missions";
+import { isMissionReadyToClaim } from "@/game/missions/progress";
 import { addInventorySlot } from "@/game/power-ups";
 import type { MissionCounters, MissionsPersistedState } from "@/game/types";
 import { sound } from "@/providers/sound";
 import { store } from "@/providers/store";
-import { getInvokedGods } from "@/store/atoms/gods";
 import { inventoryAtom } from "@/store/atoms/inventory";
 import { missionsAtom } from "@/store/atoms/missions.atom";
-import { buildMissionGameSnapshot } from "@/store/atoms/missions.selectors";
+import {
+  buildMissionGameSnapshot,
+  getMissionPlayerLevel,
+} from "@/store/atoms/missions.selectors";
 import { increaseGoldByAmount } from "@/store/atoms/wallet";
 import {
   deserializeDecimal,
@@ -105,9 +108,17 @@ const applyMissionSync = (
     withBaselines,
     snapshot
   );
-  const readyToClaimIds = [
+  const candidateReady = [
     ...new Set([...withBaselines.readyToClaimIds, ...newlyReady]),
   ];
+  const readyToClaimIds = candidateReady.filter((id) => {
+    const mission = getMissionById(id);
+
+    return (
+      mission !== undefined &&
+      isMissionReadyToClaim(mission, snapshot, withBaselines)
+    );
+  });
 
   return {
     ...withBaselines,
@@ -142,8 +153,9 @@ export const claimMissionReward = (id: MissionId): boolean => {
   syncMissionProgress();
 
   const state = store.get(missionsAtom);
+  const snapshot = buildMissionGameSnapshot();
 
-  if (!canClaimMission(id, state)) {
+  if (!canClaimMission(id, state, snapshot)) {
     return false;
   }
 
@@ -155,7 +167,7 @@ export const claimMissionReward = (id: MissionId): boolean => {
 
   const rewards = summarizeMissionRewards(
     mission.rewards,
-    getInvokedGods().length
+    getMissionPlayerLevel()
   );
 
   if (rewards.gold.gt(0)) {
@@ -193,13 +205,22 @@ export const claimMissionReward = (id: MissionId): boolean => {
     const readyToClaimIds = previous.readyToClaimIds.filter(
       (readyId) => readyId !== id
     );
-    const claimedIds = [...previous.claimedIds, id];
+    const claimedIds = previous.claimedIds.includes(id)
+      ? previous.claimedIds
+      : [...previous.claimedIds, id];
     const { [id]: _removed, ...progressBaselines } = previous.progressBaselines;
+    const ownUnitsBaselines =
+      mission.objective.type === "ownUnits"
+        ? (({ [mission.objective.factory]: _factory, ...rest }) => rest)(
+            previous.ownUnitsBaselines
+          )
+        : previous.ownUnitsBaselines;
     const afterClaim = {
       ...previous,
       readyToClaimIds,
       claimedIds,
       progressBaselines,
+      ownUnitsBaselines,
     };
 
     const activeSlotIds = replaceActiveSlotAfterClaim(

@@ -4,6 +4,7 @@ import {
   getRenownProductionMultiplier,
   getVisibleMissionSlots,
 } from "@/game/missions";
+import { getPlayerLevel } from "@/game/player-level";
 import type { MissionGameSnapshot } from "@/game/types";
 import { store } from "@/providers/store";
 import { useFactories } from "@/store/atoms/factories";
@@ -28,6 +29,29 @@ export const buildMissionGameSnapshot = (): MissionGameSnapshot => {
     walletGold: getGold(),
     counters: missions.counters,
   };
+};
+
+export const getMissionPlayerLevel = (): number =>
+  getPlayerLevel(buildMissionGameSnapshot());
+
+export const usePlayerLevel = (): number => {
+  const { gold } = useWallet();
+  const factories = useFactories();
+  const statistics = useStatistics();
+  const { invoked: godsInvoked } = useGods();
+  const { counters } = useMissionsState();
+
+  return React.useMemo(
+    () =>
+      getPlayerLevel({
+        statistics,
+        factories,
+        gods: { invoked: godsInvoked },
+        walletGold: gold,
+        counters,
+      }),
+    [gold, factories, statistics, godsInvoked, counters]
+  );
 };
 
 export const getMissionRenownProductionMultiplier = () =>

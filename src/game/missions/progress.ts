@@ -5,6 +5,7 @@ import type {
   MissionObjective,
 } from "@/content/missions";
 import { createInitialFactoryState } from "@/game/factories";
+import { getPlayerLevel } from "@/game/player-level";
 import {
   createInitialMissionsState,
   type MissionGameSnapshot,
@@ -14,6 +15,7 @@ import {
   type MissionsPersistedState,
 } from "@/game/types";
 import { D, type GameValue } from "@/utils/decimal";
+import { isMissionReplay } from "./replay";
 import { getScaledMissionObjective } from "./scaling";
 
 const clampRatio = (current: number, target: number): number => {
@@ -232,6 +234,17 @@ const getScopedCountProgress = (
   return getCountProgress(lifetimeValue, target);
 };
 
+const resolveMissionScope = (
+  scope: MissionObjective["scope"],
+  replay: boolean
+): MissionObjective["scope"] => {
+  if (replay && scope === "lifetime") {
+    return "sinceActive";
+  }
+
+  return scope;
+};
+
 /**
  * Returns progress toward a mission objective from the current game snapshot.
  *
@@ -246,13 +259,14 @@ export const getMissionProgress = (
 ): MissionProgress => {
   const baseline =
     state && missionId ? getBaseline(missionId, state) : undefined;
-  const godsInvoked = snapshot.gods.invoked.length;
-  const scaled = getScaledMissionObjective(objective, godsInvoked);
+  const replay = state && missionId ? isMissionReplay(state, missionId) : false;
+  const playerLevel = getPlayerLevel(snapshot);
+  const scaled = getScaledMissionObjective(objective, playerLevel);
 
   switch (scaled.type) {
     case "earnGold":
       return getScopedGoldProgress(
-        scaled.scope,
+        resolveMissionScope(scaled.scope, replay),
         scaled.target,
         snapshot.counters.runGoldEarned,
         snapshot.statistics.goldEarned,
@@ -260,7 +274,7 @@ export const getMissionProgress = (
       );
     case "spendGold":
       return getScopedGoldProgress(
-        scaled.scope,
+        resolveMissionScope(scaled.scope, replay),
         scaled.target,
         snapshot.counters.runGoldSpent,
         snapshot.statistics.goldSpent,
@@ -292,14 +306,14 @@ export const getMissionProgress = (
       );
     case "completeCycles":
       return getScopedCountProgress(
-        scaled.scope,
+        resolveMissionScope(scaled.scope, replay),
         scaled.target,
         snapshot.counters.productionCyclesCompleted,
         getSinceActiveCycles(snapshot, baseline)
       );
     case "activatePowerUps":
       return getScopedCountProgress(
-        scaled.scope,
+        resolveMissionScope(scaled.scope, replay),
         scaled.target,
         snapshot.counters.powerUpsActivated,
         getSinceActivePowerUps(snapshot, baseline)

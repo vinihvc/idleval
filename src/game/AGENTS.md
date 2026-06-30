@@ -39,7 +39,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 | `offline-earning.ts` | Offline earnings simulation |
 | `manual-production.ts` | Manual cycle reconcile by wall-clock timestamp |
 | `factory-cycle.ts` | Wall-clock cycle anchors (`cycleEndsAt`) for scheduler + progress UI |
-| `missions.ts` | Barrel: progress, slots, scaling, rewards |
+| `player-level.ts` | Derived player level 1–100 from wallet + gods |
+| `missions/level-scaling.ts` | Mission objective/gold/power-up scaling by level |
 | `mission-progression.ts` | Catalog-order wallet simulation for balance checks |
 | `progress-ease.ts` | Flat factory difficulty boost |
 | `progression-estimates.ts` | Milestone timing estimates for docs/PROGRESSION.md |
@@ -52,8 +53,8 @@ Pure, testable logic — formulas, eligibility, offline simulation, no UI or str
 
 ## Evolution
 
+- 2026-06-30 — Player level 1–100 from wallet + gods; mission scaling replaces god-cycle multiplier
 - 2026-06-30 — Aggressive ease rebalance: `GAME_BALANCE` 1.5; `productionValue` 2.85; `unitCostGrowth` 1.024; `godGoldRequired` 0.60; progress ease 1.55
 - 2026-06-30 — `GAME_BALANCE` is a single difficulty number; tuned constants moved to `BALANCE_BASELINE`; removed `GAME_DIFFICULTY`
 - 2026-06-27 — Simplified progress ease: flat `factory.difficulty` 1.3; removed milestone decay and per-god invoke cost curve
 - 2026-06-27 — Pre-god engagement: `unitCostGrowth` 1.03; `godGoldRequired` 1.05
-- 2026-06-27 — Aggressive factory income rebalance: `productionValue` 2.25, `productionTime` 0.81

@@ -5,13 +5,10 @@ import {
 } from "@/components/missions/format-mission-progress";
 import { MissionObjectiveLabel } from "@/components/missions/mission-objective";
 import type { MissionDefinition } from "@/content/missions";
-import {
-  getScaledMissionObjective,
-  getScaledMissionRewards,
-} from "@/game/missions";
+import { buildMissionSlotPresentation } from "@/game/missions";
 import type { MissionProgress, MissionSlotStatus } from "@/game/types";
 import { m } from "@/i18n/messages";
-import { useGods } from "@/store/atoms/gods";
+import { usePlayerLevel } from "@/store/atoms/missions.selectors";
 import { MissionRewardItem } from "./mission.reward-item";
 import { MissionProressbar } from "./mission.status";
 
@@ -26,14 +23,13 @@ export const MissionClaimContent = (props: MissionClaimContentProps) => {
 
   const rewardsHeadingId = React.useId();
 
-  const { count: godsInvoked } = useGods();
+  const playerLevel = usePlayerLevel();
 
   const isReady = status === "ready";
-  const scaledObjective = getScaledMissionObjective(
-    mission.objective,
-    godsInvoked
+  const { scaledObjective, scaledRewards } = buildMissionSlotPresentation(
+    mission,
+    playerLevel
   );
-  const scaledRewards = getScaledMissionRewards(mission.rewards, godsInvoked);
   const progressLabel = formatMissionProgressLabel(scaledObjective, progress);
 
   return (

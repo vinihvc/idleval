@@ -1,6 +1,15 @@
 // biome-ignore-all lint/performance/noBarrelFile: Re-exports keep @/game/missions import path stable after module split.
 
 export {
+  getMissionGoldRewardLevelMultiplier,
+  getMissionObjectiveLevelMultiplier,
+  getMissionPowerUpRewardCount,
+} from "./missions/level-scaling";
+export {
+  buildMissionSlotPresentation,
+  type MissionSlotPresentation,
+} from "./missions/presentation";
+export {
   getMissionProgress,
   getPlayerProgressStage,
   isMissionReadyToClaim,
@@ -14,7 +23,6 @@ export {
   summarizeMissionRewards,
 } from "./missions/rewards";
 export {
-  getMissionGodCycleMultiplier,
   getScaledMissionObjective,
   getScaledMissionRewards,
   scaleMissionCountTarget,
@@ -27,7 +35,9 @@ export {
   getHasClaimableMission,
   getMissionSlotStatus,
   getVisibleMissionSlots,
+  isMissionReplay,
   replaceActiveSlotAfterClaim,
   resolveActiveSlotIds,
   resolveMissionSlotStatus,
 } from "./missions/slots";
+export { getPlayerLevel, getPlayerLevelProgress } from "./player-level";
