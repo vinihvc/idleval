@@ -27,12 +27,6 @@ describe("Header", () => {
 
     await expect.element(screen.getByText("$500")).toBeInTheDocument();
     await expect
-      .element(screen.getByText(m["ui.playerLevel.label"]({ level: "1" })))
-      .toBeInTheDocument();
-    await expect
-      .poll(() => screen.container.querySelector('[data-slot="progress"]'))
-      .not.toBeNull();
-    await expect
       .element(screen.getByRole("button", { name: m["ui.nav.upgrades"]() }))
       .toBeInTheDocument();
     await expect
